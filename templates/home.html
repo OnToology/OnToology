@@ -1,0 +1,24 @@
+{% extends "base.html"%}
+{%block body%}
+
+<form action="" method="POST" style="color: #999"> {% csrf_token %}
+<input type="number" name="year" placeholder="year" class="form-control" value="{{today.year}}"/>
+<input type="number" name="month" placeholder="month" class="form-control" value="{{today.month}}"/>
+<input type="number" name="day" placeholder="day" class="form-control" value="{{today.day}}"/>
+<input type="number" name="hour" placeholder="hour" class="form-control" value="{{today.hour}}"/>
+<input type="number" name="minute" placeholder="minutes" class="form-control" value="{{today.minute}}"/>
+<input type="text" name="target_repo" placeholder="target repo" class="form-control" value="ahmad88me/target"/>
+<input type="submit" class="form-control" value="View changed files"/>
+</form>
+
+<table class="table table-bordered table-hover">
+<tr>
+	<th>changed files</th>
+</tr>
+{%for r in result%}
+<tr>
+	<td>{{r}}</td>
+</tr>
+{%endfor%}
+</table>
+{% endblock %}
