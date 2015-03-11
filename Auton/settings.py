@@ -16,6 +16,11 @@ AUTHENTICATION_BACKENDS = (
     'mongoengine.django.auth.MongoEngineBackend',
 )
 
+LOGIN_URL = '/signin'
+
+from mongoengine import connect
+connect("Auton")
+
 AUTH_USER_MODEL = 'mongo_auth.MongoUser'
 MONGOENGINE_USER_DOCUMENT = 'mongoengine.django.auth.User'
 SESSION_ENGINE = 'mongoengine.django.sessions'
@@ -36,6 +41,10 @@ ALLOWED_HOSTS = []
 TEMPLATE_DIRS = (
     BASE_DIR+'/templates',
 )
+
+MEDIA_ROOT = BASE_DIR+'/media/'
+
+MEDIA_URL = '/media/'
 
 # Application definition
 

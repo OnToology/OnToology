@@ -8,13 +8,21 @@
 
     <!-- Bootstrap -->
    
-	<!-- Latest compiled and minified CSS -->
+   <!-- local bootstrap -->
+
+	<link rel="stylesheet" href="{{MEDIA_URL}}css/bootstrap.min.css">
+	<link rel="stylesheet" href="{{MEDIA_URL}}css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="{{MEDIA_URL}}css/cover.css">
+	<script src="{{MEDIA_URL}}js/bootstrap.min.js"></script>
+
+
+<!-- Latest compiled and minified CSS >
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 	
-	<!-- Optional theme -->
+	<!-- Optional theme >
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
 	<link rel="stylesheet" href="http://getbootstrap.com/examples/cover/cover.css">
-	<!-- Latest compiled and minified JavaScript -->
+	<!-- Latest compiled and minified JavaScript >
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 
 
@@ -38,14 +46,14 @@
               <h3 class="masthead-brand">Auton</h3>
               <nav>
                 <ul class="nav masthead-nav">
-                  <li class="active"><a href="#">Home</a></li>
-                  <li><a href="#">Features</a></li>
-                  <li><a href="#">Contact</a></li>
+                  <li class="active"><a href="/">Home</a></li>
+                  <li><a href="repos">Repositories</a></li>
+                  <li><a href="signout">Logout</a></li>
                 </ul>
               </nav>
             </div>
             </br></br>
-             {% block body%}
+            {% block body%}
             {% endblock %}
           </div>
 

@@ -1,0 +1,12 @@
+{% extends "base.html"%}
+{%block body%}
+{%for r in repos%}
+<div class="">
+	{{r.repo_url}}
+</div>
+{%endfor%}
+<form  method="POST"> {% csrf_token %}
+	<input type="text" name="newrepo" class="form-control"/>
+	<input type="submit" value="Create" class="form-control"/>
+</form>
+{%endblock%}
