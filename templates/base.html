@@ -49,9 +49,9 @@
               <h3 class="masthead-brand">Auton</h3>
               <nav>
                 <ul class="nav masthead-nav">
-                  <li class="active"><a href="/">Home</a></li>
-                  <li><a href="repos">Repositories</a></li>
-                  <li><a href="signout">Logout</a></li>
+                  <li {% block home_head %} class="active" {% endblock %} ><a href="/">Home</a></li>
+                  <li {% block repos_head %} {% endblock %} ><a href="repos">Repositories</a></li>
+                  <li {% block signout_head %} {% endblock %} ><a href="signout">Logout</a></li>
                 </ul>
               </nav>
             </div>
