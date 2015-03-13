@@ -2,15 +2,23 @@
 {%block body%}
 
 
+
+
+
 <table class="table table-bordered">
 
 {%for r in repos%}
 <tr>
 	<td>
-	{{r.repo_url}}
+		{{r.repo_url}}
 	</td>
-	<td>
-	<a href="delete_repo"><img src="http://yunda.djehouti.com/media/graph/4fe2fb56eb419.png" height="30" width="30"/></a>
+	<td>	
+		<form action="deleterepo" method="POST">
+			<input type="hidden" name="repo" value="{{r.repo_url}}"/>		
+			<input type="submit">
+				<img src="http://yunda.djehouti.com/media/graph/4fe2fb56eb419.png" height="30" width="30"/>
+			</input>
+		</form>
 	</td>
 </tr>
 {%endfor%}
@@ -21,4 +29,13 @@
 	<input type="text" name="newrepo" class="form-control"/>
 	<input type="submit" value="Create" class="form-control"/>
 </form>
+
+<script>
+$('#repo').click(function(){
+	
+});
+</script>
+
+
 {%endblock%}
+
