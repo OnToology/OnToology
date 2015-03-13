@@ -28,8 +28,6 @@
 
 </br>
 
-<p>This is test</p>
-
 <table class="table table-bordered">
 <tr>
 	<td><b>changed files</b></td>
@@ -41,11 +39,15 @@
 {%endfor%}
 </table>
 
+{%if viewproceed %}
+
 <form id="ch_form" action="grantupdate" method="POST">{% csrf_token %}
 	<input type="hidden" id="files_list" name="files_list" value="test message"/>
 	<input type="hidden" id="target_repo_grand" name="target_repo"/>
-	<input type="submit" value="Proceed"/>
+	<input type="submit" value="Proceed" class="form-control"/>
 </form>
+
+{% endif %}
 
 <script>
 var fis="";
@@ -54,7 +56,7 @@ $('#ch_form').submit(function (){
 	$('.highl').each(function(){
 		fis+=$(this).text()+"&";
 	});
-	alert(fis);
+	//alert(fis);
 	$('#files_list').val(fis);
 });
 

@@ -10,7 +10,8 @@ password = os.environ['github_password']
 #target_repo = 'ahmad88me/target'
 
 #home = '/Users/blakxu/Studying Material UPM/Thesis/code/'
-home = '/Users/blakxu/test123/pro/'
+#home = '/Users/blakxu/test123/pro/'
+home = '/home/ubuntu/temp/'
 
 
 parent_folder = None
