@@ -57,9 +57,10 @@ def grant_update(request):
 def delete_repo(request):
     repo = request.POST['target_repo']
     r = Repof.objects.get(repo_url=repo)
+    AutonUser.objects(id=request.user.id).update_one(pull__repos=r)
     r.delete()
-    return render_to_response('msg.html',{'msg': 'repo deleted'},context_instance=RequestContext(request))
-    #return redirect('repos')
+    #return render_to_response('msg.html',{'msg': 'repo deleted'},context_instance=RequestContext(request))
+    return redirect('repos')
 
 
 
