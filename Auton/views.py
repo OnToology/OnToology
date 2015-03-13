@@ -55,7 +55,7 @@ def grant_update(request):
 
 @login_required
 def delete_repo(request):
-    repo = request.POST['repo']
+    repo = request.POST['target_repo']
     r = Repof.objects.get(repo_url=repo)
     r.delete()
     return render_to_response('msg.html',{'msg': 'repo deleted'},context_instance=RequestContext(request))
