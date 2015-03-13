@@ -16,6 +16,7 @@ urlpatterns = patterns('',
     url(r'^signout',views.signout,name='signout'),
     url(r'^repos',views.repos,name='repos'),
     url(r'^grantupdate',views.grant_update,name='grantupdate'),
+    url(r'deleterepo',views.delete_repo,name='deleterepo'),
     url(r'',views.home, name='home'),
     #url(r'^admin/', include(admin.site.urls)),
 )

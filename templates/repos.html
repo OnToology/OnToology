@@ -1,10 +1,22 @@
 {% extends "base.html"%}
 {%block body%}
+
+
+<table>
+
 {%for r in repos%}
-<div class="">
+<tr>
+	<td>
 	{{r.repo_url}}
-</div>
+	</td>
+	<td>
+	<a href="delete_repo"><img src="http://yunda.djehouti.com/media/graph/4fe2fb56eb419.png"/></a>
+	</td>
+</tr>
 {%endfor%}
+
+</table>
+
 <form  method="POST"> {% csrf_token %}
 	<input type="text" name="newrepo" class="form-control"/>
 	<input type="submit" value="Create" class="form-control"/>

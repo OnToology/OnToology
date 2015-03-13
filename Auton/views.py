@@ -53,6 +53,15 @@ def grant_update(request):
 
 
 
+@login_required
+def delete_repo(request):
+    repo = request.POST['repo']
+    r = Repof.objects.find(repo_url=repo)
+    r.delete()
+    return redirect('repos')
+
+
+
 
 @login_required
 def repos(request):
