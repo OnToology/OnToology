@@ -14,7 +14,7 @@
 	</td>
 	<td>	
 		<form action="deleterepo" method="POST"> {% csrf_token %}
-			<input type="hidden" name="repo" value="{{r.repo_url}}"/>		
+			<input type="hidden" name="target_repo" value="{{r.repo_url}}"/>		
 			<input type="image" src="http://yunda.djehouti.com/media/graph/4fe2fb56eb419.png" height="30" width="30"/>	
 		</form>
 	</td>
