@@ -1,35 +1,75 @@
 {% extends "base.html"%}
 {%block body%}
 
+
+
+
+
+
 <form action="" method="POST" style="color: #999"> {% csrf_token %}
 
-	<input type="checkbox" name="fromlast" class=""  >From last check</input>
 	<input type="checkbox" name="checktry" class="" >Mark this check</input>
+	<!-- input type="checkbox" name="fromlast" class=""  >From last check</input>
 	<input type="number" name="year" id="year" placeholder="year" class="form-control" value="{{today.year}}"/>
 	<input type="number" name="month" id="month" placeholder="month" class="form-control" value="{{today.month}}"/>
 	<input type="number" name="day" id="day" placeholder="day" class="form-control" value="{{today.day}}"/>
 	<input type="number" name="hour" placeholder="hour" class="form-control" value="{{today.hour}}"/>
-	<input type="number" name="minute" placeholder="minutes" class="form-control" value="{{today.minute}}"/>
+	<input type="number" name="minute" placeholder="minutes" class="form-control" value="{{today.minute}}"/-->
 	
-	
-	
-	
-<!-- input type="text" name="target_repo" placeholder="target repo" class="form-control" value="ahmad88me/target"/  -->
-<select name="target_repo" class="form-control">
+<select name="target_repo" id="target_repo_select" class="form-control">
 	{%for r in repos%}
 	<option value="{{r.repo_url}}">{{r.repo_url}}</option>
 	{%endfor%}
 </select>
 <input type="submit" class="form-control" value="View changed files"/>
 </form>
-<table class="table table-bordered table-hover">
+
+
+
+</br>
+
+<p>This is test</p>
+
+<table class="table table-bordered">
 <tr>
 	<td><b>changed files</b></td>
 </tr>
 {%for r in result%}
-<tr>
+<tr class='ch_file'>
 	<td>{{r}}</td>
 </tr>
 {%endfor%}
 </table>
+
+<form id="ch_form" action="grantupdate" method="POST">{% csrf_token %}
+	<input type="hidden" id="files_list" name="files_list" value="test message"/>
+	<input type="hidden" id="target_repo_grand" name="target_repo"/>
+	<input type="submit" value="Proceed"/>
+</form>
+
+<script>
+var fis="";
+$('#ch_form').submit(function (){
+	$('#target_repo_grand').val($('#target_repo_select option:selected').text());
+	$('.highl').each(function(){
+		fis+=$(this).text()+"&";
+	});
+	alert(fis);
+	$('#files_list').val(fis);
+});
+
+
+$('.ch_file').click(function(){
+  if ($(this).hasClass('highl')){
+	  $(this).removeClass('highl');
+  }
+  else{
+	  $(this).addClass('highl');  
+  }
+  //alert('clicked');
+});
+</script>
 {% endblock %}
+
+
+

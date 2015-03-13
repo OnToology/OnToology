@@ -20,15 +20,16 @@ def home(request):
         return render_to_response('home.html',{'today': datetime.today(), 'repos': request.user.repos},context_instance=RequestContext(request))
     else:
         print request.POST
-        year = int(request.POST['year'])
-        month = int(request.POST['month'])
-        day = int(request.POST['day'])
-        hour = int(request.POST['hour'])
-        minute = int(request.POST['minute'])
+#         year = int(request.POST['year'])
+#         month = int(request.POST['month'])
+#         day = int(request.POST['day'])
+#         hour = int(request.POST['hour'])
+#         minute = int(request.POST['minute'])
+#         target_datetime = datetime(year=year,month=month,day=day,hour=hour,minute=minute)
         target_repo = request.POST['target_repo']
-        target_datetime = datetime(year=year,month=month,day=day,hour=hour,minute=minute)
         u = AutonUser.objects.get(id=request.user.id)
-        if 'fromlast' in request.POST:
+#        if 'fromlast' in request.POST:
+        if True:
             r = None
             for i in u.repos:
                 if i.repo_url == target_repo:
@@ -45,6 +46,22 @@ def home(request):
         else:
             result = get_updated_files(target_repo, target_datetime)
         return render_to_response('home.html',{'today': target_datetime,'repos': request.user.repos, 'result': result},context_instance=RequestContext(request))
+
+
+
+@login_required
+def grant_update(request):
+    print request.POST
+    target_repo = request.POST['target_repo']
+    l = request.POST['files_list'].strip()
+    try:
+        fil = l.split('&')[:-1]
+    except:
+        fil = []
+    result = git_magic(target_repo,request.user.username,'git@github.com:'+target_repo+'.git',fil)
+
+    return render_to_response('msg.html',{'msg': 'Magic is done'},context_instance=RequestContext(request))
+
 
 
 

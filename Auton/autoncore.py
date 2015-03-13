@@ -34,25 +34,43 @@ g = Github(user,password)
 
 
 
+# def git_magic(target_repo,last_commit_date,user,cloning_repo):
+#     global parent_folder
+#     global project_folder
+#     parent_folder = user
+#     project_folder = target_repo.split("/")[-1]
+#     changed_files = get_updated_files(target_repo, last_commit_date)
+#     print 'got updated files'
+#     clone_repo(cloning_repo)
+#     print 'repo cloned'
+#     update_readme(changed_files)
+#     print 'readme updated'
+#     #push_repo()
+#     #print 'repo pull request'
+#     commit_changes()
+#     print 'changes committed'
+#     send_pull_request(cloning_repo)
+#     print 'pull request is sent'
+#     return changed_files
 
-def git_magic(target_repo,last_commit_date,user,cloning_repo):
+
+
+def git_magic(target_repo,user,cloning_repo,changed_files):
     global parent_folder
     global project_folder
     parent_folder = user
     project_folder = target_repo.split("/")[-1]
-    changed_files = get_updated_files(target_repo, last_commit_date)
-    print 'got updated files'
     clone_repo(cloning_repo)
     print 'repo cloned'
     update_readme(changed_files)
     print 'readme updated'
-    #push_repo()
-    #print 'repo pull request'
     commit_changes()
     print 'changes committed'
     send_pull_request(cloning_repo)
     print 'pull request is sent'
     return changed_files
+
+
 
 
 
@@ -117,7 +135,16 @@ def send_pull_request(cloning_repo):
     g.get_repo(source_repo).create_pull(head='Autontool:master',base='master',title=title,body=body)
     
 
+#def add_as_collaborator(target_repo):
+#    g_ahmad.get_repo(target_repo).add_to_collaborators('Autontool')
+    #g.get_repo(target_repo).add_to_collaborators(collaborator)
 
 
+#https://github.com/login/oauth/authorize?client_id=bbfc39dd5b6065bbe53b&redirect_uri=http://127.0.0.1:8000&scope=repo&state=213498549ksdjflkjadslaksfd
+#from datetime import datetime
+#target_repo = 'ahmad88me/target'
+#target_datetime = datetime.today()
+#user = 'ahmad88me@gmail.com'
+#git_magic(target_repo, target_datetime,user,'git@github.com:'+target_repo+'.git')
 
 
