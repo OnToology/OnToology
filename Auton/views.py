@@ -7,6 +7,9 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.core.urlresolvers import reverse
+from django.views.decorators.csrf import csrf_exempt
+
+
 
 from datetime import datetime
 from autoncore import get_updated_files,git_magic
@@ -86,7 +89,7 @@ def hooks(request):
     return render_to_response('hooks.html',{'hooks': Webhook.objects.all()},context_instance=RequestContext(request))
 
 
-
+@csrf_exempt
 def add_hook(request):
     h = Webhook()
     h.msg = request.POST
