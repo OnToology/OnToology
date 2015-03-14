@@ -16,4 +16,6 @@ class AutonUser(User):
     repos = ListField(ReferenceField(Repof))
 
 
+class Webhook(Document):
+    msg = StringField(default="")
 

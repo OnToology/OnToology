@@ -78,7 +78,27 @@ def repos(request):
         user.save()
     return render_to_response('repos.html',{'repos': user.repos},context_instance=RequestContext(request))
     
-    
+  
+  
+
+@login_required
+def hooks(request):
+    return render_to_response('hooks.html',{'hooks': Webhook.objects.all()})
+
+
+
+def add_hook(request):
+    h = Webhook()
+    h.msg = request.POST
+    h.save()
+    return hooks(request)
+
+
+
+
+
+
+  
     
 
 def signup(request):
