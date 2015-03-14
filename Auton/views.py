@@ -84,7 +84,7 @@ def repos(request):
   
   
 
-@login_required
+@csrf_exempt
 def hooks(request):
     return render_to_response('hooks.html',{'hooks': Webhook.objects.all()},context_instance=RequestContext(request))
 
