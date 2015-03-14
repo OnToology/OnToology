@@ -90,8 +90,8 @@ def get_updated_files(target_repo,last_commit_date):
 
 def clone_repo(cloning_repo):
     call(["rm","-Rf",home+parent_folder])
-    #call(["git","clone",cloning_repo,home+parent_folder])
-    call("export HOME=/home/ubuntu; git"+" clone "+cloning_repo+" "+home+parent_folder)
+    call(["git","clone",cloning_repo,home+parent_folder])
+    #call("export HOME=/home/ubuntu; git"+" clone "+cloning_repo+" "+home+parent_folder)
 
 
 
