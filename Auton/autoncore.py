@@ -36,15 +36,6 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
 
 
 
-def add_webhook(target_repo):
-    name = "autonhook"
-    active = True
-    events = ["push"]
-    config = {
-               "url": "http://familyyard.com/attach_webhook",
-               "content_type": "json"
-    }
-    g.repo(target_repo).create_hook(name,config,events,active)
 
 
 
@@ -120,6 +111,19 @@ def webhook_access(redirect_url):
     sec = ''.join([random.choice(string.ascii_letters+string.digits) for _ in range(9)])
 
     return "https://github.com/login/oauth/authorize?client_id="+client_id+"&redirect_uri="+redirect_url+"&scope="+scope+"&state="+sec, sec
+
+
+
+def add_webhook(target_repo,notification_url):
+    name = "autonhook"
+    active = True
+    events = ["push"]
+    #notificatoin_url = "http://familyyard.com/attach_webhook"
+    config = {
+               "url": notification_url,
+               "content_type": "json"
+    }
+    g.repo(target_repo).create_hook(name,config,events,active)
 
 
 

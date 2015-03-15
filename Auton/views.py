@@ -101,11 +101,15 @@ def add_hook(request):
 
 
 
-
+@login_required   
 def attach_webhook(request):
-    return render_to_response('msg.html',{'msg': request.POST},context_instance=RequestContext(request))
-    #add_webhook()
-
+    #return render_to_response('msg.html',{'msg': request.POST},context_instance=RequestContext(request))
+    u = AutonUser.objects.get(id=request.user.id)
+    for r in u.repos():
+        if request.GET['state']==r.state_code:
+            add_webhook(r.repo_url, "http://familyyard.com/add_hook")
+            return render_to_response('msg.html',{'msg': 'hook is added to repo: '+r.repo_url},context_instance=RequestContext(request))
+    return render_to_response('msg.html',{'msg': 'invalid state'},context_instance=RequestContext(request))
 
 
   
