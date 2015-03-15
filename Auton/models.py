@@ -8,7 +8,8 @@ from datetime import datetime
 class Repof(Document):
     repo_url = StringField(max_length=100,required=True)
     last_update = DateTimeField(default=datetime.today())
-    files = ListField()
+    state_code = StringField(max_length=100,default='not used yet')
+    #files = ListField()
 
 
 

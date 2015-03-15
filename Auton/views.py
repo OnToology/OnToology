@@ -12,9 +12,8 @@ from django.views.decorators.csrf import csrf_exempt
 import string
 import random
 from datetime import datetime
-from autoncore import get_updated_files,git_magic
+from autoncore import get_updated_files,git_magic, add_webhook, webhook_access
 from models import *
-from Auton.autoncore import add_webhook
 
 
 
@@ -73,14 +72,17 @@ def delete_repo(request):
 def repos(request):
     user = request.user
     user = AutonUser.objects.get(id=user.id)
-    print str(user.id)+", "+user.email
     if request.method=='POST':
+        webhook_access_url, sec = webhook_access('http://www.familyyard.net/attach_webhook')
         repo = Repof()
         repo.repo_url=request.POST['newrepo']
+        repo.state_code = sec
         repo.save()
         user.repos.append(repo)
         user.save()
-    return render_to_response('repos.html',{'repos': user.repos},context_instance=RequestContext(request))
+        return  HttpResponseRedirect(webhook_access_url)
+    else:
+        return render_to_response('repos.html',{'repos': user.repos},context_instance=RequestContext(request))
     
   
   
@@ -96,16 +98,6 @@ def add_hook(request):
     h.msg = str( request.POST)
     h.save()
     return hooks(request)
-
-
-
-
-def webhook_access(request):
-    client_id='bbfc39dd5b6065bbe53b'
-    redirect_url = 'http://www.familyyard.net/attach_webhook'
-    scope = 'write:repo_hook'
-    sec = ''.join([random.choice(string.ascii_letters+string.digits) for _ in range(9)])
-    return HttpResponseRedirect("https://github.com/login/oauth/authorize?client_id="+client_id+"&redirect_uri="+redirect_url+"&scope="+scope+"&state="+sec)
 
 
 

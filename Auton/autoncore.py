@@ -5,55 +5,16 @@ import getpass
 from datetime import datetime
 from subprocess import call
 import string, random
-user = os.environ['github_username']
-password = os.environ['github_password']
-#target_repo = 'ahmad88me/target'
-
-#home = '/Users/blakxu/Studying Material UPM/Thesis/code/'
-#home = '/Users/blakxu/test123/pro/'
-home = '/home/ubuntu/temp/'
 
 
 parent_folder = None
 project_folder = None
+home = '/home/ubuntu/temp/'
 
-# if len(sys.argv)!=3:
-#     user =  raw_input("Enter your email: ")
-#     password = getpass.getpass("Enter your password: ")    
-# else:
-#     user = sys.argv[1]
-#     password = sys.argv[2]
+user = os.environ['github_username']
+password = os.environ['github_password']
+
 g = Github(user,password)
-#for repo in g.get_user().get_repos():
-#    print repo.name
-# repo = g.get_repo(target_repo)
-# print repo.name
-# for c in repo.get_commits(since=datetime(year=2015,month=3,day=5,hour=17,minute=15,second=0)):
-#     print c.sha
-#     for f in c.files:
-#         print "--> "+f.filename
-
-
-
-# def git_magic(target_repo,last_commit_date,user,cloning_repo):
-#     global parent_folder
-#     global project_folder
-#     parent_folder = user
-#     project_folder = target_repo.split("/")[-1]
-#     changed_files = get_updated_files(target_repo, last_commit_date)
-#     print 'got updated files'
-#     clone_repo(cloning_repo)
-#     print 'repo cloned'
-#     update_readme(changed_files)
-#     print 'readme updated'
-#     #push_repo()
-#     #print 'repo pull request'
-#     commit_changes()
-#     print 'changes committed'
-#     send_pull_request(cloning_repo)
-#     print 'pull request is sent'
-#     return changed_files
-
 
 
 def git_magic(target_repo,user,cloning_repo,changed_files):
@@ -150,6 +111,18 @@ def send_pull_request(cloning_repo):
     print 'source_repo: '+source_repo
     g.get_repo(source_repo).create_pull(head='Autontool:master',base='master',title=title,body=body)
     
+
+
+def webhook_access(redirect_url):
+    client_id='bbfc39dd5b6065bbe53b'
+    #redirect_url = 'http://www.familyyard.net/attach_webhook'
+    scope = 'write:repo_hook'
+    sec = ''.join([random.choice(string.ascii_letters+string.digits) for _ in range(9)])
+
+    return "https://github.com/login/oauth/authorize?client_id="+client_id+"&redirect_uri="+redirect_url+"&scope="+scope+"&state="+sec, sec
+
+
+
 
 #def add_as_collaborator(target_repo):
 #    g_ahmad.get_repo(target_repo).add_to_collaborators('Autontool')
