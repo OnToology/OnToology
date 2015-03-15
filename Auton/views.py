@@ -14,6 +14,7 @@ import random
 from datetime import datetime
 from autoncore import get_updated_files,git_magic
 from models import *
+from Auton.autoncore import add_webhook
 
 
 
@@ -101,12 +102,17 @@ def add_hook(request):
 
 def webhook_access(request):
     client_id='bbfc39dd5b6065bbe53b'
-    redirect_url = 'http://familyyard.net'
+    redirect_url = 'http://www.familyyard.net/attach_webhook'
     scope = 'write:repo_hook'
     sec = ''.join([random.choice(string.ascii_letters+string.digits) for _ in range(9)])
     return HttpResponseRedirect("https://github.com/login/oauth/authorize?client_id="+client_id+"&redirect_uri="+redirect_url+"&scope="+scope+"&state="+sec)
 
 
+
+
+def attach_webhook(request):
+    return render_to_response('msg.html',{'msg': request.POST},context_instance=RequestContext(request))
+    #add_webhook()
 
 
 

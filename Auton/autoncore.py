@@ -75,16 +75,15 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
 
 
 
-def add_webhook():
-    
+def add_webhook(target_repo):
     name = "autonhook"
     active = True
     events = ["push"]
     config = {
-               "url": "http://example.com/webhook",
+               "url": "http://familyyard.com/attach_webhook",
                "content_type": "json"
     }
-
+    g.repo(target_repo).create_hook(name,config,events,active)
 
 
 

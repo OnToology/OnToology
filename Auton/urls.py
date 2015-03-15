@@ -13,6 +13,7 @@ urlpatterns = patterns('',
 
     url(r'^hooks',views.hooks,name='hooks'),
     url(r'^add_hook',views.add_hook,name='addhook'),
+    url(r'attach_webhook',views.attach_webhook,name="attachwebhook"),
     url(r'^webhook_access',views.webhook_access,name='webhookaccess'),
     url(r'^signup',views.signup,name='signup'),
     url(r'^signin',views.signin,name='signin'),
