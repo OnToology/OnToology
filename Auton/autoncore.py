@@ -123,7 +123,7 @@ def add_webhook(target_repo,notification_url):
                "url": notification_url,
                "content_type": "json"
     }
-    g.repo(target_repo).create_hook(name,config,events,active)
+    g.get_repo(target_repo).create_hook(name,config,events,active)
 
 
 
