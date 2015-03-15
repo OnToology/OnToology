@@ -96,9 +96,9 @@ def hooks(request):
 
 @csrf_exempt
 def add_hook(request):
-    h = Webhook()
-    h.msg = str( request.POST)
-    h.save()
+#     h = Webhook()
+#     h.msg = str( request.POST)
+#     h.save()
     return hooks(request)
 
 
