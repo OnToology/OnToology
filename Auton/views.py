@@ -16,6 +16,8 @@ from autoncore import get_updated_files,git_magic, add_webhook, webhook_access
 from models import *
 
 
+host = 'http://54.172.63.231'
+
 
 @login_required
 def home(request):
@@ -73,7 +75,7 @@ def repos(request):
     user = request.user
     user = AutonUser.objects.get(id=user.id)
     if request.method=='POST':
-        webhook_access_url, sec = webhook_access('http://www.familyyard.net/attach_webhook')
+        webhook_access_url, sec = webhook_access(host+'/attach_webhook')
         repo = Repof()
         repo.repo_url=request.POST['newrepo']
         repo.state_code = sec
@@ -107,7 +109,7 @@ def attach_webhook(request):
     u = AutonUser.objects.get(id=request.user.id)
     for r in u.repos():
         if request.GET['state']==r.state_code:
-            add_webhook(r.repo_url, "http://familyyard.com/add_hook")
+            add_webhook(r.repo_url, host+"/add_hook")
             return render_to_response('msg.html',{'msg': 'hook is added to repo: '+r.repo_url},context_instance=RequestContext(request))
     return render_to_response('msg.html',{'msg': 'invalid state'},context_instance=RequestContext(request))
 
