@@ -9,8 +9,8 @@ from django.http import JsonResponse
 from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
 
-
-
+import string
+import random
 from datetime import datetime
 from autoncore import get_updated_files,git_magic
 from models import *
@@ -96,6 +96,15 @@ def add_hook(request):
     h.save()
     return hooks(request)
 
+
+
+
+def webhook_access(request):
+    client_id='bbfc39dd5b6065bbe53b'
+    redirect_url = 'http://familyyard.net'
+    scope = 'write:repo_hook'
+    sec = ''.join([random.choice(string.ascii_letters+string.digits) for _ in range(9)])
+    return HttpResponseRedirect("https://github.com/login/oauth/authorize?client_id="+client_id+"&redirect_uri="+redirect_url+"&scope="+scope+"&state="+sec)
 
 
 

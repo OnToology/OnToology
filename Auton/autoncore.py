@@ -4,7 +4,7 @@ from github import Github
 import getpass
 from datetime import datetime
 from subprocess import call
-
+import string, random
 user = os.environ['github_username']
 password = os.environ['github_password']
 #target_repo = 'ahmad88me/target'
@@ -70,6 +70,21 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     send_pull_request(cloning_repo)
     print 'pull request is sent'
     return changed_files
+
+
+
+
+
+def add_webhook():
+    
+    name = "autonhook"
+    active = True
+    events = ["push"]
+    config = {
+               "url": "http://example.com/webhook",
+               "content_type": "json"
+    }
+
 
 
 
