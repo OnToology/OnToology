@@ -76,6 +76,7 @@ def repos(request):
     user = AutonUser.objects.get(id=user.id)
     if request.method=='POST':
         webhook_access_url, sec = webhook_access(host+'/attach_webhook')
+        #webhook_access_url, sec = webhook_access(host+'/ver_step')
         repo = Repof()
         repo.repo_url=request.POST['newrepo']
         repo.state_code = sec
@@ -87,6 +88,14 @@ def repos(request):
         return render_to_response('repos.html',{'repos': user.repos},context_instance=RequestContext(request))
     
   
+  
+def second_ver(request):
+    client_id = ''
+    client_secret =''
+    code = ''
+    redirect_url  =''
+    return render_to_response('second_ver.html',context_instance=RequestContext(request))
+    
   
 
 @csrf_exempt
