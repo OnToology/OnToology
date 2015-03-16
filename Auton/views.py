@@ -147,7 +147,7 @@ def add_hook(request):
     s = ""
     s = str(request.POST['payload'])#['repository']['name']
     j = json.loads(s)
-    s = j['repository']['name']
+    s = j['repository']['name']+'updated files: '+str(['head_commit']['modified'])
 #     for i in request.POST['payload']['repository']['name']:
 #         s+=str(i)+"\n**"
     h.msg = s
