@@ -1,30 +1,10 @@
 {% extends "base.html"%}
 {%block body%}
 
-
-
-
-
-
-<form action="" method="POST" style="color: #999"> {% csrf_token %}
-
-	<input type="checkbox" name="checktry" class="" >Mark this check</input>
-	<!-- input type="checkbox" name="fromlast" class=""  >From last check</input>
-	<input type="number" name="year" id="year" placeholder="year" class="form-control" value="{{today.year}}"/>
-	<input type="number" name="month" id="month" placeholder="month" class="form-control" value="{{today.month}}"/>
-	<input type="number" name="day" id="day" placeholder="day" class="form-control" value="{{today.day}}"/>
-	<input type="number" name="hour" placeholder="hour" class="form-control" value="{{today.hour}}"/>
-	<input type="number" name="minute" placeholder="minutes" class="form-control" value="{{today.minute}}"/-->
-	
-<select name="target_repo" id="target_repo_select" class="form-control">
-	{%for r in repos%}
-	<option value="{{r.repo_url}}">{{r.repo_url}}</option>
-	{%endfor%}
-</select>
+<form action="" method="GET" style="color: #999">
+<input name="target_repo" id="target_repo_select" class="form-control">
 <input type="submit" class="form-control" value="View changed files"/>
 </form>
-
-
 
 </br>
 

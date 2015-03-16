@@ -19,210 +19,76 @@ import json
 
 
 host = 'http://54.172.63.231'
+client_id = 'bbfc39dd5b6065bbe53b'
+client_secret = '60014ba718601441f542213855607810573c391e'
 
 
-@login_required
+
 def home(request):
-    if request.method=='GET':
-        return render_to_response('home.html',{'today': datetime.today(), 'repos': request.user.repos},context_instance=RequestContext(request))
-    else:
-        print request.POST
-        target_repo = request.POST['target_repo']
-        u = AutonUser.objects.get(id=request.user.id)
-        r = None
-        for i in u.repos:
-            if i.repo_url == target_repo:
-                r=i
-                break
-#         target_datetime = r.last_update        
-#         result = get_updated_files(target_repo, target_datetime)
-        result = r.files
-        target_datetime = datetime.today()#now it is not needed
-        return render_to_response('home.html',{'today': target_datetime,'repos': request.user.repos, 'result': result, 'viewproceed':True},context_instance=RequestContext(request))
+    if 'target_repo' in request.GET:
+        target_repo = request.GET['target_repo']
+        webhook_access_url, state = webhook_access(client_id,host+'/get_access_token')
+        request.session['target_repo'] = target_repo
+        request.session['state'] = state
+        return  HttpResponseRedirect(webhook_access_url)
+    return render_to_response('home.html',context_instance=RequestContext(request))
+
         
 
 
-@login_required
+
 def grant_update(request):
-    print request.POST
-    target_repo = request.POST['target_repo']
-    l = request.POST['files_list'].strip()
-    try:
-        fil = l.split('&')[:-1]
-    except:
-        fil = []
-    u = AutonUser.objects.get(id=request.user.id)
-    r = None
-    for i in u.repos:
-        if i.repo_url == target_repo:
-            r=i
-    r.last_update = datetime.today()
-    result = git_magic(target_repo,request.user.username,'git@github.com:'+target_repo+'.git',fil)
-    r.save()
+#     print request.POST
+#     target_repo = request.POST['target_repo']
+#     l = request.POST['files_list'].strip()
+#     try:
+#         fil = l.split('&')[:-1]
+#     except:
+#         fil = []
+#     u = AutonUser.objects.get(id=request.user.id)
+#     r = None
+#     for i in u.repos:
+#         if i.repo_url == target_repo:
+#             r=i
+#     r.last_update = datetime.today()
+#     result = git_magic(target_repo,request.user.username,'git@github.com:'+target_repo+'.git',fil)
+#     r.save()
     return render_to_response('msg.html',{'msg': 'Magic is done'},context_instance=RequestContext(request))
 
 
 
-@login_required
-def delete_repo(request):
-    repo = request.POST['target_repo']
-    r = Repof.objects.get(repo_url=repo)
-    AutonUser.objects(id=request.user.id).update_one(pull__repos=r)
-    r.delete()
-    #return render_to_response('msg.html',{'msg': 'repo deleted'},context_instance=RequestContext(request))
-    return redirect('repos')
 
-
-
-
-@login_required
-def repos(request):
-    user = request.user
-    user = AutonUser.objects.get(id=user.id)
-    if request.method=='POST':
-        #webhook_access_url, sec = webhook_access(host+'/attach_webhook')
-        #webhook_access_url, sec = webhook_access(host+'/ver_step')
-        webhook_access_url, sec = webhook_access(host+'/get_access_token')
-        repo = Repof()
-        repo.repo_url=request.POST['newrepo']
-        repo.state_code = sec
-        repo.save()
-        user.repos.append(repo)
-        user.save()
-        return  HttpResponseRedirect(webhook_access_url)
-    else:
-        return render_to_response('repos.html',{'repos': user.repos},context_instance=RequestContext(request))
-    
-
-@login_required  
-def get_access_token(request):
-    u = request.user
-    u = AutonUser.objects.get(id=u.id)
-    for r in u.repos:
-        if r.state_code == request.GET['state']:
-            #r.token = request.GET['code']
-            r.save()
-            
-            data = {
-                    'client_id': 'bbfc39dd5b6065bbe53b',
-                    'client_secret':'60014ba718601441f542213855607810573c391e',
-                    'code':request.GET['code'],
-                    'redirect_uri':host+'/add_hook?msg=hola'
-            }
-            res = requests.post('https://github.com/login/oauth/access_token',data=data)
-            atts = res.text.split('&')
-            d={}
-            for att in atts:
-                keyv = att.split('=')
-                d[keyv[0]] = keyv[1]
-            access_token = d['access_token']
-            r.token = access_token
-            r.save()
-            update_g(access_token)
-            add_webhook(r.repo_url, host+"/add_hook")
-            return render_to_response('msg.html',{'msg':'webhook attached' },context_instance=RequestContext(request))
-            #return HttpResponseRedirect('attach_webhook?state='+request.GET['state'])
-    return render_to_response('msg.html',{'msg': 'Error, invalid state'},context_instance=RequestContext(request))
-
-
-
-def second_ver(request):
-    client_id = ''
-    client_secret =''
-    code = ''
-    redirect_url  =''
-    return render_to_response('second_ver.html',context_instance=RequestContext(request))
-    
   
+def get_access_token(request):
+    if request.GET['state'] != request.session['state']:
+        return render_to_response('msg.html',{'msg':'Error, ; not an ethical attempt' },context_instance=RequestContext(request))
+    data = {
+        'client_id': client_id,
+        'client_secret': client_secret,
+        'code': request.GET['code'],
+        'redirect_uri': host+'/add_hook'
+    }
+    res = requests.post('https://github.com/login/oauth/access_token',data=data)
+    atts = res.text.split('&')
+    d={}
+    for att in atts:
+        keyv = att.split('=')
+        d[keyv[0]] = keyv[1]
+    access_token = d['access_token']
+    request.session['access_token'] = access_token
+    update_g(access_token)
+    add_webhook(request.session['target_repo'], host+"/add_hook")
+    return render_to_response('msg.html',{'msg':'webhook attached' },context_instance=RequestContext(request))
+    
 
-@csrf_exempt
-def hooks(request):
-    return render_to_response('hooks.html',{'hooks': Webhook.objects.all()},context_instance=RequestContext(request))
-
+      
 
 @csrf_exempt
 def add_hook(request):
-    h = Webhook()
-    #js_req = json.loads(str(request.body))
-    #h.msg = str(request.body)
-    #h.msg = str(request.POST)
-    #h.msg = str(request.POST['url'])
-    s = ""
-    s = str(request.POST['payload'])#['repository']['name']
+    s = str(request.POST['payload'])
     j = json.loads(s)
     s = j['repository']['url']+'updated files: '+str(j['head_commit']['modified'])
-#     for i in request.POST['payload']['repository']['name']:
-#         s+=str(i)+"\n**"
-    h.msg = s
-    h.save()
-    url = j['repository']['url']
-    url = url.replace('https://github.com/','')
-    repos = Repof.objects.filter(repo_url=url)
-    for r in repos:
-        for f in j['head_commit']['modified']:
-            r.files.append(f)
-        r.save()
-    return hooks(request)
+    request.session['updated_files'] = j['head_commit']['modified']
+    return render_to_response('msg.html',{'msg': 'webhook created: '+s},context_instance=RequestContext(request))
 
 
-
-@login_required   
-def attach_webhook(request):
-    #return render_to_response('msg.html',{'msg': request.POST},context_instance=RequestContext(request))
-    u = AutonUser.objects.get(id=request.user.id)
-    for r in u.repos:
-        if request.GET['state']==r.state_code:
-            add_webhook(r.repo_url, host+"/add_hook")
-            return render_to_response('msg.html',{'msg': 'hook is added to repo: '+r.repo_url},context_instance=RequestContext(request))
-    return render_to_response('msg.html',{'msg': 'invalid state'},context_instance=RequestContext(request))
-
-
-
-
-################################ Account management ######################################
-  
-    
-
-def signup(request):
-    if request.method=='GET':
-        return render_to_response('signinup.html',context_instance=RequestContext(request))
-    else:
-        if 'next' in request.GET:
-            next_url = request.GET['next']
-        else:
-            next_url = "/"
-        print request.GET
-        print request.POST
-        username = request.POST['username']
-        password = request.POST['password']
-        confirm_password = request.POST['confirmpassword']
-        if password != confirm_password:
-            return render_to_response('signinup',{'error_signup': 'password does not match'},context_instance=RequestContext(request))
-        u = AutonUser.create_user(username=username,email=username,password=password)
-        u = authenticate(username=username,password=password)
-        login(request,u)
-        return redirect('home')
-
-    
-    
-def signin(request):
-    if request.method=='GET':
-        return render_to_response('signinup.html',context_instance=RequestContext(request))
-    else:
-        username = request.POST['username']
-        password = request.POST['password'] 
-        next_url = '/'
-        u = authenticate(username=username, password=password)
-        if u == None:
-            return render_to_response('signinup.html', {'error_signin': 'wrong username/password combination'}, context_instance=RequestContext(request))
-        else:
-            login(request, u)    
-            return HttpResponseRedirect(next_url)
-
-    
-    
-def signout(request):
-    logout(request)
-    return redirect('home')
-
-    

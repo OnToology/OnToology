@@ -9,12 +9,11 @@ import string, random
 
 parent_folder = None
 project_folder = None
+
+
 home = '/home/ubuntu/temp/'
 
-user = os.environ['github_username']
-password = os.environ['github_password']
-
-g = Github(user,password)
+g = None
 
 
 def git_magic(target_repo,user,cloning_repo,changed_files):
@@ -36,12 +35,6 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
 
 
 
-
-
-
-
-
-
 def get_updated_files(target_repo,last_commit_date):
     changed_files = []
     repo = g.get_repo(target_repo)
@@ -57,7 +50,6 @@ def get_updated_files(target_repo,last_commit_date):
 def clone_repo(cloning_repo):
     call(["rm","-Rf",home+parent_folder])
     call(["git","clone",cloning_repo,home+parent_folder])
-    #call("export HOME=/home/ubuntu; git"+" clone "+cloning_repo+" "+home+parent_folder)
 
 
 
@@ -88,10 +80,14 @@ def push_repo():
                 
 
 
+
+
 def refresh_repo(target_repo):
     local_repo = target_repo.split('/')[-1]
     g.get_user().get_repo(local_repo).delete()
     g.get_user().create_fork(target_repo)
+
+
 
 
 
@@ -104,9 +100,9 @@ def send_pull_request(cloning_repo):
     
 
 
-def webhook_access(redirect_url):
-    client_id='bbfc39dd5b6065bbe53b'
-    #redirect_url = 'http://www.familyyard.net/attach_webhook'
+
+
+def webhook_access(redirect_url,client_id):
     scope = 'admin:org_hook'
     scope+=',admin:org,admin:public_key,admin:repo_hook,gist,notifications,delete_repo,repo_deployment,repo,public_repo,user,admin:public_key'
     sec = ''.join([random.choice(string.ascii_letters+string.digits) for _ in range(9)])
@@ -114,11 +110,13 @@ def webhook_access(redirect_url):
 
 
 
+
+
+
 def add_webhook(target_repo,notification_url):
     name = "web"
     active = True
     events = ["push"]
-    #notificatoin_url = "http://familyyard.com/attach_webhook"
     config = {
                "url": notification_url,
                "content_type": "form"
@@ -126,36 +124,12 @@ def add_webhook(target_repo,notification_url):
     g.get_repo(target_repo).create_hook(name,config,events,active)
 
 
+
+
 def update_g(token):
     global g
     g = Github(token)
 
-# 
-# name = "autonhook"
-# active = True
-# events = ["push"]
-# config = {
-#            "url": notification_url,
-#            "content_type": "form"
-# }
-# config = {
-#            "url": notification_url,
-#            "content_type": "json"
-# }
-# g.get_repo(target_repo).create_hook(name,config,events,active)
 
-
-
-#def add_as_collaborator(target_repo):
-#    g_ahmad.get_repo(target_repo).add_to_collaborators('Autontool')
-    #g.get_repo(target_repo).add_to_collaborators(collaborator)
-
-
-#https://github.com/login/oauth/authorize?client_id=bbfc39dd5b6065bbe53b&redirect_uri=http://127.0.0.1:8000&scope=repo&state=213498549ksdjflkjadslaksfd
-#from datetime import datetime
-#target_repo = 'ahmad88me/target'
-#target_datetime = datetime.today()
-#user = 'ahmad88me@gmail.com'
-#git_magic(target_repo, target_datetime,user,'git@github.com:'+target_repo+'.git')
 
 
