@@ -33,10 +33,13 @@ def home(request):
         for i in u.repos:
             if i.repo_url == target_repo:
                 r=i
-        target_datetime = r.last_update        
-        result = get_updated_files(target_repo, target_datetime)
+                break
+#         target_datetime = r.last_update        
+#         result = get_updated_files(target_repo, target_datetime)
+        result = r.files
+        target_datetime = datetime.today()#now it is not needed
         return render_to_response('home.html',{'today': target_datetime,'repos': request.user.repos, 'result': result, 'viewproceed':True},context_instance=RequestContext(request))
-
+        
 
 
 @login_required
@@ -147,11 +150,18 @@ def add_hook(request):
     s = ""
     s = str(request.POST['payload'])#['repository']['name']
     j = json.loads(s)
-    s = j['repository']['name']+'updated files: '+str(j['head_commit']['modified'])
+    s = j['repository']['url']+'updated files: '+str(j['head_commit']['modified'])
 #     for i in request.POST['payload']['repository']['name']:
 #         s+=str(i)+"\n**"
     h.msg = s
     h.save()
+    url = j['repository']['url']
+    url = url.replace('https://github.com/','')
+    repos = Repof.objects.filter(repo_url=url)
+    for r in repos:
+        for f in j['head_commit']['modified']:
+            r.files.append(f)
+        r.save()
     return hooks(request)
 
 

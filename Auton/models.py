@@ -10,7 +10,7 @@ class Repof(Document):
     last_update = DateTimeField(default=datetime.today())
     state_code = StringField(max_length=100,default='not used yet')
     token = StringField(max_length=100,default='not used yet')
-    #files = ListField()
+    files = ListField()
 
 
 
