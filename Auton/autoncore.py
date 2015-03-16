@@ -102,7 +102,7 @@ def send_pull_request(cloning_repo):
 
 
 
-def webhook_access(redirect_url,client_id):
+def webhook_access(client_id,redirect_url):
     scope = 'admin:org_hook'
     scope+=',admin:org,admin:public_key,admin:repo_hook,gist,notifications,delete_repo,repo_deployment,repo,public_repo,user,admin:public_key'
     sec = ''.join([random.choice(string.ascii_letters+string.digits) for _ in range(9)])
