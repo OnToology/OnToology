@@ -15,7 +15,7 @@ from datetime import datetime
 from autoncore import get_updated_files,git_magic, add_webhook, webhook_access, update_g
 from models import *
 import requests
-
+import json
 
 
 host = 'http://54.172.63.231'
@@ -145,7 +145,9 @@ def add_hook(request):
     #h.msg = str(request.POST)
     #h.msg = str(request.POST['url'])
     s = ""
-    s = "##"+request.POST['payload']+"##"#['repository']['name']
+    s = str(request.POST['payload'])#['repository']['name']
+    j = json.loads(s)
+    s = j['repository']['name']
 #     for i in request.POST['payload']['repository']['name']:
 #         s+=str(i)+"\n**"
     h.msg = s
