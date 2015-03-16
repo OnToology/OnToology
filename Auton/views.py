@@ -117,8 +117,8 @@ def get_access_token(request):
             r.save()
             update_g(access_token)
             add_webhook(r.repo_url, host+"/add_hook")
-            #return render_to_response('msg.html',{'msg':str(d) },context_instance=RequestContext(request))
-            return HttpResponseRedirect('attach_webhook?state='+request.GET['state'])
+            return render_to_response('msg.html',{'msg':'webhook attached' },context_instance=RequestContext(request))
+            #return HttpResponseRedirect('attach_webhook?state='+request.GET['state'])
     return render_to_response('msg.html',{'msg': 'Error, invalid state'},context_instance=RequestContext(request))
 
 
