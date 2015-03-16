@@ -13,9 +13,7 @@ urlpatterns = patterns('',
 
 
     url(r'^add_hook',views.add_hook,name='addhook'),
-    url(r'attach_webhook',views.attach_webhook,name="attachwebhook"),
     url(r'^get_access_token',views.get_access_token,name='getaccesstoken'),
-    url(r'^deleterepo',views.delete_repo,name='deleterepo'),
     url(r'^grantupdate',views.grant_update,name='grantupdate'),
     url(r'',views.home, name='home'),
     #url(r'^admin/', include(admin.site.urls)),
