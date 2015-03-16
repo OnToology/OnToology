@@ -143,7 +143,11 @@ def add_hook(request):
     #js_req = json.loads(str(request.body))
     #h.msg = str(request.body)
     #h.msg = str(request.POST)
-    h.msg = str(request.POST['url'])
+    #h.msg = str(request.POST['url'])
+    s = ""
+    for i in request.POST:
+        s+=str(i)+"<br>\n"
+    h.msg = s
     h.save()
     return hooks(request)
 

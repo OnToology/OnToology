@@ -1,10 +1,10 @@
 {% extends "base.html"%}
 {% block body%}
-<table class="table">
+
 {%for h in hooks%}
-<tr>
-	<td><p>{{h.msg}}</p></td>
-</tr>
+
+<p>{{h.msg}}</p>
+<p>============================================================</p>
 {%endfor%}
 </table>
 {%endblock%}
