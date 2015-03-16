@@ -145,7 +145,7 @@ def add_hook(request):
     #h.msg = str(request.POST)
     #h.msg = str(request.POST['url'])
     s = ""
-    s = request.POST['payload']['repository']['name']
+    s = "##"+request.POST['payload']+"##"#['repository']['name']
 #     for i in request.POST['payload']['repository']['name']:
 #         s+=str(i)+"\n**"
     h.msg = s
