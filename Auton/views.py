@@ -77,7 +77,9 @@ def get_access_token(request):
     access_token = d['access_token']
     request.session['access_token'] = access_token
     update_g(access_token)
-    add_webhook(request.session['target_repo'], host+"/add_hook")
+    rpy = add_webhook(request.session['target_repo'], host+"/add_hook")
+    if rpy['status'] == False:
+        return render_to_response('msg.html',{'msg':rpy['error'] },context_instance=RequestContext(request))
     return render_to_response('msg.html',{'msg':'webhook attached' },context_instance=RequestContext(request))
     
 

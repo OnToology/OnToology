@@ -121,8 +121,12 @@ def add_webhook(target_repo,notification_url):
                "url": notification_url,
                "content_type": "form"
     }
-    g.get_repo(target_repo).create_hook(name,config,events,active)
-
+    try:
+        g.get_repo(target_repo).create_hook(name,config,events,active)
+        return {'status': True}
+    except Exception as e:
+        return {'status': False, 'error': e.value}
+        
 
 
 
