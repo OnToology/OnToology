@@ -97,23 +97,28 @@ def get_access_token(request):
     u = AutonUser.objects.get(id=u.id)
     for r in u.repos:
         if r.state_code == request.GET['state']:
-            r.token = request.GET['code']
+            #r.token = request.GET['code']
             r.save()
-            update_g(r.token)
+            
             data = {
                     'client_id': 'bbfc39dd5b6065bbe53b',
                     'client_secret':'60014ba718601441f542213855607810573c391e',
                     'code':request.GET['code'],
                     'redirect_uri':host+'/add_hook?msg=hola'
             }
-            r = requests.post('https://github.com/login/oauth/access_token',data=data)
-            atts = r.text.split('&')
+            res = requests.post('https://github.com/login/oauth/access_token',data=data)
+            atts = res.text.split('&')
             d={}
             for att in atts:
                 keyv = att.split('=')
                 d[keyv[0]] = keyv[1]
-            return render_to_response('msg.html',{'msg':str(d) },context_instance=RequestContext(request))
-            #return HttpResponseRedirect('attach_webhook?state='+request.GET['state'])
+            access_token = d['access_token']
+            r.token = access_token
+            r.save()
+            update_g(access_token)
+            add_webhook(r.repo_url, host+"/add_hook")
+            #return render_to_response('msg.html',{'msg':str(d) },context_instance=RequestContext(request))
+            return HttpResponseRedirect('attach_webhook?state='+request.GET['state'])
     return render_to_response('msg.html',{'msg': 'Error, invalid state'},context_instance=RequestContext(request))
 
 
