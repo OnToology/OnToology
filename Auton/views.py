@@ -12,8 +12,10 @@ from django.views.decorators.csrf import csrf_exempt
 import string
 import random
 from datetime import datetime
-from autoncore import get_updated_files,git_magic, add_webhook, webhook_access
+from autoncore import get_updated_files,git_magic, add_webhook, webhook_access, update_g
 from models import *
+import requests
+
 
 
 host = 'http://54.172.63.231'
@@ -75,8 +77,9 @@ def repos(request):
     user = request.user
     user = AutonUser.objects.get(id=user.id)
     if request.method=='POST':
-        webhook_access_url, sec = webhook_access(host+'/attach_webhook')
+        #webhook_access_url, sec = webhook_access(host+'/attach_webhook')
         #webhook_access_url, sec = webhook_access(host+'/ver_step')
+        webhook_access_url, sec = webhook_access(host+'/get_access_token')
         repo = Repof()
         repo.repo_url=request.POST['newrepo']
         repo.state_code = sec
@@ -87,8 +90,28 @@ def repos(request):
     else:
         return render_to_response('repos.html',{'repos': user.repos},context_instance=RequestContext(request))
     
-  
-  
+
+@login_required  
+def get_access_token(request):
+    u = request.user
+    u = AutonUser.objects.get(id=u.id)
+    for r in u.repos:
+        if r.state_code == request.GET['state']:
+            r.token = request.GET['code']
+            r.save()
+            update_g(r.token)
+            data = {
+                    'client_id': 'bbfc39dd5b6065bbe53b',
+                    'client_secret':'60014ba718601441f542213855607810573c391e',
+                    'code':request.GET['code'],
+                    'redirect_uri':home+'/add_hook?msg=hola'
+            }
+            requests.post('https://github.com/login/oauth/access_token',data=data)
+            #return HttpResponseRedirect('attach_webhook?state='+request.GET['state'])
+    return render_to_response('msg.html',{'msg': 'Error, invalid state'},context_instance=RequestContext(request))
+
+
+
 def second_ver(request):
     client_id = ''
     client_secret =''
@@ -105,9 +128,9 @@ def hooks(request):
 
 @csrf_exempt
 def add_hook(request):
-#     h = Webhook()
-#     h.msg = str( request.POST)
-#     h.save()
+    h = Webhook()
+    h.msg = str( request.GET)
+    h.save()
     return hooks(request)
 
 
@@ -123,6 +146,9 @@ def attach_webhook(request):
     return render_to_response('msg.html',{'msg': 'invalid state'},context_instance=RequestContext(request))
 
 
+
+
+################################ Account management ######################################
   
     
 

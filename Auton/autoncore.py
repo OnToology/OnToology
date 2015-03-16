@@ -126,6 +126,10 @@ def add_webhook(target_repo,notification_url):
     g.get_repo(target_repo).create_hook(name,config,events,active)
 
 
+def update_g(token):
+    global g
+    g = Github(token)
+
 # 
 # name = "autonhook"
 # active = True
