@@ -27,7 +27,7 @@ client_secret = '60014ba718601441f542213855607810573c391e'
 def home(request):
     if 'target_repo' in request.GET:
         target_repo = request.GET['target_repo']
-        webhook_access_url, state = webhook_access(client_id=client_id,host+'/get_access_token')
+        webhook_access_url, state = webhook_access(client_id,host+'/get_access_token')
         request.session['target_repo'] = target_repo
         request.session['state'] = state
         return  HttpResponseRedirect(webhook_access_url)
