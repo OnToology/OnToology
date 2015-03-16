@@ -107,7 +107,12 @@ def get_access_token(request):
                     'redirect_uri':host+'/add_hook?msg=hola'
             }
             r = requests.post('https://github.com/login/oauth/access_token',data=data)
-            return render_to_response('msg.html',{'msg':r.text },context_instance=RequestContext(request))
+            atts = r.text.split('&')
+            d={}
+            for att in atts:
+                keyv = att.split('=')
+                d[keyv[0]] = keyv[1]
+            return render_to_response('msg.html',{'msg':str(d) },context_instance=RequestContext(request))
             #return HttpResponseRedirect('attach_webhook?state='+request.GET['state'])
     return render_to_response('msg.html',{'msg': 'Error, invalid state'},context_instance=RequestContext(request))
 
