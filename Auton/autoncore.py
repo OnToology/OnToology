@@ -121,7 +121,7 @@ def add_webhook(target_repo,notification_url):
     #notificatoin_url = "http://familyyard.com/attach_webhook"
     config = {
                "url": notification_url,
-               "content_type": "json"
+               "content_type": "form"
     }
     g.get_repo(target_repo).create_hook(name,config,events,active)
 
