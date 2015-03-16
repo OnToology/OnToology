@@ -142,7 +142,8 @@ def add_hook(request):
     h = Webhook()
     #js_req = json.loads(str(request.body))
     #h.msg = str(request.body)
-    h.msg = str(request.POST)
+    #h.msg = str(request.POST)
+    h.msg = str(request.POST['url'])
     h.save()
     return hooks(request)
 
