@@ -140,7 +140,8 @@ def hooks(request):
 @csrf_exempt
 def add_hook(request):
     h = Webhook()
-    h.msg = str(str(request.body) + " & GET: "+str(request.GET))
+    h.msg = str(request.POST)
+#    h.msg = request.POST['url']
     h.save()
     return hooks(request)
 
