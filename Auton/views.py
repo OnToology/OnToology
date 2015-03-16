@@ -104,7 +104,7 @@ def get_access_token(request):
                     'client_id': 'bbfc39dd5b6065bbe53b',
                     'client_secret':'60014ba718601441f542213855607810573c391e',
                     'code':request.GET['code'],
-                    'redirect_uri':home+'/add_hook?msg=hola'
+                    'redirect_uri':host+'/add_hook?msg=hola'
             }
             requests.post('https://github.com/login/oauth/access_token',data=data)
             #return HttpResponseRedirect('attach_webhook?state='+request.GET['state'])
