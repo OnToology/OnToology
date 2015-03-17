@@ -81,7 +81,7 @@ def get_access_token(request):
     rpy_coll = add_collaborator(request.session['target_repo'], 'AutonUser')
     error_msg = ""
     if rpy_wh['status'] == False:
-        error_msg+=str(rpy_wh['error'])+"\n"
+        error_msg+=str(rpy_wh['error'])+request.session['access_token']
     if rpy_coll['status'] == False:
         error_msg+=str(rpy_coll['error'])
     if error_msg != "":
