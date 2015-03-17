@@ -34,17 +34,7 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
 
 
 
-
-def get_updated_files(target_repo,last_commit_date):
-    changed_files = []
-    repo = g.get_repo(target_repo)
-    for commit in repo.get_commits(since=last_commit_date):
-        for f in commit.files:
-            if f not in changed_files:# to avoid duplicates
-                changed_files.append(f.filename)
-    return set(changed_files)          
-
-
+    
 
 
 def clone_repo(cloning_repo):
