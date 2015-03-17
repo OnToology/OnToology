@@ -100,10 +100,9 @@ def add_hook(request):
     target_repo = j['repository']['full_name']
     user = j['repository']['owner']['email']
     changed_files = j['head_commit']['modified']
-    try:
-        git_magic(target_repo, user, cloning_repo, changed_files)
-    except Exception as e:
-        s+="\nexception: "+e.value
+    
+    git_magic(target_repo, user, cloning_repo, changed_files)
+    
     #request.session['updated_files'] = j['head_commit']['modified']
     return render_to_response('msg.html',{'msg': 'webhook created: '+s},context_instance=RequestContext(request))
 
