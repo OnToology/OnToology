@@ -85,7 +85,7 @@ def get_access_token(request):
     if rpy_coll['status'] == False:
         error_msg+=str(rpy_coll['error'])
     if error_msg != "":
-        return render_to_response('msg.html',{'msg':rpy_coll['error'] },context_instance=RequestContext(request))
+        return render_to_response('msg.html',{'msg':error_msg },context_instance=RequestContext(request))
     return render_to_response('msg.html',{'msg':'webhook attached and user added as collaborator' },context_instance=RequestContext(request))
     
 
