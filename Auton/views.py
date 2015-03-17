@@ -78,12 +78,12 @@ def get_access_token(request):
     request.session['access_token'] = access_token
     update_g(access_token)
     rpy_wh = add_webhook(request.session['target_repo'], host+"/add_hook")
-    rpy_coll = add_collaborator(request.session['target_repo'], 'Autontool')
+    rpy_coll = add_collaborator(request.session['target_repo'], 'AutonUser')
     error_msg = ""
     if rpy_wh['status'] == False:
-        error_msg+=rpy_wh['error']+"\n"
+        error_msg+=str(rpy_wh['error'])+"\n"
     if rpy_coll['status'] == False:
-        error_msg+=rpy_coll['error']
+        error_msg+=str(rpy_coll['error'])
     if error_msg == "":
         return render_to_response('msg.html',{'msg':rpy_coll['error'] },context_instance=RequestContext(request))
     return render_to_response('msg.html',{'msg':'webhook attached and user added as collaborator' },context_instance=RequestContext(request))
