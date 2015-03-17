@@ -126,7 +126,15 @@ def add_webhook(target_repo,notification_url):
         return {'status': True}
     except Exception as e:
         return {'status': False, 'error': e.data}
-        
+
+
+
+def add_collaborator(target_repo,user):
+    try:
+        g.get_repo(target_repo).add_to_collaborators(user)
+        return {'status': True}
+    except Exception as e:
+        return {'status': False, 'error': e.data}
 
 
 
