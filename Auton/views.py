@@ -81,7 +81,7 @@ def get_access_token(request):
     rpy_coll = add_collaborator(request.session['target_repo'], 'AutonUser')
     error_msg = ""
     if rpy_wh['status'] == False:
-        error_msg+=str(rpy_wh['error'])+request.session['access_token']
+        error_msg+=str(rpy_wh['error'])
     if rpy_coll['status'] == False:
         error_msg+=str(rpy_coll['error'])
     if error_msg != "":
@@ -96,7 +96,7 @@ def add_hook(request):
     s = str(request.POST['payload'])
     j = json.loads(s)
     s = j['repository']['url']+'updated files: '+str(j['head_commit']['modified'])
-    request.session['updated_files'] = j['head_commit']['modified']
+    #request.session['updated_files'] = j['head_commit']['modified']
     return render_to_response('msg.html',{'msg': 'webhook created: '+s},context_instance=RequestContext(request))
 
 
