@@ -12,7 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 import string
 import random
 from datetime import datetime
-from autoncore import get_updated_files,git_magic, add_webhook, webhook_access, update_g, add_collaborator
+from autoncore import git_magic, add_webhook, webhook_access, update_g, add_collaborator
 from models import *
 import requests
 import json
