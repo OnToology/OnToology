@@ -77,14 +77,15 @@ def commit_changes():
     gu+="git config  user.name \"AutonUser\" ;"
     call("cd "+home+parent_folder+";"+gu+" git add README.md ",shell=True)
     call("cd "+home+parent_folder+";"+gu+" git commit -m 'automated change' ",shell=True)
+    call("cd "+home+parent_folder+";"+gu+" git push ",shell=True)
 
 
 
 
-def push_repo():
-    commit_changes()
-    call("cd "+home+parent_folder+"/"+"; git push ",shell=True)
-                
+# def push_repo():
+# #    commit_changes()
+#     call("cd "+home+parent_folder+"/"+"; git push ",shell=True)
+#                 
 
 
 
