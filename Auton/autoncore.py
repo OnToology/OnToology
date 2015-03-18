@@ -75,8 +75,8 @@ def commit_changes():
     
     gu = "git config  user.email \"ahmad88csc@gmail.com\";"
     gu+="git config  user.name \"AutonUser\" ;"
-    call(gu+"cd "+home+parent_folder+""+"; git add README.md ",shell=True)
-    call(gu+"cd "+home+parent_folder+""+"; git commit -m 'automated change' ",shell=True)
+    call("cd "+home+parent_folder+";"+gu+" git add README.md ",shell=True)
+    call("cd "+home+parent_folder+";"+gu+" git commit -m 'automated change' ",shell=True)
 
 
 
