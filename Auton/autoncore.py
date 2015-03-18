@@ -11,6 +11,7 @@ parent_folder = None
 project_folder = None
 
 
+
 home = '/home/ubuntu/temp/'
 
 g = None
@@ -27,7 +28,7 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     print 'readme updated'
     commit_changes()
     print 'changes committed'
-    send_pull_request(cloning_repo)
+    send_pull_request(target_repo)
     print 'pull request is sent'
     return changed_files
 
@@ -81,12 +82,13 @@ def refresh_repo(target_repo):
 
 
 
-def send_pull_request(cloning_repo):
+def send_pull_request(target_repo):
+    username = os.environ['github_username']
+    password = os.environ['github_password']
+    g = Github(username,password)
     title = 'AutonTool update'
     body = title
-    source_repo = (cloning_repo.split(':')[-1])[:-4]
-    print 'source_repo: '+source_repo
-    g.get_repo(source_repo).create_pull(head='Autontool:master',base='master',title=title,body=body)
+    g.get_repo(target_repo).create_pull(head='Autontool:master',base='master',title=title,body=body)
     
 
 
