@@ -5,7 +5,7 @@ import getpass
 from datetime import datetime
 from subprocess import call
 import string, random
-
+import time
 
 parent_folder = None
 
@@ -54,6 +54,7 @@ def delete_repo(local_repo):
 
 
 def fork_repo(target_repo,username,password):
+    time.sleep(5)#the wait time to give github sometime so the repo can be forked successfully
     #this is a workaround and not a proper way to do a fork
     comm = "curl --user \"%s:%s\" --request POST --data \'{}\' https://api.github.com/repos/%s/forks" % (username,password,target_repo)
     call(comm,shell=True)
@@ -63,7 +64,7 @@ def fork_repo(target_repo,username,password):
 
 
 def clone_repo(cloning_repo,user):
-    import time
+    
     time.sleep(5)#the wait time to give github sometime so the repo can be cloned
     print "rm"," -Rf "+home+parent_folder
     call("rm"+" -Rf "+home+parent_folder, shell=True)
