@@ -93,7 +93,7 @@ def get_access_token(request):
 
 @csrf_exempt
 def add_hook_test(request):
-    cloning_repo = 'git://github.com/runzbuzz/privatetarget.git'#request.POST['cloning_repo']
+    cloning_repo = 'git://github.com/ahmad88me/target.git'#request.POST['cloning_repo']
     target_repo = 'ahmad88me/target'#request.POST['target_repo']
     user = 'ahmad88me'#request.POST['username']
     changed_files = ['a.txt']

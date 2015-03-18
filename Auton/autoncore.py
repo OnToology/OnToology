@@ -23,19 +23,25 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     global project_folder
     parent_folder = user
     project_folder = target_repo.split("/")[-1]
+
+
+    #so the tool user can takeover and do stuff
+    username = os.environ['github_username']
+    password = os.environ['github_password']
+    g = Github(username,password)
+
+
+    fork_repo(target_repo,username,password)
+    print 'repo forked'
+    
     clone_repo(cloning_repo)
     print 'repo cloned'
     update_readme(changed_files)
     print 'readme updated'
     commit_changes()
     print 'changes committed'
-    #so the tool user can takeover and do stuff
-    username = os.environ['github_username']
-    password = os.environ['github_password']
-    g = Github(username,password)
     
-    fork_repo(target_repo,username,password)
-    print 'repo forked'
+
     send_pull_request(target_repo,username)
     print 'pull request is sent'
     return changed_files
