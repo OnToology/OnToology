@@ -46,6 +46,8 @@ pip install pygithub
 pip install mongoengine
 ```
 
+To install pip follow the instructions here https://pip.pypa.io/en/latest/installing.html
+
 ###Requirements guide (if you want to try in locally)
 * python to be installed
 * curl to be installed
