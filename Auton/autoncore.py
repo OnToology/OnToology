@@ -27,7 +27,7 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     username = os.environ['github_username']
     password = os.environ['github_password']
     g = Github(username,password)
-    local_repo = target_repo.replace(cloning_repo.split('/')[-2],username)
+    local_repo = target_repo.replace(target_repo.split('/')[-2] ,'AutonUser')#target_repo.replace(cloning_repo.split('/')[-2],username)
     delete_repo(local_repo)
     #print 'repo deleted'
     fork_repo(target_repo,username,password)
