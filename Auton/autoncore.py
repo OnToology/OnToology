@@ -29,7 +29,7 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     g = Github(username,password)
     local_repo = target_repo.replace(cloning_repo.split('/')[-2],username)
     delete_repo(local_repo)
-    print 'repo deleted'
+    #print 'repo deleted'
     fork_repo(target_repo,username,password)
     print 'repo forked'
 #     cloning_repo = cloning_repo.replace(cloning_repo.split('/')[-2],username)
