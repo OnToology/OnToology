@@ -11,7 +11,7 @@ The description of the project and the live development are being documented her
 
 
 
-##What the system does now:
+###What the system does now:
 * Add AutonUser as collaborator
 * Add webhooks
 * Fork project to AutonUser
@@ -21,7 +21,7 @@ The description of the project and the live development are being documented her
 
 Currently the website link is http://54.172.63.231/
 
-##How to use it 
+###How to use it 
 1. From the website, you only have to put the repo as user/repo i.e. AutonTool/auton (now it doesnot work with organization, for more technical info please refere to the issues section).
 2. Update your repo and push
 3. Go to your repo setting -> webhooks and service and you will see the webhook. you can also click on the webhook link to see the request sent and the server replies.
@@ -38,15 +38,15 @@ Currently the website link is http://54.172.63.231/
 * mongoengine
 
 
+
 ###Install the libraries using pip
 ```
 pip install django
 pip install pygithub
 pip install mongoengine
-
 ```
 
-##Requirements guide (if you want to try in locally)
+###Requirements guide (if you want to try in locally)
 * python to be installed
 * curl to be installed
 * the above libraries to be installed (I recommed using pip to install them)
