@@ -52,6 +52,7 @@ def delete_repo(local_repo):
     except:
         print 'the repo doesn\'t exists [not an error]'
 
+
 def fork_repo(target_repo,username,password):
     #this is a workaround and not a proper way to do a fork
     comm = "curl --user \"%s:%s\" --request POST --data \'{}\' https://api.github.com/repos/%s/forks" % (username,password,target_repo)
@@ -66,7 +67,8 @@ def clone_repo(cloning_repo,user):
     call("rm"+" -Rf "+home+parent_folder, shell=True)
     print "git"+" clone"+" "+cloning_repo+" "+home+parent_folder
     call("git"+" clone"+" "+cloning_repo+" "+home+parent_folder, shell=True)
-
+    print "chmod 777 -R "+home+parent_folder
+    call("chmod 777 -R "+home+parent_folder, shell=True)
 
 
 
