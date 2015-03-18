@@ -12,3 +12,17 @@ The description of the project and the live development are being documented her
 * pygithub
 * mongoengine
 
+
+##Requirements guide (if you want to try in locally)
+* python to be installed
+* curl to be installed
+* the above libraries to be installed (I recommed using pip to install them)
+
+note: you may need to change some of the hardcoded variables, since the system still in early stange
+
+
+##Take a peek on the system
+* The system is currently host on the development server http://54.172.63.231/ 
+
+
+
