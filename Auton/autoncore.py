@@ -18,6 +18,7 @@ g = None
 
 
 def git_magic(target_repo,user,cloning_repo,changed_files):
+    global g
     global parent_folder
     global project_folder
     parent_folder = user
@@ -28,13 +29,27 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     print 'readme updated'
     commit_changes()
     print 'changes committed'
-    send_pull_request(target_repo)
+    #so the tool user can takeover and do stuff
+    username = os.environ['github_username']
+    password = os.environ['github_password']
+    g = Github(username,password)
+    
+    fork_repo(target_repo)
+    print 'repo forked'
+    send_pull_request(target_repo,username)
     print 'pull request is sent'
     return changed_files
 
 
 
 
+def fork_repo(target_repo):
+    #this is a workaround and not a proper way to do a fork
+    """
+        curl --user "%s:%s" --request POST --data '{}' https://api.github.com/repos/%s/forks
+    """ % (username,password,target_repo)
+    print 'fork'
+    
     
 
 
@@ -82,13 +97,10 @@ def refresh_repo(target_repo):
 
 
 
-def send_pull_request(target_repo):
-    username = os.environ['github_username']
-    password = os.environ['github_password']
-    g = Github(username,password)
+def send_pull_request(target_repo,username):
     title = 'AutonTool update'
     body = title
-    g.get_repo(target_repo).create_pull(head='Autontool:master',base='master',title=title,body=body)
+    g.get_repo(target_repo).create_pull(head=username+':master',base='master',title=title,body=body)
     
 
 
