@@ -72,7 +72,7 @@ def update_readme(changed_files):
 
 def commit_changes():
     print "command: "+"git --git-dir="+home+parent_folder+"/"+".git add "+home+parent_folder+"/README.md "
-    call("cd "+home+parent_folder+"/"+"; git add "+home+parent_folder+"/README.md ",shell=True)
+    call("cd "+home+parent_folder+"/"+"; git add README.md ",shell=True)
     call("cd "+home+parent_folder+"/"+"; git commit -m 'automated change' ",shell=True)
 
 
