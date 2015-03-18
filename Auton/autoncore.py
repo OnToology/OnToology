@@ -135,7 +135,7 @@ def send_pull_request(target_repo,username):
         g.get_repo(target_repo).create_pull(head=username+':master',base='master',title=title,body=body)
         return 'pull request created successfully'
     except Exception as e:
-        return e.data
+        return str(e.data)
 
 
 
