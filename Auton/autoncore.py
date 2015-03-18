@@ -62,8 +62,10 @@ def fork_repo(target_repo,username,password):
 
 
 def clone_repo(cloning_repo,user):
-    call(["rm","-Rf",home+parent_folder], shell=True)
-    call(["git","clone",cloning_repo,home+parent_folder], shell=True)
+    print "rm"," -Rf "+home+parent_folder
+    call("rm"," -Rf "+home+parent_folder, shell=True)
+    print "git"+" clone"+" "+cloning_repo+" "+home+parent_folder
+    call("git"+" clone"+" "+cloning_repo+" "+home+parent_folder, shell=True)
 
 
 
