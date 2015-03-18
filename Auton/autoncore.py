@@ -22,6 +22,7 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     global g
     global parent_folder
     parent_folder = user
+    print '############################### magic #############################'
     #so the tool user can takeover and do stuff
     username = os.environ['github_username']
     password = os.environ['github_password']
