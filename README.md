@@ -32,14 +32,19 @@ Currently the website link is http://54.172.63.231/
 
 
 
-
-
-
 ### used python libraries:
 * django
 * pygithub
 * mongoengine
 
+
+###Install the libraries using pip
+```
+pip install django
+pip install pygithub
+pip install mongoengine
+
+```
 
 ##Requirements guide (if you want to try in locally)
 * python to be installed
@@ -47,6 +52,7 @@ Currently the website link is http://54.172.63.231/
 * the above libraries to be installed (I recommed using pip to install them)
 
 note: you may need to change some of the hardcoded variables, since the system still in early stange
+
 
 
 ##Take a peek on the system
