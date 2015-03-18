@@ -93,7 +93,9 @@ def get_access_token(request):
 
 @csrf_exempt
 def add_hook_test(request):
+    # cloning_repo should look like 'git@github.com:AutonUser/target.git'
     cloning_repo = 'git://github.com/ahmad88me/target.git'#request.POST['cloning_repo']
+    cloning_repo.replace('git://github.com/','git@github.com:')
     target_repo = 'ahmad88me/target'#request.POST['target_repo']
     user = 'test_user'#request.POST['username']
     changed_files = ['a.txt']
@@ -113,7 +115,8 @@ def add_hook(request):
     target_repo = j['repository']['full_name']
     user = j['repository']['owner']['email']
     changed_files = j['head_commit']['modified']
-    
+    # cloning_repo should look like 'git@github.com:AutonUser/target.git'
+    cloning_repo.replace('git://github.com/','git@github.com:')
     git_magic(target_repo, user, cloning_repo, changed_files)
     
     #request.session['updated_files'] = j['head_commit']['modified']
