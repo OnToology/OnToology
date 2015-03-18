@@ -26,6 +26,9 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     username = os.environ['github_username']
     password = os.environ['github_password']
     g = Github(username,password)
+    local_repo = target_repo.replace(cloning_repo.split('/')[-2],username)
+    delete_repo(local_repo)
+    print 'repo deleted'
     fork_repo(target_repo,username,password)
     print 'repo forked'
     cloning_repo = cloning_repo.replace(cloning_repo.split('/')[-2],username)
@@ -41,6 +44,12 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
 
 
 
+def delete_repo(local_repo):
+    try:
+        g.get_repo(local_repo).delete()
+        print 'repo deleted '
+    except:
+        print 'the repo doesn\'t exists [not an error]'
 
 def fork_repo(target_repo,username,password):
     #this is a workaround and not a proper way to do a fork
