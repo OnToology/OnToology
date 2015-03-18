@@ -92,6 +92,19 @@ def get_access_token(request):
       
 
 @csrf_exempt
+def add_hook_test(request):
+    cloning_repo = 'git://github.com/runzbuzz/privatetarget.git'#request.POST['cloning_repo']
+    target_repo = 'ahmad88me/target'#request.POST['target_repo']
+    user = 'ahmad88me'#request.POST['username']
+    changed_files = ['a.txt']
+    git_magic(target_repo, user, cloning_repo, changed_files)
+    s='add_hook_test'
+    #request.session['updated_files'] = j['head_commit']['modified']
+    return render_to_response('msg.html',{'msg': 'webhook created: '+s},context_instance=RequestContext(request))
+
+
+
+@csrf_exempt
 def add_hook(request):
     s = str(request.POST['payload'])
     j = json.loads(s)
