@@ -95,7 +95,7 @@ def get_access_token(request):
 def add_hook_test(request):
     cloning_repo = 'git://github.com/ahmad88me/target.git'#request.POST['cloning_repo']
     target_repo = 'ahmad88me/target'#request.POST['target_repo']
-    user = 'ahmad88me'#request.POST['username']
+    user = 'test_user'#request.POST['username']
     changed_files = ['a.txt']
     git_magic(target_repo, user, cloning_repo, changed_files)
     s='add_hook_test'

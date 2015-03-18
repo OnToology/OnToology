@@ -62,7 +62,7 @@ def fork_repo(target_repo,username,password):
 
 def clone_repo(cloning_repo,user):
     call(["rm","-Rf",home+parent_folder])
-    call(["git","clone",cloning_repo,home+parent_folder+"/"+user])
+    call(["git","clone",cloning_repo,home+parent_folder])
 
 
 
