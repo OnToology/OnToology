@@ -63,6 +63,8 @@ def fork_repo(target_repo,username,password):
 
 
 def clone_repo(cloning_repo,user):
+    import time
+    time.sleep(5)#the wait time to give github sometime so the repo can be cloned
     print "rm"," -Rf "+home+parent_folder
     call("rm"+" -Rf "+home+parent_folder, shell=True)
     print "git"+" clone"+" "+cloning_repo+" "+home+parent_folder
