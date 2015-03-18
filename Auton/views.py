@@ -121,9 +121,9 @@ def add_hook(request):
     tar = cloning_repo.split('/')[-2]
     cloning_repo = cloning_repo.replace(tar,'AutonUser')
     cloning_repo = cloning_repo.replace('git://github.com/','git@github.com:')
-    git_magic(target_repo, user, cloning_repo, changed_files)
+    r = git_magic(target_repo, user, cloning_repo, changed_files)
     
     #request.session['updated_files'] = j['head_commit']['modified']
-    return render_to_response('msg.html',{'msg': 'webhook created: '+s},context_instance=RequestContext(request))
+    return render_to_response('msg.html',{'msg': ''+s+'<>'+r},context_instance=RequestContext(request))
 
 

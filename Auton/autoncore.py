@@ -39,9 +39,9 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     print 'readme updated'
     commit_changes()
     print 'changes committed'
-    send_pull_request(target_repo,username)
+    r = send_pull_request(target_repo,username)
     print 'pull request is sent'
-    return changed_files
+    return r
 
 
 
@@ -131,8 +131,11 @@ def refresh_repo(target_repo):
 def send_pull_request(target_repo,username):
     title = 'AutonTool update'
     body = title
-    g.get_repo(target_repo).create_pull(head=username+':master',base='master',title=title,body=body)
-    
+    try:
+        g.get_repo(target_repo).create_pull(head=username+':master',base='master',title=title,body=body)
+        return 'pull request created successfully'
+    except Exception as e:
+        return e.data
 
 
 
