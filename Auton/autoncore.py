@@ -32,7 +32,7 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     fork_repo(target_repo,username,password)
     print 'repo forked'
     cloning_repo = cloning_repo.replace(cloning_repo.split('/')[-2],username)
-    clone_repo(cloning_repo)
+    clone_repo(cloning_repo,user)
     print 'repo cloned'
     update_readme(changed_files)
     print 'readme updated'
@@ -60,9 +60,9 @@ def fork_repo(target_repo,username,password):
     
 
 
-def clone_repo(cloning_repo):
+def clone_repo(cloning_repo,user):
     call(["rm","-Rf",home+parent_folder])
-    call(["git","clone",cloning_repo,home+parent_folder])
+    call(["git","clone",cloning_repo,home+parent_folder+"/"+user])
 
 
 
