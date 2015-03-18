@@ -34,7 +34,7 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     password = os.environ['github_password']
     g = Github(username,password)
     
-    fork_repo(target_repo)
+    fork_repo(target_repo,username,password)
     print 'repo forked'
     send_pull_request(target_repo,username)
     print 'pull request is sent'
@@ -43,7 +43,7 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
 
 
 
-def fork_repo(target_repo):
+def fork_repo(target_repo,username,password):
     #this is a workaround and not a proper way to do a fork
     """
         curl --user "%s:%s" --request POST --data '{}' https://api.github.com/repos/%s/forks
