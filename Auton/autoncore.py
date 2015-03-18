@@ -80,13 +80,16 @@ def update_readme(changed_files):
 
 
 def commit_changes():
-    print "command: "+"git --git-dir="+home+parent_folder+"/"+".git add "+home+parent_folder+"/README.md "
-    
-    gu = "git config  user.email \"ahmad88csc@gmail.com\";"
-    gu+="git config  user.name \"AutonUser\" ;"
+    gu = ""
+#     gu = "git config  user.email \"ahmad88csc@gmail.com\";"
+#     gu+="git config  user.name \"AutonUser\" ;"
+    print "command: "+"cd "+home+parent_folder+";"+gu+" git add README.md "    
     call("cd "+home+parent_folder+";"+gu+" git add README.md ",shell=True)
+    print "cd "+home+parent_folder+";"+gu+" git commit -m 'automated change' "
     call("cd "+home+parent_folder+";"+gu+" git commit -m 'automated change' ",shell=True)
-    gup = "git config push.default matching;"
+    gup =""
+    #gup = "git config push.default matching;"
+    print "cd "+home+parent_folder+";"+gu+gup+" git push "
     call("cd "+home+parent_folder+";"+gu+gup+" git push ",shell=True)
 
 
