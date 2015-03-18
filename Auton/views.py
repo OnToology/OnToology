@@ -101,10 +101,10 @@ def add_hook_test(request):
     target_repo = 'ahmad88me/target'#request.POST['target_repo']
     user = 'test_user'#request.POST['username']
     changed_files = ['a.txt']
-    git_magic(target_repo, user, cloning_repo, changed_files)
+    r = git_magic(target_repo, user, cloning_repo, changed_files)
     s='add_hook_test'
     #request.session['updated_files'] = j['head_commit']['modified']
-    return render_to_response('msg.html',{'msg': 'webhook created: '+s},context_instance=RequestContext(request))
+    return render_to_response('msg.html',{'msg': ''+s+'<>'+r},context_instance=RequestContext(request))
 
 
 
