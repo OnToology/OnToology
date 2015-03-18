@@ -11,8 +11,8 @@ parent_folder = None
 
 
 
-#home = '/home/ubuntu/temp/'
-home = '/Users/blakxu/test123/pro/'
+home = '/home/ubuntu/temp/'
+#home = '/Users/blakxu/test123/pro/'
 
 
 g = None
