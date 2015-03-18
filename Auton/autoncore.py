@@ -88,7 +88,7 @@ def commit_changes():
     print "cd "+home+parent_folder+";"+gu+" git commit -m 'automated change' "
     call("cd "+home+parent_folder+";"+gu+" git commit -m 'automated change' ",shell=True)
     gup =""
-    #gup = "git config push.default matching;"
+    gup = "git config push.default matching;"
     print "cd "+home+parent_folder+";"+gu+gup+" git push "
     call("cd "+home+parent_folder+";"+gu+gup+" git push ",shell=True)
 
