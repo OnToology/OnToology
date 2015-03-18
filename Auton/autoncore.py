@@ -35,7 +35,7 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
 #     cloning_repo = cloning_repo.replace(cloning_repo.split('/')[-2],username)
     clone_repo(cloning_repo,user)
     print 'repo cloned'
-    update_readme(changed_files)
+    update_readme(changed_files,cloning_repo,user)
     print 'readme updated'
     commit_changes()
     print 'changes committed'
@@ -76,8 +76,16 @@ def clone_repo(cloning_repo,user):
 
 
                 
-def update_readme(changed_files):
-    f = open(home+parent_folder+"/"+"README.md","a")
+def update_readme(changed_files,cloning_repo,user):
+    for i in range(3):
+        try:
+            f = open(home+parent_folder+"/"+"README.md","a")
+            break
+        except IOError:
+            print 'readme is not ready: '+str(i)
+            time.sleep(5)
+            clone_repo(cloning_repo,user)
+            
     f.write("\n##Changelog "+str(datetime.today())+"\n")
     for chf in changed_files:
         f.write("\n* "+chf)                
