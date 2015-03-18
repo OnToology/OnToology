@@ -77,7 +77,7 @@ def commit_changes():
     gu+="git config  user.name \"AutonUser\" ;"
     call("cd "+home+parent_folder+";"+gu+" git add README.md ",shell=True)
     call("cd "+home+parent_folder+";"+gu+" git commit -m 'automated change' ",shell=True)
-    gup = "git config push.default simple;"
+    gup = "git config push.default matching;"
     call("cd "+home+parent_folder+";"+gu+gup+" git push ",shell=True)
 
 
