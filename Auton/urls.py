@@ -12,7 +12,7 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
 
     
-    url(r'^add_hook_test',views.add_hook,name='addhooktest'),
+    url(r'^add_hook_test',views.add_hook_test,name='addhooktest'),
     url(r'^add_hook',views.add_hook,name='addhook'),
     url(r'^get_access_token',views.get_access_token,name='getaccesstoken'),
     url(r'^grantupdate',views.grant_update,name='grantupdate'),
