@@ -22,10 +22,10 @@ The description of the project and the live development are being documented her
 Currently the website link is http://54.172.63.231/
 
 ##How to use it 
-1-From the website, you only have to put the repo as user/repo i.e. AutonTool/auton.
-2-Update your repo and push
-3-Go to your repo setting -> webhooks and service and you will see the webhook. you can also click on the webhook link to see the request sent and the server replies.
-4-If pull requests are created successfully you can find them in the pull requests pool
+1. From the website, you only have to put the repo as user/repo i.e. AutonTool/auton.
+2. Update your repo and push
+3. Go to your repo setting -> webhooks and service and you will see the webhook. you can also click on the webhook link to see the request sent and the server replies.
+4. If pull requests are created successfully you can find them in the pull requests pool
 
 **Please only use this with testing repos**
 
