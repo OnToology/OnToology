@@ -39,6 +39,7 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     print 'readme updated'
     commit_changes()
     print 'changes committed'
+    remove_old_pull_requests(target_repo)
     r = send_pull_request(target_repo,username)
     print 'pull request is sent'
     return r
@@ -125,6 +126,14 @@ def refresh_repo(target_repo):
     g.get_user().create_fork(target_repo)
 
 
+
+
+def remove_old_pull_requests(target_repo):
+    title = 'AutonTool update'
+    for p in g.get_repo(target_repo).get_pulls():
+        if p.name == title:
+            p.edit(state="closed")
+    
 
 
 
