@@ -117,6 +117,8 @@ def add_hook(request):
     target_repo = j['repository']['full_name']
     user = j['repository']['owner']['email']
     changed_files = j['head_commit']['modified']
+    print '##################################################'
+    print 'changed_files: '+str(changed_files)
     # cloning_repo should look like 'git@github.com:AutonUser/target.git'
     tar = cloning_repo.split('/')[-2]
     cloning_repo = cloning_repo.replace(tar,'AutonUser')

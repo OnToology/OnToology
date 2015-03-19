@@ -86,7 +86,6 @@ def update_readme(changed_files,cloning_repo,user):
             print 'readme is not ready: '+str(i)
             time.sleep(5)
             clone_repo(cloning_repo,user)
-            
     f.write("\n##Changelog "+str(datetime.today())+"\n")
     for chf in changed_files:
         f.write("\n* "+chf)                
