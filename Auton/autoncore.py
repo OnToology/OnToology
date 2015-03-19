@@ -139,11 +139,16 @@ def remove_old_pull_requests(target_repo):
 def send_pull_request(target_repo,username):
     title = 'AutonTool update'
     body = title
-    try:
-        g.get_repo(target_repo).create_pull(head=username+':master',base='master',title=title,body=body)
-        return 'pull request created successfully'
-    except Exception as e:
-        return str(e.data)
+    err = ""
+    for i in range(3):
+        try:
+            g.get_repo(target_repo).create_pull(head=username+':master',base='master',title=title,body=body)
+            return 'pull request created successfully'
+        except Exception as e:
+            err = str(e.data)
+            print 'pull('+str(i)+'): '+err
+            time.sleep(5)
+    return err
 
 
 
