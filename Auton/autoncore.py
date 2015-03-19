@@ -130,7 +130,7 @@ def refresh_repo(target_repo):
 def remove_old_pull_requests(target_repo):
     title = 'AutonTool update'
     for p in g.get_repo(target_repo).get_pulls():
-        if p.name == title:
+        if p.title == title:
             p.edit(state="closed")
     
 
