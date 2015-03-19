@@ -39,8 +39,8 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     print 'readme updated'
     commit_changes()
     print 'changes committed'
-    remove_old_pull_requests(target_repo)
-    r = send_pull_request(local_repo,'AutonUser')
+    #remove_old_pull_requests(target_repo)
+    r = send_pull_request(target_repo,'AutonUser')
     print 'pull request is sent'
     return r
 
