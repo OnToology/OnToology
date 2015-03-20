@@ -38,7 +38,7 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     print 'repo cloned'
 #     update_readme(changed_files,cloning_repo,user)
 #     print 'readme updated'
-    draw_diagrams()
+    draw_diagrams(changed_files)
     print 'diagrams drawn'
     commit_changes()
     print 'changes committed'
