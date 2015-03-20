@@ -19,7 +19,7 @@ from django.core.wsgi import get_wsgi_application
 
 _application = get_wsgi_application()
 
-env_variables_to_pass = ['github_username', 'github_password',  ]
+env_variables_to_pass = ['github_username', 'github_password', 'github_repos_dir' ,'ar2dtool_dir',]
 def application(environ, start_response):
     # pass the WSGI environment variables on through to os.environ
     for var in env_variables_to_pass:

@@ -6,13 +6,14 @@ from datetime import datetime
 from subprocess import call
 import string, random
 import time
+from setuptools.command.setopt import config_file
 
 parent_folder = None
 
-
-
-home = '/home/ubuntu/temp/'
-#home = '/Users/blakxu/test123/pro/'
+#e.g. ar2dtool_dir = 'blahblah/ar2dtool/bin/'
+ar2dtool_dir = os.environ['ar2dtool_dir']
+#e.g. home = 'blahblah/temp/'
+home = os.environ['github_repos_dir']
 
 
 g = None
@@ -35,8 +36,10 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
 #     cloning_repo = cloning_repo.replace(cloning_repo.split('/')[-2],username)
     clone_repo(cloning_repo,user)
     print 'repo cloned'
-    update_readme(changed_files,cloning_repo,user)
-    print 'readme updated'
+#     update_readme(changed_files,cloning_repo,user)
+#     print 'readme updated'
+    draw_diagrams()
+    print 'diagrams drawn'
     commit_changes()
     print 'changes committed'
     remove_old_pull_requests(target_repo)
@@ -195,4 +198,52 @@ def update_g(token):
 
 
 
+
+####################  drawing functions  ###########################
+
+
+def draw_diagrams(rdf_files):
+    for r in rdf_files:
+        if r[:-4] =='.rdf':
+            draw_file(r)
+
+
+def get_ar2dtool_config():
+    return """
+pathToDot=/usr/local/bin/dot;
+pathToTempDir=/Users/blakxu/drawrdf/tmp;
+imageSize=1000;
+rankdir=LR;
+classShape=ellipse;
+literalColor=blue;
+nodeNameMode=localname;
+ignoreLiterals=false;
+ignoreRdfType=false;
+synthesizeObjectProperties=false;
+    """
+
+
+
+def draw_file(rdf_file):
+    outtype="png"
+    abs_dir = home+parent_folder+'/'+'drawings'+'/'
+    config_file = abs_dir+'ar2dtool.config'
+    directory = ""
+    if len(rdf_file.split('/'))>1:
+        directory = '/'.join(rdf_file.split('/')[0:-1])
+        if not os.path.exists(abs_dir+directory):
+            os.makedirs(abs_dir+directory)
+    try:
+        open(config_file,"r")
+    except:
+        f = open(config_file,"w")
+        f.write(get_ar2dtool_config())
+        f.close()
+    comm = 'java -jar '
+    comm+= ar2dtool_dir+'ar2dtool.jar -i '
+    comm+= home+parent_folder+'/'+rdf_file+' -o '
+    comm+= abs_dir+rdf_file+'.'+outtype+' -t '+outtype+' -c '+config_file+' -GV -d'
+    print comm
+    call(comm,shell=True)
+# draw_file('myrdfs/sample.rdf')
 
