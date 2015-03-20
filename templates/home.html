@@ -1,56 +1,32 @@
 {% extends "base.html"%}
 {%block body%}
 
+</br></br>
+
 <form action="" method="GET" style="color: #999">
-<input name="target_repo" id="target_repo_select" class="form-control">
-<input type="submit" class="form-control" value="View changed files"/>
+<div class="form-group">
+	<input type="text" name="target_repo" id="target_repo_select" class="form-control" placeholder="user/repo" ></br>
+	<input type="submit" class="form-control btn" value="Watch this repo"/>
+</div>
 </form>
-
 </br>
+<h3>
+What is Auton
+</h3>
+<p>
+A system to automate part of the collaborative ontology development process. Given a repository with an owl file,
+ Auton will survey it and produce diagrams, a complete documentation and validation based on common pitfalls. 
+</p>
 
-<table class="table table-bordered">
-<tr>
-	<td><b>changed files</b></td>
-</tr>
-{%for r in result%}
-<tr class='ch_file'>
-	<td>{{r}}</td>
-</tr>
-{%endfor%}
-</table>
+<h3>How to use it</h3>
+<ol>
+	<li align="left">Enter your repo as user/repo i.e. AutonTool/auton (it does not work with organizations at the moment).</li>
+	<li align="left">Update your repo and push.</li>
+	<li align="left">If pull requests are created successfully you can find them in the pull requests pool with the diagram.</li>
+</ol>
+</br>
+<a style="text-decoration: underline;" href="https://github.com/Autontool/auton">Auton project is an open source project, click here to check it</a>
 
-{%if viewproceed %}
-
-<form id="ch_form" action="grantupdate" method="POST">{% csrf_token %}
-	<input type="hidden" id="files_list" name="files_list" value="test message"/>
-	<input type="hidden" id="target_repo_grand" name="target_repo"/>
-	<input type="submit" value="Proceed" class="form-control"/>
-</form>
-
-{% endif %}
-
-<script>
-var fis="";
-$('#ch_form').submit(function (){
-	$('#target_repo_grand').val($('#target_repo_select option:selected').text());
-	$('.highl').each(function(){
-		fis+=$(this).text()+"&";
-	});
-	//alert(fis);
-	$('#files_list').val(fis);
-});
-
-
-$('.ch_file').click(function(){
-  if ($(this).hasClass('highl')){
-	  $(this).removeClass('highl');
-  }
-  else{
-	  $(this).addClass('highl');  
-  }
-  //alert('clicked');
-});
-</script>
 {% endblock %}
 
 
