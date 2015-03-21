@@ -146,7 +146,7 @@ def send_pull_request(target_repo,username):
     title = 'AutonTool update'
     body = title
     err = ""
-    for i in range(3):
+    for i in range(10):
         try:
             g.get_repo(target_repo).create_pull(head=username+':master',base='master',title=title,body=body)
             return 'pull request created successfully'
