@@ -10,6 +10,7 @@ from setuptools.command.setopt import config_file
 
 parent_folder = None
 
+ar2dtool_config = os.environ['ar2dtool_config']
 #e.g. ar2dtool_dir = 'blahblah/ar2dtool/bin/'
 ar2dtool_dir = os.environ['ar2dtool_dir']
 #e.g. home = 'blahblah/temp/'
@@ -210,37 +211,39 @@ def draw_diagrams(rdf_files):
             draw_file(r)
 
 
+
+
 def get_ar2dtool_config():
-    return """
-pathToDot=/usr/local/bin/dot;
-pathToTempDir=/Users/blakxu/drawrdf/tmp;
-imageSize=1000;
-rankdir=LR;
-classShape=ellipse;
-literalColor=blue;
-nodeNameMode=localname;
-ignoreLiterals=false;
-ignoreRdfType=false;
-synthesizeObjectProperties=false;
-    """
+    f = open(ar2dtool_config,"r")
+    return f.read()
+
 
 
 
 def draw_file(rdf_file):
     outtype="png"
+    print '1'
     abs_dir = home+parent_folder+'/'+'drawings'+'/'
+    print '2'
     config_file = abs_dir+'ar2dtool.config'
+    print '3'
     directory = ""
     if len(rdf_file.split('/'))>1:
+        print '4'
         directory = '/'.join(rdf_file.split('/')[0:-1])
+        print '5'
         if not os.path.exists(abs_dir+directory):
+            print '6'
             os.makedirs(abs_dir+directory)
     try:
+        print '7'
         open(config_file,"r")
     except:
+        print '8'
         f = open(config_file,"w")
         f.write(get_ar2dtool_config())
         f.close()
+    print '9'
     comm = 'java -jar '
     comm+= ar2dtool_dir+'ar2dtool.jar -i '
     comm+= home+parent_folder+'/'+rdf_file+' -o '
