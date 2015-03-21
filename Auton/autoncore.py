@@ -9,7 +9,7 @@ import time
 from setuptools.command.setopt import config_file
 
 parent_folder = None
-ar2dtool_config_types = ['ar2dtool-taxonomy.config','ar2dtool-class.config']
+ar2dtool_config_types = ['ar2dtool-taxonomy.conf','ar2dtool-class.conf']
 ar2dtool_config = os.environ['ar2dtool_config']
 #e.g. ar2dtool_dir = 'blahblah/ar2dtool/bin/'
 ar2dtool_dir = os.environ['ar2dtool_dir']
