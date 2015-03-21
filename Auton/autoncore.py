@@ -209,7 +209,7 @@ def draw_diagrams(rdf_files):
     print str(len(rdf_files))+' changed files'
     for r in rdf_files:
         print r+' is changed '
-        if r[:-4] =='.rdf':
+        if r[-4:] =='.rdf':
             draw_file(r)
         else:
             print r+' is not an rdf'
