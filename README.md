@@ -15,7 +15,7 @@ The description of the project and the live development are being documented her
 * Add AutonUser as collaborator
 * Add webhooks
 * Fork project to AutonUser
-* Update readme file
+* Draw a diagram from rdf files using ar2dtool (https://github.com/idafensp/ar2dtool)
 * Create a pull request
 
 
@@ -50,7 +50,9 @@ To install pip follow the instructions here https://pip.pypa.io/en/latest/instal
 
 ###Requirements guide (if you want to try in locally)
 * python to be installed
+* git to be installed
 * curl to be installed
+* ar2dtool to be installed https://github.com/idafensp/ar2dtool
 * the above libraries to be installed (I recommed using pip to install them)
 
 note: you may need to change some of the hardcoded variables, since the system still in early stange
