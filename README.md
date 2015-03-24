@@ -54,6 +54,7 @@ To install pip follow the instructions here https://pip.pypa.io/en/latest/instal
 * curl to be installed
 * ar2dtool to be installed https://github.com/idafensp/ar2dtool
 * the above libraries to be installed (I recommed using pip to install them)
+* linux/unix operating system (it may work on Windows with some adjusments)
 
 note: you may need to change some of the hardcoded variables, since the system still in early stange
 
