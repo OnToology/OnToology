@@ -208,10 +208,11 @@ def update_g(token):
 
 
 def draw_diagrams(rdf_files):
+    formates = ['.rdf','.owl']
     print str(len(rdf_files))+' changed files'
     for r in rdf_files:
         print r+' is changed '
-        if r[-4:] =='.rdf':
+        if r[-4:] in formates:
             for t in ar2dtool_config_types:
                 draw_file(r,t)
         else:
