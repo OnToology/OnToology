@@ -299,6 +299,7 @@ def create_widoco_doc(rdf_file):
     comm+=" -ontFile "+widoco_dir+"widoco-0.0.1-jar-with-dependencies.jar"
     comm+=" -outFolder "+abs_dir+directory
     comm+=" -confFile "+config_file
+    print comm
     call(comm,shell=True)
     
 
