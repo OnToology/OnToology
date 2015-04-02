@@ -8,6 +8,7 @@ import string, random
 import time
 from setuptools.command.setopt import config_file
 
+
 parent_folder = None
 ar2dtool_config_types = ['ar2dtool-taxonomy.conf','ar2dtool-class.conf']
 ar2dtool_config = os.environ['ar2dtool_config']
@@ -15,9 +16,11 @@ ar2dtool_config = os.environ['ar2dtool_config']
 ar2dtool_dir = os.environ['ar2dtool_dir']
 #e.g. home = 'blahblah/temp/'
 home = os.environ['github_repos_dir']
+#e.g. widoco_dir = 'blahblah/Widoco/JAR/'
+widoco_dir = os.environ['widoco_dir']
+widoco_config = ar2dtool_config+'/'+'widoco.conf'
 
-
-
+ontology_formats = ['.rdf','.owl','.ttl']
 
 g = None
 
@@ -43,6 +46,8 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
 #     print 'readme updated'
     draw_diagrams(changed_files)
     print 'diagrams drawn'
+    generate_widoco_docs(changed_files)
+    print 'generated docs'
     commit_changes()
     print 'changes committed'
     remove_old_pull_requests(target_repo)
@@ -60,6 +65,7 @@ def delete_repo(local_repo):
         print 'the repo doesn\'t exists [not an error]'
 
 
+
 def fork_repo(target_repo,username,password):
     time.sleep(5)#the wait time to give github sometime so the repo can be forked successfully
     #this is a workaround and not a proper way to do a fork
@@ -70,8 +76,7 @@ def fork_repo(target_repo,username,password):
     
 
 
-def clone_repo(cloning_repo,user):
-    
+def clone_repo(cloning_repo,user):    
     time.sleep(5)#the wait time to give github sometime so the repo can be cloned
     print "rm"," -Rf "+home+parent_folder
     call("rm"+" -Rf "+home+parent_folder, shell=True)
@@ -208,11 +213,10 @@ def update_g(token):
 
 
 def draw_diagrams(rdf_files):
-    formates = ['.rdf','.owl','.ttl']
     print str(len(rdf_files))+' changed files'
     for r in rdf_files:
         print r+' is changed '
-        if r[-4:] in formates:
+        if r[-4:] in ontology_formats:
             for t in ar2dtool_config_types:
                 draw_file(r,t)
         else:
@@ -252,4 +256,50 @@ def draw_file(rdf_file,config_type):
     print comm
     call(comm,shell=True)
 # draw_file('myrdfs/sample.rdf')
+
+
+
+############################# Widoco ###################################
+
+
+def get_widoco_config():
+    f = open(widoco_config,"r")
+    return f.read()
+
+
+
+
+def generate_widoco_docs(changed_files):
+    for r in changed_files:
+        if r[-4:] in ontology_formats:
+            print 'will widoco '+r
+            create_widoco_doc(r)
+        else:
+            print r+' does not belong to supported ontology formats for widoco'
+
+
+
+
+def create_widoco_doc(rdf_file):
+    abs_dir = home+parent_folder+'/'+'docs'+'/'
+    config_file = abs_dir+rdf_file.split('/')[-1]+'.widoco.conf'
+    directory = ""
+    if len(rdf_file.split('/'))>1:
+        directory = '/'.join(rdf_file.split('/')[0:-1])
+        if not os.path.exists(abs_dir+directory):
+            os.makedirs(abs_dir+directory)
+    try:
+        open(config_file,"r")
+    except:
+        f = open(config_file,"w")
+        f.write(get_widoco_config())
+        f.close()
+    comm = "java -jar "
+    comm+="widoco-0.0.1-jar-with-dependencies.jar "
+    comm+=" -ontFile "+widoco_dir+"widoco-0.0.1-jar-with-dependencies.jar"
+    comm+=" -outFolder "+abs_dir+directory
+    comm+=" -confFile "+config_file
+    call(comm,shell=True)
+    
+
 
