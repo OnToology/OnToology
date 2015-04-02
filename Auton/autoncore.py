@@ -208,7 +208,7 @@ def update_g(token):
 
 
 def draw_diagrams(rdf_files):
-    formates = ['.rdf','.owl']
+    formates = ['.rdf','.owl','.ttl']
     print str(len(rdf_files))+' changed files'
     for r in rdf_files:
         print r+' is changed '
