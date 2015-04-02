@@ -248,7 +248,7 @@ def draw_file(rdf_file,config_type):
     comm = 'java -jar '
     comm+= ar2dtool_dir+'ar2dtool.jar -i '
     comm+= home+parent_folder+'/'+rdf_file+' -o '
-    comm+= abs_dir+rdf_file+'.'+outtype+' -t '+outtype+' -c '+config_file+' -GV -d'
+    comm+= abs_dir+rdf_file+'.'+outtype+' -t '+outtype+' -c '+config_file+' -GV -gml -d'
     print comm
     call(comm,shell=True)
 # draw_file('myrdfs/sample.rdf')
