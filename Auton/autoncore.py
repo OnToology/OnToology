@@ -344,7 +344,7 @@ def get_auton_configuration():
         print 'add ar2dtool value'
         config.add_section(widoco_sec_name)
         print 'add another section'
-        config.set(widoco_config,'enable',widoco_enable)
+        config.set(widoco_sec_name,'enable',widoco_enable)
         print 'now will create the files'
         with open(home+parent_folder+'/auton.cfg', 'wb') as configfile:
             config.write(configfile)
