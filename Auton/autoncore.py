@@ -16,9 +16,7 @@ ar2dtool_config = os.environ['ar2dtool_config']
 ar2dtool_dir = os.environ['ar2dtool_dir']
 #e.g. home = 'blahblah/temp/'
 home = os.environ['github_repos_dir']
-#e.g. widoco_dir = 'blahblah/Widoco/JAR/'
-widoco_dir = os.environ['widoco_dir']
-widoco_config = ar2dtool_config+'/'+'widoco.conf'
+
 
 ontology_formats = ['.rdf','.owl','.ttl']
 
@@ -34,6 +32,9 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     username = os.environ['github_username']
     password = os.environ['github_password']
     g = Github(username,password)
+    
+    auton_conf = get_auton_configuration()
+    
     local_repo = target_repo.replace(target_repo.split('/')[-2] ,'AutonUser')#target_repo.replace(cloning_repo.split('/')[-2],username)
     delete_repo(local_repo)
     #print 'repo deleted'
@@ -44,10 +45,12 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     print 'repo cloned'
 #     update_readme(changed_files,cloning_repo,user)
 #     print 'readme updated'
-    draw_diagrams(changed_files)
-    print 'diagrams drawn'
-    generate_widoco_docs(changed_files)
-    print 'generated docs'
+    if auton_conf['ar2dtool_enable']:
+        draw_diagrams(changed_files)
+        print 'diagrams drawn'
+    if auton_conf['widoco_enable']:
+        generate_widoco_docs(changed_files)
+        print 'generated docs'
     commit_changes()
     print 'changes committed'
     remove_old_pull_requests(target_repo)
@@ -208,8 +211,9 @@ def update_g(token):
 
 
 
-
-####################  drawing functions  ###########################
+########################################################################
+##########################  ar2dtool   #################################
+########################################################################
 
 
 def draw_diagrams(rdf_files):
@@ -258,8 +262,14 @@ def draw_file(rdf_file,config_type):
 # draw_file('myrdfs/sample.rdf')
 
 
-
+########################################################################
 ############################# Widoco ###################################
+########################################################################
+
+
+#e.g. widoco_dir = 'blahblah/Widoco/JAR/'
+widoco_dir = os.environ['widoco_dir']
+widoco_config = ar2dtool_config+'/'+'widoco.conf'
 
 
 def get_widoco_config():
@@ -303,4 +313,33 @@ def create_widoco_doc(rdf_file):
     call(comm,shell=True)
     
 
+########################################################################
+######################  Auton configuration file  ######################
+########################################################################
 
+import ConfigParser
+
+def get_auton_configuration():
+    config = ConfigParser.RawConfigParser()
+    ar2dtool_sec_name = 'ar2dtool'
+    widoco_sec_name = 'widoco'
+    ar2dtool_enable = True
+    widoco_enable = True
+    try:
+        config.read(home+parent_folder+'/auton.cfg')
+        try:
+            ar2dtool_enable = config.getboolean(ar2dtool_sec_name,'enable')
+        except:
+            pass
+        try:
+            widoco_enable = config.getboolean(widoco_sec_name, 'enable')
+        except:
+            pass
+    except:  
+        config.add_section(ar2dtool_sec_name)
+        config.set(ar2dtool_sec_name, 'enable', 'true') 
+        config.add_section(widoco_sec_name)
+        config.set(widoco_config,'enable','true')
+        with open(home+parent_folder+'/auton.cfg', 'wb') as configfile:
+            config.write(configfile)
+    return {'ar2dtool_enable':ar2dtool_enable , 'widoco_enable': widoco_enable}
