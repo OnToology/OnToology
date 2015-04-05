@@ -354,8 +354,11 @@ def get_auton_configuration():
         print 'now will create the files'
         conff = home+parent_folder+'/auton.cfg'
         print 'will create conf file: '+ conff
-        with open(conff, 'wb') as configfile:
-            configfile.write('test\n')
-            config.write(configfile)
+        f = open(conff,'wb')
+        f.write('test\n')
+        f.close()
+        #with open(conff, 'wb') as configfile:
+        #    configfile.write('test\n')
+        #    config.write(configfile)
         print 'auton configutation file closed'
     return {'ar2dtool_enable':ar2dtool_enable , 'widoco_enable': widoco_enable}
