@@ -324,7 +324,7 @@ def get_auton_configuration():
     ar2dtool_sec_name = 'ar2dtool'
     widoco_sec_name = 'widoco'
     ar2dtool_enable = True
-    widoco_enable = True
+    widoco_enable = False
     try:
         config.read(home+parent_folder+'/auton.cfg')
         try:
@@ -337,9 +337,9 @@ def get_auton_configuration():
             pass
     except:  
         config.add_section(ar2dtool_sec_name)
-        config.set(ar2dtool_sec_name, 'enable', 'true') 
+        config.set(ar2dtool_sec_name, 'enable', ar2dtool_enable) 
         config.add_section(widoco_sec_name)
-        config.set(widoco_config,'enable','true')
+        config.set(widoco_config,'enable',widoco_enable)
         with open(home+parent_folder+'/auton.cfg', 'wb') as configfile:
             config.write(configfile)
     return {'ar2dtool_enable':ar2dtool_enable , 'widoco_enable': widoco_enable}
