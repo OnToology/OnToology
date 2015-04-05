@@ -326,7 +326,7 @@ def get_auton_configuration():
     ar2dtool_enable = True
     widoco_enable = False
     
-    if len(config.read(home+parent_folder+'/auton.cfg')) ==0:
+    if len(config.read(home+parent_folder+'/auton.cfg')) !=0:
         print 'auton configuration file does exists'
         try:
             ar2dtool_enable = config.getboolean(ar2dtool_sec_name,'enable')
