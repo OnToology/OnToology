@@ -33,7 +33,7 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     password = os.environ['github_password']
     g = Github(username,password)
     
-    auton_conf = get_auton_configuration()
+    
     
     local_repo = target_repo.replace(target_repo.split('/')[-2] ,'AutonUser')#target_repo.replace(cloning_repo.split('/')[-2],username)
     delete_repo(local_repo)
@@ -45,6 +45,8 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     print 'repo cloned'
 #     update_readme(changed_files,cloning_repo,user)
 #     print 'readme updated'
+
+    auton_conf = get_auton_configuration()
     if auton_conf['ar2dtool_enable']:
         draw_diagrams(changed_files)
         print 'diagrams drawn'
@@ -359,12 +361,14 @@ def get_auton_configuration():
             f.write('test\n')
             f.close()
         except Exception as e:
-            print 'expection11: '+e
+            print 'expection11: '
+            print e
         try:
             with open(conff, 'wb') as configfile:
                 configfile.write('test\n')
                 config.write(configfile)
         except Exception as e:
-            print 'expection: '+e
+            print 'expection: '
+            print e
         print 'auton configutation file closed'
     return {'ar2dtool_enable':ar2dtool_enable , 'widoco_enable': widoco_enable}
