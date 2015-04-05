@@ -346,8 +346,9 @@ def get_auton_configuration():
         print 'add another section'
         config.set(widoco_sec_name,'enable',widoco_enable)
         print 'now will create the files'
-        with open(home+parent_folder+'/auton.cfg', 'wb') as configfile:
+        conff = home+parent_folder+'/auton.cfg'
+        print 'will create conf file: '+ conff
+        with open(conff, 'wb') as configfile:
             config.write(configfile)
-            config.close()
-            print 'auton configutation file closed'
+        print 'auton configutation file closed'
     return {'ar2dtool_enable':ar2dtool_enable , 'widoco_enable': widoco_enable}
