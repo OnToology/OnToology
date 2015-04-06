@@ -6,8 +6,8 @@ from datetime import datetime
 
 class Repo(Document):
     url = StringField(max_length='100',default='Not set yet')
-    last_used = DateTimeField(default=datetime.today())
-    create_on = DateTimeField(default=datetime.today())
+    last_used = DateTimeField(default=datetime.now())
+    create_on = DateTimeField(default=datetime.now())
     
 
 # class Repof(Document):
