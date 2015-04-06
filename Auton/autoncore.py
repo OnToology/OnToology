@@ -390,22 +390,19 @@ def get_auton_configuration():
 ############################\_______/###################################
 import urllib2
 
-def valid_ont_file(r):
-    if r[-4:] in ontology_formats:
-        return True
-    return False
 
 
 def oops_ont_files(changed_files):
     for r in changed_files:
         if valid_ont_file(r):
             print 'will oops: '+r
-            get_pitfalls(home+parent_folder+'/'+r) 
+            get_pitfalls(r) 
 
 
 
 def get_pitfalls(ont_file):
-    f = open(ont_file,'r')
+    ont_file_full_path = get_abs_path(ont_file)
+    f = open(ont_file_full_path,'r')
     ont_file_content = f.read()
     url = 'http://oops-ws.oeg-upm.net/rest'
     xml_content = """
@@ -421,6 +418,52 @@ def get_pitfalls(ont_file):
     req.add_header('Content-Type', 'application/xml; charset=utf-8')
     req.add_header('Content-Length', len(xml_content))
     oops_reply = urllib2.urlopen(req)
-    print 'OOPS! reply:  '+oops_reply.read()
+    oops_reply = oops_reply.read()
+    print 'OOPS! reply:  '+oops_reply
+    output_pitfalls(ont_file,oops_reply)
+
+
+
+
+def output_pitfalls(ont_file,oops_reply):
+    ont_file_abs_path = build_file_structure(ont_file, 'oops')
+    f = open(ont_file_abs_path,'w')
+    f.write(oops_reply)
+    f.close()
+    print 'oops file written'
+
+
+################################# generic helper functions ##################################
+
+
+
+def valid_ont_file(r):
+    if r[-4:] in ontology_formats:
+        return True
+    return False
+
+
+def get_abs_path(relative_path):
+    return home+parent_folder+'/'+relative_path
+
+
+def build_file_structure(file_with_rel_dir,category_folder=''):#e.g. category_folder = docs, file_with_rel_dir = ahmad88me/org/ont.txt
+    abs_dir = get_abs_path('')
+    if category_folder!='':
+        abs_dir+=category_folder+'/'
+    abs_dir_with_file= abs_dir+file_with_rel_dir
+    abs_dir = '/'.join(abs_dir_with_file.split('/')[0:-1])
+    if not os.path.exists(abs_dir):
+        os.makedirs(abs_dir)
+    return abs_dir_with_file
+
+
+
+
+
+
+
+
+
 
 
