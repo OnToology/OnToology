@@ -31,30 +31,14 @@ def home(request):
         request.session['target_repo'] = target_repo
         request.session['state'] = state
         return  HttpResponseRedirect(webhook_access_url)
-    return render_to_response('home.html',context_instance=RequestContext(request))
+    return render_to_response('home.html',{'repos': Repo.objects.all()},context_instance=RequestContext(request))
 
         
 
 
 
 def grant_update(request):
-#     print request.POST
-#     target_repo = request.POST['target_repo']
-#     l = request.POST['files_list'].strip()
-#     try:
-#         fil = l.split('&')[:-1]
-#     except:
-#         fil = []
-#     u = AutonUser.objects.get(id=request.user.id)
-#     r = None
-#     for i in u.repos:
-#         if i.repo_url == target_repo:
-#             r=i
-#     r.last_update = datetime.today()
-#     result = git_magic(target_repo,request.user.username,'git@github.com:'+target_repo+'.git',fil)
-#     r.save()
     return render_to_response('msg.html',{'msg': 'Magic is done'},context_instance=RequestContext(request))
-
 
 
 
@@ -84,6 +68,9 @@ def get_access_token(request):
         error_msg+=str(rpy_wh['error'])
     if rpy_coll['status'] == False:
         error_msg+=str(rpy_coll['error'])
+        print 'error adding collaborator: '+rpy_coll['error']
+    else:
+        print 'adding collaborator: '+rpy_coll['msg']
     if error_msg != "":
         return render_to_response('msg.html',{'msg':error_msg },context_instance=RequestContext(request))
     return render_to_response('msg.html',{'msg':'webhook attached and user added as collaborator' },context_instance=RequestContext(request))
@@ -126,8 +113,26 @@ def add_hook(request):
     cloning_repo = cloning_repo.replace(tar,'AutonUser')
     cloning_repo = cloning_repo.replace('git://github.com/','git@github.com:')
     r = git_magic(target_repo, user, cloning_repo, changed_files)
-    
+    if r['status']==True:
+        try:
+            repo = Repo.objects.get(url=target_repo)
+            repo.last_used = datetime.today()
+            repo.save()
+        except DoesNotExist:
+            repo = Repo()
+            repo.url=target_repo
+            repo.save()
+        except Exception as e:
+            r['database_exception']=str(e)
+    r = str(r)
     #request.session['updated_files'] = j['head_commit']['modified']
     return render_to_response('msg.html',{'msg': ''+s+'<>'+r},context_instance=RequestContext(request))
+
+
+
+
+
+
+
 
 

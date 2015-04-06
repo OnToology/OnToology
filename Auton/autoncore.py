@@ -30,21 +30,16 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     #so the tool user can takeover and do stuff
     username = os.environ['github_username']
     password = os.environ['github_password']
-    g = Github(username,password)
-    
-    
-    
-    local_repo = target_repo.replace(target_repo.split('/')[-2] ,'AutonUser')#target_repo.replace(cloning_repo.split('/')[-2],username)
+    g = Github(username,password)    
+    local_repo = target_repo.replace(target_repo.split('/')[-2] ,'AutonUser')
     delete_repo(local_repo)
     #print 'repo deleted'
     fork_repo(target_repo,username,password)
     print 'repo forked'
-#     cloning_repo = cloning_repo.replace(cloning_repo.split('/')[-2],username)
     clone_repo(cloning_repo,user)
     print 'repo cloned'
 #     update_readme(changed_files,cloning_repo,user)
 #     print 'readme updated'
-    
     auton_conf = get_auton_configuration()
     print str(auton_conf)
     if auton_conf['ar2dtool_enable']:
@@ -135,11 +130,6 @@ def commit_changes():
 
 
 
-# def push_repo():
-# #    commit_changes()
-#     call("cd "+home+parent_folder+"/"+"; git push ",shell=True)
-#                 
-
 
 
 
@@ -167,13 +157,14 @@ def send_pull_request(target_repo,username):
     for i in range(3):
         try:
             g.get_repo(target_repo).create_pull(head=username+':master',base='master',title=title,body=body)
-            return 'pull request created successfully'
+            #return 'pull request created successfully'
+            return {'status': True, 'msg':'pull request created successfully' }
         except Exception as e:
             err = str(e.data)
             print 'pull('+str(i)+'): '+err
             time.sleep(5)
-    return err
-
+    #return err
+    return {'status': False, 'error': err}
 
 
 
@@ -206,8 +197,8 @@ def add_webhook(target_repo,notification_url):
 
 def add_collaborator(target_repo,user):
     try:
-        g.get_repo(target_repo).add_to_collaborators(user)
-        return {'status': True}
+        msg = g.get_repo(target_repo).add_to_collaborators(user)
+        return {'status': True, 'msg': str(msg) }
     except Exception as e:
         return {'status': False, 'error': e.data}
 

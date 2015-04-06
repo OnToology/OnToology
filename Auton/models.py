@@ -3,6 +3,13 @@ from mongoengine.django.auth import User
 from datetime import datetime
 
 
+
+class Repo(Document):
+    url = StringField(max_length='100',default='Not set yet')
+    last_used = DateTimeField(default=datetime.today())
+    create_on = DateTimeField(default=datetime.today())
+    
+
 # class Repof(Document):
 #     repo_url = StringField(max_length=100,required=True)
 #     state_code = StringField(max_length=100,default='not used yet')
