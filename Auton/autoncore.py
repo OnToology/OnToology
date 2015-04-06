@@ -1,7 +1,6 @@
 #!/usr/bin/python
 import sys, os
 from github import Github
-import getpass
 from datetime import datetime
 from subprocess import call
 import string, random
@@ -329,6 +328,8 @@ def create_widoco_doc(rdf_file):
 import ConfigParser
 
 def get_auton_configuration():
+    
+    print 'auton config is called'
     config = ConfigParser.RawConfigParser()
     ar2dtool_sec_name = 'ar2dtool'
     widoco_sec_name = 'widoco'
