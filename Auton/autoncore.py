@@ -224,7 +224,7 @@ def update_g(token):
 def draw_diagrams(rdf_files):
     print str(len(rdf_files))+' changed files'
     for r in rdf_files:
-        print r+' is changed '
+        #print r+' is changed '
         if r[-4:] in ontology_formats:
             for t in ar2dtool_config_types:
                 draw_file(r,t)
@@ -399,25 +399,28 @@ def valid_ont_file(r):
 def oops_ont_files(changed_files):
     for r in changed_files:
         if valid_ont_file(r):
-            get_pitfalls(r) 
+            print 'will oops: '+r
+            get_pitfalls(home+parent_folder+'/'+r) 
 
 
 
-def get_pitfalls(ont_file_content):
+def get_pitfalls(ont_file):
+    f = open(ont_file,'r')
+    ont_file_content = f.read()
     url = 'http://oops-ws.oeg-upm.net/rest'
     xml_content = """
     <?xml version="1.0" encoding="UTF-8"?>
     <OOPSRequest>
           <OntologyUrl></OntologyUrl>
-          <OntologyContent></OntologyContent>
+          <OntologyContent>%s</OntologyContent>
           <Pitfalls></Pitfalls>
           <OutputFormat></OutputFormat>
     </OOPSRequest>    
     """ %(ont_file_content)
-    
     req = urllib2.Request(url, xml_content)
     req.add_header('Content-Type', 'application/xml; charset=utf-8')
     req.add_header('Content-Length', len(xml_content))
     oops_reply = urllib2.urlopen(req)
     print 'OOPS! reply:  '+oops_reply.read()
+
 
