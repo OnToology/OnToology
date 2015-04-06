@@ -210,9 +210,9 @@ def update_g(token):
 
 
 
-########################################################################
+##########################~~~~~~~~~~~~##################################
 ##########################  ar2dtool   #################################
-########################################################################
+##########################~~~~~~~~~~~~~#################################
 
 
 def draw_diagrams(rdf_files):
@@ -223,7 +223,8 @@ def draw_diagrams(rdf_files):
             for t in ar2dtool_config_types:
                 draw_file(r,t)
         else:
-            print r+' is not an rdf'
+            pass
+            #print r+' is not an rdf'
 
 
 
@@ -288,7 +289,8 @@ def generate_widoco_docs(changed_files):
             print 'will widoco '+r
             create_widoco_doc(r)
         else:
-            print r+' does not belong to supported ontology formats for widoco'
+            pass
+            #print r+' does not belong to supported ontology formats for widoco'
 
 
 
@@ -373,3 +375,21 @@ def get_auton_configuration():
             print e
         print 'auton configutation file closed'
     return {'ar2dtool_enable':ar2dtool_enable , 'widoco_enable': widoco_enable}
+
+
+
+
+############################---------###################################
+############################  OOPS!  ###################################
+############################\_______/###################################
+import urllib2
+
+def get_pitfalls(xml_content):
+    url = 'http://oops-ws.oeg-upm.net/rest'
+    
+    req = urllib2.Request(url, xml_content)
+    req.add_header('Content-Type', 'application/xml; charset=utf-8')
+    req.add_header('Content-Length', len(xml_content))
+    handle = urllib2.urlopen(req)
+
+
