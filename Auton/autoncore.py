@@ -45,14 +45,21 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     print 'repo cloned'
 #     update_readme(changed_files,cloning_repo,user)
 #     print 'readme updated'
-
+    
     auton_conf = get_auton_configuration()
+    print str(auton_conf)
     if auton_conf['ar2dtool_enable']:
+        print 'ar2dtool_enable is true'
         draw_diagrams(changed_files)
         print 'diagrams drawn'
+    else: 
+        print 'ar2dtool_enable is false'
     if auton_conf['widoco_enable']:
+        print  'widoco_enable is true'
         generate_widoco_docs(changed_files)
         print 'generated docs'
+    else:
+        print  'widoco_enable is false'
     commit_changes()
     print 'changes committed'
     remove_old_pull_requests(target_repo)
