@@ -364,16 +364,9 @@ def get_auton_configuration():
         print 'now will create the files'
         conff = home+parent_folder+'/auton.cfg'
         print 'will create conf file: '+ conff
-        try:
-            f = open(conff,'wb')
-            f.write('test\n')
-            f.close()
-        except Exception as e:
-            print 'expection11: '
-            print e
+        
         try:
             with open(conff, 'wb') as configfile:
-                configfile.write('test\n')
                 config.write(configfile)
         except Exception as e:
             print 'expection: '
