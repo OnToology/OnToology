@@ -248,10 +248,14 @@ def draw_file(rdf_file,config_type):
             os.makedirs(abs_dir+directory)
     try:
         open(config_file,"r")
-    except:
+    except IOError:
+        if not os.path.exists(abs_dir):
+            os.makedirs(abs_dir)
         f = open(config_file,"w")
         f.write(get_ar2dtool_config(config_type))
         f.close()
+    except Exception as e:
+        print 'in draw_file: exception opening the file: '+str(e)
     comm = 'java -jar '
     comm+= ar2dtool_dir+'ar2dtool.jar -i '
     comm+= home+parent_folder+'/'+rdf_file+' -o '
@@ -299,10 +303,14 @@ def create_widoco_doc(rdf_file):
             os.makedirs(abs_dir+directory)
     try:
         open(config_file,"r")
-    except:
+    except IOError:
+        if not os.path.exists(abs_dir):
+            os.makedirs(abs_dir)
         f = open(config_file,"w")
         f.write(get_widoco_config())
         f.close()
+    except Exception as e:
+        print 'in create_widoco_doc: exception opening the file: '+str(e)
     comm = "cd "+home+parent_folder+"; "
     comm+= "java -jar "
     comm+=widoco_dir+"widoco-0.0.1-jar-with-dependencies.jar "
