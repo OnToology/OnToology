@@ -426,7 +426,7 @@ def get_pitfalls(ont_file):
 
 
 def output_pitfalls(ont_file,oops_reply):
-    ont_file_abs_path = build_file_structure(ont_file, 'oops')
+    ont_file_abs_path = build_file_structure(ont_file+'oops', 'oops')
     f = open(ont_file_abs_path,'w')
     f.write(oops_reply)
     f.close()
@@ -447,12 +447,16 @@ def get_abs_path(relative_path):
     return home+parent_folder+'/'+relative_path
 
 
+def get_parent_path(f):
+    return '/'.join(f.split('/')[0:-1])
+
+
 def build_file_structure(file_with_rel_dir,category_folder=''):#e.g. category_folder = docs, file_with_rel_dir = ahmad88me/org/ont.txt
     abs_dir = get_abs_path('')
     if category_folder!='':
         abs_dir+=category_folder+'/'
     abs_dir_with_file= abs_dir+file_with_rel_dir
-    abs_dir = '/'.join(abs_dir_with_file.split('/')[0:-1])
+    abs_dir = get_parent_path(abs_dir_with_file)#'/'.join(abs_dir_with_file.split('/')[0:-1])
     if not os.path.exists(abs_dir):
         os.makedirs(abs_dir)
     return abs_dir_with_file
