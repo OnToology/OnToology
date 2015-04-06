@@ -106,7 +106,7 @@ def add_hook(request):
     target_repo = j['repository']['full_name']
     user = j['repository']['owner']['email']
     changed_files = j['head_commit']['modified']
-    changed_files+= j['head_commit']['removed']
+    #changed_files+= j['head_commit']['removed']
     changed_files+= j['head_commit']['added']
     print '##################################################'
     print 'changed_files: '+str(changed_files)
