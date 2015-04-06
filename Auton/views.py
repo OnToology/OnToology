@@ -61,6 +61,7 @@ def get_access_token(request):
     access_token = d['access_token']
     request.session['access_token'] = access_token
     update_g(access_token)
+    print 'access_token: '+access_token
     rpy_wh = add_webhook(request.session['target_repo'], host+"/add_hook")
     rpy_coll = add_collaborator(request.session['target_repo'], 'AutonUser')
     error_msg = ""
