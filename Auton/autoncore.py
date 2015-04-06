@@ -334,7 +334,7 @@ def get_auton_configuration():
     ar2dtool_sec_name = 'ar2dtool'
     widoco_sec_name = 'widoco'
     ar2dtool_enable = True
-    widoco_enable = False
+    widoco_enable = True
     
     opened_conf_files = config.read(home+parent_folder+'/auton.cfg')
     if len(opened_conf_files) == 1:
