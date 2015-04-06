@@ -66,6 +66,7 @@ def get_access_token(request):
     error_msg = ""
     if rpy_wh['status'] == False:
         error_msg+=str(rpy_wh['error'])
+        print 'error adding webhook: '+error_msg
     if rpy_coll['status'] == False:
         error_msg+=str(rpy_coll['error'])
         print 'error adding collaborator: '+rpy_coll['error']
