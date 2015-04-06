@@ -54,6 +54,12 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
         print 'generated docs'
     else:
         print  'widoco_enable is false'
+    if auton_conf['oops_enable']:
+        print 'oops_enable is true'
+        oops_ont_files(changed_files)
+        print 'oops checked ontology for pitfalls'
+    else:
+        print 'oops_enable is false'
     commit_changes()
     print 'changes committed'
     remove_old_pull_requests(target_repo)
@@ -282,7 +288,6 @@ def get_widoco_config():
 
 
 
-
 def generate_widoco_docs(changed_files):
     for r in changed_files:
         if r[-4:] in ontology_formats:
@@ -330,14 +335,14 @@ def create_widoco_doc(rdf_file):
 import ConfigParser
 
 def get_auton_configuration():
-    
     print 'auton config is called'
     config = ConfigParser.RawConfigParser()
     ar2dtool_sec_name = 'ar2dtool'
     widoco_sec_name = 'widoco'
+    oops_sec_name = 'oops'
     ar2dtool_enable = True
     widoco_enable = True
-    
+    oops_enable = True
     opened_conf_files = config.read(home+parent_folder+'/auton.cfg')
     if len(opened_conf_files) == 1:
         print 'auton configuration file exists'
@@ -354,27 +359,28 @@ def get_auton_configuration():
         except:
             print 'widoco enable value doesnot exist'
             pass
+        try:
+            oops_enable = config.getboolean(oops_sec_name, 'enable')
+            print 'got oops enable value'
+        except:
+            print 'oops enable value doesnot exist'
     else:  
         print 'auton configuration file does not exists'
         config.add_section(ar2dtool_sec_name)
-        print 'add section'
         config.set(ar2dtool_sec_name, 'enable', ar2dtool_enable) 
-        print 'add ar2dtool value'
         config.add_section(widoco_sec_name)
-        print 'add another section'
         config.set(widoco_sec_name,'enable',widoco_enable)
-        print 'now will create the files'
+        config.add_section(oops_sec_name)
+        config.set(oops_sec_name,'enable',oops_enable)
         conff = home+parent_folder+'/auton.cfg'
         print 'will create conf file: '+ conff
-        
         try:
             with open(conff, 'wb') as configfile:
                 config.write(configfile)
         except Exception as e:
             print 'expection: '
             print e
-        print 'auton configutation file closed'
-    return {'ar2dtool_enable':ar2dtool_enable , 'widoco_enable': widoco_enable}
+    return {'ar2dtool_enable':ar2dtool_enable , 'widoco_enable': widoco_enable, 'oops_enable': oops_enable}
 
 
 
@@ -384,12 +390,34 @@ def get_auton_configuration():
 ############################\_______/###################################
 import urllib2
 
-def get_pitfalls(xml_content):
+def valid_ont_file(r):
+    if r[-4:] in ontology_formats:
+        return True
+    return False
+
+
+def oops_ont_files(changed_files):
+    for r in changed_files:
+        if valid_ont_file(r):
+            get_pitfalls(r) 
+
+
+
+def get_pitfalls(ont_file_content):
     url = 'http://oops-ws.oeg-upm.net/rest'
+    xml_content = """
+    <?xml version="1.0" encoding="UTF-8"?>
+    <OOPSRequest>
+          <OntologyUrl></OntologyUrl>
+          <OntologyContent></OntologyContent>
+          <Pitfalls></Pitfalls>
+          <OutputFormat></OutputFormat>
+    </OOPSRequest>    
+    """ %(ont_file_content)
     
     req = urllib2.Request(url, xml_content)
     req.add_header('Content-Type', 'application/xml; charset=utf-8')
     req.add_header('Content-Length', len(xml_content))
-    handle = urllib2.urlopen(req)
-
+    oops_reply = urllib2.urlopen(req)
+    print 'OOPS! reply:  '+oops_reply.read()
 
