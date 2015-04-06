@@ -27,6 +27,22 @@ A system to automate part of the collaborative ontology development process. Giv
 </br>
 <a style="text-decoration: underline;" href="https://github.com/Autontool/auton">Auton project is an open source project, click here to check it</a>
 
+
+<table class="table table-striped">
+<th>
+	<td>Repo</td>
+	<td>created</td>
+	<td>last used</td>
+</th>
+{%for r in repos%}
+	<tr>
+		<td>{{r.url}}</tr>
+		<td>{{r.created_on}}</td>
+		<td>{{r.last_used}}</td>
+	<tr>
+{%endfor%}
+</table>
+
 {% endblock %}
 
 
