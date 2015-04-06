@@ -168,7 +168,7 @@ def send_pull_request(target_repo,username):
         except Exception as e:
             err = str(e.data)
             print 'pull('+str(i)+'): '+err
-            time.sleep(5)
+            time.sleep(3)
     #return err
     return {'status': False, 'error': err}
 
