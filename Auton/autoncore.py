@@ -312,7 +312,8 @@ def create_widoco_doc(rdf_file):
         f = open(config_file,"w")
         f.write(get_widoco_config())
         f.close()
-    comm = "java -jar "
+    comm = "cd "+home+parent_folder+"; "
+    comm+= "java -jar "
     comm+=widoco_dir+"widoco-0.0.1-jar-with-dependencies.jar "
     comm+=" -ontFile "+home+parent_folder+'/'+rdf_file
     comm+=" -outFolder "+abs_dir+directory
