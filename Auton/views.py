@@ -139,6 +139,7 @@ def add_hook(request):
     comm+=' "'+target_repo+'" "'+user+'" "'+cloning_repo+'" '
     for c in changed_files:
         comm+='"'+c+'" '
+    print 'running autoncore code as: '+comm
     call(comm,shell=True)
     r=""
     #r = str(r)
