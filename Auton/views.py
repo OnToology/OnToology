@@ -17,6 +17,9 @@ from models import *
 import requests
 import json
 
+import multiprocessing
+
+
 
 host = 'http://54.172.63.231'
 client_id = 'bbfc39dd5b6065bbe53b'
@@ -114,8 +117,9 @@ def add_hook(request):
     tar = cloning_repo.split('/')[-2]
     cloning_repo = cloning_repo.replace(tar,'AutonUser')
     cloning_repo = cloning_repo.replace('git://github.com/','git@github.com:')
-    r = git_magic(target_repo, user, cloning_repo, changed_files)
-    if r['status']==True:
+#     r = git_magic(target_repo, user, cloning_repo, changed_files)
+    #if r['status']==True:
+    if True:
         try:
             repo = Repo.objects.get(url=target_repo)
             repo.last_used = datetime.today()
@@ -125,8 +129,11 @@ def add_hook(request):
             repo.url=target_repo
             repo.save()
         except Exception as e:
-            r['database_exception']=str(e)
-    r = str(r)
+            print 'database_exception: '+str(e)
+            #r['database_exception']=str(e)
+    multiprocessing.Process(target=git_magic,args=(target_repo, user, cloning_repo, changed_files)).start()
+    r=""
+    #r = str(r)
     #request.session['updated_files'] = j['head_commit']['modified']
     return render_to_response('msg.html',{'msg': ''+s+'<>'+r},context_instance=RequestContext(request))
 

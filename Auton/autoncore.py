@@ -8,6 +8,11 @@ import time
 from setuptools.command.setopt import config_file
 
 
+
+
+
+
+
 parent_folder = None
 ar2dtool_config_types = ['ar2dtool-taxonomy.conf','ar2dtool-class.conf']
 ar2dtool_config = os.environ['ar2dtool_config']
@@ -26,6 +31,10 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     global g
     global parent_folder
     parent_folder = user
+    
+    f = open(get_abs_path(target_repo)+'log.txt', 'w')
+    sys.stdout = f
+        
     print '############################### magic #############################'
     #so the tool user can takeover and do stuff
     username = os.environ['github_username']
@@ -65,7 +74,7 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     remove_old_pull_requests(target_repo)
     r = send_pull_request(target_repo,'AutonUser')
     print 'pull request is sent'
-    return r
+    #return r
 
 
 
