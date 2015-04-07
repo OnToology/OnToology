@@ -36,7 +36,7 @@ Currently the website link is http://54.172.63.231/
 * django
 * pygithub
 * mongoengine
-
+* rdfxml (http://infomesh.net/2003/rdfparser/)
 
 
 ###Install the libraries using pip
@@ -45,6 +45,8 @@ pip install django
 pip install pygithub
 pip install mongoengine
 ```
+rdfxml (can be downloaded from http://infomesh.net/2003/rdfparser/)
+
 
 To install pip follow the instructions here https://pip.pypa.io/en/latest/installing.html
 

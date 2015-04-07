@@ -389,6 +389,7 @@ def get_auton_configuration():
 ############################  OOPS!  ###################################
 ############################\_______/###################################
 import urllib2
+import rdfxml
 
 
 
@@ -420,17 +421,97 @@ def get_pitfalls(ont_file):
     oops_reply = urllib2.urlopen(req)
     oops_reply = oops_reply.read()
     print 'OOPS! reply:  '+oops_reply
-    output_pitfalls(ont_file,oops_reply)
+    output_parsed_pitfalls(ont_file,oops_reply)
 
 
 
 
-def output_pitfalls(ont_file,oops_reply):
-    ont_file_abs_path = build_file_structure(ont_file+'oops', 'oops')
+def output_raw_pitfalls(ont_file,oops_reply):
+    ont_file_abs_path = build_file_structure(ont_file+'.oops', 'oops')
     f = open(ont_file_abs_path,'w')
     f.write(oops_reply)
     f.close()
     print 'oops file written'
+
+
+def output_parsed_pitfalls(ont_file,oops_reply):
+    ont_file_abs_path = ont_file # build_file_structure(ont_file+'.oops', 'oops')
+    f = open(ont_file_abs_path,'w')
+    issues, interesting_features = parse_oops_issues(oops_reply)
+    s= ""
+    print str(issues)
+    for i in issues:
+        for intfea in interesting_features:
+            if intfea in issues[i]:
+                val = issues[i][intfea].split('^^')[0]
+                key = intfea.split("#")[-1].replace('>','')
+                s+=key+": "+val+"\n"
+        s+=20*"="
+        s+="\n"
+    f.write(s)
+    f.close()
+    print 'oops file written'
+
+
+
+#  output_parsed_pitfalls('test.oops',a)
+
+
+def parse_oops_issues(oops_rdf):
+    p = rdfxml.parseRDF(oops_rdf)
+    raw_oops_list = p.result
+    oops_issues={}
+    #Filter #1
+    #Construct combine all data of a single elements into one json like format
+    for r in raw_oops_list:
+        if r['domain'] not in oops_issues:
+            oops_issues[r['domain']] = {}
+        oops_issues[r['domain']][r['relation']] = r['range']
+    #Filter #2
+    #get rid of elements without issue id 
+    oops_issues_filter2={}
+    for  i in oops_issues:
+        if '#' not in i:
+            oops_issues_filter2[i] = oops_issues[i]
+    #Filter #3    
+    #Only include actual issues (some data are useless to us)
+    detailed_desc = []
+    oops_issues_filter3={}
+    for i in oops_issues_filter2:
+        if '<http://www.oeg-upm.net/oops#hasNumberAffectedElements>' in oops_issues_filter2[i]:
+            oops_issues_filter3[i] = oops_issues_filter2[i]
+#         else:
+#             detailed_desc.append(i)
+#     #Bring details from other referenced components
+#     for i in oops_issues_filter2:
+#         for k in oops_issues_filter2[i]:#search for all (relations)
+#             for d in detailed_desc:#search for all the refs
+#                 if oops_issues_filter2[i][k] ==d:# found an element with (range) = ref
+#                     print 'range: '+d
+#                     for t in oops_issues_filter2[d]:#since we don't know the relation between the ref and the value
+#                         print i+' *** '+k+' *** '+oops_issues_filter3[i][k]
+#                         print d+' *** '+t+' *** '+oops_issues_filter2[d][t]+'\n\n'
+#                         oops_issues_filter3[i][k] = oops_issues_filter2[d][t]
+        
+            
+    #Filter #4
+    #Only include data of interest about the issue
+    oops_issues_filter4={}
+    issue_interesting_data = [
+        '<http://www.oeg-upm.net/oops#hasName>',
+        '<http://www.oeg-upm.net/oops#hasCode>',
+        '<http://www.oeg-upm.net/oops#hasDescription>',
+        '<http://www.oeg-upm.net/oops#hasNumberAffectedElements>',
+        '<http://www.oeg-upm.net/oops#hasImportanceLevel>',
+        '<http://www.oeg-upm.net/oops#hasAffectedElement>',
+        '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>',
+    ]
+    for i in oops_issues_filter3:
+        oops_issues_filter4[i]={}
+        for intda in issue_interesting_data:
+            if intda in oops_issues_filter3[i]:
+                oops_issues_filter4[i][intda] = oops_issues_filter3[i][intda]
+    return oops_issues_filter4, issue_interesting_data
 
 
 ################################# generic helper functions ##################################
@@ -443,12 +524,15 @@ def valid_ont_file(r):
     return False
 
 
+
 def get_abs_path(relative_path):
     return home+parent_folder+'/'+relative_path
 
 
+
 def get_parent_path(f):
     return '/'.join(f.split('/')[0:-1])
+
 
 
 def build_file_structure(file_with_rel_dir,category_folder=''):#e.g. category_folder = docs, file_with_rel_dir = ahmad88me/org/ont.txt
