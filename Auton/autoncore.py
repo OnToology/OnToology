@@ -56,7 +56,7 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
         print  'widoco_enable is false'
     if auton_conf['oops_enable']:
         print 'oops_enable is true'
-        oops_ont_files(changed_files)
+        oops_ont_files(target_repo,changed_files)
         print 'oops checked ontology for pitfalls'
     else:
         print 'oops_enable is false'
@@ -328,9 +328,12 @@ def create_widoco_doc(rdf_file):
     call(comm,shell=True)
     
 
+
 ########################################################################
 ######################  Auton configuration file  ######################
 ########################################################################
+
+
 
 import ConfigParser
 
@@ -393,15 +396,15 @@ import rdfxml
 
 
 
-def oops_ont_files(changed_files):
+def oops_ont_files(target_repo,changed_files):
     for r in changed_files:
         if valid_ont_file(r):
             print 'will oops: '+r
-            get_pitfalls(r) 
+            get_pitfalls(target_repo,r) 
 
 
 
-def get_pitfalls(ont_file):
+def get_pitfalls(target_repo,ont_file):
     ont_file_full_path = get_abs_path(ont_file)
     f = open(ont_file_full_path,'r')
     ont_file_content = f.read()
@@ -420,8 +423,11 @@ def get_pitfalls(ont_file):
     req.add_header('Content-Length', len(xml_content))
     oops_reply = urllib2.urlopen(req)
     oops_reply = oops_reply.read()
-    print 'OOPS! reply:  '+oops_reply
-    output_parsed_pitfalls(ont_file,oops_reply)
+    #print 'OOPS! reply:  '+oops_reply
+    issues_s = output_parsed_pitfalls(ont_file,oops_reply)
+    close_old_oops_issues_in_github(target_repo)
+    create_oops_issue_in_github(target_repo, issues_s)
+
 
 
 
@@ -432,6 +438,10 @@ def output_raw_pitfalls(ont_file,oops_reply):
     f.write(oops_reply)
     f.close()
     print 'oops file written'
+
+
+
+
 
 
 def output_parsed_pitfalls(ont_file,oops_reply):
@@ -451,7 +461,7 @@ def output_parsed_pitfalls(ont_file,oops_reply):
     f.write(s)
     f.close()
     print 'oops file written'
-
+    return s
 
 
 #  output_parsed_pitfalls('test.oops',a)
@@ -480,20 +490,7 @@ def parse_oops_issues(oops_rdf):
     for i in oops_issues_filter2:
         if '<http://www.oeg-upm.net/oops#hasNumberAffectedElements>' in oops_issues_filter2[i]:
             oops_issues_filter3[i] = oops_issues_filter2[i]
-#         else:
-#             detailed_desc.append(i)
-#     #Bring details from other referenced components
-#     for i in oops_issues_filter2:
-#         for k in oops_issues_filter2[i]:#search for all (relations)
-#             for d in detailed_desc:#search for all the refs
-#                 if oops_issues_filter2[i][k] ==d:# found an element with (range) = ref
-#                     print 'range: '+d
-#                     for t in oops_issues_filter2[d]:#since we don't know the relation between the ref and the value
-#                         print i+' *** '+k+' *** '+oops_issues_filter3[i][k]
-#                         print d+' *** '+t+' *** '+oops_issues_filter2[d][t]+'\n\n'
-#                         oops_issues_filter3[i][k] = oops_issues_filter2[d][t]
-        
-            
+                    
     #Filter #4
     #Only include data of interest about the issue
     oops_issues_filter4={}
@@ -503,7 +500,7 @@ def parse_oops_issues(oops_rdf):
         '<http://www.oeg-upm.net/oops#hasDescription>',
         '<http://www.oeg-upm.net/oops#hasNumberAffectedElements>',
         '<http://www.oeg-upm.net/oops#hasImportanceLevel>',
-        '<http://www.oeg-upm.net/oops#hasAffectedElement>',
+        #'<http://www.oeg-upm.net/oops#hasAffectedElement>',
         '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>',
     ]
     for i in oops_issues_filter3:
@@ -514,7 +511,27 @@ def parse_oops_issues(oops_rdf):
     return oops_issues_filter4, issue_interesting_data
 
 
+
+
+def create_oops_issue_in_github(target_repo,oops_issues):
+    try:
+        g.get_repo(target_repo).create_issue('OOPS', oops_issues)
+    except Exception as e:
+        print 'exception when creating issue: '+e.data
+        
+    
+
+
+def close_old_oops_issues_in_github(target_repo):
+    for i in g.get_repo(target_repo).get_issues(state='open'):
+        if i.title=='OOPS':
+            i.edit(state='closed')
+
+
+
+#############################################################################################
 ################################# generic helper functions ##################################
+#############################################################################################
 
 
 
