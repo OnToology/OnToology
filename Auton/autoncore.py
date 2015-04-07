@@ -13,6 +13,7 @@ from setuptools.command.setopt import config_file
 
 
 
+
 parent_folder = None
 ar2dtool_config_types = ['ar2dtool-taxonomy.conf','ar2dtool-class.conf']
 ar2dtool_config = os.environ['ar2dtool_config']
@@ -31,14 +32,14 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     global g
     global parent_folder
     parent_folder = user
-    pid = os.fork()
-    if pid>0:# if parent
-        print 'parent will return'
-        return
-#     f = open(build_file_structure(user+'.log','logs'), 'w')
-#     sys.stdout = f
-    else:
-        print 'this is child'
+#    pid = os.fork()
+#     if pid>0:# if parent
+#         print 'parent will return'
+#         return
+# #     f = open(build_file_structure(user+'.log','logs'), 'w')
+# #     sys.stdout = f
+#     else:
+#         print 'this is child'
     print '############################### magic #############################'
     #so the tool user can takeover and do stuff
     username = os.environ['github_username']
@@ -82,12 +83,15 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
 
 
 
+
 def delete_repo(local_repo):
     try:
         g.get_repo(local_repo).delete()
         print 'repo deleted '
     except:
         print 'the repo doesn\'t exists [not an error]'
+
+
 
 
 
@@ -587,6 +591,9 @@ def build_file_structure(file_with_rel_dir,category_folder=''):#e.g. category_fo
 
 
 
+
+
+git_magic(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4:])
 
 
 
