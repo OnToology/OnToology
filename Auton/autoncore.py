@@ -514,6 +514,7 @@ def parse_oops_issues(oops_rdf):
 
 
 def create_oops_issue_in_github(target_repo,oops_issues):
+    print 'will create an oops issue'
     try:
         g.get_repo(target_repo).create_issue('OOPS', oops_issues)
     except Exception as e:
@@ -523,6 +524,7 @@ def create_oops_issue_in_github(target_repo,oops_issues):
 
 
 def close_old_oops_issues_in_github(target_repo):
+    print 'will close old issues'
     for i in g.get_repo(target_repo).get_issues(state='open'):
         if i.title=='OOPS':
             i.edit(state='closed')
