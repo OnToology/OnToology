@@ -33,6 +33,7 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     parent_folder = user
     pid = os.fork()
     if pid>0:# if parent
+        print 'parent will return'
         return
 #     f = open(build_file_structure(user+'.log','logs'), 'w')
 #     sys.stdout = f
@@ -232,6 +233,7 @@ def update_g(token):
 ##########################~~~~~~~~~~~~~#################################
 
 
+
 def draw_diagrams(rdf_files):
     print str(len(rdf_files))+' changed files'
     for r in rdf_files:
@@ -283,9 +285,11 @@ def draw_file(rdf_file,config_type):
 # draw_file('myrdfs/sample.rdf')
 
 
+
 ########################################################################
 ############################# Widoco ###################################
 ########################################################################
+
 
 
 #e.g. widoco_dir = 'blahblah/Widoco/JAR/'
@@ -402,6 +406,7 @@ def get_auton_configuration():
 ############################---------###################################
 ############################  OOPS!  ###################################
 ############################\_______/###################################
+
 import urllib2
 import rdfxml
 
@@ -412,6 +417,7 @@ def oops_ont_files(target_repo,changed_files):
         if valid_ont_file(r):
             print 'will oops: '+r
             get_pitfalls(target_repo,r) 
+
 
 
 
@@ -474,8 +480,6 @@ def output_parsed_pitfalls(ont_file,oops_reply):
     print 'oops file written'
     return s
 
-
-#  output_parsed_pitfalls('test.oops',a)
 
 
 def parse_oops_issues(oops_rdf):
@@ -548,10 +552,12 @@ def close_old_oops_issues_in_github(target_repo):
 
 
 
+
 def valid_ont_file(r):
     if r[-4:] in ontology_formats:
         return True
     return False
+
 
 
 
@@ -560,8 +566,10 @@ def get_abs_path(relative_path):
 
 
 
+
 def get_parent_path(f):
     return '/'.join(f.split('/')[0:-1])
+
 
 
 
