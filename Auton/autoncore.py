@@ -31,7 +31,9 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     global g
     global parent_folder
     parent_folder = user
-    
+    pid = os.fork()
+    if pid>0:# if parent
+        return
 #     f = open(build_file_structure(user+'.log','logs'), 'w')
 #     sys.stdout = f
         

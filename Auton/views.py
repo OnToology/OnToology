@@ -131,7 +131,8 @@ def add_hook(request):
         except Exception as e:
             print 'database_exception: '+str(e)
             #r['database_exception']=str(e)
-    multiprocessing.Process(target=git_magic,args=(target_repo, user, cloning_repo, changed_files)).start()
+    #multiprocessing.Process(target=git_magic,args=(target_repo, user, cloning_repo, changed_files)).start()
+    git_magic(target_repo, user, cloning_repo, changed_files)
     r=""
     #r = str(r)
     #request.session['updated_files'] = j['head_commit']['modified']
