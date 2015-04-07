@@ -32,7 +32,7 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     global parent_folder
     parent_folder = user
     
-    f = open(get_abs_path(target_repo)+'log.txt', 'w')
+    f = open(build_file_structure(user+'.log','logs'), 'w')
     sys.stdout = f
         
     print '############################### magic #############################'
@@ -568,7 +568,7 @@ def build_file_structure(file_with_rel_dir,category_folder=''):#e.g. category_fo
     if category_folder!='':
         abs_dir+=category_folder+'/'
     abs_dir_with_file= abs_dir+file_with_rel_dir
-    abs_dir = get_parent_path(abs_dir_with_file)#'/'.join(abs_dir_with_file.split('/')[0:-1])
+    abs_dir = get_parent_path(abs_dir_with_file)
     if not os.path.exists(abs_dir):
         os.makedirs(abs_dir)
     return abs_dir_with_file
