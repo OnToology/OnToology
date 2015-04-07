@@ -435,11 +435,11 @@ def output_raw_pitfalls(ont_file,oops_reply):
 
 
 def output_parsed_pitfalls(ont_file,oops_reply):
-    ont_file_abs_path = ont_file # build_file_structure(ont_file+'.oops', 'oops')
+    ont_file_abs_path = build_file_structure(ont_file+'.oops', 'oops')
     f = open(ont_file_abs_path,'w')
     issues, interesting_features = parse_oops_issues(oops_reply)
     s= ""
-    print str(issues)
+    #print str(issues)
     for i in issues:
         for intfea in interesting_features:
             if intfea in issues[i]:
