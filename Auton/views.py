@@ -19,7 +19,7 @@ import json
 
 import multiprocessing
 
-from subprocess import call
+import subprocess
 
 
 
@@ -146,7 +146,8 @@ def add_hook(request):
     for c in changed_files:
         comm+='"'+c+'" '
     print 'running autoncore code as: '+comm
-    call(comm,shell=True)
+    subprocess.Popen(comm,shell=True)
+    #call(comm,shell=True)
     r=""
     #r = str(r)
     #request.session['updated_files'] = j['head_commit']['modified']
