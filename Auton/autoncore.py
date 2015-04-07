@@ -593,7 +593,7 @@ def build_file_structure(file_with_rel_dir,category_folder=''):#e.g. category_fo
 
 
 print "autoncore command: "+str(sys.argv)
-git_magic(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4:])
+#git_magic(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4:])
 
 
 

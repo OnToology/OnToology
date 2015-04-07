@@ -121,17 +121,23 @@ def add_hook(request):
     cloning_repo = cloning_repo.replace('git://github.com/','git@github.com:')
 #     r = git_magic(target_repo, user, cloning_repo, changed_files)
     #if r['status']==True:
-    if True:
-        try:
-            repo = Repo.objects.get(url=target_repo)
-            repo.last_used = datetime.today()
-            repo.save()
-        except DoesNotExist:
-            repo = Repo()
-            repo.url=target_repo
-            repo.save()
-        except Exception as e:
-            print 'database_exception: '+str(e)
+    
+    
+    
+#     if True:
+#         try:
+#             repo = Repo.objects.get(url=target_repo)
+#             repo.last_used = datetime.today()
+#             repo.save()
+#         except DoesNotExist:
+#             repo = Repo()
+#             repo.url=target_repo
+#             repo.save()
+#         except Exception as e:
+#             print 'database_exception: '+str(e)
+            
+            
+            
             #r['database_exception']=str(e)
     #multiprocessing.Process(target=git_magic,args=(target_repo, user, cloning_repo, changed_files)).start()
     #git_magic(target_repo, user, cloning_repo, changed_files)
