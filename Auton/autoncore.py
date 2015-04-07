@@ -560,7 +560,7 @@ def close_old_oops_issues_in_github(target_repo):
 
 def valid_ont_file(r):
     if r[-4:] in ontology_formats:
-        return True
+        return True 
     return False
 
 

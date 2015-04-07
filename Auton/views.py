@@ -141,7 +141,7 @@ def add_hook(request):
             #r['database_exception']=str(e)
     #multiprocessing.Process(target=git_magic,args=(target_repo, user, cloning_repo, changed_files)).start()
     #git_magic(target_repo, user, cloning_repo, changed_files)
-    comm = "python autoncore.py "
+    comm = "python /home/ubuntu/auton/Auton/autoncore.py "
     comm+=' "'+target_repo+'" "'+user+'" "'+cloning_repo+'" '
     for c in changed_files:
         comm+='"'+c+'" '
