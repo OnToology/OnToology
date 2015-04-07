@@ -40,6 +40,10 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
 # #     sys.stdout = f
 #     else:
 #         print 'this is child'
+
+    f = open(build_file_structure(user+'.log','logs'), 'w')
+    sys.stdout = f
+
     print '############################### magic #############################'
     #so the tool user can takeover and do stuff
     username = os.environ['github_username']
