@@ -32,8 +32,8 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     global parent_folder
     parent_folder = user
     
-    f = open(build_file_structure(user+'.log','logs'), 'w')
-    sys.stdout = f
+#     f = open(build_file_structure(user+'.log','logs'), 'w')
+#     sys.stdout = f
         
     print '############################### magic #############################'
     #so the tool user can takeover and do stuff
