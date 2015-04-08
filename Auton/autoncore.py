@@ -28,7 +28,7 @@ ontology_formats = ['.rdf','.owl','.ttl']
 
 g = None
 
-log_file_dir = sys.stdout#by default
+log_file_dir = '&1'#which is stdout #sys.stdout#by default
 
 def git_magic(target_repo,user,cloning_repo,changed_files):
     global g
