@@ -41,8 +41,8 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
 #     else:
 #         print 'this is child'
 
-    f = open(build_file_structure(user+'.log','logs'), 'w')
-    sys.stdout = f
+#     f = open(build_file_structure(user+'.log','logs'), 'w')
+#     sys.stdout = f
 
     print '############################### magic #############################'
     #so the tool user can takeover and do stuff
@@ -416,7 +416,7 @@ def get_auton_configuration():
 ############################  OOPS!  ###################################
 ############################\_______/###################################
 
-import urllib2
+import requests
 import rdfxml
 
 
@@ -444,12 +444,16 @@ def get_pitfalls(target_repo,ont_file):
           <OutputFormat></OutputFormat>
     </OOPSRequest>    
     """ %(ont_file_content)
-    req = urllib2.Request(url, xml_content)
-    req.add_header('Content-Type', 'application/xml; charset=utf-8')
-    req.add_header('Content-Length', len(xml_content))
-    oops_reply = urllib2.urlopen(req)
-    oops_reply = oops_reply.read()
+#     req = urllib2.Request(url, xml_content)
+#     req.add_header('Content-Type', 'application/xml; charset=utf-8')
+#     req.add_header('Content-Length', len(xml_content))
+#     oops_reply = urllib2.urlopen(req)
+#     oops_reply = oops_reply.read()
     #print 'OOPS! reply:  '+oops_reply
+    headers = {'Content-Type': 'application/xml'}
+    oops_reply = requests.post('http://httpbin.org/post', data=xml_content, headers=headers)
+    oops_reply = oops_reply.text
+    print 'got oops reply' 
     issues_s = output_parsed_pitfalls(ont_file,oops_reply)
     close_old_oops_issues_in_github(target_repo)
     create_oops_issue_in_github(target_repo, issues_s)
@@ -552,6 +556,69 @@ def close_old_oops_issues_in_github(target_repo):
     for i in g.get_repo(target_repo).get_issues(state='open'):
         if i.title=='OOPS':
             i.edit(state='closed')
+
+
+
+
+
+
+# def get_pitfalls(ont_file):
+#     
+# import urllib2
+# ont_file = 'daniel.owl'
+# ont_file_full_path = ont_file#get_abs_path(ont_file)
+# f = open(ont_file_full_path,'r')
+# ont_file_content = f.read()
+# url = 'http://oops-ws.oeg-upm.net/rest'
+# xml_content = """
+# <?xml version="1.0" encoding="UTF-8"?>
+# <OOPSRequest>
+#       <OntologyUrl></OntologyUrl>
+#       <OntologyContent>%s</OntologyContent>
+#       <Pitfalls></Pitfalls>
+#       <OutputFormat></OutputFormat>
+# </OOPSRequest>    
+# """ %(ont_file_content)
+# req = urllib2.Request(url, xml_content)
+# req.add_header('Content-Type', 'application/xml; charset=utf-8')
+# req.add_header('Content-Length', len(xml_content))
+# req.add_header("Accept" , "*/*")
+# 
+# req.add_header('User-agent', 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)     Chrome/37.0.2049.0 Safari/537.36')
+# 
+# 
+# 
+# oops_reply = urllib2.urlopen(req)
+# oops_reply = oops_reply.read()
+# print 'OOPS! reply:  '+oops_reply
+    
+
+
+
+
+# 
+# import requests
+# 
+# ont_file = 'daniel.owl'
+# ont_file_full_path = ont_file#get_abs_path(ont_file)
+# f = open(ont_file_full_path,'r')
+# ont_file_content = f.read()
+# url = 'http://oops-ws.oeg-upm.net/rest'
+# xml_content = """
+# <?xml version="1.0" encoding="UTF-8"?>
+# <OOPSRequest>
+#       <OntologyUrl></OntologyUrl>
+#       <OntologyContent>%s</OntologyContent>
+#       <Pitfalls></Pitfalls>
+#       <OutputFormat></OutputFormat>
+# </OOPSRequest>    
+# """ %(ont_file_content)
+# 
+# headers = {'Content-Type': 'application/xml'}
+# 
+# oops_reply = requests.post('http://httpbin.org/post', data=xml_content, headers=headers)
+# oops_reply = oops_reply.text
+
 
 
 
