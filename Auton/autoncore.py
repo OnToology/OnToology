@@ -43,7 +43,7 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
 
 #     f = open(build_file_structure(user+'.log','logs'), 'w')
 #     sys.stdout = f
-
+    prepare_log(user)
     print '############################### magic #############################'
     #so the tool user can takeover and do stuff
     username = os.environ['github_username']
@@ -87,6 +87,12 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
 
 
 
+def prepare_log(user):
+    file_dir = build_file_structure(user+'.log', 'log', home)
+    f = open(file_dir,'w')
+    sys.stdout=f
+    
+    
 
 def delete_repo(local_repo):
     try:
@@ -490,6 +496,7 @@ def output_parsed_pitfalls(ont_file,oops_reply):
                 val = issues[i][intfea].split('^^')[0]
                 key = intfea.split("#")[-1].replace('>','')
                 s+=key+": "+val+"\n"
+        s+"\n"
         s+=20*"="
         s+="\n"
     f.write(s)
@@ -665,8 +672,11 @@ def get_parent_path(f):
 
 
 
-def build_file_structure(file_with_rel_dir,category_folder=''):#e.g. category_folder = docs, file_with_rel_dir = ahmad88me/org/ont.txt
-    abs_dir = get_abs_path('')
+def build_file_structure(file_with_rel_dir,category_folder='',abs_home=''):#e.g. category_folder = docs, file_with_rel_dir = ahmad88me/org/ont.txt
+    if abs_home=='':
+        abs_dir = get_abs_path('')
+    else:
+        abs_dir=abs_home
     if category_folder!='':
         abs_dir+=category_folder+'/'
     abs_dir_with_file= abs_dir+file_with_rel_dir
