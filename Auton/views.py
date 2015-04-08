@@ -130,7 +130,7 @@ def add_hook(request):
     mont = get_auton_configuration(user)
     s = ""
     for i in mont:
-        s+=i+"="+mont[i]+", "
+        s+=i+"="+str(mont[i])+", "
     
     try:
         repo = Repo.objects.get(url=target_repo)
