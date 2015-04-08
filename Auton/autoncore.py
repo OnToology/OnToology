@@ -295,36 +295,47 @@ def get_ar2dtool_config(config_type):
 
 def draw_file(rdf_file,config_type):
     outtype="png"
-    abs_dir = home+parent_folder+'/'+'drawings'+'/'+config_type+'/'
-    config_file = abs_dir+config_type
-    directory = ""
-    if len(rdf_file.split('/'))>1:
-        directory = '/'.join(rdf_file.split('/')[0:-1])
-        if not os.path.exists(abs_dir+directory):
-            os.makedirs(abs_dir+directory)
+    
+    
+    config_file_abs = build_file_structure(config_type, [get_target_home(),'diagrams',config_type])
+    
+    rdf_file_abs = build_file_structure(rdf_file, [get_target_home(),'diagrams',config_type])
+    
+#     abs_dir = home+parent_folder+'/'+'diagrams'+'/'+config_type+'/'
+#     config_file = abs_dir+config_type
+#     directory = ""
+    
+    
+#     if len(rdf_file.split('/'))>1:
+#         directory = '/'.join(rdf_file.split('/')[0:-1])
+#         if not os.path.exists(abs_dir+directory):
+#             os.makedirs(abs_dir+directory)
     try:
-        open(config_file,"r")
+        open(config_file_abs,"r")
     except IOError:
-        if not os.path.exists(abs_dir):
-            os.makedirs(abs_dir)
-        f = open(config_file,"w")
+#         if not os.path.exists(abs_dir):
+#             os.makedirs(abs_dir)
+        f = open(config_file_abs,"w")
         f.write(get_ar2dtool_config(config_type))
         f.close()
     except Exception as e:
         print 'in draw_file: exception opening the file: '+str(e)
     comm = 'java -jar '
     comm+= ar2dtool_dir+'ar2dtool.jar -i '
-    comm+= home+parent_folder+'/'+rdf_file+' -o '
-    comm+= abs_dir+rdf_file+'.'+outtype+' -t '+outtype+' -c '+config_file+' -GV -gml '
+    #comm+= home+parent_folder+'/'+rdf_file+' -o '
+    comm+= get_abs_path(rdf_file)+' -o'
+    #comm+= abs_dir+rdf_file+'.'+outtype+' -t '+outtype+' -c '+config_file+' -GV -gml '
+    comm+= rdf_file_abs+'.'+outtype+' -t '+outtype+' -c '+config_file_abs+' -GV -gml '
     comm+= ' > "'+log_file_dir+'"'
     print comm
     call(comm,shell=True)
 # draw_file('myrdfs/sample.rdf')
 
 
-
+########################################################################
 ########################################################################
 ############################# Widoco ###################################
+########################################################################
 ########################################################################
 
 
@@ -353,36 +364,44 @@ def generate_widoco_docs(changed_files):
 
 
 def create_widoco_doc(rdf_file):
-    abs_dir = home+parent_folder+'/'+'docs'+'/'
-    config_file = abs_dir+rdf_file.split('/')[-1]+'.widoco.conf'
-    directory = ""
-    if len(rdf_file.split('/'))>1:
-        directory = '/'.join(rdf_file.split('/')[0:-1])
-        if not os.path.exists(abs_dir+directory):
-            os.makedirs(abs_dir+directory)
+    
+    rdf_file_abs = get_abs_path(rdf_file)
+    config_file_abs = build_file_structure(rdf_file+'.widoco.conf', [get_target_home(),'documentation'])
+     
+#     abs_dir = home+parent_folder+'/'+'docs'+'/'
+#     config_file = abs_dir+rdf_file.split('/')[-1]+'.widoco.conf'
+#     directory = ""
+#     if len(rdf_file.split('/'))>1:
+#         directory = '/'.join(rdf_file.split('/')[0:-1])
+#         if not os.path.exists(abs_dir+directory):
+#             os.makedirs(abs_dir+directory)
     try:
-        open(config_file,"r")
+        open(config_file_abs,"r")
     except IOError:
-        if not os.path.exists(abs_dir):
-            os.makedirs(abs_dir)
-        f = open(config_file,"w")
+        f = open(config_file_abs,"w")
         f.write(get_widoco_config())
         f.close()
     except Exception as e:
         print 'in create_widoco_doc: exception opening the file: '+str(e)
-    comm = "cd "+home+parent_folder+"; "
+    #comm = "cd "+home+parent_folder+"; "
+    comm = "cd "+get_abs_path('')+"; "
     comm+= "java -jar "
     comm+=widoco_dir+"widoco-0.0.1-jar-with-dependencies.jar "
-    comm+=" -ontFile "+home+parent_folder+'/'+rdf_file
-    comm+=" -outFolder "+abs_dir+directory
-    comm+=" -confFile "+config_file
+    #comm+=" -ontFile "+home+parent_folder+'/'+rdf_file
+    comm+=" -ontFile "+rdf_file_abs
+#     comm+=" -outFolder "+abs_dir+directory
+    comm+=" -outFolder "+get_parent_path(config_file_abs)
+#     comm+=" -confFile "+config_file
+    comm+=" -confFile "+config_file_abs
     print comm
     call(comm,shell=True)
     
-
+    
 
 ########################################################################
+########################################################################
 ######################  Auton configuration file  ######################
+########################################################################
 ########################################################################
 
 
@@ -497,7 +516,7 @@ def get_pitfalls(target_repo,ont_file):
 
 
 def output_raw_pitfalls(ont_file,oops_reply):
-    ont_file_abs_path = build_file_structure(ont_file+'.oops', 'oops')
+    ont_file_abs_path = build_file_structure(ont_file+'.oops', [get_target_home(),'oops'])
     f = open(ont_file_abs_path,'w')
     f.write(oops_reply)
     f.close()
@@ -682,6 +701,8 @@ def valid_ont_file(r):
     return False
 
 
+def get_target_home():
+    return get_abs_path('')+'/'+'auton'
 
 
 def get_abs_path(relative_path):
@@ -693,7 +714,8 @@ def get_abs_path(relative_path):
 def get_parent_path(f):
     return '/'.join(f.split('/')[0:-1])
 
-
+def get_file_from_path(f):
+    return f.split('/')[-1] 
 
 
 def build_file_structure(file_with_rel_dir,category_folder='',abs_home=''):#e.g. category_folder = docs, file_with_rel_dir = ahmad88me/org/ont.txt
@@ -701,8 +723,13 @@ def build_file_structure(file_with_rel_dir,category_folder='',abs_home=''):#e.g.
         abs_dir = get_abs_path('')
     else:
         abs_dir=abs_home
-    if category_folder!='':
-        abs_dir+=category_folder+'/'
+    
+    if type(category_folder) == type(""):# if string    
+        if category_folder!='':
+            abs_dir+=category_folder+'/'
+    elif type(category_folder) == type([]):# if list
+        for catfol in category_folder:
+            abs_dir+=catfol+'/'
     abs_dir_with_file= abs_dir+file_with_rel_dir
     abs_dir = get_parent_path(abs_dir_with_file)
     if not os.path.exists(abs_dir):
