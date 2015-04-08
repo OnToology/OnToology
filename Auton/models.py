@@ -8,6 +8,7 @@ class Repo(Document):
     url = StringField(max_length='100',default='Not set yet')
     last_used = DateTimeField(default=datetime.now())
     created_on = DateTimeField(default=datetime.now())
+    monitoring = StringField(max_length=100,default='Not set yet')
     
 
 # class Repof(Document):

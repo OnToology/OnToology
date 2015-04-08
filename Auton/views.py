@@ -12,7 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 import string
 import random
 from datetime import datetime
-from autoncore import git_magic, add_webhook, webhook_access, update_g, add_collaborator
+from autoncore import git_magic, add_webhook, webhook_access, update_g, add_collaborator, get_auton_configuration
 from models import *
 import requests
 import json
@@ -20,6 +20,7 @@ import json
 import multiprocessing
 
 import subprocess
+
 
 
 
@@ -126,20 +127,23 @@ def add_hook(request):
     cloning_repo = cloning_repo.replace('git://github.com/','git@github.com:')
 #     r = git_magic(target_repo, user, cloning_repo, changed_files)
     #if r['status']==True:
+    mont = get_auton_configuration(user)
+    s = ""
+    for i in mont:
+        s+=i+"="+mont[i]+", "
     
-    
-    
-#     if True:
-#         try:
-#             repo = Repo.objects.get(url=target_repo)
-#             repo.last_used = datetime.today()
-#             repo.save()
-#         except DoesNotExist:
-#             repo = Repo()
-#             repo.url=target_repo
-#             repo.save()
-#         except Exception as e:
-#             print 'database_exception: '+str(e)
+    try:
+        repo = Repo.objects.get(url=target_repo)
+        repo.last_used = datetime.today()
+        repo.monitoring = s
+        repo.save()
+    except DoesNotExist:
+        repo = Repo()
+        repo.url=target_repo
+        repo.monitoring = s
+        repo.save()
+    except Exception as e:
+        print 'database_exception: '+str(e)
             
             
             

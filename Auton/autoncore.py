@@ -389,7 +389,7 @@ def create_widoco_doc(rdf_file):
 
 import ConfigParser
 
-def get_auton_configuration():
+def get_auton_configuration(parent_folder=parent_folder):
     print 'auton config is called'
     config = ConfigParser.RawConfigParser()
     ar2dtool_sec_name = 'ar2dtool'
