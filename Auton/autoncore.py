@@ -264,9 +264,13 @@ def update_g(token):
 
 
 
+
+##########################~~~~~~~~~~~~##################################
 ##########################~~~~~~~~~~~~##################################
 ##########################  ar2dtool   #################################
 ##########################~~~~~~~~~~~~~#################################
+##########################~~~~~~~~~~~~~#################################
+
 
 
 
@@ -323,7 +327,7 @@ def draw_file(rdf_file,config_type):
     comm = 'java -jar '
     comm+= ar2dtool_dir+'ar2dtool.jar -i '
     #comm+= home+parent_folder+'/'+rdf_file+' -o '
-    comm+= get_abs_path(rdf_file)+' -o'
+    comm+= get_abs_path(rdf_file)+' -o '
     #comm+= abs_dir+rdf_file+'.'+outtype+' -t '+outtype+' -c '+config_file+' -GV -gml '
     comm+= rdf_file_abs+'.'+outtype+' -t '+outtype+' -c '+config_file_abs+' -GV -gml '
     comm+= ' > "'+log_file_dir+'"'
