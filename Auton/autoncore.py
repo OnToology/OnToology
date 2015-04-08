@@ -28,7 +28,7 @@ ontology_formats = ['.rdf','.owl','.ttl']
 
 g = None
 
-log_file_dir = '&1'#which is stdout #sys.stdout#by default
+log_file_dir = None#'&1'#which is stdout #sys.stdout#by default
 
 def git_magic(target_repo,user,cloning_repo,changed_files):
     global g
@@ -91,6 +91,7 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
 
 
 def prepare_log(user):
+    global log_file_dir
     file_dir = build_file_structure(user+'.log', 'log', home)
     f = open(file_dir,'w')
     sys.stdout=f
