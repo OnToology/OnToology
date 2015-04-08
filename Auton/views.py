@@ -127,7 +127,7 @@ def add_hook(request):
     cloning_repo = cloning_repo.replace('git://github.com/','git@github.com:')
 #     r = git_magic(target_repo, user, cloning_repo, changed_files)
     #if r['status']==True:
-    mont = get_auton_configuration(parent_folder=user)
+    mont = get_auton_configuration(user)
     s = ""
     for i in mont:
         s+=i+"="+str(mont[i])+", "
