@@ -418,7 +418,6 @@ def get_auton_configuration():
 
 import requests
 import rdfxml
-import json
 
 
 def oops_ont_files(target_repo,changed_files):
@@ -602,37 +601,37 @@ def close_old_oops_issues_in_github(target_repo):
 
 # 
 #  
-import requests
-import json 
- 
-ont_file = 'daniel.owl'
-ont_file_full_path = ont_file#get_abs_path(ont_file)
-f = open(ont_file_full_path,'r')
-ont_file_content = f.read()
-url = 'http://oops-ws.oeg-upm.net/rest'
-xml_content = """
-<?xml version="1.0" encoding="UTF-8"?>
-<OOPSRequest>
-      <OntologyUrl></OntologyUrl>
-      <OntologyContent>%s</OntologyContent>
-      <Pitfalls></Pitfalls>
-      <OutputFormat></OutputFormat>
-</OOPSRequest>    
-""" %(ont_file_content)
-  
-headers = {'Content-Type': 'application/xml', 
-           'Connection': 'Keep-Alive',
-           'Content-Length':len(xml_content),
-            
-            'Accept-Charset': 'utf-8'
-            }
- 
-oops_reply = requests.post(url, data=xml_content, headers=headers)
-oops_reply = oops_reply.text
- 
-
- 
-oops_reply = json.loads(oops_reply)["data"]
+# import requests
+# import json 
+#  
+# ont_file = 'daniel.owl'
+# ont_file_full_path = ont_file#get_abs_path(ont_file)
+# f = open(ont_file_full_path,'r')
+# ont_file_content = f.read()
+# url = 'http://oops-ws.oeg-upm.net/rest'
+# xml_content = """
+# <?xml version="1.0" encoding="UTF-8"?>
+# <OOPSRequest>
+#       <OntologyUrl></OntologyUrl>
+#       <OntologyContent>%s</OntologyContent>
+#       <Pitfalls></Pitfalls>
+#       <OutputFormat></OutputFormat>
+# </OOPSRequest>    
+# """ %(ont_file_content)
+#   
+# headers = {'Content-Type': 'application/xml', 
+#            'Connection': 'Keep-Alive',
+#            'Content-Length':len(xml_content),
+#             
+#             'Accept-Charset': 'utf-8'
+#             }
+#  
+# oops_reply = requests.post(url, data=xml_content, headers=headers)
+# oops_reply = oops_reply.text
+#  
+# 
+#  
+# oops_reply = json.loads(oops_reply)["data"]
 
 
 
