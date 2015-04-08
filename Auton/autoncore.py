@@ -706,7 +706,7 @@ def valid_ont_file(r):
 
 
 def get_target_home():
-    return get_abs_path('')+'/'+'auton'
+    return 'auton'
 
 
 def get_abs_path(relative_path):
