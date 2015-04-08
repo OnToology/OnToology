@@ -114,6 +114,8 @@ def add_hook(request):
         changed_files = j['head_commit']['modified']
         #changed_files+= j['head_commit']['removed']
         changed_files+= j['head_commit']['added']
+        if 'Merge pull request' in  j['head_commit']['message'] :
+            return render_to_response('msg.html',{'msg': 'This indicate that this merge request will be ignored'},context_instance=RequestContext(request))
     except:
         return render_to_response('msg.html',{'msg': 'This request should be a webhook ping'},context_instance=RequestContext(request))
     print '##################################################'
