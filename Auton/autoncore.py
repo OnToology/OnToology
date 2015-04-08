@@ -121,9 +121,10 @@ def fork_repo(target_repo,username,password):
     
 
 
-def clone_repo(cloning_repo,user):    
+def clone_repo(cloning_repo,user):
     time.sleep(sleeping_time)#the wait time to give github sometime so the repo can be cloned
     comm =  "rm"," -Rf "+home+parent_folder
+    print 'type of log_file_dir'+str(type(log_file_dir))
     comm+= ' > "'+log_file_dir+'"'
     print comm
     call(comm, shell=True)
