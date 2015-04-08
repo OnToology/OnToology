@@ -418,7 +418,7 @@ def get_auton_configuration():
 
 import requests
 import rdfxml
-
+import json
 
 
 def oops_ont_files(target_repo,changed_files):
@@ -453,7 +453,8 @@ def get_pitfalls(target_repo,ont_file):
     headers = {'Content-Type': 'application/xml'}
     oops_reply = requests.post('http://httpbin.org/post', data=xml_content, headers=headers)
     oops_reply = oops_reply.text
-    print 'got oops reply' 
+    oops_reply = json.loads(oops_reply)["data"]
+    print 'got oops reply'#+oops_reply 
     issues_s = output_parsed_pitfalls(ont_file,oops_reply)
     close_old_oops_issues_in_github(target_repo)
     create_oops_issue_in_github(target_repo, issues_s)
@@ -595,9 +596,10 @@ def close_old_oops_issues_in_github(target_repo):
 
 
 
-
 # 
+#  
 # import requests
+# import json 
 # 
 # ont_file = 'daniel.owl'
 # ont_file_full_path = ont_file#get_abs_path(ont_file)
@@ -613,11 +615,15 @@ def close_old_oops_issues_in_github(target_repo):
 #       <OutputFormat></OutputFormat>
 # </OOPSRequest>    
 # """ %(ont_file_content)
-# 
+#  
 # headers = {'Content-Type': 'application/xml'}
-# 
+#  
 # oops_reply = requests.post('http://httpbin.org/post', data=xml_content, headers=headers)
 # oops_reply = oops_reply.text
+# 
+# oops_reply = json.loads(oops_reply)["data"]
+
+
 
 
 
