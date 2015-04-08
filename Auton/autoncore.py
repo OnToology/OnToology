@@ -22,6 +22,7 @@ ar2dtool_dir = os.environ['ar2dtool_dir']
 #e.g. home = 'blahblah/temp/'
 home = os.environ['github_repos_dir']
 
+sleeping_time = 7
 
 ontology_formats = ['.rdf','.owl','.ttl']
 
@@ -109,7 +110,7 @@ def delete_repo(local_repo):
 
 
 def fork_repo(target_repo,username,password):
-    time.sleep(5)#the wait time to give github sometime so the repo can be forked successfully
+    time.sleep(sleeping_time)#the wait time to give github sometime so the repo can be forked successfully
     #this is a workaround and not a proper way to do a fork
     comm = "curl --user \"%s:%s\" --request POST --data \'{}\' https://api.github.com/repos/%s/forks" % (username,password,target_repo)
     comm+= ' > "'+log_file_dir+'"'
@@ -120,7 +121,7 @@ def fork_repo(target_repo,username,password):
 
 
 def clone_repo(cloning_repo,user):    
-    time.sleep(5)#the wait time to give github sometime so the repo can be cloned
+    time.sleep(sleeping_time)#the wait time to give github sometime so the repo can be cloned
     comm =  "rm"," -Rf "+home+parent_folder
     comm+= ' > "'+log_file_dir+'"'
     print comm
@@ -137,19 +138,20 @@ def clone_repo(cloning_repo,user):
 
 
                 
-def update_readme(changed_files,cloning_repo,user):
-    for i in range(3):
-        try:
-            f = open(home+parent_folder+"/"+"README.md","a")
-            break
-        except IOError:
-            print 'readme is not ready: '+str(i)
-            time.sleep(5)
-            clone_repo(cloning_repo,user)
-    f.write("\n##Changelog "+str(datetime.today())+"\n")
-    for chf in changed_files:
-        f.write("\n* "+chf)                
-    f.close()
+# def update_readme(changed_files,cloning_repo,user):
+#     #for i in range(3):
+#     try:
+#         f = open(home+parent_folder+"/"+"README.md","a")
+#         break
+#     except IOError:
+#         print 'error opening the README file'
+#         #print 'readme is not ready: '+str(i)
+#         time.sleep(sleeping_time)
+#         clone_repo(cloning_repo,user)
+#     f.write("\n##Changelog "+str(datetime.today())+"\n")
+#     for chf in changed_files:
+#         f.write("\n* "+chf)                
+#     f.close()
                 
 
 
@@ -203,15 +205,17 @@ def send_pull_request(target_repo,username):
     title = 'AutonTool update'
     body = title
     err = ""
-    for i in range(3):
-        try:
-            g.get_repo(target_repo).create_pull(head=username+':master',base='master',title=title,body=body)
-            #return 'pull request created successfully'
-            return {'status': True, 'msg':'pull request created successfully' }
-        except Exception as e:
-            err = str(e.data)
-            print 'pull('+str(i)+'): '+err
-            time.sleep(3)
+#    for i in range(3):
+    time.sleep(sleeping_time)
+    try:
+        g.get_repo(target_repo).create_pull(head=username+':master',base='master',title=title,body=body)
+        #return 'pull request created successfully'
+        return {'status': True, 'msg':'pull request created successfully' }
+    except Exception as e:
+        err = str(e.data)
+        print 'pull request error: '+err
+        #print 'pull('+str(i)+'): '+err
+
     #return err
     return {'status': False, 'error': err}
 

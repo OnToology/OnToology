@@ -104,15 +104,18 @@ def add_hook_test(request):
 
 @csrf_exempt
 def add_hook(request):
-    s = str(request.POST['payload'])
-    j = json.loads(s)
-    s = j['repository']['url']+'updated files: '+str(j['head_commit']['modified'])
-    cloning_repo = j['repository']['git_url']
-    target_repo = j['repository']['full_name']
-    user = j['repository']['owner']['email']
-    changed_files = j['head_commit']['modified']
-    #changed_files+= j['head_commit']['removed']
-    changed_files+= j['head_commit']['added']
+    try:
+        s = str(request.POST['payload'])
+        j = json.loads(s)
+        s = j['repository']['url']+'updated files: '+str(j['head_commit']['modified'])
+        cloning_repo = j['repository']['git_url']
+        target_repo = j['repository']['full_name']
+        user = j['repository']['owner']['email']
+        changed_files = j['head_commit']['modified']
+        #changed_files+= j['head_commit']['removed']
+        changed_files+= j['head_commit']['added']
+    except:
+        return render_to_response('msg.html',{'msg': 'This request should be a webhook ping'},context_instance=RequestContext(request))
     print '##################################################'
     print 'changed_files: '+str(changed_files)
     # cloning_repo should look like 'git@github.com:AutonUser/target.git'
