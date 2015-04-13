@@ -56,7 +56,11 @@ def home(request):
             r[keyval[0]]=keyval[1]
             monit+="=".join(keyval) +","
         r.monitoring = monit
-        repos.append(r)    
+        repos.append(r)
+    for i in repos:
+        for k in i:
+            print k+""+i[k]
+        print "------------------------"
     return render_to_response('home.html',{'repos': repos},context_instance=RequestContext(request))
 
         
