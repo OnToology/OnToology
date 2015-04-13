@@ -141,6 +141,7 @@ def add_hook(request):
         #changed_files+= j['head_commit']['removed']
         changed_files+= j['head_commit']['added']
         if 'Merge pull request' in  j['head_commit']['message'] :
+            print 'This is a merge request'
             mont = get_auton_configuration(user)
             s = ""
             for i in mont:
