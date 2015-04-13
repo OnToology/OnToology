@@ -47,7 +47,6 @@ def home(request):
         for t in tools:   
             keyval = t.split("=")
             if len(keyval) != 2:
-                #monit = r.monitoring
                 break
             if keyval[1].lower().strip()=='true':
                 keyval[1]='Yes'
@@ -56,14 +55,14 @@ def home(request):
             print r['url']+" "+keyval[0]+"="+str(keyval[1])
             r[keyval[0].strip()]=keyval[1]
             monit+="=".join(keyval) +","
-        print " original: "+orir.monitoring
-        print "++++++++++++++++++++++++++++++++++"
+        #print " original: "+orir.monitoring
+        #print "++++++++++++++++++++++++++++++++++"
         r['monitoring'] = monit
         repos.append(r)
-    for i in repos:
-        for k in i:
-            print k+""+str(i[k])
-        print "------------------------"
+#     for i in repos:
+#         for k in i:
+#             print k+""+str(i[k])
+#         print "------------------------"
     return render_to_response('home.html',{'repos': repos},context_instance=RequestContext(request))
 
         
