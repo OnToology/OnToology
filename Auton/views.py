@@ -38,7 +38,10 @@ def home(request):
         request.session['state'] = state
         return  HttpResponseRedirect(webhook_access_url)
     repos = []
-    for r in Repo.objects.all():
+    for orir in Repo.objects.all():
+        r = {}
+        for ke in orir:
+            r[ke]  = orir[ke]
         tools = r.monitoring.split(",")
         monit=""
         for t in tools:
@@ -54,8 +57,6 @@ def home(request):
             monit+="=".join(keyval) +","
         r.monitoring = monit
         repos.append(r)    
-    for r in repos:
-        print r.url+" -- "+r.ar2dtool    
     return render_to_response('home.html',{'repos': repos},context_instance=RequestContext(request))
 
         
