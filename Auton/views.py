@@ -45,6 +45,7 @@ def home(request):
         tools = r['monitoring'].split(",")
         monit=""
         for t in tools:
+            
             keyval = t.split("=")
             if len(keyval) != 2:
                 #monit = r.monitoring
@@ -53,7 +54,7 @@ def home(request):
                 keyval[1]='Yes'
             else:
                 keyval[1]='No'
-            r[keyval[0]]=keyval[1]
+            r[keyval[0].strip()]=keyval[1]
             monit+="=".join(keyval) +","
         r['monitoring'] = monit
         repos.append(r)
