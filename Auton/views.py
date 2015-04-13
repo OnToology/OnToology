@@ -55,7 +55,7 @@ def home(request):
         r.monitoring = monit
         repos.append(r)    
     for r in repos:
-        print r.url+" -- "+r.monitoring    
+        print r.url+" -- "+r.ar2dtool    
     return render_to_response('home.html',{'repos': repos},context_instance=RequestContext(request))
 
         
