@@ -144,13 +144,18 @@ def add_hook(request):
             print 'This is a merge request'
             mont = get_auton_configuration(user)
             s = ""
+            print "the configuration: "+str(mont)
             for i in mont:
                 s+=i+"="+str(mont[i])+", "
                 try:
+
                     repo = Repo.objects.get(url=target_repo)
+                    print 'got the repo'
                     repo.last_used = datetime.today()
+                    print 'monitoring is: '+s
                     repo.monitoring = s
                     repo.save()
+                    print 'repo saved'
                 except DoesNotExist:
                     repo = Repo()
                     repo.url=target_repo
