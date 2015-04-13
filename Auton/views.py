@@ -50,6 +50,7 @@ def home(request):
                 keyval[1]='Yes'
             else:
                 keyval[1]='No'
+            r[keyval[0]]=keyval[1]
             monit+="=".join(keyval) +","
         r.monitoring = monit
         repos.append(r)    

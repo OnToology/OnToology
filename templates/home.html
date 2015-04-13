@@ -34,14 +34,18 @@ A system to automate part of the collaborative ontology development process. Giv
 	<td  >Repository</td>
 	<td >Created on</td>
 	<td >Last used</td>
-	<td >Tools</td>
+	<td>ar2dtool</td>
+	<td>OOPS</td>
+	<td >Widoco</td>
 </tr>
 {%for r in repos%}
 	<tr>
 		<td>{{r.url}}</td>
 		<td>{{r.created_on}}</td>
 		<td>{{r.last_used}}</td>
-		<td>{{r.monitoring}}</td>
+		<td>{{r.ar2dtool_enable}}</td>
+		<td>{{r.oops_enable}}</td>
+		<td>{{r.widoco_enable}}</td>
 	<tr>
 {%endfor%}
 </table>
