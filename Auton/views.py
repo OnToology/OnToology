@@ -59,7 +59,7 @@ def home(request):
         repos.append(r)
     for i in repos:
         for k in i:
-            print k+""+i[k]
+            print k+""+str(i[k])
         print "------------------------"
     return render_to_response('home.html',{'repos': repos},context_instance=RequestContext(request))
 
