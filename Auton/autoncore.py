@@ -429,19 +429,19 @@ def get_auton_configuration(f=None):
         print opened_conf_files[0]
         try:
             ar2dtool_enable = config.getboolean(ar2dtool_sec_name,'enable')
-            print 'got ar2dtool enable value: '+ar2dtool_enable
+            print 'got ar2dtool enable value: '+str(ar2dtool_enable)
         except:
             print 'ar2dtool enable value doesnot exist'
             pass
         try:
             widoco_enable = config.getboolean(widoco_sec_name, 'enable')
-            print 'got widoco enable value: '+widoco_enable
+            print 'got widoco enable value: '+str(widoco_enable)
         except:
             print 'widoco enable value doesnot exist'
             pass
         try:
             oops_enable = config.getboolean(oops_sec_name, 'enable')
-            print 'got oops enable value: '+oops_enable
+            print 'got oops enable value: '+str(oops_enable)
         except:
             print 'oops enable value doesnot exist'
     else:  
