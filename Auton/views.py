@@ -141,18 +141,22 @@ def add_hook(request):
         #changed_files+= j['head_commit']['removed']
         changed_files+= j['head_commit']['added']
         if 'Merge pull request' in  j['head_commit']['message'] :
-            try:
-                repo = Repo.objects.get(url=target_repo)
-                repo.last_used = datetime.today()
-                repo.monitoring = s
-                repo.save()
-            except DoesNotExist:
-                repo = Repo()
-                repo.url=target_repo
-                repo.monitoring = s
-                repo.save()
-            except Exception as e:
-                print 'database_exception: '+str(e)
+            mont = get_auton_configuration(user)
+            s = ""
+            for i in mont:
+                s+=i+"="+str(mont[i])+", "
+                try:
+                    repo = Repo.objects.get(url=target_repo)
+                    repo.last_used = datetime.today()
+                    repo.monitoring = s
+                    repo.save()
+                except DoesNotExist:
+                    repo = Repo()
+                    repo.url=target_repo
+                    repo.monitoring = s
+                    repo.save()
+                except Exception as e:
+                    print 'database_exception: '+str(e)
             return render_to_response('msg.html',{'msg': 'This indicate that this merge request will be ignored'},context_instance=RequestContext(request))
     except:
         return render_to_response('msg.html',{'msg': 'This request should be a webhook ping'},context_instance=RequestContext(request))
@@ -164,10 +168,13 @@ def add_hook(request):
     cloning_repo = cloning_repo.replace('git://github.com/','git@github.com:')
 #     r = git_magic(target_repo, user, cloning_repo, changed_files)
     #if r['status']==True:
-    mont = get_auton_configuration(user)
-    s = ""
-    for i in mont:
-        s+=i+"="+str(mont[i])+", "
+    
+    
+    
+#     mont = get_auton_configuration(user)
+#     s = ""
+#     for i in mont:
+#         s+=i+"="+str(mont[i])+", "
     
 #     try:
 #         repo = Repo.objects.get(url=target_repo)
