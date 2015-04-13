@@ -44,7 +44,7 @@ def home(request):
         for t in tools:
             keyval = t.split("=")
             if len(keyval) != 2:
-                monit = r.monitoring
+                #monit = r.monitoring
                 break
             if keyval[1]:
                 keyval[1]='Yes'
@@ -52,7 +52,9 @@ def home(request):
                 keyval[1]='No'
             monit+="=".join(keyval) +","
         r.monitoring = monit
-        repos.append(r)        
+        repos.append(r)    
+    for r in repos:
+        print r.url+" -- "+r.monitoring    
     return render_to_response('home.html',{'repos': repos},context_instance=RequestContext(request))
 
         
