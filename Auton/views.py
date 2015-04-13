@@ -37,7 +37,23 @@ def home(request):
         request.session['target_repo'] = target_repo
         request.session['state'] = state
         return  HttpResponseRedirect(webhook_access_url)
-    return render_to_response('home.html',{'repos': Repo.objects.all()},context_instance=RequestContext(request))
+    repos = []
+    for r in Repo.objects.all():
+        tools = r.monitoring.split(",")
+        monit=""
+        for t in tools:
+            keyval = t.split("=")
+            if len(keyval) != 2:
+                monit = r.monitoring
+                break
+            if keyval[1]:
+                keyval[1]='Yes'
+            else:
+                keyval[1]='No'
+            monit+="=".join(keyval) +","
+        r.monitoring = monit
+        repos.append(r)        
+    return render_to_response('home.html',{'repos': repos},context_instance=RequestContext(request))
 
         
 
