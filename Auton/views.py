@@ -44,18 +44,20 @@ def home(request):
             r[ke]  = orir[ke]
         tools = r['monitoring'].split(",")
         monit=""
-        for t in tools:
-            
+        for t in tools:   
             keyval = t.split("=")
             if len(keyval) != 2:
                 #monit = r.monitoring
                 break
-            if keyval[1]:
+            if keyval[1].lower().strip()=='true':
                 keyval[1]='Yes'
             else:
                 keyval[1]='No'
+            print r['url']+" "+keyval[0]+"="+str(keyval[1])
             r[keyval[0].strip()]=keyval[1]
             monit+="=".join(keyval) +","
+        print " original: "+orir.monitoring
+        print "++++++++++++++++++++++++++++++++++"
         r['monitoring'] = monit
         repos.append(r)
     for i in repos:
@@ -65,6 +67,9 @@ def home(request):
     return render_to_response('home.html',{'repos': repos},context_instance=RequestContext(request))
 
         
+
+
+
 
 
 
