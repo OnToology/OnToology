@@ -143,6 +143,18 @@ def add_hook(request):
         if 'Merge pull request' in  j['head_commit']['message'] :
             return render_to_response('msg.html',{'msg': 'This indicate that this merge request will be ignored'},context_instance=RequestContext(request))
     except:
+        try:
+            repo = Repo.objects.get(url=target_repo)
+            repo.last_used = datetime.today()
+            repo.monitoring = s
+            repo.save()
+        except DoesNotExist:
+            repo = Repo()
+            repo.url=target_repo
+            repo.monitoring = s
+            repo.save()
+        except Exception as e:
+            print 'database_exception: '+str(e)
         return render_to_response('msg.html',{'msg': 'This request should be a webhook ping'},context_instance=RequestContext(request))
     print '##################################################'
     print 'changed_files: '+str(changed_files)
@@ -157,18 +169,18 @@ def add_hook(request):
     for i in mont:
         s+=i+"="+str(mont[i])+", "
     
-    try:
-        repo = Repo.objects.get(url=target_repo)
-        repo.last_used = datetime.today()
-        repo.monitoring = s
-        repo.save()
-    except DoesNotExist:
-        repo = Repo()
-        repo.url=target_repo
-        repo.monitoring = s
-        repo.save()
-    except Exception as e:
-        print 'database_exception: '+str(e)
+#     try:
+#         repo = Repo.objects.get(url=target_repo)
+#         repo.last_used = datetime.today()
+#         repo.monitoring = s
+#         repo.save()
+#     except DoesNotExist:
+#         repo = Repo()
+#         repo.url=target_repo
+#         repo.monitoring = s
+#         repo.save()
+#     except Exception as e:
+#         print 'database_exception: '+str(e)
             
             
             
