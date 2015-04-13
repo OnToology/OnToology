@@ -42,7 +42,7 @@ def home(request):
         r = {}
         for ke in orir:
             r[ke]  = orir[ke]
-        tools = r.monitoring.split(",")
+        tools = r['monitoring'].split(",")
         monit=""
         for t in tools:
             keyval = t.split("=")
@@ -55,7 +55,7 @@ def home(request):
                 keyval[1]='No'
             r[keyval[0]]=keyval[1]
             monit+="=".join(keyval) +","
-        r.monitoring = monit
+        r['monitoring'] = monit
         repos.append(r)
     for i in repos:
         for k in i:
