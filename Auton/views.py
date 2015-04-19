@@ -152,7 +152,6 @@ def add_hook(request):
             for i in mont:
                 s+=i+"="+str(mont[i])+", "
                 try:
-
                     repo = Repo.objects.get(url=target_repo)
                     print 'got the repo'
                     repo.last_used = datetime.today()
