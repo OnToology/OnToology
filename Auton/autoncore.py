@@ -790,17 +790,19 @@ def build_file_structure(file_with_rel_dir,category_folder='',abs_home=''):#e.g.
 ################################ Database functions #########################################
 #############################################################################################
 
-if use_database:
-    from models import Repo
-def change_status(target_repo, status):
-    if not use_database:
-        return
+# if use_database:
+#     from models import Repo
+from models import Repo
+def change_status(target_repo, state):
+#     if not use_database:
+#         return
     print 'will change status of repo: '+target_repo+' to: '+status
     repo = Repo.objects.get(url=target_repo)
     print 'repo: '+repo.url
-    repo.status = status
-    print 'repo new status: '+repo.status
+    repo.state = state
+    print 'repo new status: '+repo.state
     repo.save()
+    print 'validate'+Repo.objects.get(url=target_repo).state
     
     
 
