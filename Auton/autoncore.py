@@ -35,17 +35,6 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     global g
     global parent_folder
     parent_folder = user
-#    pid = os.fork()
-#     if pid>0:# if parent
-#         print 'parent will return'
-#         return
-# #     f = open(build_file_structure(user+'.log','logs'), 'w')
-# #     sys.stdout = f
-#     else:
-#         print 'this is child'
-
-#     f = open(build_file_structure(user+'.log','logs'), 'w')
-#     sys.stdout = f
     prepare_log(user)
     print str(datetime.today())
     print '############################### magic #############################'
@@ -63,8 +52,6 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     change_status(target_repo,'cloning repo')
     clone_repo(cloning_repo,user)
     print 'repo cloned'
-#     update_readme(changed_files,cloning_repo,user)
-#     print 'readme updated'
     auton_conf = get_auton_configuration()
     print str(auton_conf)
     exception_if_exists = ""
@@ -251,7 +238,6 @@ def send_pull_request(target_repo,username):
         err = str(e.data)
         print 'pull request error: '+err
         #print 'pull('+str(i)+'): '+err
-
     #return err
     return {'status': False, 'error': err}
 
@@ -263,8 +249,6 @@ def webhook_access(client_id,redirect_url):
     scope+=',admin:org,admin:public_key,admin:repo_hook,gist,notifications,delete_repo,repo_deployment,repo,public_repo,user,admin:public_key'
     sec = ''.join([random.choice(string.ascii_letters+string.digits) for _ in range(9)])
     return "https://github.com/login/oauth/authorize?client_id="+client_id+"&redirect_uri="+redirect_url+"&scope="+scope+"&state="+sec, sec
-
-
 
 
 
@@ -285,16 +269,12 @@ def add_webhook(target_repo,notification_url):
 
 
 
-
-
 def add_collaborator(target_repo,user):
     try:
         msg = g.get_repo(target_repo).add_to_collaborators(user)
         return {'status': True, 'msg': str(msg) }
     except Exception as e:
         return {'status': False, 'error': e.data}
-
-
 
 
 
@@ -323,9 +303,6 @@ def draw_diagrams(rdf_files):
                 draw_file(r,t)
         else:
             pass
-            #print r+' is not an rdf'
-
-
 
 
 
@@ -335,31 +312,15 @@ def get_ar2dtool_config(config_type):
 
 
 
-
-
-
 def draw_file(rdf_file,config_type):
     outtype="png"
-    
-    
-    config_file_abs = build_file_structure(config_type, [get_target_home(),'diagrams',config_type])
-    
-    rdf_file_abs = build_file_structure(rdf_file, [get_target_home(),'diagrams',config_type])
-    
-#     abs_dir = home+parent_folder+'/'+'diagrams'+'/'+config_type+'/'
-#     config_file = abs_dir+config_type
-#     directory = ""
-    
-    
-#     if len(rdf_file.split('/'))>1:
-#         directory = '/'.join(rdf_file.split('/')[0:-1])
-#         if not os.path.exists(abs_dir+directory):
-#             os.makedirs(abs_dir+directory)
+    #config_file_abs = build_file_structure(config_type, [get_target_home(),'diagrams',config_type])
+    #rdf_file_abs = build_file_structure(rdf_file, [get_target_home(),'diagrams',config_type])    
+    rdf_file_abs = build_file_structure(get_file_from_path(rdf_file),[get_target_home(),rdf_file,config_type])
+    config_file_abs = build_file_structure(config_type, [get_target_home(),rdf_file,'config'])
     try:
         open(config_file_abs,"r")
     except IOError:
-#         if not os.path.exists(abs_dir):
-#             os.makedirs(abs_dir)
         f = open(config_file_abs,"w")
         f.write(get_ar2dtool_config(config_type))
         f.close()
@@ -367,14 +328,11 @@ def draw_file(rdf_file,config_type):
         print 'in draw_file: exception opening the file: '+str(e)
     comm = 'java -jar '
     comm+= ar2dtool_dir+'ar2dtool.jar -i '
-    #comm+= home+parent_folder+'/'+rdf_file+' -o '
     comm+= get_abs_path(rdf_file)+' -o '
-    #comm+= abs_dir+rdf_file+'.'+outtype+' -t '+outtype+' -c '+config_file+' -GV -gml '
     comm+= rdf_file_abs+'.'+outtype+' -t '+outtype+' -c '+config_file_abs+' -GV -gml '
     comm+= ' > "'+log_file_dir+'"'
     print comm
     call(comm,shell=True)
-# draw_file('myrdfs/sample.rdf')
 
 
 ########################################################################
@@ -409,17 +367,9 @@ def generate_widoco_docs(changed_files):
 
 
 def create_widoco_doc(rdf_file):
-    
     rdf_file_abs = get_abs_path(rdf_file)
-    config_file_abs = build_file_structure(rdf_file+'.widoco.conf', [get_target_home(),'documentation'])
-     
-#     abs_dir = home+parent_folder+'/'+'docs'+'/'
-#     config_file = abs_dir+rdf_file.split('/')[-1]+'.widoco.conf'
-#     directory = ""
-#     if len(rdf_file.split('/'))>1:
-#         directory = '/'.join(rdf_file.split('/')[0:-1])
-#         if not os.path.exists(abs_dir+directory):
-#             os.makedirs(abs_dir+directory)
+    #config_file_abs = build_file_structure(rdf_file+'.widoco.conf', [get_target_home(),'documentation'])     
+    config_file_abs = build_file_structure(get_file_from_path(rdf_file)+'.widoco.conf', [get_target_home(), rdf_file, 'documentation'])     
     try:
         open(config_file_abs,"r")
     except IOError:
@@ -428,15 +378,11 @@ def create_widoco_doc(rdf_file):
         f.close()
     except Exception as e:
         print 'in create_widoco_doc: exception opening the file: '+str(e)
-    #comm = "cd "+home+parent_folder+"; "
     comm = "cd "+get_abs_path('')+"; "
     comm+= "java -jar "
     comm+=widoco_dir+"widoco-0.0.1-jar-with-dependencies.jar "
-    #comm+=" -ontFile "+home+parent_folder+'/'+rdf_file
     comm+=" -ontFile "+rdf_file_abs
-#     comm+=" -outFolder "+abs_dir+directory
     comm+=" -outFolder "+get_parent_path(config_file_abs)
-#     comm+=" -confFile "+config_file
     comm+=" -confFile "+config_file_abs
     print comm
     call(comm,shell=True)
@@ -537,12 +483,6 @@ def get_pitfalls(target_repo,ont_file):
           <OutputFormat></OutputFormat>
     </OOPSRequest>    
     """ %(ont_file_content)
-#     req = urllib2.Request(url, xml_content)
-#     req.add_header('Content-Type', 'application/xml; charset=utf-8')
-#     req.add_header('Content-Length', len(xml_content))
-#     oops_reply = urllib2.urlopen(req)
-#     oops_reply = oops_reply.read()
-    #print 'OOPS! reply:  '+oops_reply
     headers = {'Content-Type': 'application/xml', 
                'Connection': 'Keep-Alive',
                'Content-Length':len(xml_content),
@@ -561,7 +501,8 @@ def get_pitfalls(target_repo,ont_file):
 
 
 def output_raw_pitfalls(ont_file,oops_reply):
-    ont_file_abs_path = build_file_structure(ont_file+'.oops', [get_target_home(),'oops'])
+    #ont_file_abs_path = build_file_structure(ont_file+'.oops', [get_target_home(),'oops'])
+    ont_file_abs_path = build_file_structure(get_file_from_path(ont_file)+'.oops', [get_target_home(),ont_file,'oops'])
     f = open(ont_file_abs_path,'w')
     f.write(oops_reply)
     f.close()
@@ -663,79 +604,6 @@ def close_old_oops_issues_in_github(target_repo):
 
 
 
-
-# def get_pitfalls(ont_file):
-#     
-# import urllib2
-# ont_file = 'daniel.owl'
-# ont_file_full_path = ont_file#get_abs_path(ont_file)
-# f = open(ont_file_full_path,'r')
-# ont_file_content = f.read()
-# url = 'http://oops-ws.oeg-upm.net/rest'
-# xml_content = """
-# <?xml version="1.0" encoding="UTF-8"?>
-# <OOPSRequest>
-#       <OntologyUrl></OntologyUrl>
-#       <OntologyContent>%s</OntologyContent>
-#       <Pitfalls></Pitfalls>
-#       <OutputFormat></OutputFormat>
-# </OOPSRequest>    
-# """ %(ont_file_content)
-# req = urllib2.Request(url, xml_content)
-# req.add_header('Content-Type', 'application/xml; charset=utf-8')
-# req.add_header('Content-Length', len(xml_content))
-# req.add_header("Accept" , "*/*")
-# 
-# req.add_header('User-agent', 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)     Chrome/37.0.2049.0 Safari/537.36')
-# 
-# 
-# 
-# oops_reply = urllib2.urlopen(req)
-# oops_reply = oops_reply.read()
-# print 'OOPS! reply:  '+oops_reply
-    
-
-
-
-# 
-#  
-# import requests
-# import json 
-#  
-# ont_file = 'daniel.owl'
-# ont_file_full_path = ont_file#get_abs_path(ont_file)
-# f = open(ont_file_full_path,'r')
-# ont_file_content = f.read()
-# url = 'http://oops-ws.oeg-upm.net/rest'
-# xml_content = """
-# <?xml version="1.0" encoding="UTF-8"?>
-# <OOPSRequest>
-#       <OntologyUrl></OntologyUrl>
-#       <OntologyContent>%s</OntologyContent>
-#       <Pitfalls></Pitfalls>
-#       <OutputFormat></OutputFormat>
-# </OOPSRequest>    
-# """ %(ont_file_content)
-#   
-# headers = {'Content-Type': 'application/xml', 
-#            'Connection': 'Keep-Alive',
-#            'Content-Length':len(xml_content),
-#             
-#             'Accept-Charset': 'utf-8'
-#             }
-#  
-# oops_reply = requests.post(url, data=xml_content, headers=headers)
-# oops_reply = oops_reply.text
-#  
-# 
-#  
-# oops_reply = json.loads(oops_reply)["data"]
-
-
-
-
-
-
 #############################################################################################
 ################################# generic helper functions ##################################
 #############################################################################################
@@ -771,7 +639,6 @@ def build_file_structure(file_with_rel_dir,category_folder='',abs_home=''):#e.g.
         abs_dir = get_abs_path('')
     else:
         abs_dir=abs_home
-    
     if type(category_folder) == type(""):# if string    
         if category_folder!='':
             abs_dir+=category_folder+'/'
@@ -827,9 +694,6 @@ def generate_user_log(log_file_name):
     sys.stdout.close()
     call(comm,shell=True)
     
-
-
-
 
 
 
