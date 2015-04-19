@@ -316,8 +316,8 @@ def draw_file(rdf_file,config_type):
     outtype="png"
     #config_file_abs = build_file_structure(config_type, [get_target_home(),'diagrams',config_type])
     #rdf_file_abs = build_file_structure(rdf_file, [get_target_home(),'diagrams',config_type])    
-    rdf_file_abs = build_file_structure(get_file_from_path(rdf_file),[get_target_home(),rdf_file,config_type])
-    config_file_abs = build_file_structure(config_type, [get_target_home(),rdf_file,'config'])
+    rdf_file_abs = build_file_structure(get_file_from_path(rdf_file),[get_target_home(),rdf_file,'diagrams',config_type])
+    config_file_abs = build_file_structure(config_type, [get_target_home(),rdf_file,'diagrams','config'])
     try:
         open(config_file_abs,"r")
     except IOError:
