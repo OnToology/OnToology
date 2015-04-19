@@ -796,11 +796,11 @@ from models import Repo
 def change_status(target_repo, state):
 #     if not use_database:
 #         return
-    print 'will change status of repo: '+target_repo+' to: '+status
+    print 'will change status of repo: '+target_repo+' to: '+state
     repo = Repo.objects.get(url=target_repo)
     print 'repo: '+repo.url
     repo.state = state
-    print 'repo new status: '+repo.state
+    print 'repo new state: '+repo.state
     repo.save()
     print 'validate'+Repo.objects.get(url=target_repo).state
     
