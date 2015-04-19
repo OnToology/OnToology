@@ -820,6 +820,7 @@ def change_status(target_repo, state):
 def generate_user_log(log_file_name):
     comm='cp '+home+'log/'+log_file_name+' /home/ubuntu/auton/media/logs/'
     print comm
+    sys.stdout.close()
     call(comm,shell=True)
     
 
