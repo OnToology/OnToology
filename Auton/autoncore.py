@@ -795,8 +795,11 @@ if use_database:
 def change_status(target_repo, status):
     if not use_database:
         return
+    print 'will change status of repo: '+target_repo+' to: '+status
     repo = Repo.objects.get(url=target_repo)
+    print 'repo: '+repo.url
     repo.status = status
+    print 'repo new status: '+repo.status
     repo.save()
     
     
