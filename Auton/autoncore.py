@@ -111,6 +111,8 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
         change_status(target_repo, 'Ready')
     else:
         change_status(target_repo, exception_if_exists)
+    print 'will generate user log'
+    generate_user_log(parent_folder+'.log')
     #return r
 
 
@@ -805,6 +807,22 @@ def change_status(target_repo, state):
     print 'validate'+Repo.objects.get(url=target_repo).state
     
     
+
+
+
+
+#############################################################################################
+#####################   Generate user log file  #############################################
+#############################################################################################
+
+#just for the development phase 
+
+def generate_user_log(log_file_name):
+    comm='cp '+home+'log/'+log_file_name+' /home/ubuntu/auton/media/logs/'
+    print comm
+    call(comm,shell=True)
+    
+
 
 
 
