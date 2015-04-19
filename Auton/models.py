@@ -1,15 +1,15 @@
 from mongoengine import *
-from mongoengine.django.auth import User
+#from mongoengine.django.auth import User
 from datetime import datetime
 
 
 
 class Repo(Document):
-    url = StringField(max_length='100',default='Not set yet')
+    url = StringField(max_length=100,default='Not set yet')
     last_used = DateTimeField(default=datetime.now())
     created_on = DateTimeField(default=datetime.now())
     monitoring = StringField(max_length=100,default='Not set yet')
-    
+    state = StringField(max_length=50,default='Ready')
 
 # class Repof(Document):
 #     repo_url = StringField(max_length=100,required=True)

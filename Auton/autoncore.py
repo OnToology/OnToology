@@ -8,11 +8,12 @@ import time
 from setuptools.command.setopt import config_file
 
 
+from mongoengine import *
 
 
 
 
-
+use_database = True
 
 parent_folder = None
 ar2dtool_config_types = ['ar2dtool-taxonomy.conf','ar2dtool-class.conf']
@@ -48,6 +49,7 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     prepare_log(user)
     print str(datetime.today())
     print '############################### magic #############################'
+    change_status(target_repo,'Preparing')
     #so the tool user can takeover and do stuff
     username = os.environ['github_username']
     password = os.environ['github_password']
@@ -55,37 +57,60 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     local_repo = target_repo.replace(target_repo.split('/')[-2] ,'AutonUser')
     delete_repo(local_repo)
     #print 'repo deleted'
+    change_status(target_repo, 'forking repo')
     fork_repo(target_repo,username,password)
     print 'repo forked'
+    change_status(target_repo,'cloning repo')
     clone_repo(cloning_repo,user)
     print 'repo cloned'
 #     update_readme(changed_files,cloning_repo,user)
 #     print 'readme updated'
     auton_conf = get_auton_configuration()
     print str(auton_conf)
+    exception_if_exists = ""
     if auton_conf['ar2dtool_enable']:
         print 'ar2dtool_enable is true'
-        draw_diagrams(changed_files)
+        change_status(target_repo,'drawing diagrams')
+        try:
+            draw_diagrams(changed_files)
+        except Exception as e:
+            exception_if_exists+=str(e)
         print 'diagrams drawn'
     else: 
         print 'ar2dtool_enable is false'
     if auton_conf['widoco_enable']:
         print  'widoco_enable is true'
-        generate_widoco_docs(changed_files)
+        change_status(target_repo, 'generating documents')
+        try:
+            generate_widoco_docs(changed_files)
+        except Exception as e:
+            exception_if_exists+=str(e)
         print 'generated docs'
     else:
         print  'widoco_enable is false'
     if auton_conf['oops_enable']:
         print 'oops_enable is true'
-        oops_ont_files(target_repo,changed_files)
+        change_status(target_repo, 'OOPS is checking for errors')
+        try:
+            oops_ont_files(target_repo,changed_files)
+        except Exception as e:
+            exception_if_exists+=str(e)
         print 'oops checked ontology for pitfalls'
     else:
         print 'oops_enable is false'
     commit_changes()
     print 'changes committed'
     remove_old_pull_requests(target_repo)
-    r = send_pull_request(target_repo,'AutonUser')
+    change_status(target_repo, 'creating a pull request')
+    try:
+        r = send_pull_request(target_repo,'AutonUser')
+    except Exception as e:
+        exception_if_exists+=str(e)
     print 'pull request is sent'
+    if exception_if_exists=="": #no errors
+        change_status(target_repo, 'Ready')
+    else:
+        change_status(target_repo, exception_if_exists)
     #return r
 
 
@@ -759,8 +784,38 @@ def build_file_structure(file_with_rel_dir,category_folder='',abs_home=''):#e.g.
 
 
 
+
+
+#############################################################################################
+################################ Database functions #########################################
+#############################################################################################
+
+if use_database:
+    from models import Repo
+def change_status(target_repo, status):
+    if not use_database:
+        return
+    repo = Repo.objects.get(url=target_repo)
+    repo.status = status
+    repo.save()
+    
+    
+
+
+
+
+
+
+#############################################################################################
+####################################   main  ################################################
+#############################################################################################
+
+
+
 if __name__ == "__main__":
     print "autoncore command: "+str(sys.argv)
+    if use_database:
+        connect('Auton')
     git_magic(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4:])
 
 
