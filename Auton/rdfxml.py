@@ -6,6 +6,11 @@ import sys, re, urllib, StringIO, xml.sax, xml.sax.handler
 try: from uripath import join as urijoin
 except ImportError: from urlparse import urljoin as urijoin
 
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+
+
 class Namespace(unicode): 
    def __getattr__(self, name): return self + name
 
