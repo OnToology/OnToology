@@ -801,11 +801,13 @@ def change_status(target_repo, state):
         repo = Repo.objects.get(url=target_repo)
         repo.last_used = datetime.today()
         repo.state = state
+        repo.owner = parent_folder
         repo.save()
     except DoesNotExist:
         repo = Repo()
         repo.url=target_repo
         repo.state = state
+        repo.owner = parent_folder
         repo.save()
     except Exception as e:
         print 'database_exception: '+str(e)
