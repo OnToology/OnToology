@@ -514,7 +514,8 @@ def output_raw_pitfalls(ont_file,oops_reply):
 
 
 def output_parsed_pitfalls(ont_file,oops_reply):
-    ont_file_abs_path = build_file_structure(ont_file+'.oops', [get_target_home(),'oops'])
+    #ont_file_abs_path = build_file_structure(ont_file+'.oops', [get_target_home(),'oops'])
+    ont_file_abs_path = build_file_structure(get_file_from_path(ont_file)+'.oops', [get_target_home(),ont_file,'oops'])
     f = open(ont_file_abs_path,'w')
     issues, interesting_features = parse_oops_issues(oops_reply)
     s= ""
