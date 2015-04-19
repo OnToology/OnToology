@@ -1,7 +1,8 @@
 #!/usr/bin/python
 """An RDF/XML Parser. Sean B. Palmer, 2003-05. GPL 2. Thanks to bitsko."""
 
-import sys, re, urllib, cStringIO, xml.sax, xml.sax.handler
+
+import sys, re, urllib, StringIO, xml.sax, xml.sax.handler
 try: from uripath import join as urijoin
 except ImportError: from urlparse import urljoin as urijoin
 
@@ -204,21 +205,10 @@ class RDFParser(xml.sax.handler.ContentHandler):
          i = self.uri(urijoin(e.base, ('#' + e.attrs[rdf.ID])))
          self.reify(i, e.parent.subject, self.uri(e.URI), r)
 
-#class Sink(object): 
-#   def __init__(self): self.result = ""
-#   def triple(self, s, p, o): self.result += "%s %s %s .\n" % (s, p, o)
-#   def write(self): print self.result.rstrip().encode('utf-8')
-
-#Ahmad Alobaid Modification
 class Sink(object): 
    def __init__(self): self.result = []
    def triple(self, s, p, o): self.result.append({'domain': s, 'relation': p, 'range': o})
    def write(self): print '\n'.join(str(s) for s in self.result)
-
-
-
-
-
 
 def parseRDF(s, base=None, sink=None): 
    sink = sink or Sink()
@@ -229,7 +219,7 @@ def parseRDF(s, base=None, sink=None):
    except xml.sax._exceptions.SAXNotSupportedException: pass
    except xml.sax._exceptions.SAXNotRecognizedException: pass
    parser.setContentHandler(RDFParser(sink, base, qnames=False))
-   parser.parse(cStringIO.StringIO(s))
+   parser.parse(StringIO.StringIO(s))
    return sink
 
 def parseURI(uri, sink=None): 

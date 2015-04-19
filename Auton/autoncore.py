@@ -90,6 +90,8 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
 
 
 
+
+
 def prepare_log(user):
     global log_file_dir
     file_dir = build_file_structure(user+'.log', 'log', home)
@@ -97,6 +99,9 @@ def prepare_log(user):
     sys.stdout=f
     log_file_dir = file_dir
     
+
+
+
     
 
 def delete_repo(local_repo):
@@ -193,12 +198,15 @@ def refresh_repo(target_repo):
 
 
 
+
+
 def remove_old_pull_requests(target_repo):
     title = 'AutonTool update'
     for p in g.get_repo(target_repo).get_pulls():
         if p.title == title:
             p.edit(state="closed")
     
+
 
 
 
@@ -219,6 +227,7 @@ def send_pull_request(target_repo,username):
 
     #return err
     return {'status': False, 'error': err}
+
 
 
 
@@ -249,12 +258,16 @@ def add_webhook(target_repo,notification_url):
 
 
 
+
+
 def add_collaborator(target_repo,user):
     try:
         msg = g.get_repo(target_repo).add_to_collaborators(user)
         return {'status': True, 'msg': str(msg) }
     except Exception as e:
         return {'status': False, 'error': e.data}
+
+
 
 
 
@@ -284,6 +297,7 @@ def draw_diagrams(rdf_files):
         else:
             pass
             #print r+' is not an rdf'
+
 
 
 
@@ -557,18 +571,21 @@ def parse_oops_issues(oops_rdf):
     p = rdfxml.parseRDF(oops_rdf)
     raw_oops_list = p.result
     oops_issues={}
+    
     #Filter #1
     #Construct combine all data of a single elements into one json like format
     for r in raw_oops_list:
         if r['domain'] not in oops_issues:
             oops_issues[r['domain']] = {}
         oops_issues[r['domain']][r['relation']] = r['range']
+    
     #Filter #2
     #get rid of elements without issue id 
     oops_issues_filter2={}
     for  i in oops_issues:
         if '#' not in i:
             oops_issues_filter2[i] = oops_issues[i]
+    
     #Filter #3    
     #Only include actual issues (some data are useless to us)
     detailed_desc = []
