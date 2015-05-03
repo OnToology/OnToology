@@ -386,7 +386,8 @@ def create_widoco_doc(rdf_file):
         print 'in create_widoco_doc: exception opening the file: '+str(e)
     comm = "cd "+get_abs_path('')+"; "
     comm+= "java -jar "
-    comm+=widoco_dir+"widoco-0.0.1-jar-with-dependencies.jar -Dfile.encoding=utf-8 -rewriteAll "
+    comm+=widoco_dir+"widoco-0.0.1-jar-with-dependencies.jar  -rewriteAll "
+    #comm+=' -Dfile.encoding=utf-8 '
     comm+=" -ontFile "+rdf_file_abs
     comm+=" -outFolder "+get_parent_path(config_file_abs)
     comm+=" -confFile "+config_file_abs
@@ -543,7 +544,8 @@ def generate_oops_pitfalls(ont_file):
     #config_file_abs = build_file_structure(get_file_from_path(ont_file)+'.widoco.conf', [get_target_home(), ont_file, 'documentation'])     
     comm = "cd "+get_abs_path('')+"; "
     comm+= "java -jar "
-    comm+=widoco_dir+"widoco-0.0.1-jar-with-dependencies.jar -Dfile.encoding=utf-8 -oops "
+    comm+=widoco_dir+"widoco-0.0.1-jar-with-dependencies.jar -oops "
+    #comm+=' -Dfile.encoding=utf-8 '
     comm+=" -ontFile "+ont_file_abs_path
     comm+=" -outFolder "+get_parent_path(r)
     #comm+=" -confFile "+config_file_abs
