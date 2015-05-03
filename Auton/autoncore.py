@@ -380,7 +380,7 @@ def create_widoco_doc(rdf_file):
         print 'in create_widoco_doc: exception opening the file: '+str(e)
     comm = "cd "+get_abs_path('')+"; "
     comm+= "java -jar "
-    comm+=widoco_dir+"widoco-0.0.1-jar-with-dependencies.jar "
+    comm+=widoco_dir+"widoco-0.0.1-jar-with-dependencies.jar -rewriteAll "
     comm+=" -ontFile "+rdf_file_abs
     comm+=" -outFolder "+get_parent_path(config_file_abs)
     comm+=" -confFile "+config_file_abs
@@ -498,7 +498,7 @@ def get_pitfalls(target_repo,ont_file):
     nicer_issues = nicer_oops_output(issues_s)
     if nicer_issues!="":
         create_oops_issue_in_github(target_repo, nicer_issues)
-
+        generate_oops_pitfalls(ont_file)
     
 
 
@@ -512,17 +512,9 @@ def get_pitfalls(target_repo,ont_file):
 #     print 'oops file written'
 
 
-
-
-
-
 def output_parsed_pitfalls(ont_file,oops_reply):
-    #ont_file_abs_path = build_file_structure(ont_file+'.oops', [get_target_home(),'oops'])
-    ont_file_abs_path = build_file_structure(get_file_from_path(ont_file)+'.oops', [get_target_home(),ont_file,'oops'])
-    f = open(ont_file_abs_path,'w')
     issues, interesting_features = parse_oops_issues(oops_reply)
     s= ""
-    #print str(issues)
     for i in issues:
         for intfea in interesting_features:
             if intfea in issues[i]:
@@ -532,10 +524,49 @@ def output_parsed_pitfalls(ont_file,oops_reply):
         s+"\n"
         s+=20*"="
         s+="\n"
-    f.write(s)
-    f.close()
-    print 'oops file written'
+    print 'oops issues gotten'
     return s
+
+
+
+def generate_oops_pitfalls(ont_file):    
+    ont_file_abs_path = build_file_structure(get_file_from_path(ont_file)+'.oops', [get_target_home(),ont_file,'oops'])
+    #config_file_abs = build_file_structure(get_file_from_path(ont_file)+'.widoco.conf', [get_target_home(), ont_file, 'documentation'])     
+    comm = "cd "+get_abs_path('')+"; "
+    comm+= "java -jar "
+    comm+=widoco_dir+"widoco-0.0.1-jar-with-dependencies.jar  "
+    comm+=" -ontFile "+ont_file_abs_path
+    comm+=" -outFolder "+get_parent_path(ont_file_abs_path)
+    #comm+=" -confFile "+config_file_abs
+    print comm
+    call(comm,shell=True)
+    
+
+
+
+
+
+
+# def output_parsed_pitfalls(ont_file,oops_reply):
+#     #ont_file_abs_path = build_file_structure(ont_file+'.oops', [get_target_home(),'oops'])
+#     ont_file_abs_path = build_file_structure(get_file_from_path(ont_file)+'.oops', [get_target_home(),ont_file,'oops'])
+#     f = open(ont_file_abs_path,'w')
+#     issues, interesting_features = parse_oops_issues(oops_reply)
+#     s= ""
+#     #print str(issues)
+#     for i in issues:
+#         for intfea in interesting_features:
+#             if intfea in issues[i]:
+#                 val = issues[i][intfea].split('^^')[0]
+#                 key = intfea.split("#")[-1].replace('>','')
+#                 s+=key+": "+val+"\n"
+#         s+"\n"
+#         s+=20*"="
+#         s+="\n"
+#     f.write(s)
+#     f.close()
+#     print 'oops file written'
+#     return s
 
 
 
