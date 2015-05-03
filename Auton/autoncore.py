@@ -384,6 +384,7 @@ def create_widoco_doc(rdf_file):
     comm+=" -ontFile "+rdf_file_abs
     comm+=" -outFolder "+get_parent_path(config_file_abs)
     comm+=" -confFile "+config_file_abs
+    comm+= ' > "'+log_file_dir+'"'
     print comm
     call(comm,shell=True)
     
@@ -540,6 +541,7 @@ def generate_oops_pitfalls(ont_file):
     comm+=" -ontFile "+ont_file_abs_path
     comm+=" -outFolder "+get_parent_path(r)
     #comm+=" -confFile "+config_file_abs
+    comm+= ' > "'+log_file_dir+'"'
     print comm
     call(comm,shell=True)
     
