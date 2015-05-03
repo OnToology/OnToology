@@ -497,7 +497,7 @@ def get_pitfalls(target_repo,ont_file):
     close_old_oops_issues_in_github(target_repo)
     nicer_issues = nicer_oops_output(issues_s)
     if nicer_issues!="":
-        create_oops_issue_in_github(target_repo, issues_s)
+        create_oops_issue_in_github(target_repo, nicer_issues)
 
     
 
