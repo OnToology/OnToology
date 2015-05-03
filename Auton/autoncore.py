@@ -536,7 +536,7 @@ def generate_oops_pitfalls(ont_file):
     #config_file_abs = build_file_structure(get_file_from_path(ont_file)+'.widoco.conf', [get_target_home(), ont_file, 'documentation'])     
     comm = "cd "+get_abs_path('')+"; "
     comm+= "java -jar "
-    comm+=widoco_dir+"widoco-0.0.1-jar-with-dependencies.jar --oops "
+    comm+=widoco_dir+"widoco-0.0.1-jar-with-dependencies.jar -oops "
     comm+=" -ontFile "+ont_file_abs_path
     comm+=" -outFolder "+get_parent_path(r)
     #comm+=" -confFile "+config_file_abs
