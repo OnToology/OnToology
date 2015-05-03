@@ -451,10 +451,11 @@ def get_auton_configuration(f=None):
 
 
 
-
+########################################################################
 ############################---------###################################
 ############################  OOPS!  ###################################
 ############################\_______/###################################
+
 
 import requests
 import rdfxml
@@ -494,19 +495,21 @@ def get_pitfalls(target_repo,ont_file):
     print 'got oops reply'#+oops_reply 
     issues_s = output_parsed_pitfalls(ont_file,oops_reply)
     close_old_oops_issues_in_github(target_repo)
-    create_oops_issue_in_github(target_repo, issues_s)
+    nicer_issues = nicer_oops_output(issues_s)
+    if nicer_issues!="":
+        create_oops_issue_in_github(target_repo, issues_s)
+
+    
 
 
-
-
-
-def output_raw_pitfalls(ont_file,oops_reply):
-    #ont_file_abs_path = build_file_structure(ont_file+'.oops', [get_target_home(),'oops'])
-    ont_file_abs_path = build_file_structure(get_file_from_path(ont_file)+'.oops', [get_target_home(),ont_file,'oops'])
-    f = open(ont_file_abs_path,'w')
-    f.write(oops_reply)
-    f.close()
-    print 'oops file written'
+# 
+# def output_raw_pitfalls(ont_file,oops_reply):
+#     #ont_file_abs_path = build_file_structure(ont_file+'.oops', [get_target_home(),'oops'])
+#     ont_file_abs_path = build_file_structure(get_file_from_path(ont_file)+'.oops', [get_target_home(),ont_file,'oops'])
+#     f = open(ont_file_abs_path,'w')
+#     f.write(oops_reply)
+#     f.close()
+#     print 'oops file written'
 
 
 
@@ -588,7 +591,7 @@ def parse_oops_issues(oops_rdf):
 def create_oops_issue_in_github(target_repo,oops_issues):
     print 'will create an oops issue'
     try:
-        g.get_repo(target_repo).create_issue('OOPS', oops_issues)
+        g.get_repo(target_repo).create_issue('OOPS! Evaluation', oops_issues)
     except Exception as e:
         print 'exception when creating issue: '+e.data
         
@@ -598,10 +601,59 @@ def create_oops_issue_in_github(target_repo,oops_issues):
 def close_old_oops_issues_in_github(target_repo):
     print 'will close old issues'
     for i in g.get_repo(target_repo).get_issues(state='open'):
-        if i.title=='OOPS':
+        if i.title=='OOPS! Evaluation':
             i.edit(state='closed')
 
 
+
+def nicer_oops_output(issues):
+    sugg_flag = '<http://www.oeg-upm.net/oops#suggestion>'
+    pitf_flag = '<http://www.oeg-upm.net/oops#pitfall>'
+    warn_flag = '<http://www.oeg-upm.net/oops#warning>'
+    num_of_suggestions = issues.count(sugg_flag)
+    num_of_pitfalls = issues.count(pitf_flag)
+    num_of_warnings = issues.count(warn_flag)
+    s=" OOPS has encountered %d pitfalls and %d warnings"%(num_of_pitfalls,num_of_warnings)
+    if num_of_pitfalls == num_of_suggestions == num_of_warnings ==0:
+        return ""
+    if num_of_suggestions >0:
+        s+="  and have %d suggestions"%(num_of_suggestions)
+    nodes = issues.split("====================")
+    suggs=[]
+    pitfs=[]
+    warns=[]
+    for node in nodes[:-1]:
+        attrs = node.split("\n")
+        if sugg_flag in node:
+            for attr in attrs:
+                if 'hasDescription' in attr:
+                    suggs.append(attr.replace('hasDescription: ',''))
+                    break
+        elif pitf_flag in node :
+            for attr in attrs:
+                if 'hasName' in attr:
+                    pitfs.append(attr.replace('hasName: ',''))
+                    break
+        elif warn_flag in node:
+            for attr in attrs:
+                if 'hasName' in attr:
+                    warns.append(attr.replace('hasName: ',''))
+                    break
+        else:
+            print 'in nicer_oops_output: strange node: '+node
+    if len(pitfs) >0:
+        s+="The Pitfalls are the following:\n"
+        for i in range(len(pitfs)):
+            s+='%d. '%(i+1) + pitfs[i]+"\n"
+    if len(warns) >0:
+        s+="The Warning are the following:\n"
+        for i in range(len(warns)):
+            s+="%d. "%(i+1) + warns[i]+"\n"
+    if len(suggs) >0:
+        s+="The Suggestions are the following:\n"
+        for i in range(len(suggs)):
+            s+="%d. "%(i+1) + suggs[i]+"\n"
+    return s
 
 
 
