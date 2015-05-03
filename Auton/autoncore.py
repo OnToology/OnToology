@@ -529,12 +529,13 @@ def output_parsed_pitfalls(ont_file,oops_reply):
 
 
 
+#generate oops issues using widoco
 def generate_oops_pitfalls(ont_file):    
     ont_file_abs_path = build_file_structure(get_file_from_path(ont_file)+'.oops', [get_target_home(),ont_file,'oops'])
     #config_file_abs = build_file_structure(get_file_from_path(ont_file)+'.widoco.conf', [get_target_home(), ont_file, 'documentation'])     
     comm = "cd "+get_abs_path('')+"; "
     comm+= "java -jar "
-    comm+=widoco_dir+"widoco-0.0.1-jar-with-dependencies.jar  "
+    comm+=widoco_dir+"widoco-0.0.1-jar-with-dependencies.jar --oops "
     comm+=" -ontFile "+ont_file_abs_path
     comm+=" -outFolder "+get_parent_path(ont_file_abs_path)
     #comm+=" -confFile "+config_file_abs
