@@ -420,10 +420,10 @@ def get_auton_configuration(f=None):
     ar2dtool_enable = True
     widoco_enable = True
     oops_enable = True
-    fii =  get_target_home()+'/'
     if f != None:
-        fii+=f+'/'
-    conf_file_abs = get_abs_path(fii+'auton.cfg')
+        conf_file_abs = build_file_structure('auton.cfg',[get_target_home(),f] )
+    else:
+        conf_file_abs = build_file_structure('auton.cfg',[get_target_home()] )
     opened_conf_files = config.read(conf_file_abs)
     if len(opened_conf_files) == 1:
         print 'auton configuration file exists'
