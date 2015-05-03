@@ -31,7 +31,7 @@ g = None
 
 log_file_dir = None#'&1'#which is stdout #sys.stdout#by default
 
-def git_magic(target_repo,user,cloning_repo,changed_files):
+def git_magic(target_repo,user,cloning_repo,changed_filesss):
     global g
     global parent_folder
     parent_folder = user
@@ -52,39 +52,44 @@ def git_magic(target_repo,user,cloning_repo,changed_files):
     change_status(target_repo,'cloning repo')
     clone_repo(cloning_repo,user)
     print 'repo cloned'
-    auton_conf = get_auton_configuration()
-    print str(auton_conf)
-    exception_if_exists = ""
-    if auton_conf['ar2dtool_enable']:
-        print 'ar2dtool_enable is true'
-        change_status(target_repo,'drawing diagrams')
-        try:
-            draw_diagrams(changed_files)
-        except Exception as e:
-            exception_if_exists+=str(e)
-        print 'diagrams drawn'
-    else: 
-        print 'ar2dtool_enable is false'
-    if auton_conf['widoco_enable']:
-        print  'widoco_enable is true'
-        change_status(target_repo, 'generating documents')
-        try:
-            generate_widoco_docs(changed_files)
-        except Exception as e:
-            exception_if_exists+=str(e)
-        print 'generated docs'
-    else:
-        print  'widoco_enable is false'
-    if auton_conf['oops_enable']:
-        print 'oops_enable is true'
-        change_status(target_repo, 'OOPS is checking for errors')
-        try:
-            oops_ont_files(target_repo,changed_files)
-        except Exception as e:
-            exception_if_exists+=str(e)
-        print 'oops checked ontology for pitfalls'
-    else:
-        print 'oops_enable is false'
+    for chf in changed_filesss:
+        if chf[-4:] not in ontology_formats:
+            continue
+        print 'working with: '+chf
+        changed_files = [chf]
+        auton_conf = get_auton_configuration(chf)
+        print str(auton_conf)
+        exception_if_exists = ""
+        if auton_conf['ar2dtool_enable']:
+            print 'ar2dtool_enable is true'
+            change_status(target_repo,'drawing diagrams')
+            try:
+                draw_diagrams(changed_files)
+            except Exception as e:
+                exception_if_exists+=str(e)
+            print 'diagrams drawn'
+        else: 
+            print 'ar2dtool_enable is false'
+        if auton_conf['widoco_enable']:
+            print  'widoco_enable is true'
+            change_status(target_repo, 'generating documents')
+            try:
+                generate_widoco_docs(changed_files)
+            except Exception as e:
+                exception_if_exists+=str(e)
+            print 'generated docs'
+        else:
+            print  'widoco_enable is false'
+        if auton_conf['oops_enable']:
+            print 'oops_enable is true'
+            change_status(target_repo, 'OOPS is checking for errors')
+            try:
+                oops_ont_files(target_repo,changed_files)
+            except Exception as e:
+                exception_if_exists+=str(e)
+            print 'oops checked ontology for pitfalls'
+        else:
+            print 'oops_enable is false'
     commit_changes()
     print 'changes committed'
     remove_old_pull_requests(target_repo)
