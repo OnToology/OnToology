@@ -410,6 +410,8 @@ import ConfigParser
 def get_auton_configuration(f=None):
     if f==None:
         f=parent_folder 
+    else:
+        f=parent_folder+'/'+f
     print 'auton config is called'
     config = ConfigParser.RawConfigParser()
     ar2dtool_sec_name = 'ar2dtool'
@@ -418,7 +420,8 @@ def get_auton_configuration(f=None):
     ar2dtool_enable = True
     widoco_enable = True
     oops_enable = True
-    opened_conf_files = config.read(home+f+'/auton.cfg')
+    conf_file_abs = home+f+'/auton.cfg'
+    opened_conf_files = config.read(conf_file_abs)
     if len(opened_conf_files) == 1:
         print 'auton configuration file exists'
         print opened_conf_files[0]
@@ -447,7 +450,7 @@ def get_auton_configuration(f=None):
         config.set(widoco_sec_name,'enable',widoco_enable)
         config.add_section(oops_sec_name)
         config.set(oops_sec_name,'enable',oops_enable)
-        conff = home+parent_folder+'/auton.cfg'
+        conff = conf_file_abs
         print 'will create conf file: '+ conff
         try:
             with open(conff, 'wb') as configfile:
