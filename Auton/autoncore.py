@@ -111,6 +111,7 @@ def prepare_log(user):
     file_dir = build_file_structure(user+'.log', 'log', home)
     f = open(file_dir,'w')
     sys.stdout=f
+    sys.stderr=f
     log_file_dir = file_dir
     
 
