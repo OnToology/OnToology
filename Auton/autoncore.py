@@ -134,7 +134,7 @@ def fork_repo(target_repo,username,password):
     time.sleep(sleeping_time)#the wait time to give github sometime so the repo can be forked successfully
     #this is a workaround and not a proper way to do a fork
     comm = "curl --user \"%s:%s\" --request POST --data \'{}\' https://api.github.com/repos/%s/forks" % (username,password,target_repo)
-    comm+= ' > "'+log_file_dir+'"'
+    comm+= ' >> "'+log_file_dir+'"'
     call(comm,shell=True)
     print 'fork'
     
@@ -144,15 +144,15 @@ def fork_repo(target_repo,username,password):
 def clone_repo(cloning_repo,user):
     time.sleep(sleeping_time)#the wait time to give github sometime so the repo can be cloned
     comm =  "rm"+" -Rf "+home+parent_folder
-    comm+= ' > "'+log_file_dir+'"'
+    comm+= ' >> "'+log_file_dir+'"'
     print comm
     call(comm, shell=True)
     comm = "git"+" clone"+" "+cloning_repo+" "+home+parent_folder
-    comm+= ' > "'+log_file_dir+'"'
+    comm+= ' >> "'+log_file_dir+'"'
     print comm
     call(comm, shell=True)
     comm =  "chmod 777 -R "+home+parent_folder
-    comm+= ' > "'+log_file_dir+'"'
+    comm+= ' >> "'+log_file_dir+'"'
     print comm
     call(comm, shell=True)
 
@@ -185,17 +185,17 @@ def commit_changes():
     #print "command: "+"cd "+home+parent_folder+";"+gu+" git add README.md "    
     #call("cd "+home+parent_folder+";"+gu+" git add README.md ",shell=True)
     comm =  "cd "+home+parent_folder+";"+gu+" git add . "    
-    comm+= ' > "'+log_file_dir+'"'
+    comm+= ' >> "'+log_file_dir+'"'
     print comm
     call(comm,shell=True)
     comm = "cd "+home+parent_folder+";"+gu+" git commit -m 'automated change' "
-    comm+= ' > "'+log_file_dir+'"'
+    comm+= ' >> "'+log_file_dir+'"'
     print comm
     call(comm,shell=True)
     gup =""
     gup = "git config push.default matching;"
     comm =  "cd "+home+parent_folder+";"+gu+gup+" git push "
-    comm+= ' > "'+log_file_dir+'"'
+    comm+= ' >> "'+log_file_dir+'"'
     print comm
     call(comm,shell=True)
 
@@ -331,7 +331,7 @@ def draw_file(rdf_file,config_type):
     comm+= ar2dtool_dir+'ar2dtool.jar -i '
     comm+= get_abs_path(rdf_file)+' -o '
     comm+= rdf_file_abs+'.'+outtype+' -t '+outtype+' -c '+config_file_abs+' -GV -gml '
-    comm+= ' > "'+log_file_dir+'"'
+    comm+= ' >> "'+log_file_dir+'"'
     print comm
     call(comm,shell=True)
 
@@ -385,7 +385,7 @@ def create_widoco_doc(rdf_file):
     comm+=" -ontFile "+rdf_file_abs
     comm+=" -outFolder "+get_parent_path(config_file_abs)
     comm+=" -confFile "+config_file_abs
-    comm+= ' > "'+log_file_dir+'"'
+    comm+= ' >> "'+log_file_dir+'"'
     print comm
     call(comm,shell=True)
     
@@ -542,7 +542,7 @@ def generate_oops_pitfalls(ont_file):
     comm+=" -ontFile "+ont_file_abs_path
     comm+=" -outFolder "+get_parent_path(r)
     #comm+=" -confFile "+config_file_abs
-    comm+= ' > "'+log_file_dir+'"'
+    comm+= ' >> "'+log_file_dir+'"'
     print comm
     call(comm,shell=True)
     
