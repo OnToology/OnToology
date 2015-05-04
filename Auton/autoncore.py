@@ -56,18 +56,18 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
         auton_conf = {'ar2dtool_enable':False , 'widoco_enable': False, 'oops_enable': False}
         if chf[-4:] not in ontology_formats:
             if get_file_from_path(chf) =='auton.cfg':
-                fi = get_parent_path(chf)
+                fi = get_level_up(chf)
                 changed_files = [fi]
                 auton_conf = get_auton_configuration(fi)
             elif get_file_from_path(chf) in ar2dtool_config_types:
                 auton_conf['ar2dtool_enable'] = True
-                fi =  get_parent_path(chf)
-                fi = get_parent_path(fi)
-                fi = get_parent_path(fi)
+                fi = get_level_up(chf)
+                fi = get_level_up(fi)
+                fi = get_level_up(fi)
                 changed_files = [fi]
             elif  'widoco.conf' in  get_file_from_path(chf):
-                fi = get_parent_path(chf)
-                fi = get_parent_path(fi)
+                fi = get_level_up(chf)
+                fi = get_level_up(fi)
                 changed_files = [fi]
         else:
             print 'working with: '+chf
@@ -742,6 +742,9 @@ def get_abs_path(relative_path):
     return home+parent_folder+'/'+relative_path
 
 
+def get_level_up(relative_path):
+    fi = get_file_from_path(relative_path)
+    relative_path[-len(fi)+1:]
 
 
 def get_parent_path(f):
