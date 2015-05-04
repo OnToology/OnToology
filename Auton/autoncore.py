@@ -58,6 +58,7 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
             if get_file_from_path(chf) =='auton.cfg':
                 print 'auton.cfg is changed'
                 fi = get_level_up(chf)
+                fi = fi[6:]
                 print 'ont file is: '+fi
                 changed_files = [fi]
                 auton_conf = get_auton_configuration(fi)
@@ -71,6 +72,7 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
                 fi = get_level_up(chf)
                 fi = get_level_up(fi)
                 changed_files = [fi]
+            
         else:
             print 'working with: '+chf
             changed_files = [chf]
