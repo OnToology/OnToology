@@ -746,7 +746,7 @@ def get_abs_path(relative_path):
 
 def get_level_up(relative_path):
     fi = get_file_from_path(relative_path)
-    relative_path[-len(fi)+1:]
+    return relative_path[-len(fi)+1:]
 
 
 def get_parent_path(f):
