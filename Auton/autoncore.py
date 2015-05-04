@@ -53,11 +53,26 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
     clone_repo(cloning_repo,user)
     print 'repo cloned'
     for chf in changed_filesss:
+        auton_conf = {'ar2dtool_enable':False , 'widoco_enable': False, 'oops_enable': False}
         if chf[-4:] not in ontology_formats:
-            continue
-        print 'working with: '+chf
-        changed_files = [chf]
-        auton_conf = get_auton_configuration(chf)
+            if get_file_from_path(chf) =='auton.cfg':
+                fi = get_parent_path(chf)
+                changed_files = [fi]
+                auton_conf = get_auton_configuration(fi)
+            elif get_file_from_path(chf) in ar2dtool_config_types:
+                auton_conf['ar2dtool_enable'] = True
+                fi =  get_parent_path(chf)
+                fi = get_parent_path(fi)
+                fi = get_parent_path(fi)
+                changed_files = [fi]
+            elif  'widoco.conf' in  get_file_from_path(chf):
+                fi = get_parent_path(chf)
+                fi = get_parent_path(fi)
+                changed_files = [fi]
+        else:
+            print 'working with: '+chf
+            changed_files = [chf]
+            auton_conf = get_auton_configuration(chf)
         print str(auton_conf)
         exception_if_exists = ""
         if auton_conf['ar2dtool_enable']:
