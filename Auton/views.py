@@ -221,14 +221,11 @@ def add_hook(request):
 
 ##The below line is for login
 def login(request):
-    if request.method == 'POST':
-        redirect_url = host+'login_get_access'
-        sec = ''.join([random.choice(string.ascii_letters+string.digits) for _ in range(9)])
-        request.session['state'] = sec
-        redirect_url = "https://github.com/login/oauth/authorize?client_id="+client_id+"&redirect_uri="+redirect_url+"&scope="+"&state="+sec
-        HttpResponseRedirect(redirect_url)
-    else:
-        HttpResponseRedirect('/')
+    redirect_url = host+'login_get_access'
+    sec = ''.join([random.choice(string.ascii_letters+string.digits) for _ in range(9)])
+    request.session['state'] = sec
+    redirect_url = "https://github.com/login/oauth/authorize?client_id="+client_id+"&redirect_uri="+redirect_url+"&scope="+"&state="+sec
+    HttpResponseRedirect(redirect_url)
 
 
 
