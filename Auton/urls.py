@@ -7,17 +7,14 @@ from django.conf import settings
 
 
 urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'Auton.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
-
-    
     url(r'^add_hook_test',views.add_hook_test,name='addhooktest'),
     url(r'^add_hook',views.add_hook,name='addhook'),
     url(r'^get_access_token',views.get_access_token,name='getaccesstoken'),
     url(r'^grantupdate',views.grant_update,name='grantupdate'),
+    url(r'^testlogin',views.testlogin,name='testlogin'),
+    url(r'^login_get_access',views.login_get_access,name='login_get_access'),
+    url(r'^login',views.login,name='login'),
     url(r'',views.home, name='home'),
-    #url(r'^admin/', include(admin.site.urls)),
 )
 
 

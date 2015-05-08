@@ -184,25 +184,7 @@ def clone_repo(cloning_repo,user):
 
 
 
-                
-# def update_readme(changed_files,cloning_repo,user):
-#     #for i in range(3):
-#     try:
-#         f = open(home+parent_folder+"/"+"README.md","a")
-#         break
-#     except IOError:
-#         print 'error opening the README file'
-#         #print 'readme is not ready: '+str(i)
-#         time.sleep(sleeping_time)
-#         clone_repo(cloning_repo,user)
-#     f.write("\n##Changelog "+str(datetime.today())+"\n")
-#     for chf in changed_files:
-#         f.write("\n* "+chf)                
-#     f.close()
-                
-
-
-
+            
 
 def commit_changes():
     gu = ""
@@ -537,14 +519,6 @@ def get_pitfalls(target_repo,ont_file):
     
 
 
-# 
-# def output_raw_pitfalls(ont_file,oops_reply):
-#     #ont_file_abs_path = build_file_structure(ont_file+'.oops', [get_target_home(),'oops'])
-#     ont_file_abs_path = build_file_structure(get_file_from_path(ont_file)+'.oops', [get_target_home(),ont_file,'oops'])
-#     f = open(ont_file_abs_path,'w')
-#     f.write(oops_reply)
-#     f.close()
-#     print 'oops file written'
 
 
 def output_parsed_pitfalls(ont_file,oops_reply):

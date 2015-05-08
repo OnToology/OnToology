@@ -14,9 +14,17 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 AUTHENTICATION_BACKENDS = (
     'mongoengine.django.auth.MongoEngineBackend',
+    #'social_auth.backends.contrib.github.GithubBackend',
 )
 
-LOGIN_URL = '/signin'
+LOGIN_URL = '/login'
+
+#The below 5 lines are used for login with facebook purposes
+#SOCIAL_AUTH_MODELS = 'social_auth.db.mongoengine_models'
+#SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL = True
+GITHUB_APP_ID = 'bbfc39dd5b6065bbe53b'
+GITHUB_API_SECRET = '60014ba718601441f542213855607810573c391e'
+#LOGIN_REDIRECT_URL = '/testlogin'
 
 from mongoengine import connect
 connect("Auton")
@@ -56,6 +64,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'mongoengine.django.mongo_auth',
+    #'social_auth',
 )
 
 MIDDLEWARE_CLASSES = (

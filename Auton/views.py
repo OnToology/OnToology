@@ -1,13 +1,16 @@
 from django.shortcuts import render, render_to_response, redirect
 from django.http import HttpResponseRedirect
 from mongoengine.django.auth import User
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login as django_login, logout as django_logout
+
 from django import forms
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
+import settings
+
 
 import string
 import random
@@ -17,16 +20,16 @@ from models import *
 import requests
 import json
 
-import multiprocessing
-
 import subprocess
+
+from github import Github
 
 
 
 
 host = 'http://54.172.63.231'
-client_id = 'bbfc39dd5b6065bbe53b'
-client_secret = '60014ba718601441f542213855607810573c391e'
+client_id = settings.GITHUB_APP_ID#'bbfc39dd5b6065bbe53b'
+client_secret = settings.GITHUB_API_SECRET#'60014ba718601441f542213855607810573c391e'
 
 
 
@@ -216,8 +219,56 @@ def add_hook(request):
     return render_to_response('msg.html',{'msg': ''+s+'<>'+r},context_instance=RequestContext(request))
 
 
+##The below line is for login
+def login(request):
+    if request.method == 'POST':
+        redirect_url = host+'login_get_access'
+        sec = ''.join([random.choice(string.ascii_letters+string.digits) for _ in range(9)])
+        request.session['state'] = sec
+        redirect_url = "https://github.com/login/oauth/authorize?client_id="+client_id+"&redirect_uri="+redirect_url+"&scope="+"&state="+sec
+        HttpResponseRedirect(redirect_url)
+    else:
+        HttpResponseRedirect('/')
 
 
+
+
+
+def login_get_access(request):
+    if request.GET['state'] != request.session['state']:
+        return render_to_response('msg.html',{'msg':'Error, ; not an ethical attempt' },context_instance=RequestContext(request))
+    data = {
+        'client_id': client_id,
+        'client_secret': client_secret,
+        'code': request.GET['code'],
+        'redirect_uri': host#host+'/add_hook'
+    }
+    res = requests.post('https://github.com/login/oauth/access_token',data=data)
+    atts = res.text.split('&')
+    d={}
+    for att in atts:
+        keyv = att.split('=')
+        d[keyv[0]] = keyv[1]
+    access_token = d['access_token']
+    request.session['access_token'] = access_token
+    g = Github(access_token)
+    email = g.get_user().email
+    try:
+        user = OUser.objects.get(email=email)
+    except:#The password is never important but we set it here because it is required by User class
+        user = OUser.create_user(email, password=request.session['state'], email=email)
+        user.save()
+    django_login(request, user)
+    print 'access_token: '+access_token
+    
+
+
+
+
+
+@login_required
+def testlogin(request):
+    return render_to_response('msg.html',{'msg': 'The user is logged it'},context_instance=RequestContext(request))
 
 
 
