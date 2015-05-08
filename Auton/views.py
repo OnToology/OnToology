@@ -225,7 +225,7 @@ def login(request):
     sec = ''.join([random.choice(string.ascii_letters+string.digits) for _ in range(9)])
     request.session['state'] = sec
     redirect_url = "https://github.com/login/oauth/authorize?client_id="+client_id+"&redirect_uri="+redirect_url+"&scope="+"&state="+sec
-    HttpResponseRedirect(redirect_url)
+    return HttpResponseRedirect(redirect_url)
 
 
 
