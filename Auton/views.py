@@ -269,7 +269,7 @@ def login_get_access(request):
     #user.backend = 'mongoengine.django.auth.MongoEngineBackend'
     django_login(request, user)
     print 'access_token: '+access_token
-    
+    return HttpResponseRedirect('/')
 
 
 
