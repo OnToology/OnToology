@@ -260,9 +260,13 @@ def login_get_access(request):
     email = g.get_user().email
     try:
         user = OUser.objects.get(email=email)
+        user.backend = 'mongoengine.django.auth.MongoEngineBackend'
+        user.save()
     except:#The password is never important but we set it here because it is required by User class
         user = OUser.create_user(email, password=request.session['state'], email=email)
+        user.backend = 'mongoengine.django.auth.MongoEngineBackend'
         user.save()
+    #user.backend = 'mongoengine.django.auth.MongoEngineBackend'
     django_login(request, user)
     print 'access_token: '+access_token
     

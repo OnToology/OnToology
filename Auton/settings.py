@@ -14,7 +14,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 AUTHENTICATION_BACKENDS = (
     'mongoengine.django.auth.MongoEngineBackend',
-    #'social_auth.backends.contrib.github.GithubBackend',
 )
 
 LOGIN_URL = '/login'
@@ -64,7 +63,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'mongoengine.django.mongo_auth',
-    #'social_auth',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -87,7 +85,7 @@ WSGI_APPLICATION = 'Auton.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.dummy'
+        'ENGINE': 'django.db.backends.dummy',
     }
 }
 
