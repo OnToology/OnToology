@@ -1,9 +1,9 @@
 {% extends "base.html"%}
 {%block teapot%}
 {% if user.is_authenticated %}
-	<p>Welcome, {{ user.username }}. Thanks for logging in.</p>
+	<p>Welcome, {{ user.username }}.</p>
 {% else %}
-    <p>Welcome, new user. Please log in.</p>
+    <p><a href="/login">Login through linkedin</a></p>
 {% endif %}
 {% endblock %}
 {%block body%}
