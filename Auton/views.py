@@ -66,7 +66,7 @@ def home(request):
 #         for k in i:
 #             print k+""+str(i[k])
 #         print "------------------------"
-    return render_to_response('home.html',{'repos': repos, 'user': request.user},context_instance=RequestContext(request))
+    return render_to_response('home.html',{'repos': repos, 'user': request.user, 'avatar_url': request.session['avatar_url']},context_instance=RequestContext(request))
 
         
 
@@ -232,6 +232,7 @@ def login_get_access(request):
     request.session['access_token'] = access_token
     g = Github(access_token)
     email = g.get_user().email
+    request.session['avatar_url'] = g.get_user().avatar_url
     try:
         user = OUser.objects.get(email=email)
         user.backend = 'mongoengine.django.auth.MongoEngineBackend'
