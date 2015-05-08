@@ -230,7 +230,9 @@ def login(request):
     redirect_url = host+'/login_get_access'
     sec = ''.join([random.choice(string.ascii_letters+string.digits) for _ in range(9)])
     request.session['state'] = sec
-    redirect_url = "https://github.com/login/oauth/authorize?client_id="+client_id+"&redirect_uri="+redirect_url+"&scope="+"&state="+sec
+    scope = 'admin:org_hook'
+    scope+=',admin:org,admin:public_key,admin:repo_hook,gist,notifications,delete_repo,repo_deployment,repo,public_repo,user,admin:public_key'
+    redirect_url = "https://github.com/login/oauth/authorize?client_id="+client_id+"&redirect_uri="+redirect_url+"&scope="+scope+"&state="+sec
     return HttpResponseRedirect(redirect_url)
 
 
