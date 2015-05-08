@@ -1,8 +1,9 @@
 {% extends "base.html"%}
 {%block teapot%}
 {% if user.is_authenticated %}
-	<p>Welcome, {{ user.username }}.</p>
-	<img src="{{avatar_url}}" class="img-circle"/>
+	<img src="{{avatar_url}}" class="img-circle" height="50px"/>
+	<span>Welcome, {{ user.username }}.</span>
+
 {% else %}
     <p><a href="/login">Login through linkedin</a></p>
 {% endif %}
