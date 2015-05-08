@@ -178,44 +178,13 @@ def add_hook(request):
     tar = cloning_repo.split('/')[-2]
     cloning_repo = cloning_repo.replace(tar,'AutonUser')
     cloning_repo = cloning_repo.replace('git://github.com/','git@github.com:')
-#     r = git_magic(target_repo, user, cloning_repo, changed_files)
-    #if r['status']==True:
-    
-    
-    
-#     mont = get_auton_configuration(user)
-#     s = ""
-#     for i in mont:
-#         s+=i+"="+str(mont[i])+", "
-    
-#     try:
-#         repo = Repo.objects.get(url=target_repo)
-#         repo.last_used = datetime.today()
-#         repo.monitoring = s
-#         repo.save()
-#     except DoesNotExist:
-#         repo = Repo()
-#         repo.url=target_repo
-#         repo.monitoring = s
-#         repo.save()
-#     except Exception as e:
-#         print 'database_exception: '+str(e)
-            
-            
-            
-            #r['database_exception']=str(e)
-    #multiprocessing.Process(target=git_magic,args=(target_repo, user, cloning_repo, changed_files)).start()
-    #git_magic(target_repo, user, cloning_repo, changed_files)
     comm = "python /home/ubuntu/auton/Auton/autoncore.py "
     comm+=' "'+target_repo+'" "'+user+'" "'+cloning_repo+'" '
     for c in changed_files:
         comm+='"'+c+'" '
     print 'running autoncore code as: '+comm
     subprocess.Popen(comm,shell=True)
-    #call(comm,shell=True)
     r=""
-    #r = str(r)
-    #request.session['updated_files'] = j['head_commit']['modified']
     return render_to_response('msg.html',{'msg': ''+s+'<>'+r},context_instance=RequestContext(request))
 
 
@@ -238,8 +207,10 @@ def login(request):
 
 
 def logout(request):
-    request.logout()
-    return HttpResponseRedirect('/')
+    logout(request)
+    return render_to_response('msg.html',{'msg':'logged out' },context_instance=RequestContext(request))
+
+
 
 
 def login_get_access(request):
