@@ -1,7 +1,7 @@
 {% extends "base.html"%}
 {%block teapot%}
 {% if user.is_authenticated %}
-	<p>Welcome, {{ user.get_username }}.{{user.get_email}} Thanks for logging in.</p>
+	<p>Welcome, {{ request.user.username }}.{{request.user.email}} Thanks for logging in.</p>
 {% else %}
     <p>Welcome, new user. Please log in.</p>
 {% endif %}
