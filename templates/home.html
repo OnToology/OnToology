@@ -2,7 +2,7 @@
 {%block teapot%}
 {% if user.is_authenticated %}
 	<img src="{{avatar_url}}" class="img-circle" height="50px"/>
-	<span>Welcome, {{ user.username }}.</span>
+	<span>{{ user.username }}</span>
 
 {% else %}
     <p><a href="/login">Login through linkedin</a></p>
