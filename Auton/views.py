@@ -219,9 +219,15 @@ def add_hook(request):
     return render_to_response('msg.html',{'msg': ''+s+'<>'+r},context_instance=RequestContext(request))
 
 
+
+
+
+
+
+
 ##The below line is for login
 def login(request):
-    redirect_url = host+'login_get_access'
+    redirect_url = host+'/login_get_access'
     sec = ''.join([random.choice(string.ascii_letters+string.digits) for _ in range(9)])
     request.session['state'] = sec
     redirect_url = "https://github.com/login/oauth/authorize?client_id="+client_id+"&redirect_uri="+redirect_url+"&scope="+"&state="+sec
