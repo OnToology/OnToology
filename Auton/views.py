@@ -66,7 +66,7 @@ def home(request):
 #         for k in i:
 #             print k+""+str(i[k])
 #         print "------------------------"
-    return render_to_response('home.html',{'repos': repos},context_instance=RequestContext(request))
+    return render_to_response('home.html',{'repos': repos, 'user': request.user},context_instance=RequestContext(request))
 
         
 
