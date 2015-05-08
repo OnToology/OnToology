@@ -237,6 +237,9 @@ def login(request):
 
 
 
+def logout(request):
+    request.logout()
+    return HttpResponseRedirect('/')
 
 
 def login_get_access(request):
