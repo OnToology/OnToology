@@ -1,15 +1,5 @@
 {% extends "base.html"%}
-{%block teapot%}
-{% if user.is_authenticated %}
-	<img src="{{avatar_url}}" class="img-circle" height="50px"/>
-	<span>{{ user.username }}</span>
-	<a href="/logout">Logout</a>
 
-{% else %}
-	<img src="{{avatar_url}}" class="img-circle" height="50px"/>
-   <a href="/login">Login through Github</a>
-{% endif %}
-{% endblock %}
 {%block body%}
 
 </br></br>
