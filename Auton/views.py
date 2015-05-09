@@ -211,7 +211,8 @@ def login(request):
 
 def logout(request):
     django_logout(request)
-    return render_to_response('msg.html',{'msg':'logged out' },context_instance=RequestContext(request))
+    return HttpResponseRedirect('/')
+    #return render_to_response('msg.html',{'msg':'logged out' },context_instance=RequestContext(request))
 
 
 
