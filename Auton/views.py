@@ -64,9 +64,10 @@ def home(request):
         webhook_access_url, state = webhook_access(client_id,host+'/get_access_token')
         request.session['target_repo'] = target_repo
         request.session['state'] = state
-        if request.user.is_authenticated():            
+        if request.user.is_authenticated():    
             ouser = OUser.objects.get(email=request.user.email)
             ouser.repos.append(target_repo)
+            ouser.save()
         return  HttpResponseRedirect(webhook_access_url)
 #     repos = []
 #     for orir in Repo.objects.all():
