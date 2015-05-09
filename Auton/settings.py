@@ -97,7 +97,7 @@ WSGI_APPLICATION = 'Auton.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django_mongodb_engine',#'django.db.backends.dummy',
+        'ENGINE': 'django.db.backends.dummy',
     }
 }
 
