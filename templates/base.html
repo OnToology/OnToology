@@ -67,8 +67,10 @@
                 	<-->
                 	{%block teapot%}
 						{% if request.user.is_authenticated %}
-							<img src="{{request.session.avatar_url}}" class="img-circle" height="50px"/>
-							<span>{{ user.username }}</span>
+							<a href="/profile">
+								<img src="{{request.session.avatar_url}}" class="img-circle" height="50px"/>
+								<span>{{ user.username }}</span>
+							</a>
 							<p><a href="/logout">Logout</a></p>
 						
 						{% else %}
