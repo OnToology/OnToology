@@ -58,15 +58,20 @@ def get_repos_formatted(the_repos):
     return repos
 
 
+
+
 def home(request):
     if 'target_repo' in request.GET:
         target_repo = request.GET['target_repo']
         webhook_access_url, state = webhook_access(client_id,host+'/get_access_token')
         request.session['target_repo'] = target_repo
-        request.session['state'] = state
+        request.session['state'] = state                
+        repo = Repo()
+        repo.url=target_repo
+        repo.save()
         if request.user.is_authenticated():    
             ouser = OUser.objects.get(email=request.user.email)
-            ouser.repos.append(target_repo)
+            ouser.repos.append(repo)
             ouser.save()
         return  HttpResponseRedirect(webhook_access_url)
 #     repos = []
