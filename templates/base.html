@@ -66,7 +66,7 @@
                   <li {% block home_head %} class="active" {% endblock %} ><a href="/">Home</a></li>
                 	<-->
                 	{%block teapot%}
-						{% if user.is_authenticated %}
+						{% if user.is_authenticated() %}
 							<img src="{{request.session.avatar_url}}" class="img-circle" height="50px"/>
 							<span>{{ user.username }}</span>
 							<p><a href="/logout">Logout</a></p>
