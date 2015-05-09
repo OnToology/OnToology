@@ -266,6 +266,7 @@ def login_get_access(request):
     g = Github(access_token)
     email = g.get_user().email
     request.session['avatar_url'] = g.get_user().avatar_url
+    print 'avatar_url: '+request.session['avatar_url']
     try:
         user = OUser.objects.get(email=email)
         user.backend = 'mongoengine.django.auth.MongoEngineBackend'
