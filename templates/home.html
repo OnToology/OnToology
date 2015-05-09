@@ -6,7 +6,8 @@
 	<a href="/logout">Logout</a>
 
 {% else %}
-    <p><a href="/login">Login through linkedin</a></p>
+	<img src="{{avatar_url}}" class="img-circle" height="50px"/>
+   <a href="/login">Login through Github</a>
 {% endif %}
 {% endblock %}
 {%block body%}

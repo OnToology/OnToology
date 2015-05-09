@@ -67,7 +67,7 @@ def home(request):
 #             print k+""+str(i[k])
 #         print "------------------------"
     if 'avatar_url' not in request.session:
-        request.session['avatar_url'] = ''
+        request.session['avatar_url'] = 'https://assets-cdn.github.com/images/modules/logos_page/Octocat.png'
     return render_to_response('home.html',{'repos': repos, 'user': request.user, 'avatar_url': request.session['avatar_url']},context_instance=RequestContext(request))
 
         
