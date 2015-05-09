@@ -89,7 +89,7 @@ def home(request):
 #         r['monitoring'] = monit
 #         repos.append(r)
     repos = get_repos_formatted(Repo.objects.all())
-    if 'avatar_url' not in request.session:
+    if not request.user.is_authenticated():
         request.session['avatar_url'] ='https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png'
         #request.session['avatar_url'] = 'https://assets-cdn.github.com/images/modules/logos_page/Octocat.png'
     #return render_to_response('home.html',{'repos': repos, 'user': request.user, 'avatar_url': request.session['avatar_url']},context_instance=RequestContext(request))
