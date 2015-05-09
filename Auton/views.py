@@ -33,15 +33,10 @@ client_secret = settings.GITHUB_API_SECRET#'60014ba718601441f542213855607810573c
 
 
 
-def home(request):
-    if 'target_repo' in request.GET:
-        target_repo = request.GET['target_repo']
-        webhook_access_url, state = webhook_access(client_id,host+'/get_access_token')
-        request.session['target_repo'] = target_repo
-        request.session['state'] = state
-        return  HttpResponseRedirect(webhook_access_url)
+
+def get_repos_formatted(the_repos):
     repos = []
-    for orir in Repo.objects.all():
+    for orir in the_repos:
         r = {}
         for ke in orir:
             r[ke]  = orir[ke]
@@ -60,6 +55,37 @@ def home(request):
             monit+="=".join(keyval) +","
         r['monitoring'] = monit
         repos.append(r)
+    return repos
+
+
+def home(request):
+    if 'target_repo' in request.GET:
+        target_repo = request.GET['target_repo']
+        webhook_access_url, state = webhook_access(client_id,host+'/get_access_token')
+        request.session['target_repo'] = target_repo
+        request.session['state'] = state
+        return  HttpResponseRedirect(webhook_access_url)
+#     repos = []
+#     for orir in Repo.objects.all():
+#         r = {}
+#         for ke in orir:
+#             r[ke]  = orir[ke]
+#         tools = r['monitoring'].split(",")
+#         monit=""
+#         for t in tools:   
+#             keyval = t.split("=")
+#             if len(keyval) != 2:
+#                 break
+#             if keyval[1].lower().strip()=='true':
+#                 keyval[1]='Yes'
+#             else:
+#                 keyval[1]='No'
+#             print r['url']+" "+keyval[0]+"="+str(keyval[1])
+#             r[keyval[0].strip()]=keyval[1]
+#             monit+="=".join(keyval) +","
+#         r['monitoring'] = monit
+#         repos.append(r)
+    repos = get_repos_formatted(Repo.objects.all())
     if 'avatar_url' not in request.session:
         request.session['avatar_url'] ='https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png'
         #request.session['avatar_url'] = 'https://assets-cdn.github.com/images/modules/logos_page/Octocat.png'
@@ -249,8 +275,8 @@ def login_get_access(request):
 
 
 @login_required
-def testlogin(request):
-    return render_to_response('msg.html',{'msg': 'The user is logged it'},context_instance=RequestContext(request))
+def profile(request):
+    return render_to_response('profile.html',{'repos': get_repos_formatted(Repo.objects.all())},context_instance=RequestContext(request))
 
 
 
