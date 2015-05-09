@@ -3,6 +3,7 @@
 {% if user.is_authenticated %}
 	<img src="{{avatar_url}}" class="img-circle" height="50px"/>
 	<span>{{ user.username }}</span>
+	<a href="/logout">Logout</a>
 
 {% else %}
     <p><a href="/login">Login through linkedin</a></p>

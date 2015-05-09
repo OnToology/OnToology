@@ -34,11 +34,6 @@ The description of the project and the live development are being documented her
 
 
 
-###The configuration file (the parameters in the configuration file is not finalized), if not included the system will use default configuration
-
-
-
-
 ### used python libraries:
 * django
 * pygithub
