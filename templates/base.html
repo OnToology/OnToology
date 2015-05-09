@@ -67,12 +67,12 @@
                 	<-->
                 	{%block teapot%}
 						{% if user.is_authenticated %}
-							<img src="{{avatar_url}}" class="img-circle" height="50px"/>
+							<img src="{{request.session.avatar_url}}" class="img-circle" height="50px"/>
 							<span>{{ user.username }}</span>
 							<p><a href="/logout">Logout</a></p>
 						
 						{% else %}
-							<img src="{{avatar_url}}" class="img-circle" height="50px"/>
+							<img src="{{request.session.avatar_url}}" class="img-circle" height="50px"/>
 						   <a href="/login">Login through Github</a>
 						{% endif %}
 					{% endblock %}
