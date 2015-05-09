@@ -64,6 +64,9 @@ def home(request):
         webhook_access_url, state = webhook_access(client_id,host+'/get_access_token')
         request.session['target_repo'] = target_repo
         request.session['state'] = state
+        if request.user.is_authenticated():            
+            ouser = OUser.objects.get(email=request.user.email)
+            ouser.repos.append(target_repo)
         return  HttpResponseRedirect(webhook_access_url)
 #     repos = []
 #     for orir in Repo.objects.all():
@@ -89,9 +92,9 @@ def home(request):
     if 'avatar_url' not in request.session:
         request.session['avatar_url'] ='https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png'
         #request.session['avatar_url'] = 'https://assets-cdn.github.com/images/modules/logos_page/Octocat.png'
-    return render_to_response('home.html',{'repos': repos, 'user': request.user, 'avatar_url': request.session['avatar_url']},context_instance=RequestContext(request))
+    #return render_to_response('home.html',{'repos': repos, 'user': request.user, 'avatar_url': request.session['avatar_url']},context_instance=RequestContext(request))
     #return render('home.html',{'repos': repos, 'user': request.user, 'avatar_url': request.session['avatar_url']})
-        
+    return render('home.html',{'repos': repos, 'user': request.user })    
 
 
 
@@ -276,7 +279,8 @@ def login_get_access(request):
 
 @login_required
 def profile(request):
-    return render_to_response('profile.html',{'repos': get_repos_formatted(Repo.objects.all())},context_instance=RequestContext(request))
+    ouser = OUser.objects.get(email=request.user.email)
+    return render_to_response('profile.html',{'repos': get_repos_formatted(ouser.repos)},context_instance=RequestContext(request))
 
 
 
