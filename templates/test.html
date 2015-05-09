@@ -21,20 +21,22 @@
 
 <!-- Latest compiled and minified CSS -->
 	
-	
+	<!-- Optional theme -->
+
+
 	<!-- Jquery -->
-	<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-	<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-	
-	
+	<script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+	<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+
+
+	<!-- Latest compiled and minified JavaScript-->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 	
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
 	<link rel="stylesheet" href="http://getbootstrap.com/examples/cover/cover.css">
-	<!-- Latest compiled and minified JavaScript-->
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 
-	<!-- This is for bootstrap switch only-->
+	<!-- This is for bootstrap switch only [for testing purposes]-->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css">
 
@@ -64,24 +66,28 @@
                 <ul class="nav masthead-nav">
                   <!-- >
                   <li {% block home_head %} class="active" {% endblock %} ><a href="/">Home</a></li>
+
                 	<-->
-                	{%block teapot%}
-						{% if user.is_authenticated %}
-							<img src="{{avatar_url}}" class="img-circle" height="50px"/>
-							<span>{{ user.username }}</span>
-							<p><a href="/logout">Logout</a></p>
-						
-						{% else %}
-							<img src="{{avatar_url}}" class="img-circle" height="50px"/>
-						   <a href="/login">Login through Github</a>
-						{% endif %}
-					{% endblock %}
-                </ul>
-              </nav>
-            </div>
-            </br></br>
-            {% block body%}
-            {% endblock %}
+
+
+
+<input type="checkbox" name="my-checkbox" checked>
+
+<script>
+$("[name='my-checkbox']").bootstrapSwitch();
+
+$('input[name="my-checkbox"]').on('switchChange.bootstrapSwitch', function(event, state) {
+	  console.log(this); // DOM element
+	  console.log(event); // jQuery event
+	  console.log(state); // true | false
+	  
+	});
+
+</script>
+
+
+
+
           </div>
 
 		  
@@ -107,8 +113,7 @@
       </div>
 
     </div>
-	{%block bel%}
-	{% endblock %}
+
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) >
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed >
