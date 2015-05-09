@@ -58,14 +58,8 @@ def home(request):
             print r['url']+" "+keyval[0]+"="+str(keyval[1])
             r[keyval[0].strip()]=keyval[1]
             monit+="=".join(keyval) +","
-        #print " original: "+orir.monitoring
-        #print "++++++++++++++++++++++++++++++++++"
         r['monitoring'] = monit
         repos.append(r)
-#     for i in repos:
-#         for k in i:
-#             print k+""+str(i[k])
-#         print "------------------------"
     if 'avatar_url' not in request.session:
         request.session['avatar_url'] ='https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png'
         #request.session['avatar_url'] = 'https://assets-cdn.github.com/images/modules/logos_page/Octocat.png'

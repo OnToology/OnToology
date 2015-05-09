@@ -1,0 +1,40 @@
+{% extends "base.html"%}
+{%block body%}
+
+<input type="checkbox" name="my-checkbox" checked>
+
+<script>
+$("[name='my-checkbox']").bootstrapSwitch();
+
+$('input[name="my-checkbox"]').on('switchChange.bootstrapSwitch', function(event, state) {
+	  console.log(this); // DOM element
+	  console.log(event); // jQuery event
+	  console.log(state); // true | false
+	});
+
+</script>
+
+<table class="table table-striped">
+<tr class="highl">
+	<td>Repository</td>
+	<td>Status</td>
+	<td>Log file</td>
+	<td>Last used</td>
+	<td>ar2dtool</td>
+	<td>OOPS</td>
+	<td >Widoco</td>
+</tr>
+{%for r in repos%}
+	<tr>
+		<td><a href="http://github.com/{{r.url}}">{{r.url}}</a></td>
+		<td>{{r.state}}</td>
+		<td><a href="media/logs/{{r.owner}}.log">log</a></td>
+		<td>{{r.last_used}}</td>
+		<td>{{r.ar2dtool_enable}}</td>
+		<td>{{r.oops_enable}}</td>
+		<td>{{r.widoco_enable}}</td>
+	<tr>
+{%endfor%}
+</table>
+{% endblock %}
+
