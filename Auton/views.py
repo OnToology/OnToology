@@ -336,24 +336,24 @@ def parse_folder_for_ontologies(ontologies_abs_folder):
     return ontologies
 
 
-
-ontologies=[] 
-ontologies_abs_folder = '/home/ubuntu/temp/ahmad88me@gmail.com'
-print 'will be searching in: '+ontologies_abs_folder
-for root, dirs, files in os.walk(ontologies_abs_folder):
-    for name in files:
-        if name=="auton.cfg":
-            ontologies.append({'ontology': os.path.join(root, name)})
-        else:
-            print 'name: '+name
-
-
-for o in ontologies:
-    confs = get_auton_configuration(f=None, abs_folder=o['ontology'])
-    for c in confs:
-        tool = c.replace('_enable','')
-        o[tool] = confs[c]
-return ontologies
+# 
+# ontologies=[] 
+# ontologies_abs_folder = '/home/ubuntu/temp/ahmad88me@gmail.com'
+# print 'will be searching in: '+ontologies_abs_folder
+# for root, dirs, files in os.walk(ontologies_abs_folder):
+#     for name in files:
+#         if name=="auton.cfg":
+#             ontologies.append({'ontology': os.path.join(root, name)})
+#         else:
+#             print 'name: '+name
+# 
+# 
+# for o in ontologies:
+#     confs = get_auton_configuration(f=None, abs_folder=o['ontology'])
+#     for c in confs:
+#         tool = c.replace('_enable','')
+#         o[tool] = confs[c]
+# return ontologies
 
 
 
