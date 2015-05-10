@@ -287,8 +287,12 @@ def login_get_access(request):
 
 @login_required
 def profile(request):
+    print '**************************************'
+    print '**************************************'
+    print '**************************************'
     ouser = OUser.objects.get(email=request.user.email)
     if 'repo' in request.GET:
+        print 'got the repo'
         try:
             print 'trying to validate repo' 
             ouser.repos.get(url=request.GET['repo'])
