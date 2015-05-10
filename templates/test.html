@@ -94,12 +94,12 @@ $( document ).ready(function() {
 
 
 	$("[name='my-checkbox']").bootstrapSwitch();
-
+	//$("[name='my-checkbox']").bootstrapSwitch('state',false);
+	alert($("[name='my-checkbox']").bootstrapSwitch('state'));
 	$('input[name="my-checkbox"]').on('switchChange.bootstrapSwitch', function(event, state) {
 		  console.log(this); // DOM element
 		  console.log(event); // jQuery event
 		  console.log(state); // true | false
-		  
 		});
 	
 	$("tr").click(function() {

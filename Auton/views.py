@@ -287,7 +287,7 @@ def login_get_access(request):
 
 @login_required
 def profile(request):
-    prepare_log('newauton')
+    prepare_log('webinterface-'+request.user.email)
     print '**************************************'
     print '**************************************'
     print '**************************************'

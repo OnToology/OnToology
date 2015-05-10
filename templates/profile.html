@@ -73,6 +73,7 @@ $( document ).ready(function() {
 {%for o in ontologies%}
 	<tr class="ontology" >
 		<td>{{o.ontology}}</td>
+		
 		<td><input type="checkbox" name="{{o.ontology}}-ar2dtool" checked>
 </td>
 		<td><input type="checkbox" name="{{o.ontology}}-oops" checked>
@@ -95,10 +96,9 @@ $( document ).ready(function() {
 <script>
 $( document ).ready(function() {
 	{%for o in ontologies%}
-		$("[name='{{o.ontology}}-ar2dtool']").bootstrapSwitch();
-		$("[name='{{o.ontology}}-oops']").bootstrapSwitch();
-		$("[name='{{o.ontology}}-widoco']").bootstrapSwitch();
-
+		$("[name='{{o.ontology}}-ar2dtool']").bootstrapSwitch('state',{{o.ar2dtool}});
+		$("[name='{{o.ontology}}-oops']").bootstrapSwitch('state',{{o.oops}});
+		$("[name='{{o.ontology}}-widoco']").bootstrapSwitch('state',{{o.widoco}});
 	{%endfor%}
 
 });
