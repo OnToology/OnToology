@@ -1,7 +1,6 @@
 {% extends "base.html"%}
 {%block body%}
 
-<input type="checkbox" name="my-checkbox" checked>
 
 <script>
 function GetURLParameter(sParam)
@@ -20,13 +19,6 @@ function GetURLParameter(sParam)
 }
 
 $( document ).ready(function() {
-	$("[name='my-checkbox']").bootstrapSwitch();
-	$('input[name="my-checkbox"]').on('switchChange.bootstrapSwitch', function(event, state) {
-		  console.log(this); // DOM element
-		  console.log(event); // jQuery event
-		  console.log(state); // true | false
-		  
-		});
 	
 	$("tr").click(function() {
 		 window.location.href = "?repo="+$(this).attr('url');
@@ -48,7 +40,7 @@ $( document ).ready(function() {
 </script>
 
 <table class="table table-hover">
-<tr class="highl tableheader">
+<tr class="">
 	<td>Repository</td>
 	<td>Status</td>
 	<td>Last used</td>
@@ -67,5 +59,31 @@ $( document ).ready(function() {
 	<tr>
 {%endfor%}
 </table>
+
+
+
+<table class="table table-hover">
+<tr class="">
+	<td>Ontology</td>
+	<td>ar2dtool</td>
+	<td>OOPS</td>
+	<td >Widoco</td>
+</tr>
+{%for o in ontologies%}
+	<tr class="repo" url="{{r.url}}">
+		<td>{{o.ontology}}</td>
+		<td><input type="checkbox" name="{{o.ontology}}-ar2dtool" checked>
+</td>
+		<td><input type="checkbox" name="{{o.ontology}}-oops" checked>
+</td>
+		<td><input type="checkbox" name="{{o.ontology}}widoco" checked>
+</td>
+	<tr>
+{%endfor%}
+</table>
+
+
+
+
 {% endblock %}
 
