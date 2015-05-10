@@ -171,10 +171,13 @@ def fork_repo(target_repo,username,password):
 def clone_repo(cloning_repo,parent_folder,dosleep=True):
     if dosleep:
         time.sleep(sleeping_time)#the wait time to give github sometime so the repo can be cloned
-    comm =  "rm"+" -Rf "+home+parent_folder
-    comm+= ' >> "'+log_file_dir+'"'
-    print comm
-    call(comm, shell=True)
+    try:
+        comm =  "rm"+" -Rf "+home+parent_folder
+        comm+= ' >> "'+log_file_dir+'"'
+        print comm
+        call(comm, shell=True)
+    except:
+        print 'rm failed'
     comm = "git"+" clone"+" "+cloning_repo+" "+home+parent_folder
     comm+= ' >> "'+log_file_dir+'"'
     print comm
