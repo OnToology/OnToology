@@ -321,6 +321,7 @@ def profile(request):
 
 def parse_folder_for_ontologies(ontologies_abs_folder):        
     ontologies=[] 
+    print 'will be searching in: '+ontologies_abs_folder
     for root, dirs, files in os.walk(ontologies_abs_folder):
         for name in files:
             if name=="auton.cfg":
