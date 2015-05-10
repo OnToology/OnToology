@@ -168,8 +168,9 @@ def fork_repo(target_repo,username,password):
 
 
 #def clone_repo(cloning_repo,user):
-def clone_repo(cloning_repo,parent_folder):
-    time.sleep(sleeping_time)#the wait time to give github sometime so the repo can be cloned
+def clone_repo(cloning_repo,parent_folder,dosleep=True):
+    if dosleep:
+        time.sleep(sleeping_time)#the wait time to give github sometime so the repo can be cloned
     comm =  "rm"+" -Rf "+home+parent_folder
     comm+= ' >> "'+log_file_dir+'"'
     print comm

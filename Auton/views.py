@@ -290,7 +290,7 @@ def profile(request):
     ouser = OUser.objects.get(email=request.user.email)
     if 'repo' in request.GET:
         if request.GET['repo'] in ouser.repos:
-            ontologies_abs_folder = clone_repo(request.GET['repo'], request.user.email)
+            ontologies_abs_folder = clone_repo(request.GET['repo'], request.user.email, dosleep=False)
             ontologies = parse_folder_for_ontologies(ontologies_abs_folder)
             return render_to_response('profile.html',{'repos': get_repos_formatted(ouser.repos), 'ontologies': ontologies},context_instance=RequestContext(request))
     return render_to_response('profile.html',{'repos': get_repos_formatted(ouser.repos)},context_instance=RequestContext(request))
