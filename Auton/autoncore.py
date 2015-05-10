@@ -766,11 +766,13 @@ def build_file_structure(file_with_rel_dir,category_folder='',abs_home=''):#e.g.
 ################################ Database functions #########################################
 #############################################################################################
 
-if use_database:
-    from models import Repo
+#if use_database:
+#    from Auton.models import Repo
+#import it for now
+from Auton.models import Repo
 def change_status(target_repo, state):
     if not use_database:
-        return
+        return ''
     try:
         repo = Repo.objects.get(url=target_repo)
         repo.last_used = datetime.today()
