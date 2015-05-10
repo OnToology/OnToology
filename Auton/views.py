@@ -304,7 +304,7 @@ def profile(request):
             if hackatt: # trying to access a repo that does not belong to the use currently logged in
                 return render(request,'msg.html',{'msg': 'This repo is not added, please do so in the main page'})
             print 'try to get abs folder'
-            ontologies_abs_folder = clone_repo(request.GET['repo'], request.user.email, dosleep=False)
+            ontologies_abs_folder = clone_repo('git@github.com:'+request.GET['repo'], request.user.email, dosleep=False)
             print 'abs folder: '+ontologies_abs_folder
             ontologies = parse_folder_for_ontologies(ontologies_abs_folder)
             print 'ontologies: '+str(len(ontologies))
@@ -335,6 +335,25 @@ def parse_folder_for_ontologies(ontologies_abs_folder):
             o[tool] = confs[c]
     return ontologies
 
+
+
+ontologies=[] 
+ontologies_abs_folder = '/home/ubuntu/temp/ahmad88me@gmail.com'
+print 'will be searching in: '+ontologies_abs_folder
+for root, dirs, files in os.walk(ontologies_abs_folder):
+    for name in files:
+        if name=="auton.cfg":
+            ontologies.append({'ontology': os.path.join(root, name)})
+        else:
+            print 'name: '+name
+
+
+for o in ontologies:
+    confs = get_auton_configuration(f=None, abs_folder=o['ontology'])
+    for c in confs:
+        tool = c.replace('_enable','')
+        o[tool] = confs[c]
+return ontologies
 
 
 
