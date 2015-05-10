@@ -4,31 +4,53 @@
 <input type="checkbox" name="my-checkbox" checked>
 
 <script>
-$("[name='my-checkbox']").bootstrapSwitch();
+function GetURLParameter(sParam)
+{
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++)
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam)
+        {
+            return sParameterName[1];
+        }
+    }
+    return '';
+}
 
-$('input[name="my-checkbox"]').on('switchChange.bootstrapSwitch', function(event, state) {
-	  console.log(this); // DOM element
-	  console.log(event); // jQuery event
-	  console.log(state); // true | false
+$( document ).ready(function() {
+	$("[name='my-checkbox']").bootstrapSwitch();
+	$('input[name="my-checkbox"]').on('switchChange.bootstrapSwitch', function(event, state) {
+		  console.log(this); // DOM element
+		  console.log(event); // jQuery event
+		  console.log(state); // true | false
+		  
+		});
+	
+	$("tr").click(function() {
+		 window.location.href = $(this).attr('url');
 	});
-
+});
 </script>
 
-<table class="table table-striped">
+<table class="table table-hover">
 <tr class="highl">
 	<td>Repository</td>
 	<td>Status</td>
-	<td>Log file</td>
 	<td>Last used</td>
 	<td>ar2dtool</td>
 	<td>OOPS</td>
 	<td >Widoco</td>
 </tr>
 {%for r in repos%}
-	<tr>
+	{% if GetURLParameter('repo')=='' %}
+	<tr url="?repo={{r.url}}">
+	{%else%}
+	<tr class='highl' url="?repo={{r.url}}">
+	{%endif%}
 		<td><a href="http://github.com/{{r.url}}">{{r.url}}</a></td>
 		<td>{{r.state}}</td>
-		<td><a href="media/logs/{{r.owner}}.log">log</a></td>
 		<td>{{r.last_used}}</td>
 		<td>{{r.ar2dtool_enable}}</td>
 		<td>{{r.oops_enable}}</td>

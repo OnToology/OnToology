@@ -286,8 +286,11 @@ def login_get_access(request):
 
 @login_required
 def profile(request):
-    ouser = OUser.objects.get(email=request.user.email)
-    return render_to_response('profile.html',{'repos': get_repos_formatted(ouser.repos)},context_instance=RequestContext(request))
+    if 'repo' in request.GET:
+        
+    else: 
+        ouser = OUser.objects.get(email=request.user.email)
+        return render_to_response('profile.html',{'repos': get_repos_formatted(ouser.repos)},context_instance=RequestContext(request))
 
 
 

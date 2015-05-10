@@ -73,17 +73,65 @@
 
 <input type="checkbox" name="my-checkbox" checked>
 
-<script>
-$("[name='my-checkbox']").bootstrapSwitch();
 
-$('input[name="my-checkbox"]').on('switchChange.bootstrapSwitch', function(event, state) {
-	  console.log(this); // DOM element
-	  console.log(event); // jQuery event
-	  console.log(state); // true | false
-	  
+
+<script>
+
+
+$( document ).ready(function() {
+
+
+	$("[name='my-checkbox']").bootstrapSwitch();
+
+	$('input[name="my-checkbox"]').on('switchChange.bootstrapSwitch', function(event, state) {
+		  console.log(this); // DOM element
+		  console.log(event); // jQuery event
+		  console.log(state); // true | false
+		  
+		});
+	
+	$("tr").click(function() {
+		
+	    alert($(this).attr('url'));
+	    window.location.href = '##';
+	});
+	$("p").click(function() {
+		alert('clicked');
+	    alert($(this).attr('url'));
 	});
 
+});
 </script>
+
+<table class="table table-hover">
+	<tr class="highl">
+		<td>Repository</td>
+		<td>Status</td>
+		<td>Log file</td>
+		<td>Last used</td>
+		<td>ar2dtool</td>
+		<td>OOPS</td>
+		<td >Widoco</td>
+	</tr>
+	
+	<tr class="myr" url="yaaay working">
+		<td><a href="#">ahmad88me/target</a></td>
+		<td> anystate</td>
+		<td>log</td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+	<tr>
+</table>
+
+<p>This is a testing paragraph</p>
+
+
+
+
+
+
 
 
 
