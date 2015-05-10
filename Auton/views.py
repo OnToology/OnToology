@@ -325,7 +325,7 @@ def parse_folder_for_ontologies(ontologies_abs_folder):
     for root, dirs, files in os.walk(ontologies_abs_folder):
         for name in files:
             if name=="auton.cfg":
-                ontologies.append({'ontology': os.path.join(root, name)})
+                ontologies.append({'ontology': root})#os.path.join(root, name)})
             else:
                 print 'name: '+name
     for o in ontologies:
