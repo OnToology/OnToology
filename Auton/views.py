@@ -289,10 +289,13 @@ def login_get_access(request):
 def profile(request):
     ouser = OUser.objects.get(email=request.user.email)
     if 'repo' in request.GET:
-        if request.GET['repo'] in ouser.repos:
+        try: 
+            ouser.repos.get(url=request.GET['repo'])
             ontologies_abs_folder = clone_repo(request.GET['repo'], request.user.email, dosleep=False)
             ontologies = parse_folder_for_ontologies(ontologies_abs_folder)
             return render_to_response('profile.html',{'repos': get_repos_formatted(ouser.repos), 'ontologies': ontologies},context_instance=RequestContext(request))
+        except:
+            pass
     return render_to_response('profile.html',{'repos': get_repos_formatted(ouser.repos)},context_instance=RequestContext(request))
 
 
