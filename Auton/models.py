@@ -1,4 +1,4 @@
-from mongoengine import *
+from mongoengine import Document,StringField,DateTimeField,ListField,ReferenceField
 #from mongoengine.django.auth import User
 from datetime import datetime
 from mongoengine.django.auth import User
