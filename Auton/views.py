@@ -15,7 +15,7 @@ import settings
 import string
 import random
 from datetime import datetime
-from autoncore import git_magic, add_webhook, webhook_access, update_g, add_collaborator, get_auton_configuration, clone_repo
+from autoncore import git_magic, add_webhook, webhook_access, update_g, add_collaborator, get_auton_configuration, clone_repo, prepare_log
 from models import *
 import requests
 import json
@@ -287,6 +287,7 @@ def login_get_access(request):
 
 @login_required
 def profile(request):
+    prepare_log('newauton')
     print '**************************************'
     print '**************************************'
     print '**************************************'
