@@ -296,7 +296,13 @@ def profile(request):
         print 'got the repo'
         try:
             print 'trying to validate repo' 
-            ouser.repos.get(url=request.GET['repo'])
+            hackatt = True
+            for repo  in  ouser.repos:
+                if repo.url == request.GET['repo']:
+                    hackatt=False
+                    break
+            if hackatt: # trying to access a repo that does not belong to the use currently logged in
+                return render(request,'msg.html',{'msg': 'This repo is not added, please do so in the main page'})
             print 'try to get abs folder'
             ontologies_abs_folder = clone_repo(request.GET['repo'], request.user.email, dosleep=False)
             print 'abs folder: '+ontologies_abs_folder
