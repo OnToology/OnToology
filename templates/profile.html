@@ -29,13 +29,26 @@ $( document ).ready(function() {
 		});
 	
 	$("tr").click(function() {
-		 window.location.href = $(this).attr('url');
+		 window.location.href = "?repo="+$(this).attr('url');
 	});
+	
+	$('.repo').each(function(){
+		var r = GetURLParameter('repo');
+		//alert("<"+r+">");
+		if (r==$(this).attr('url')){
+			$(this).addClass("highl");
+		}
+		else{
+			$(this).removeClass("highl");			
+		}
+	});
+
+	
 });
 </script>
 
 <table class="table table-hover">
-<tr class="highl">
+<tr class="highl tableheader">
 	<td>Repository</td>
 	<td>Status</td>
 	<td>Last used</td>
@@ -44,11 +57,7 @@ $( document ).ready(function() {
 	<td >Widoco</td>
 </tr>
 {%for r in repos%}
-	{% if GetURLParameter('repo')=='' %}
-	<tr url="?repo={{r.url}}">
-	{%else%}
-	<tr class='highl' url="?repo={{r.url}}">
-	{%endif%}
+	<tr class="repo" url="{{r.url}}">
 		<td><a href="http://github.com/{{r.url}}">{{r.url}}</a></td>
 		<td>{{r.state}}</td>
 		<td>{{r.last_used}}</td>

@@ -74,10 +74,22 @@
 <input type="checkbox" name="my-checkbox" checked>
 
 
-
 <script>
 
-
+function GetURLParameter(sParam)
+{
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++)
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam)
+        {
+            return sParameterName[1];
+        }
+    }
+    return '';
+}
 $( document ).ready(function() {
 
 
@@ -92,19 +104,31 @@ $( document ).ready(function() {
 	
 	$("tr").click(function() {
 		
-	    alert($(this).attr('url'));
-	    window.location.href = '##';
+	    //alert($(this).attr('url'));
+	    window.location.href = '?repo='+$(this).attr('url');
 	});
 	$("p").click(function() {
 		alert('clicked');
 	    alert($(this).attr('url'));
 	});
 
+	$('.repo').each(function(){
+		var r = GetURLParameter('repo');
+		//alert("<"+r+">");
+		if (r==$(this).attr('url')){
+			$(this).addClass("highl");
+		}
+		else{
+			$(this).removeClass("highl");			
+		}
+	});
+
+	
 });
 </script>
 
 <table class="table table-hover">
-	<tr class="highl">
+	<tr class="">
 		<td>Repository</td>
 		<td>Status</td>
 		<td>Log file</td>
@@ -114,8 +138,18 @@ $( document ).ready(function() {
 		<td >Widoco</td>
 	</tr>
 	
-	<tr class="myr" url="yaaay working">
-		<td><a href="#">ahmad88me/target</a></td>
+	<tr class="repo" url="ahmad">
+		<td>ahmad88me/target</td>
+		<td> anystate</td>
+		<td>log</td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+	<tr>
+	
+		<tr class="repo" url="daniel">
+		<td>daniel/target</td>
 		<td> anystate</td>
 		<td>log</td>
 		<td></td>
