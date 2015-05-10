@@ -310,7 +310,7 @@ def profile(request):
             print 'ontologies: '+str(len(ontologies))
             for o in ontologies:
                 for d in o:
-                    print d+': '+o[d]
+                    print d+': '+str(o[d])
             return render_to_response('profile.html',{'repos': get_repos_formatted(ouser.repos), 'ontologies': ontologies},context_instance=RequestContext(request))
         except:
             pass
@@ -326,8 +326,6 @@ def parse_folder_for_ontologies(ontologies_abs_folder):
         for name in files:
             if name=="auton.cfg":
                 ontologies.append({'ontology': root})#os.path.join(root, name)})
-            else:
-                print 'name: '+name
     for o in ontologies:
         confs = get_auton_configuration(f=None, abs_folder=o['ontology'])
         for c in confs:
@@ -336,24 +334,30 @@ def parse_folder_for_ontologies(ontologies_abs_folder):
     return ontologies
 
 
-# 
+ 
 # ontologies=[] 
-# ontologies_abs_folder = '/home/ubuntu/temp/ahmad88me@gmail.com'
 # print 'will be searching in: '+ontologies_abs_folder
 # for root, dirs, files in os.walk(ontologies_abs_folder):
 #     for name in files:
 #         if name=="auton.cfg":
-#             ontologies.append({'ontology': os.path.join(root, name)})
+#             ontologies.append({'ontology': root})#os.path.join(root, name)})
 #         else:
 #             print 'name: '+name
-# 
-# 
+#  
+#  
 # for o in ontologies:
-#     confs = get_auton_configuration(f=None, abs_folder=o['ontology'])
+#     confs =get_auton_configuration(f=None, abs_folder=o['ontology'])
 #     for c in confs:
 #         tool = c.replace('_enable','')
 #         o[tool] = confs[c]
-# return ontologies
+# 
+# 
+# 
+# for o in ontologies:
+#     for d in o:
+#         print d+': '+str(o[d])
+
+
 
 
 
