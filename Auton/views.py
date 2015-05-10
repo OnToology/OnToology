@@ -287,8 +287,8 @@ def login_get_access(request):
 
 @login_required
 def profile(request):
-    #prepare_log('newauton')
-    print '**************************************'
+    prepare_log('newauton')
+    print ' new **************************************'
     print '**************************************'
     print '**************************************'
     ouser = OUser.objects.get(email=request.user.email)
@@ -324,7 +324,7 @@ def parse_folder_for_ontologies(ontologies_abs_folder):
     for root, dirs, files in os.walk("."):
         for name in files:
             if name=="auton.cfg":
-                ontologies.append({'ontology': os.path.join(root, name)})
+                ontologies.append({'ontology': os.path.join(root, name)[1:]})
     for o in ontologies:
         confs = get_auton_configuration(f=None, abs_folder=o['ontology'])
         for c in confs:
