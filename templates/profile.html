@@ -63,7 +63,7 @@ $( document ).ready(function() {
 </br> </br> </br>
 
 
-<table class="table table-hover">
+<table class="table">
 <tr class="">
 	<td>Ontology</td>
 	<td>ar2dtool</td>
@@ -77,11 +77,25 @@ $( document ).ready(function() {
 </td>
 		<td><input type="checkbox" name="{{o.ontology}}-oops" checked>
 </td>
-		<td><input type="checkbox" name="{{o.ontology}}widoco" checked>
+		<td><input type="checkbox" name="{{o.ontology}}-widoco" checked>
 </td>
 	<tr>
 {%endfor%}
 </table>
+
+
+<script>
+$( document ).ready(function() {
+	{%for o in ontologies%}
+		$("[name='{{o.ontology}}-ar2dtool']").bootstrapSwitch();
+		$("[name='{{o.ontology}}-oops']").bootstrapSwitch();
+		$("[name='{{o.ontology}}-widoco']").bootstrapSwitch();
+
+	{%endfor%}
+
+});
+
+</script>
 
 
 
