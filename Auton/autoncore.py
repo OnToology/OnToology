@@ -167,7 +167,8 @@ def fork_repo(target_repo,username,password):
     
 
 
-def clone_repo(cloning_repo,user):
+#def clone_repo(cloning_repo,user):
+def clone_repo(cloning_repo,parent_folder):
     time.sleep(sleeping_time)#the wait time to give github sometime so the repo can be cloned
     comm =  "rm"+" -Rf "+home+parent_folder
     comm+= ' >> "'+log_file_dir+'"'
@@ -181,7 +182,7 @@ def clone_repo(cloning_repo,user):
     comm+= ' >> "'+log_file_dir+'"'
     print comm
     call(comm, shell=True)
-
+    return home+parent_folder
 
 
             
@@ -410,7 +411,7 @@ def create_widoco_doc(rdf_file):
 
 import ConfigParser
 
-def get_auton_configuration(f=None):
+def get_auton_configuration(f=None,abs_folder=None):
 #     if f==None:
 #         f=parent_folder 
 #     else:
@@ -423,7 +424,9 @@ def get_auton_configuration(f=None):
     ar2dtool_enable = True
     widoco_enable = True
     oops_enable = True
-    if f != None:
+    if abs_folder!=None:
+        conf_file_abs = os.path.join(abs_folder,'auton.cfg')
+    elif f != None:
         conf_file_abs = build_file_structure('auton.cfg',[get_target_home(),f] )
     else:
         conf_file_abs = build_file_structure('auton.cfg',[get_target_home()] )

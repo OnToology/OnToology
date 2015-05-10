@@ -69,14 +69,14 @@ $( document ).ready(function() {
 	<td>OOPS</td>
 	<td >Widoco</td>
 </tr>
-{%for o in ontologies%}
-	<tr class="repo" url="{{r.url}}">
-		<td>{{o.ontology}}</td>
-		<td><input type="checkbox" name="{{o.ontology}}-ar2dtool" checked>
+{%for ontology in ontologies%}
+	<tr class="ontology" >
+		<td>{{ontology}}</td>
+		<td><input type="checkbox" name="{{ontology}}-ar2dtool" checked>
 </td>
-		<td><input type="checkbox" name="{{o.ontology}}-oops" checked>
+		<td><input type="checkbox" name="{{ontology}}-oops" checked>
 </td>
-		<td><input type="checkbox" name="{{o.ontology}}widoco" checked>
+		<td><input type="checkbox" name="{{ontology}}widoco" checked>
 </td>
 	<tr>
 {%endfor%}

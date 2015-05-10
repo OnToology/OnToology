@@ -15,10 +15,11 @@ import settings
 import string
 import random
 from datetime import datetime
-from autoncore import git_magic, add_webhook, webhook_access, update_g, add_collaborator, get_auton_configuration
+from autoncore import git_magic, add_webhook, webhook_access, update_g, add_collaborator, get_auton_configuration, clone_repo
 from models import *
 import requests
 import json
+import os
 
 import subprocess
 
@@ -286,9 +287,28 @@ def login_get_access(request):
 
 @login_required
 def profile(request):
-        ouser = OUser.objects.get(email=request.user.email)
-        return render_to_response('profile.html',{'repos': get_repos_formatted(ouser.repos)},context_instance=RequestContext(request))
+    ouser = OUser.objects.get(email=request.user.email)
+    if 'repo' in request.GET:
+        if request.GET['repo'] in ouser.repos:
+            ontologies_abs_folder = clone_repo(request.GET['repo'], request.user.email)
+            ontologies = parse_folder_for_ontologies(ontologies_abs_folder)
+            return render_to_response('profile.html',{'repos': get_repos_formatted(ouser.repos), 'ontologies': ontologies},context_instance=RequestContext(request))
+    return render_to_response('profile.html',{'repos': get_repos_formatted(ouser.repos)},context_instance=RequestContext(request))
 
+
+
+def parse_folder_for_ontologies(ontologies_abs_folder):        
+    ontologies=[] 
+    for root, dirs, files in os.walk("."):
+        for name in files:
+            if name=="auton.cfg":
+                ontologies.append({'ontology': os.path.join(root, name)})
+    for o in ontologies:
+        confs = get_auton_configuration(f=None, abs_folder=o['ontology'])
+        for c in confs:
+            tool = c.replace('_enable','')
+            o[tool] = confs[c]
+    return ontologies
 
 
 
