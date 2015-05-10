@@ -9,7 +9,7 @@ from setuptools.command.setopt import config_file
 
 
 from mongoengine import *
-
+from models import *
 
 
 
@@ -769,7 +769,6 @@ def build_file_structure(file_with_rel_dir,category_folder='',abs_home=''):#e.g.
 #if use_database:
 #    from Auton.models import Repo
 #import it for now
-from Auton.models import Repo
 def change_status(target_repo, state):
     if not use_database:
         return ''
