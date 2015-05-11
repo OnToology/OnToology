@@ -95,6 +95,8 @@ $( document ).ready(function() {
 
 <script>
 $( document ).ready(function() {
+	var False=false;
+	var True=true;
 	{%for o in ontologies%}
 	$("[name='{{o.ontology}}-ar2dtool']").bootstrapSwitch();
 	$("[name='{{o.ontology}}-oops']").bootstrapSwitch();
