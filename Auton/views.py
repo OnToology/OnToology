@@ -291,8 +291,9 @@ def login_get_access(request):
 @login_required
 def profile(request):
     #print '**************************************'
-    prepare_log('webinterface-'+request.user.email)
-    print 'what the hell**************************************'
+    f=prepare_log('webinterface-'+request.user.email)
+    print str(datetime.today())
+    print '**************************************'
     print '**************************************'
     print '**************************************'
     ouser = OUser.objects.get(email=request.user.email)
@@ -315,9 +316,11 @@ def profile(request):
             for o in ontologies:
                 for d in o:
                     print d+': '+str(o[d])
+            f.close()
             return render_to_response('profile.html',{'repos': get_repos_formatted(ouser.repos), 'ontologies': ontologies},context_instance=RequestContext(request))
         except:
             pass
+    f.close()
     return render_to_response('profile.html',{'repos': get_repos_formatted(ouser.repos)},context_instance=RequestContext(request))
 
 

@@ -138,7 +138,7 @@ def prepare_log(user):
     sys.stdout=f
     sys.stderr=f
     log_file_dir = file_dir
-    
+    return f
 
 
 
