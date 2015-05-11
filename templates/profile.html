@@ -39,6 +39,7 @@ $( document ).ready(function() {
 });
 </script>
 
+<h3>Choose one of the below repo by clicking on it</h3>
 <table class="table table-hover">
 <tr class="">
 	<td>Repository</td>
@@ -84,6 +85,11 @@ $( document ).ready(function() {
 {%endfor%}
 </table>
 
+
+<input id="savebtn" type="button" value="Save" class="btn btn-default submit"/>
+
+
+
 <style>
 .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary,
 .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary {
@@ -93,7 +99,6 @@ $( document ).ready(function() {
 
 </style>
 
-<button class="btn btn-default submit"/>
 
 <script>
 	var result={};
@@ -133,7 +138,10 @@ $( document ).ready(function() {
 		result["{{o.ontology}}-widoco"]   = $("[name='{{o.ontology}}-widoco']").bootstrapSwitch('state');
 	});
 
-		
+	$("#savebtn").click(function(){
+		$.get( "",result);
+		alert("savebtn is clicked");
+	});	
 	
 	{%endfor%}
 
