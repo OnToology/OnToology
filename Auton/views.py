@@ -20,7 +20,7 @@ from models import *
 import requests
 import json
 import os
-
+import sys
 import subprocess
 
 from github import Github
@@ -316,10 +316,16 @@ def profile(request):
             for o in ontologies:
                 for d in o:
                     print d+': '+str(o[d])
+            sys.stdout= sys.__stdout__
+            sys.stderr = sys.__stderr__
+            print 'testing redirect'
             f.close()
             return render_to_response('profile.html',{'repos': get_repos_formatted(ouser.repos), 'ontologies': ontologies},context_instance=RequestContext(request))
         except:
             pass
+    sys.stdout= sys.__stdout__
+    sys.stderr = sys.__stderr__
+    print 'testing redirect'
     f.close()
     return render_to_response('profile.html',{'repos': get_repos_formatted(ouser.repos)},context_instance=RequestContext(request))
 

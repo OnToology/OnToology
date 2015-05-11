@@ -135,10 +135,12 @@ def prepare_log(user):
     global log_file_dir
     file_dir = build_file_structure(user+'.log', 'log', home)
     f = open(file_dir,'w')
+    #stdout = sys.stdout
+    #stderr = sys.stderr
     sys.stdout=f
     sys.stderr=f
     log_file_dir = file_dir
-    return f
+    return f#, stdout, stderr
 
 
 
