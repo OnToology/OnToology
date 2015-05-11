@@ -290,6 +290,7 @@ def login_get_access(request):
 
 @login_required
 def profile(request):
+    print '**************************************'
     prepare_log('webinterface-'+request.user.email)
     print '**************************************'
     print '**************************************'
