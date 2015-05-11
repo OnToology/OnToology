@@ -94,17 +94,45 @@ $( document ).ready(function() {
 </style>
 
 <script>
+	var result={};
 $( document ).ready(function() {
+	
 	var False=false;
 	var True=true;
 	{%for o in ontologies%}
+	//init required
 	$("[name='{{o.ontology}}-ar2dtool']").bootstrapSwitch();
 	$("[name='{{o.ontology}}-oops']").bootstrapSwitch();
 	$("[name='{{o.ontology}}-widoco']").bootstrapSwitch();
 
+	//setting the values
 	$("[name='{{o.ontology}}-ar2dtool']").bootstrapSwitch('state',{{o.ar2dtool}});
 	$("[name='{{o.ontology}}-oops']").bootstrapSwitch('state',{{o.oops}});
 	$("[name='{{o.ontology}}-widoco']").bootstrapSwitch('state',{{o.widoco}});
+	
+	//appending the values to be send later to the server
+	result["[name='{{o.ontology}}-ar2dtool']"] = $("[name='{{o.ontology}}-ar2dtool']").bootstrapSwitch('state');
+	result["[name='{{o.ontology}}-oops']"]     = $("[name='{{o.ontology}}-oops']").bootstrapSwitch('state');
+	result["[name='{{o.ontology}}-widoco']"]   = $("[name='{{o.ontology}}-widoco']").bootstrapSwitch('state');
+
+	
+	$("[name='{{o.ontology}}-ar2dtool']").on('switchChange.bootstrapSwitch', function(event, state) {
+		console.log(state); // true | false
+		result["[name='{{o.ontology}}-ar2dtool']"] = $("[name='{{o.ontology}}-ar2dtool']").bootstrapSwitch('state');
+	});
+
+	$("[name='{{o.ontology}}-oops']").on('switchChange.bootstrapSwitch', function(event, state) {
+		console.log(state); // true | false
+		result["[name='{{o.ontology}}-oops']"]     = $("[name='{{o.ontology}}-oops']").bootstrapSwitch('state');
+	});
+
+	$("[name='{{o.ontology}}-widoco']").on('switchChange.bootstrapSwitch', function(event, state) {
+		console.log(state); // true | false
+		result["[name='{{o.ontology}}-widoco']"]   = $("[name='{{o.ontology}}-widoco']").bootstrapSwitch('state');
+	});
+
+		
+	
 	{%endfor%}
 
 });
