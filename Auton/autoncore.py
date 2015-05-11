@@ -8,7 +8,7 @@ import time
 from setuptools.command.setopt import config_file
 
 
-from models import Repo
+# from models import Repo
 
 from mongoengine import connect
 
@@ -769,6 +769,7 @@ def build_file_structure(file_with_rel_dir,category_folder='',abs_home=''):#e.g.
 #    from Auton.models import Repo
 #import it for now
 def change_status(target_repo, state):
+    from models import Repo
     if not use_database:
         return ''
     try:
