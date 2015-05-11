@@ -290,9 +290,9 @@ def login_get_access(request):
 
 @login_required
 def profile(request):
-    print '**************************************'
-    #prepare_log('webinterface-'+request.user.email)
-    print '**************************************'
+    #print '**************************************'
+    prepare_log('webinterface-'+request.user.email)
+    print 'what the hell**************************************'
     print '**************************************'
     print '**************************************'
     ouser = OUser.objects.get(email=request.user.email)
