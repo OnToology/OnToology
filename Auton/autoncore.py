@@ -10,7 +10,7 @@ from setuptools.command.setopt import config_file
 
 # from models import Repo
 
-from mongoengine import connect
+from mongoengine import *
 
 use_database = True
 
@@ -769,7 +769,16 @@ def build_file_structure(file_with_rel_dir,category_folder='',abs_home=''):#e.g.
 #    from Auton.models import Repo
 #import it for now
 def change_status(target_repo, state):
-    from models import Repo
+    
+    class Repo(Document):
+    url = StringField(max_length=100,default='Not set yet')
+    last_used = DateTimeField(default=datetime.now())
+    created_on = DateTimeField(default=datetime.now())
+    monitoring = StringField(max_length=100,default='Not set yet')
+    state = StringField(max_length=50,default='Ready')
+    owner = StringField(max_length=50,default='no')
+    
+    
     if not use_database:
         return ''
     try:
