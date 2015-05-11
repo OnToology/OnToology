@@ -9,7 +9,7 @@ from setuptools.command.setopt import config_file
 
 
 from mongoengine import *
-from models import *
+from models import Repo
 
 
 
