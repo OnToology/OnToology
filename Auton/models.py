@@ -2,7 +2,7 @@ from mongoengine import Document,StringField,DateTimeField,ListField,ReferenceFi
 #from mongoengine.django.auth import User
 from datetime import datetime
 
-from mongoengine.django.auth import User
+
 
 
 
@@ -16,9 +16,13 @@ class Repo(Document):
 
 
 
+#The below is to avoid the error occue when importing Repo from autoncore because of the User class which cases the error
+try:    
+    from mongoengine.django.auth import User
+    class OUser(User):
+        repos = ListField(ReferenceField(Repo))
 
-class OUser(User):
-    repos = ListField(ReferenceField(Repo))
-
+except:
+    pass
 
 
