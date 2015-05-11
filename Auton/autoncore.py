@@ -8,10 +8,9 @@ import time
 from setuptools.command.setopt import config_file
 
 
-from mongoengine import *
 from models import Repo
 
-
+from mongoengine import connect
 
 use_database = True
 
