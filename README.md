@@ -1,4 +1,4 @@
-![alt text](https://raw.githubusercontent.com/OnToology/OnToology/master/ontoology.png "OnToology")
+# ![alt text](https://raw.githubusercontent.com/OnToology/OnToology/master/ontoology.png "OnToology")
 A system to automate part of the collaborative ontology development process. Given a repository with an owl file, Auton will survey it and produce diagrams, a complete documentation and validation based on common pitfalls.
 
 Creator: Ahmad Alobaid
