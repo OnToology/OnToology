@@ -18,6 +18,14 @@ AUTHENTICATION_BACKENDS = (
 
 LOGIN_URL = '/login'
 
+
+
+
+#Needed for the tests
+TEST_RUNNER = 'Auton.tests.NoSQLTestRunner'
+
+
+
 #The below 5 lines are used for login with facebook purposes
 #SOCIAL_AUTH_MODELS = 'social_auth.db.mongoengine_models'
 #SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL = True
@@ -27,6 +35,12 @@ GITHUB_API_SECRET = '60014ba718601441f542213855607810573c391e'
 
 from mongoengine import connect
 connect("Auton")
+
+#DEFAULT_CONNECTION_NAME = "Auton"
+#The below is added for the tests, not needed anymore
+#MONGODB_DATABASES = {DEFAULT_CONNECTION_NAME: {'name': 'Auton', 'ENGINE': 'django.db.backends.dummy'}}
+
+
 
 AUTH_USER_MODEL = 'mongo_auth.MongoUser'
 MONGOENGINE_USER_DOCUMENT = 'mongoengine.django.auth.User'
@@ -63,6 +77,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'mongoengine.django.mongo_auth',
+    'Auton',
 )
 
 MIDDLEWARE_CLASSES = (

@@ -5,7 +5,6 @@ from datetime import datetime
 from subprocess import call
 import string, random
 import time
-from setuptools.command.setopt import config_file
 
 
 # from models import Repo

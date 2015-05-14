@@ -51,7 +51,8 @@ Note: you must navigate to the requirements.txt using the "cd" command
 rdfxml (can be downloaded from http://infomesh.net/2003/rdfparser/)
 note: I modified rdfxml to return a dictionary rather than a string, to see 
 the modification go the rdfxml.py file you will see the original Sink commented out
- and right beneath it is my Sink function 
+ and right beneath it is my Sink function (I need to send the updated back because of GPL2 license)
+
 
 To install pip follow the instructions here https://pip.pypa.io/en/latest/installing.html
 
