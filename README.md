@@ -44,11 +44,10 @@ The description of the project and the live development are being documented her
 
 ###Install the libraries using pip
 ```
-pip install django
-pip install pygithub
-pip install mongoengine
-pip install requests
+pip install -r requirements.txt
 ```
+Note: you must navigate to the requirements.txt using the "cd" command
+
 rdfxml (can be downloaded from http://infomesh.net/2003/rdfparser/)
 note: I modified rdfxml to return a dictionary rather than a string, to see 
 the modification go the rdfxml.py file you will see the original Sink commented out
@@ -61,13 +60,13 @@ To install pip follow the instructions here https://pip.pypa.io/en/latest/instal
 * python 2.7 to be installed.
 * git to be installed.
 * curl to be installed.
-* ar2dtool to be installed https://github.com/idafensp/ar2dtool.
+* AR2DTool to be installed https://github.com/idafensp/ar2dtool.
 * Widoco to be installed https://github.com/dgarijo/Widoco.
 * the above libraries to be installed (I recommend using pip to install them).
 * linux/unix operating system (it may work on Windows with after some adjustments).
 * You have to set environment variables.
 
-note: you may need to change some of the hardcoded variables, since the system still in early stange
+note: you may need to change some of the hardcoded variables, since the system still in early stage
 
 
 
