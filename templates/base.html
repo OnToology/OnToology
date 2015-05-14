@@ -15,7 +15,9 @@
 	<link rel="stylesheet" href="{{MEDIA_URL}}css/cover.css">
 	<script src="{{MEDIA_URL}}js/bootstrap.min.js"></script-->
 
-	<style> .highl{background-color: #FBFBFB; color: #333333;} </style>
+	<style> .highl{background-color: #FBFBFB; color: #333333;}
+			.curfont{font-family: "Comic Sans MS", cursive, sans-serif;}
+	 </style>
 
 
 
@@ -69,13 +71,13 @@
 						{% if request.user.is_authenticated %}
 							<a href="/profile">
 								<img src="{{request.session.avatar_url}}" class="img-circle" height="50px"/>
-								<span>{{ user.username }}</span>
+								<span class="curfont">{{ user.username }}</span>
 							</a>
-							<p><a href="/logout">Logout</a></p>
+							<p><a class="curfont" href="/logout">Logout</a></p>
 						
 						{% else %}
 							<img src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png" class="img-circle" height="50px"/>
-						   <a href="/login">Login through Github</a>
+						   <a class="curfont" href="/login">Login through Github</a>
 						{% endif %}
 					{% endblock %}
                 </ul>
