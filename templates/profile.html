@@ -86,8 +86,11 @@ $( document ).ready(function() {
 </table>
 
 
-<input id="savebtn" type="button" value="Save" class="form-control btn btn-default "/>
-
+</br>
+<form  id="toolsform" action="" method="POST">
+<input id="savebtn" type="submit" value="Save" class="form-control btn btn-default "/>
+<input id="toolsvalues" name="toolsvalues" type="hidden" value=""/>
+</form>
 
 
 <style>
@@ -138,10 +141,17 @@ $( document ).ready(function() {
 		result["{{o.ontology}}-widoco"]   = $("[name='{{o.ontology}}-widoco']").bootstrapSwitch('state');
 	});
 
-	$("#savebtn").click(function(){
-		$.get( "",result);
+	$("#toolsform").submit(function(event){
+/* 		$.ajax({
+		    url:   "",
+		    data:  result,
+		    async: false
+		}); */
+		$("#toolsvalues").attr("value") = result;
 		alert("savebtn is clicked");
 	});	
+	
+	
 	
 	{%endfor%}
 

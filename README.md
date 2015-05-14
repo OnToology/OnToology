@@ -1,4 +1,4 @@
-# auton
+# OnToology
 A system to automate part of the collaborative ontology development process. Given a repository with an owl file, Auton will survey it and produce diagrams, a complete documentation and validation based on common pitfalls.
 
 Creator: Ahmad Alobaid
@@ -24,7 +24,7 @@ The description of the project and the live development are being documented her
 
 
 ###How to use it 
-1. From the website, you only have to put the repo as user/repo i.e. AutonTool/auton (now it doesnot work with organization, for more technical info please refere to the issues section).
+1. From the website, you only have to put the repo as user/repo i.e. myuser/myrepo (now it doesnot work with organization, for more technical info please refere to the issues section).
 2. Update/create auton.cfg (will use default configurations otherwise)
 3. Update your repo and push.
 4. Go to your repo setting -> webhooks and service and you will see the webhook. you can also click on the webhook link to see the request sent and the server replies.
