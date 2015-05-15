@@ -24,16 +24,16 @@ import sys
 import subprocess
 
 from github import Github
+from settings import client_id,client_secret
 
-
-client_id = settings.GITHUB_APP_ID#'bbfc39dd5b6065bbe53b'
-client_secret = settings.GITHUB_API_SECRET#'60014ba718601441f542213855607810573c391e'
-host = 'http://54.172.63.231'
-local=False
-if 'OnToology_home' in os.environ and os.environ['OnToology_home'].lower()=="true":
-    local=True
-    host = 'http://127.0.0.1'
-    client_id = ''
+# client_id = settings.GITHUB_APP_ID#'bbfc39dd5b6065bbe53b'
+# client_secret = settings.GITHUB_API_SECRET#'60014ba718601441f542213855607810573c391e'
+# host = 'http://54.172.63.231'
+# local=False
+# if 'OnToology_home' in os.environ and os.environ['OnToology_home'].lower()=="true":
+#     local=True
+#     host = 'http://127.0.0.1'
+#     client_id = ''
 
 
 
