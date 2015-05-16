@@ -1,0 +1,59 @@
+{% extends "base.html"%}
+
+{%block body%}
+
+</br></br>
+
+<form action="" method="GET" style="color: #999">
+<div class="form-group">
+	<input type="text" name="target_repo" id="target_repo_select" class="form-control" placeholder="user/repo" ></br>
+	<input type="submit" class="form-control btn" value="Watch this repo"/>
+</div>
+</form>
+</br>
+<h3 class="curfont">
+What is OnToology
+</h3>
+<p class="curfont">
+A system to automate part of the collaborative ontology development process. Given a repository with an owl file,
+ Ontoology will survey it and produce diagrams, a complete documentation and validation based on common pitfalls. 
+</p>
+
+<h3 class="curfont">How to use it</h3>
+<ol>
+	<li align="left" class="curfont">Enter your repo as user/repo i.e. myuser/myrepo (it does not work with organizations at the moment).</li>
+	<li align="left" class="curfont">Update your repo and push.</li>
+	<li align="left" class="curfont">If pull requests are created successfully you can find them in the pull requests pool with the diagram.</li>
+</ol>
+</br>
+<a class="curfont" style="text-decoration: underline;" href="https://github.com/OnToology/OnToology">OnToology project is an open source project, click here to check it</a>
+
+</br> </br>
+
+<table class="table table-striped">
+<tr class="highl">
+	<td>Repository</td>
+	<td>Status</td>
+	<td>Log file</td>
+	<td>Last used</td>
+	<td>ar2dtool</td>
+	<td>OOPS</td>
+	<td >Widoco</td>
+</tr>
+{%for r in repos%}
+	<tr>
+		<td><a href="http://github.com/{{r.url}}">{{r.url}}</a></td>
+		<td>{{r.state}}</td>
+		<td><a href="media/logs/{{r.owner}}.log">log</a></td>
+		<td>{{r.last_used}}</td>
+		<td>{{r.ar2dtool_enable}}</td>
+		<td>{{r.oops_enable}}</td>
+		<td>{{r.widoco_enable}}</td>
+	<tr>
+{%endfor%}
+</table>
+
+{% endblock %}
+
+
+

@@ -1,0 +1,166 @@
+{% extends "base.html"%}
+{%block body%}
+
+
+<script>
+function GetURLParameter(sParam)
+{
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++)
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam)
+        {
+            return sParameterName[1];
+        }
+    }
+    return '';
+}
+
+$( document ).ready(function() {
+	
+	$(".repo").click(function() {
+		 window.location.href = "?repo="+$(this).attr('url');
+	});
+	
+	$('.repo').each(function(){
+		var r = GetURLParameter('repo');
+		//alert("<"+r+">");
+		if (r==$(this).attr('url')){
+			$(this).addClass("highl");
+		}
+		else{
+			$(this).removeClass("highl");			
+		}
+	});
+
+	
+});
+</script>
+</br>
+<h3>Choose one of the below repo by clicking on it</h3>
+<table class="table table-hover">
+<tr class="">
+	<td>Repository</td>
+	<td>Status</td>
+	<td>Last used</td>
+	<td>ar2dtool</td>
+	<td>OOPS</td>
+	<td >Widoco</td>
+</tr>
+{%for r in repos%}
+	<tr class="repo" url="{{r.url}}">
+		<td>{{r.url}}</td>
+		<td>{{r.state}}</td>
+		<td>{{r.last_used}}</td>
+		<td>{{r.ar2dtool_enable}}</td>
+		<td>{{r.oops_enable}}</td>
+		<td>{{r.widoco_enable}}</td>
+	<tr>
+{%endfor%}
+</table>
+
+</br> </br> </br>
+
+
+<table class="table">
+<tr class="">
+	<td>Ontology</td>
+	<td>ar2dtool</td>
+	<td>OOPS</td>
+	<td >Widoco</td>
+</tr>
+{%for o in ontologies%}
+	<tr class="ontology" >
+		<td>{{o.ontology}}</td>
+		
+		<td><input type="checkbox" name="{{o.ontology}}-ar2dtool" checked>
+</td>
+		<td><input type="checkbox" name="{{o.ontology}}-oops" checked>
+</td>
+		<td><input type="checkbox" name="{{o.ontology}}-widoco" checked>
+</td>
+	<tr>
+{%endfor%}
+</table>
+
+
+</br>
+<form  id="toolsform" action="" method="POST">
+<input id="savebtn" type="submit" value="Save" class="form-control btn btn-default "/>
+<input id="toolsvalues" name="toolsvalues" type="hidden" value=""/>
+</form>
+
+
+<style>
+.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary,
+.bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary {
+  color: #fff !important;
+  background: #333333 !important;
+}
+
+</style>
+
+
+<script>
+	var result={};
+$( document ).ready(function() {
+	
+	var False=false;
+	var True=true;
+	{%for o in ontologies%}
+	//init required
+	$("[name='{{o.ontology}}-ar2dtool']").bootstrapSwitch();
+	$("[name='{{o.ontology}}-oops']").bootstrapSwitch();
+	$("[name='{{o.ontology}}-widoco']").bootstrapSwitch();
+
+	//setting the values
+	$("[name='{{o.ontology}}-ar2dtool']").bootstrapSwitch('state',{{o.ar2dtool}});
+	$("[name='{{o.ontology}}-oops']").bootstrapSwitch('state',{{o.oops}});
+	$("[name='{{o.ontology}}-widoco']").bootstrapSwitch('state',{{o.widoco}});
+	
+	//appending the values to be send later to the server
+	result["{{o.ontology}}-ar2dtool"] = $("[name='{{o.ontology}}-ar2dtool']").bootstrapSwitch('state');
+	result["{{o.ontology}}-oops"]     = $("[name='{{o.ontology}}-oops']").bootstrapSwitch('state');
+	result["{{o.ontology}}-widoco"]   = $("[name='{{o.ontology}}-widoco']").bootstrapSwitch('state');
+
+	
+	$("[name='{{o.ontology}}-ar2dtool']").on('switchChange.bootstrapSwitch', function(event, state) {
+		console.log(state); // true | false
+		result["{{o.ontology}}-ar2dtool"] = $("[name='{{o.ontology}}-ar2dtool']").bootstrapSwitch('state');
+	});
+
+	$("[name='{{o.ontology}}-oops']").on('switchChange.bootstrapSwitch', function(event, state) {
+		console.log(state); // true | false
+		result["{{o.ontology}}-oops"]     = $("[name='{{o.ontology}}-oops']").bootstrapSwitch('state');
+	});
+
+	$("[name='{{o.ontology}}-widoco']").on('switchChange.bootstrapSwitch', function(event, state) {
+		console.log(state); // true | false
+		result["{{o.ontology}}-widoco"]   = $("[name='{{o.ontology}}-widoco']").bootstrapSwitch('state');
+	});
+
+	$("#toolsform").submit(function(event){
+/* 		$.ajax({
+		    url:   "",
+		    data:  result,
+		    async: false
+		}); */
+		$("#toolsvalues").attr("value") = result;
+		alert("savebtn is clicked");
+	});	
+	
+	
+	
+	{%endfor%}
+
+});
+
+</script>
+
+
+
+
+{% endblock %}
+

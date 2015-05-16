@@ -1,0 +1,10 @@
+{% extends "base.html"%}
+{% block body%}
+
+{%for h in hooks%}
+
+<p>{{h.msg}}</p>
+<p>============================================================</p>
+{%endfor%}
+</table>
+{%endblock%}
