@@ -24,7 +24,7 @@ import sys
 import subprocess
 
 from github import Github
-from settings import client_id,client_secret
+from settings import client_id,client_secret, host
 
 # client_id = settings.GITHUB_APP_ID#'bbfc39dd5b6065bbe53b'
 # client_secret = settings.GITHUB_API_SECRET#'60014ba718601441f542213855607810573c391e'

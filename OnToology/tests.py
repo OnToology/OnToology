@@ -1,5 +1,10 @@
 from django.test import TestCase
 from django.test.simple import DjangoTestSuiteRunner
+import os
+
+
+username = os.environ['OnToology_Test_Username']
+password = os.environ['OnToology_Test_Password']
 
 
 class NoSQLTestRunner(DjangoTestSuiteRunner):
