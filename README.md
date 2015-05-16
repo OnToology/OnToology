@@ -10,7 +10,6 @@ The description of the project and the live development are being documented her
 
 
 
-
 ###What the system does now:
 * Ask user for permission.
 * Add AutonUser as collaborator.
