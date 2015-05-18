@@ -22,7 +22,7 @@ LOGIN_URL = '/login'
 
 
 #Needed for the tests
-TEST_RUNNER = 'OnToology.tests.NoSQLTestRunner'
+TEST_RUNNER = 'OnToology.tests.__init__.NoSQLTestRunner'
 
 
 
@@ -91,6 +91,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'mongoengine.django.mongo_auth',
     'OnToology',
+   # 'tests',
 )
 
 MIDDLEWARE_CLASSES = (

@@ -66,16 +66,20 @@ def get_repos_formatted(the_repos):
 
 def home(request):
     if 'target_repo' in request.GET:
+        #print request.GET
         target_repo = request.GET['target_repo']
         webhook_access_url, state = webhook_access(client_id,host+'/get_access_token')
         request.session['target_repo'] = target_repo
         request.session['state'] = state 
-        if len(Repo.objects.all())==0:             
+        
+        try: 
+            repo = Repo.objects.get(url=target_repo)
+        except Exception as e:
+            print str(e)
             repo = Repo()
             repo.url=target_repo
             repo.save()
-        else:
-            repo = Repo.objects.get(url=target_repo)
+            
         if request.user.is_authenticated():    
             ouser = OUser.objects.get(email=request.user.email)
             ouser.repos.append(repo)
