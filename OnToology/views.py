@@ -68,6 +68,7 @@ def get_repos_formatted(the_repos):
 
 def home(request):
     print '****** Welcome to home page ********'
+    print >> sys.stderr,  '****** Welcome to the error output ******'
     if 'target_repo' in request.GET:
         #print request.GET
         target_repo = request.GET['target_repo']
