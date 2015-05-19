@@ -260,6 +260,7 @@ def logout(request):
 
 
 def login_get_access(request):
+    print '***********login_get_access************'
     if request.GET['state'] != request.session['state']:
         return render_to_response('msg.html',{'msg':'Error, ; not an ethical attempt' },context_instance=RequestContext(request))
     data = {
