@@ -15,6 +15,9 @@ use_database = True
 
 ToolUser = 'AutonUser'
 
+default_stdout = sys.stdout
+default_stderr = sys.stderr
+
 parent_folder = None
 ar2dtool_config_types = ['ar2dtool-taxonomy.conf','ar2dtool-class.conf']
 ar2dtool_config = os.environ['ar2dtool_config']
@@ -134,16 +137,23 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
 
 def prepare_log(user):
     global log_file_dir
+    global default_stderr
+    global default_stdout
     file_dir = build_file_structure(user+'.log', 'log', home)
     f = open(file_dir,'w')
     #stdout = sys.stdout
     #stderr = sys.stderr
+#     default_stdout = sys.stdout
+#     default_stderr = sys.stderr
     sys.stdout=f
     sys.stderr=f
     log_file_dir = file_dir
     return f#, stdout, stderr
 
 
+def return_default_log():
+    sys.stdout=default_stdout
+    sys.stderr=default_stderr
 
     
 
@@ -812,6 +822,7 @@ def generate_user_log(log_file_name):
     comm='cp '+home+'log/'+log_file_name+' /home/ubuntu/auton/media/logs/'
     print comm
     sys.stdout.close()
+    return_default_log()
     call(comm,shell=True)
     
 

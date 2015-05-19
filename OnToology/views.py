@@ -15,7 +15,7 @@ import settings
 import string
 import random
 from datetime import datetime
-from autoncore import git_magic, add_webhook,ToolUser, webhook_access, update_g, add_collaborator, get_auton_configuration, clone_repo, prepare_log
+from autoncore import git_magic, add_webhook,ToolUser, webhook_access, update_g, add_collaborator, get_auton_configuration, clone_repo, prepare_log, return_default_log
 from models import *
 import requests
 import json
@@ -252,8 +252,6 @@ def login(request):
 
 
 def logout(request):
-    sys.stdout= sys.__stdout__
-    sys.stderr = sys.__stderr__
     django_logout(request)
     return HttpResponseRedirect('/')
     #return render_to_response('msg.html',{'msg':'logged out' },context_instance=RequestContext(request))
@@ -262,8 +260,6 @@ def logout(request):
 
 
 def login_get_access(request):
-    sys.stdout= sys.__stdout__
-    sys.stderr = sys.__stderr__
     print '***********login_get_access************'
     if request.GET['state'] != request.session['state']:
         return render_to_response('msg.html',{'msg':'Error, ; not an ethical attempt' },context_instance=RequestContext(request))
@@ -333,8 +329,7 @@ def profile(request):
             for o in ontologies:
                 for d in o:
                     print d+': '+str(o[d])
-            sys.stdout= sys.__stdout__
-            sys.stderr = sys.__stderr__
+            return_default_log()
             print 'testing redirect'
             f.close()
             return render_to_response('profile.html',{'repos': get_repos_formatted(ouser.repos), 'ontologies': ontologies},context_instance=RequestContext(request))
