@@ -11,7 +11,7 @@ from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
 import settings
 
-
+import sys
 import string
 import random
 from datetime import datetime
@@ -20,12 +20,13 @@ from models import *
 import requests
 import json
 import os
-import sys
+
 import subprocess
 
 from github import Github
 from settings import client_id,client_secret, host
 
+sys.stdout = sys.stderr
 
 
 # client_id = settings.GITHUB_APP_ID#'bbfc39dd5b6065bbe53b'

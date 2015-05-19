@@ -15,7 +15,7 @@ use_database = True
 
 ToolUser = 'AutonUser'
 
-default_stdout = sys.stdout
+default_stdout = sys.stderr
 default_stderr = sys.stderr
 
 parent_folder = None
