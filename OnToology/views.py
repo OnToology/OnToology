@@ -248,6 +248,7 @@ def add_hook(request):
 
 ##The below line is for login
 def login(request):
+    print '******* login *********'
     redirect_url = host+'/login_get_access'
     sec = ''.join([random.choice(string.ascii_letters+string.digits) for _ in range(9)])
     request.session['state'] = sec
@@ -267,7 +268,7 @@ def logout(request):
 
 
 def login_get_access(request):
-    print '***********login_get_access************'
+    print '*********** login_get_access ************'
     if request.GET['state'] != request.session['state']:
         return render_to_response('msg.html',{'msg':'Error, ; not an ethical attempt' },context_instance=RequestContext(request))
     data = {
@@ -294,6 +295,8 @@ def login_get_access(request):
         user.save()
     except:#The password is never important but we set it here because it is required by User class
         print '<%s>'%(email)
+        sys.stdout.flush()
+        sys.stderr.flush()
         user = OUser.create_user(email, password=request.session['state'], email=email)
         user.backend = 'mongoengine.django.auth.MongoEngineBackend'
         user.save()
@@ -342,8 +345,8 @@ def profile(request):
             return render_to_response('profile.html',{'repos': get_repos_formatted(ouser.repos), 'ontologies': ontologies},context_instance=RequestContext(request))
         except:
             pass
-    sys.stdout= sys.__stdout__
-    sys.stderr = sys.__stderr__
+#     sys.stdout= sys.__stdout__
+#     sys.stderr = sys.__stderr__
     print 'testing redirect'
     f.close()
     return render_to_response('profile.html',{'repos': get_repos_formatted(ouser.repos)},context_instance=RequestContext(request))
