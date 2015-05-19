@@ -141,10 +141,6 @@ def prepare_log(user):
     global default_stdout
     file_dir = build_file_structure(user+'.log', 'log', home)
     f = open(file_dir,'w')
-    #stdout = sys.stdout
-    #stderr = sys.stderr
-#     default_stdout = sys.stdout
-#     default_stderr = sys.stderr
     sys.stdout.flush()
     sys.stderr.flush()
     sys.stdout=f
