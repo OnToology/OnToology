@@ -314,7 +314,7 @@ def login_get_access(request):
 
 @login_required
 def profile(request):
-    #print '**************************************'
+    print '************* profile ************'
     #f=prepare_log('webinterface-'+request.user.email) # I am disabling this for now
     print str(datetime.today())
     print '**************************************'
