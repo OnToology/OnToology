@@ -252,6 +252,8 @@ def login(request):
 
 
 def logout(request):
+    sys.stdout= sys.__stdout__
+    sys.stderr = sys.__stderr__
     django_logout(request)
     return HttpResponseRedirect('/')
     #return render_to_response('msg.html',{'msg':'logged out' },context_instance=RequestContext(request))
@@ -260,6 +262,8 @@ def logout(request):
 
 
 def login_get_access(request):
+    sys.stdout= sys.__stdout__
+    sys.stderr = sys.__stderr__
     print '***********login_get_access************'
     if request.GET['state'] != request.session['state']:
         return render_to_response('msg.html',{'msg':'Error, ; not an ethical attempt' },context_instance=RequestContext(request))
@@ -293,6 +297,8 @@ def login_get_access(request):
     #user.backend = 'mongoengine.django.auth.MongoEngineBackend'
     django_login(request, user)
     print 'access_token: '+access_token
+    sys.stdout.flush()
+    sys.stderr.flush()
     return HttpResponseRedirect('/')
 
 
