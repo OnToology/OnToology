@@ -285,6 +285,7 @@ def login_get_access(request):
         user.backend = 'mongoengine.django.auth.MongoEngineBackend'
         user.save()
     except:#The password is never important but we set it here because it is required by User class
+        print '<%s>'%(email)
         user = OUser.create_user(email, password=request.session['state'], email=email)
         user.backend = 'mongoengine.django.auth.MongoEngineBackend'
         user.save()
