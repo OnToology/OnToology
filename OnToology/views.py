@@ -89,6 +89,8 @@ def home(request):
             ouser = OUser.objects.get(email=request.user.email)
             ouser.repos.append(repo)
             ouser.save()
+        sys.stdout.flush()
+        sys.stderr.flush()
         return  HttpResponseRedirect(webhook_access_url)
 #     repos = []
 #     for orir in Repo.objects.all():
@@ -110,6 +112,8 @@ def home(request):
 #             monit+="=".join(keyval) +","
 #         r['monitoring'] = monit
 #         repos.append(r)
+    sys.stdout.flush()
+    sys.stderr.flush()
     repos = get_repos_formatted(Repo.objects.all())
 #     if not request.user.is_authenticated():
 #         request.session['avatar_url'] ='https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png'
