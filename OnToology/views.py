@@ -314,7 +314,7 @@ def login_get_access(request):
 @login_required
 def profile(request):
     #print '**************************************'
-    f=prepare_log('webinterface-'+request.user.email)
+    #f=prepare_log('webinterface-'+request.user.email) # I am disabling this for now
     print str(datetime.today())
     print '**************************************'
     print '**************************************'
@@ -341,14 +341,14 @@ def profile(request):
                     print d+': '+str(o[d])
             return_default_log()
             print 'testing redirect'
-            f.close()
+            #f.close()
             return render_to_response('profile.html',{'repos': get_repos_formatted(ouser.repos), 'ontologies': ontologies},context_instance=RequestContext(request))
         except:
             pass
 #     sys.stdout= sys.__stdout__
 #     sys.stderr = sys.__stderr__
     print 'testing redirect'
-    f.close()
+    #f.close()
     return render_to_response('profile.html',{'repos': get_repos_formatted(ouser.repos)},context_instance=RequestContext(request))
 
 
