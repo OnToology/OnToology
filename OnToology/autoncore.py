@@ -145,6 +145,8 @@ def prepare_log(user):
     #stderr = sys.stderr
 #     default_stdout = sys.stdout
 #     default_stderr = sys.stderr
+    sys.stdout.flush()
+    sys.stderr.flush()
     sys.stdout=f
     sys.stderr=f
     log_file_dir = file_dir
@@ -152,6 +154,8 @@ def prepare_log(user):
 
 
 def return_default_log():
+    sys.stdout.flush()
+    sys.stderr.flush()
     sys.stdout=default_stdout
     sys.stderr=default_stderr
 
