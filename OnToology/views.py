@@ -293,7 +293,7 @@ def login_get_access(request):
         return render(request,'msg.html',{'msg': 'You have to make you email public and try again'})
     request.session['avatar_url'] = g.get_user().avatar_url
     print 'avatar_url: '+request.session['avatar_url']
-    try:
+    try: 
         user = OUser.objects.get(email=email)
         user.backend = 'mongoengine.django.auth.MongoEngineBackend'
         user.save()
