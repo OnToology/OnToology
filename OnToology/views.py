@@ -286,6 +286,7 @@ def login_get_access(request):
         d[keyv[0]] = keyv[1]
     access_token = d['access_token']
     request.session['access_token'] = access_token
+    print 'access_token: '+access_token
     g = Github(access_token)
     email = g.get_user().email
     request.session['avatar_url'] = g.get_user().avatar_url

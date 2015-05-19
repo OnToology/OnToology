@@ -15,7 +15,7 @@ class AddRepoWithoutLogin(unittest.TestCase):
         self.verificationErrors = []
         self.accept_next_alert = True
     
-    def tes_add_repo_without_login(self):
+    def test_add_repo_without_login(self):
         driver = self.driver
         driver.get(self.base_url + "/")
         driver.find_element_by_id("target_repo_select").clear()

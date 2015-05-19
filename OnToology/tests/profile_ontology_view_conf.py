@@ -27,7 +27,7 @@ class ProfileOntologyConf(unittest.TestCase):
         self.verificationErrors = []
         self.accept_next_alert = True
     
-    def tes_profile_ontology_conf(self):
+    def test_profile_ontology_conf(self):
         driver = self.driver
         driver.get(self.base_url + "/")
         
