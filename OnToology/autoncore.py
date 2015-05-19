@@ -13,6 +13,8 @@ from mongoengine import *
 
 use_database = True
 
+ToolUser = 'AutonUser'
+
 parent_folder = None
 ar2dtool_config_types = ['ar2dtool-taxonomy.conf','ar2dtool-class.conf']
 ar2dtool_config = os.environ['ar2dtool_config']
@@ -41,7 +43,7 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
     username = os.environ['github_username']
     password = os.environ['github_password']
     g = Github(username,password)    
-    local_repo = target_repo.replace(target_repo.split('/')[-2] ,'AutonUser')
+    local_repo = target_repo.replace(target_repo.split('/')[-2] ,ToolUser)
     delete_repo(local_repo)
     #print 'repo deleted'
     change_status(target_repo, 'forking repo')
@@ -114,7 +116,7 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
     remove_old_pull_requests(target_repo)
     change_status(target_repo, 'creating a pull request')
     try:
-        r = send_pull_request(target_repo,'AutonUser')
+        r = send_pull_request(target_repo,ToolUser)
     except Exception as e:
         exception_if_exists+=str(e)
     print 'pull request is sent'
@@ -249,7 +251,7 @@ def send_pull_request(target_repo,username):
         #return 'pull request created successfully'
         return {'status': True, 'msg':'pull request created successfully' }
     except Exception as e:
-        err = str(e.data)
+        err = str(e)#e.data}#str(e.data)
         print 'pull request error: '+err
         #print 'pull('+str(i)+'): '+err
     #return err
@@ -267,7 +269,7 @@ def webhook_access(client_id,redirect_url):
 
 
 
-def add_webhook(target_repo,notification_url):
+def add_webhook(target_repo,notification_url,g=g):
     name = "web"
     active = True
     events = ["push"]
@@ -279,16 +281,16 @@ def add_webhook(target_repo,notification_url):
         g.get_repo(target_repo).create_hook(name,config,events,active)
         return {'status': True}
     except Exception as e:
-        return {'status': False, 'error': e.data}
+        return {'status': False, 'error': str(e)}#e.data}
 
 
 
-def add_collaborator(target_repo,user):
+def add_collaborator(target_repo,user,g=g):
     try:
         msg = g.get_repo(target_repo).add_to_collaborators(user)
         return {'status': True, 'msg': str(msg) }
     except Exception as e:
-        return {'status': False, 'error': e.data}
+        return {'status': False, 'error': str(e)}#e.data}
 
 
 
@@ -644,7 +646,7 @@ def create_oops_issue_in_github(target_repo,oops_issues):
     try:
         g.get_repo(target_repo).create_issue('OOPS! Evaluation', oops_issues)
     except Exception as e:
-        print 'exception when creating issue: '+e.data
+        print 'exception when creating issue: '+str(e)#e.data}#e.data
         
     
 

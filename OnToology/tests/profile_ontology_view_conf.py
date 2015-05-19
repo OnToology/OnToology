@@ -21,13 +21,13 @@ password = os.environ['user_github_password']
 
 class ProfileOntologyConf(unittest.TestCase):
     def setUp(self):
-        self.driver = webdriver.Chrome()#PhantomJS()
+        self.driver = webdriver.Firefox()#Chrome()#PhantomJS()
         #self.driver.implicitly_wait(5)
         self.base_url = "http://127.0.0.1:8000/"
         self.verificationErrors = []
         self.accept_next_alert = True
     
-    def test_profile_ontology_conf(self):
+    def tes_profile_ontology_conf(self):
         driver = self.driver
         driver.get(self.base_url + "/")
         

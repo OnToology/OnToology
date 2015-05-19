@@ -15,7 +15,7 @@ import settings
 import string
 import random
 from datetime import datetime
-from autoncore import git_magic, add_webhook, webhook_access, update_g, add_collaborator, get_auton_configuration, clone_repo, prepare_log
+from autoncore import git_magic, add_webhook,ToolUser, webhook_access, update_g, add_collaborator, get_auton_configuration, clone_repo, prepare_log
 from models import *
 import requests
 import json
@@ -25,6 +25,8 @@ import subprocess
 
 from github import Github
 from settings import client_id,client_secret, host
+
+
 
 # client_id = settings.GITHUB_APP_ID#'bbfc39dd5b6065bbe53b'
 # client_secret = settings.GITHUB_API_SECRET#'60014ba718601441f542213855607810573c391e'
@@ -80,7 +82,7 @@ def home(request):
             repo.url=target_repo
             repo.save()
             
-        if request.user.is_authenticated():    
+        if request.user.is_authenticated():
             ouser = OUser.objects.get(email=request.user.email)
             ouser.repos.append(repo)
             ouser.save()
@@ -144,7 +146,7 @@ def get_access_token(request):
     update_g(access_token)
     print 'access_token: '+access_token
     rpy_wh = add_webhook(request.session['target_repo'], host+"/add_hook")
-    rpy_coll = add_collaborator(request.session['target_repo'], 'AutonUser')
+    rpy_coll = add_collaborator(request.session['target_repo'], ToolUser)
     error_msg = ""
     if rpy_wh['status'] == False:
         error_msg+=str(rpy_wh['error'])
@@ -166,7 +168,7 @@ def add_hook_test(request):
     # cloning_repo should look like 'git@github.com:AutonUser/target.git'
     cloning_repo = 'git://github.com/ahmad88me/target.git'#request.POST['cloning_repo']
     tar = cloning_repo.split('/')[-2]
-    cloning_repo = cloning_repo.replace(tar,'AutonUser')
+    cloning_repo = cloning_repo.replace(tar,ToolUser)
     cloning_repo = cloning_repo.replace('git://github.com/','git@github.com:')
     target_repo = 'ahmad88me/target'#request.POST['target_repo']
     user = 'test_user'#request.POST['username']
@@ -219,7 +221,7 @@ def add_hook(request):
     print 'changed_files: '+str(changed_files)
     # cloning_repo should look like 'git@github.com:AutonUser/target.git'
     tar = cloning_repo.split('/')[-2]
-    cloning_repo = cloning_repo.replace(tar,'AutonUser')
+    cloning_repo = cloning_repo.replace(tar,ToolUser)
     cloning_repo = cloning_repo.replace('git://github.com/','git@github.com:')
     comm = "python /home/ubuntu/auton/Auton/autoncore.py "
     comm+=' "'+target_repo+'" "'+user+'" "'+cloning_repo+'" '
