@@ -289,6 +289,8 @@ def login_get_access(request):
     print 'access_token: '+access_token
     g = Github(access_token)
     email = g.get_user().email
+    if email=='':
+        return render(request,'msg.html',{'msg': 'You have to make you email public and try again'})
     request.session['avatar_url'] = g.get_user().avatar_url
     print 'avatar_url: '+request.session['avatar_url']
     try:
