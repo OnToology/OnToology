@@ -1,8 +1,8 @@
-2015-05-20 14:13:34.714720
+2015-05-20 18:17:30.762000
 ############################### magic #############################
 target_repo: aaarunzbuzz/ontoologyautotest
 the repo doesn't exists [not an error]
-curl --user "AutonUser:auton88" --request POST --data '{}' https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/forks >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
+curl --user "OnToologyUser:auton88" --request POST --data '{}' https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/forks >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
 fork
 repo forked
 rm -Rf /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
@@ -16,15 +16,22 @@ will create conf file: /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.
 {'widoco_enable': True, 'ar2dtool_enable': True, 'oops_enable': True}
 ar2dtool_enable is true
 1 changed files
-cp -Rf /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/org/daniel.owl/diagrams/ar2dtool-taxonomy
+rm -Rf /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/org/daniel.owl/diagrams/ar2dtool-taxonomy
 java -jar /Users/blakxu/test123/OnToologyTestEnv/ar2dtool/bin/ar2dtool.jar -i /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/org/daniel.owl -o /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/org/daniel.owl/diagrams/ar2dtool-taxonomy/daniel.owl.png -t png -c /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/org/daniel.owl/diagrams/config/ar2dtool-taxonomy.conf -GV -gml  >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
-diagrams not drawn: failed in generating diagram for org/daniel.owl
+rm -Rf /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/org/daniel.owl/diagrams/ar2dtool-class
+java -jar /Users/blakxu/test123/OnToologyTestEnv/ar2dtool/bin/ar2dtool.jar -i /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/org/daniel.owl -o /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/org/daniel.owl/diagrams/ar2dtool-class/daniel.owl.png -t png -c /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/org/daniel.owl/diagrams/config/ar2dtool-class.conf -GV -gml  >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
+diagrams drawn successfully
 widoco_enable is true
 will widoco org/daniel.owl
 cd /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/; java -jar  -Dfile.encoding=utf-8 /Users/blakxu/test123/OnToologyTestEnv/Widoco/JAR/widoco-0.0.1-jar-with-dependencies.jar  -rewriteAll  -ontFile /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/org/daniel.owl -outFolder /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/org/daniel.owl/documentation -confFile /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/org/daniel.owl/documentation/daniel.owl.widoco.conf >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
 generated docs
 oops_enable is true
 will oops: org/daniel.owl
+got oops reply
+oops issues gotten
+will close old issues
+will create an oops issue
+cd /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/; java -jar  -Dfile.encoding=utf-8 /Users/blakxu/test123/OnToologyTestEnv/Widoco/JAR/widoco-0.0.1-jar-with-dependencies.jar -oops  -ontFile /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/org/daniel.owl -outFolder /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/org/daniel.owl/oops >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
 oops checked ontology for pitfalls
 working with: alojamiento.owl
 auton config is called: 
@@ -33,52 +40,32 @@ will create conf file: /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.
 {'widoco_enable': True, 'ar2dtool_enable': True, 'oops_enable': True}
 ar2dtool_enable is true
 1 changed files
-cp -Rf /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/alojamiento.owl/diagrams/ar2dtool-taxonomy
+rm -Rf /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/alojamiento.owl/diagrams/ar2dtool-taxonomy
 java -jar /Users/blakxu/test123/OnToologyTestEnv/ar2dtool/bin/ar2dtool.jar -i /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/alojamiento.owl -o /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/alojamiento.owl/diagrams/ar2dtool-taxonomy/alojamiento.owl.png -t png -c /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/alojamiento.owl/diagrams/config/ar2dtool-taxonomy.conf -GV -gml  >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
-diagrams not drawn: failed in generating diagram for alojamiento.owl
+rm -Rf /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/alojamiento.owl/diagrams/ar2dtool-class
+java -jar /Users/blakxu/test123/OnToologyTestEnv/ar2dtool/bin/ar2dtool.jar -i /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/alojamiento.owl -o /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/alojamiento.owl/diagrams/ar2dtool-class/alojamiento.owl.png -t png -c /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/alojamiento.owl/diagrams/config/ar2dtool-class.conf -GV -gml  >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
+diagrams drawn successfully
 widoco_enable is true
 will widoco alojamiento.owl
 cd /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/; java -jar  -Dfile.encoding=utf-8 /Users/blakxu/test123/OnToologyTestEnv/Widoco/JAR/widoco-0.0.1-jar-with-dependencies.jar  -rewriteAll  -ontFile /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/alojamiento.owl -outFolder /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/alojamiento.owl/documentation -confFile /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/alojamiento.owl/documentation/alojamiento.owl.widoco.conf >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
 generated docs
 oops_enable is true
 will oops: alojamiento.owl
+got oops reply
+oops issues gotten
+will close old issues
+will create an oops issue
+cd /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/; java -jar  -Dfile.encoding=utf-8 /Users/blakxu/test123/OnToologyTestEnv/Widoco/JAR/widoco-0.0.1-jar-with-dependencies.jar -oops  -ontFile /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/alojamiento.owl -outFolder /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/alojamiento.owl/oops >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
 oops checked ontology for pitfalls
-cd /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com;git config  user.email "ahmad88csc@gmail.com";git config  user.name "AutonUser" ; git add .  >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
-cd /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com;git config  user.email "ahmad88csc@gmail.com";git config  user.name "AutonUser" ; git commit -m 'automated change'  >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
-cd /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com;git config  user.email "ahmad88csc@gmail.com";git config  user.name "AutonUser" ;git config push.default matching; git push  >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
+cd /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com;git config  user.email "ahmad88csc@gmail.com";git config  user.name "OnToologyUser" ; git add .  >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
+cd /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com;git config  user.email "ahmad88csc@gmail.com";git config  user.name "OnToologyUser" ; git commit -m 'automated change'  >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
+cd /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com;git config  user.email "ahmad88csc@gmail.com";git config  user.name "OnToologyUser" ;git config push.default matching; git push  >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
 changes committed
-pull request error: 422 {u'documentation_url': u'https://developer.github.com/v3/pulls/#create-a-pull-request', u'message': u'Validation Failed', u'errors': [{u'field': u'head_sha', u'code': u'missing_field', u'resource': u'PullRequest'}, {u'field': u'base_sha', u'code': u'missing_field', u'resource': u'PullRequest'}, {u'message': u'No commits between aaarunzbuzz:master and ghost:master', u'code': u'custom', u'resource': u'PullRequest'}]}
+pull request error: 422 {u'documentation_url': u'https://developer.github.com/v3/pulls/#create-a-pull-request', u'message': u'Validation Failed', u'errors': [{u'message': u'No commits between aaarunzbuzz:master and OnToologyUser:master', u'code': u'custom', u'resource': u'PullRequest'}]}
 pull request is sent
-database_exception: ValidationError (Repo:555c877aa54d751b4a598ccd) (String value is too long: ['state'])
 will generate user log
 cp /Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log  /Users/blakxu/workspace/OnToology/media/logs
-followers_url": "https://api.github.com/users/aaarunzbuzz/followers",
-      "following_url": "https://api.github.com/users/aaarunzbuzz/following{/other_user}",
-      "gists_url": "https://api.github.com/users/aaarunzbuzz/gists{/gist_id}",
-      "starred_url": "https://api.github.com/users/aaarunzbuzz/starred{/owner}{/repo}",
-      "subscriptions_url": "https://api.github.com/users/aaarunzbuzz/subscriptions",
-      "organizations_url": "https://api.github.com/users/aaarunzbuzz/orgs",
-      "repos_url": "https://api.github.com/users/aaarunzbuzz/repos",
-      "events_url": "https://api.github.com/users/aaarunzbuzz/events{/privacy}",
-      "received_events_url": "https://api.github.com/users/aaarunzbuzz/received_events",
-      "type": "User",
-      "site_admin": false
-    },
-    "private": false,
-    "html_url": "https://github.com/aaarunzbuzz/ontoologyautotest",
-    "description": "",
-    "fork": false,
-    "url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest",
-    "forks_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/forks",
-    "keys_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/keys{/key_id}",
-    "collaborators_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/collaborators{/collaborator}",
-    "teams_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/teams",
-    "hooks_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/hooks",
-    "issue_events_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/issues/events{/number}",
-    "events_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/events",
-    "assignees_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/assignees{/user}",
-    "branches_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/branches{/branch}",
-    "tags_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/tags",
+ "tags_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/tags",
     "blobs_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/git/blobs{/sha}",
     "git_tags_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/git/tags{/sha}",
     "git_refs_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/git/refs{/sha}",
@@ -218,15 +205,194 @@ followers_url": "https://api.github.com/users/aaarunzbuzz/followers",
   "network_count": 1,
   "subscribers_count": 1
 }
+****PREFIX MAP****
+http://purl.org/net/p-plan#:base
+http://www.w3.org/2000/01/rdf-schema#:rdfs
+http://www.w3.org/ns/prov#:prov
+http://purl.org/dc/terms/:terms
+http://www.w3.org/2001/XMLSchema#:xsd
+http://www.w3.org/2002/07/owl#:owl
+http://purl.org/vocab/vann/:vann
+http://www.w3.org/1999/02/22-rdf-syntax-ns#:rdf
+http://purl.org/net/p-plan#:p-plan
+****END PREFIX MAP****
+****PREFIX MAP****
+http://purl.org/net/p-plan#:base
+http://www.w3.org/2000/01/rdf-schema#:rdfs
+http://www.w3.org/ns/prov#:prov
+http://purl.org/dc/terms/:terms
+http://www.w3.org/2001/XMLSchema#:xsd
+http://www.w3.org/2002/07/owl#:owl
+http://purl.org/vocab/vann/:vann
+http://www.w3.org/1999/02/22-rdf-syntax-ns#:rdf
+http://purl.org/net/p-plan#:p-plan
+****END PREFIX MAP****
 
 
 --WIzard for DOCumenting Ontologies-- Powered by LODE.
 
 Generating documentation for /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/org/daniel.owl
+Parsing Complete!
+Documentation generated successfully
+
+
+--WIzard for DOCumenting Ontologies-- Powered by LODE.
+
+Generating documentation for /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/org/daniel.owl
+Parsing Complete!
+Documentation generated successfully
+Generating the OOPS evaluation of the ontology...
+Sending request to OOPS server...
+Numero de pitfalls: 3
+Saving response...
+Done
+****PREFIX MAP****
+http://vocab.linkeddata.es/datosabiertos/def/turismo/alojamiento#:base
+http://purl.org/dc/elements/1.1/:dc
+http://dbpedia.org/ontology/:dbpedia-owl
+http://vocab.linkeddata.es/datosabiertos/def/turismo/lugar#:estur
+http://purl.org/vocab/vann/:vann
+http://geonames.org/ontology#:geonames
+http://purl.org/dc/terms/:dcterms
+http://idi.fundacionctic.org/cruzar/turismo#:cruzar
+http://schema.org/:schema
+http://www.opengis.net/ont/geosparql#:geosparql
+http://vocab.linkeddata.es/datosabiertos/def/sector-publico/territorio#:esadm
+http://www.w3.org/2000/01/rdf-schema#:rdfs
+http://purl.org/dc/dcmitype/:dctype
+http://www.w3.org/2002/07/owl#:owl
+http://www.w3.org/2001/XMLSchema#:xsd
+http://www.w3.org/1999/02/22-rdf-syntax-ns#:rdf
+http://www.w3.org/2004/02/skos/core#:skos
+http://creativecommons.org/ns#:cc
+****END PREFIX MAP****
+****PREFIX MAP****
+http://vocab.linkeddata.es/datosabiertos/def/turismo/alojamiento#:base
+http://purl.org/dc/elements/1.1/:dc
+http://dbpedia.org/ontology/:dbpedia-owl
+http://vocab.linkeddata.es/datosabiertos/def/turismo/lugar#:estur
+http://purl.org/vocab/vann/:vann
+http://geonames.org/ontology#:geonames
+http://purl.org/dc/terms/:dcterms
+http://idi.fundacionctic.org/cruzar/turismo#:cruzar
+http://schema.org/:schema
+http://www.opengis.net/ont/geosparql#:geosparql
+http://vocab.linkeddata.es/datosabiertos/def/sector-publico/territorio#:esadm
+http://www.w3.org/2000/01/rdf-schema#:rdfs
+http://purl.org/dc/dcmitype/:dctype
+http://www.w3.org/2002/07/owl#:owl
+http://www.w3.org/2001/XMLSchema#:xsd
+http://www.w3.org/1999/02/22-rdf-syntax-ns#:rdf
+http://www.w3.org/2004/02/skos/core#:skos
+http://creativecommons.org/ns#:cc
+****END PREFIX MAP****
+
+
+--WIzard for DOCumenting Ontologies-- Powered by LODE.
+
+Generating documentation for /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/alojamiento.owl
+Parsing Complete!
 Documentation generated successfully
 
 
 --WIzard for DOCumenting Ontologies-- Powered by LODE.
 
 Generating documentation for /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/alojamiento.owl
+Parsing Complete!
 Documentation generated successfully
+Generating the OOPS evaluation of the ontology...
+Sending request to OOPS server...
+Numero de pitfalls: 6
+Saving response...
+Done
+[master 7fdaac3] automated change
+ 89 files changed, 42810 insertions(+)
+ mode change 100644 => 100755 README.md
+ create mode 100644 auton/alojamiento.owl/auton.cfg
+ create mode 100644 auton/alojamiento.owl/diagrams/ar2dtool-class/alojamiento.owl.png
+ create mode 100644 auton/alojamiento.owl/diagrams/ar2dtool-class/alojamiento.owl.png.dot
+ create mode 100644 auton/alojamiento.owl/diagrams/ar2dtool-class/alojamiento.owl.png.graphml
+ create mode 100644 auton/alojamiento.owl/diagrams/ar2dtool-taxonomy/alojamiento.owl.png
+ create mode 100644 auton/alojamiento.owl/diagrams/ar2dtool-taxonomy/alojamiento.owl.png.dot
+ create mode 100644 auton/alojamiento.owl/diagrams/ar2dtool-taxonomy/alojamiento.owl.png.graphml
+ create mode 100644 auton/alojamiento.owl/diagrams/config/ar2dtool-class.conf
+ create mode 100644 auton/alojamiento.owl/diagrams/config/ar2dtool-taxonomy.conf
+ create mode 100644 auton/alojamiento.owl/documentation/alojamiento.owl.widoco.conf
+ create mode 100644 auton/alojamiento.owl/documentation/index.html
+ create mode 100644 auton/alojamiento.owl/documentation/provenance/provenance.html
+ create mode 100644 auton/alojamiento.owl/documentation/provenance/provenance.ttl
+ create mode 100644 auton/alojamiento.owl/documentation/resources/extra.css
+ create mode 100644 auton/alojamiento.owl/documentation/resources/jquery.js
+ create mode 100644 auton/alojamiento.owl/documentation/resources/owl.css
+ create mode 100644 auton/alojamiento.owl/documentation/resources/primer.css
+ create mode 100644 auton/alojamiento.owl/documentation/resources/rec.css
+ create mode 100644 auton/alojamiento.owl/documentation/sections/abstract.html
+ create mode 100644 auton/alojamiento.owl/documentation/sections/crossref.html
+ create mode 100644 auton/alojamiento.owl/documentation/sections/description.html
+ create mode 100644 auton/alojamiento.owl/documentation/sections/introduction.html
+ create mode 100644 auton/alojamiento.owl/documentation/sections/overview.html
+ create mode 100644 auton/alojamiento.owl/documentation/sections/references.html
+ create mode 100644 auton/alojamiento.owl/oops/OOPSevaluation/evaluation/bootstrap.css
+ create mode 100644 auton/alojamiento.owl/oops/OOPSevaluation/evaluation/bootstrap.min.js
+ create mode 100644 auton/alojamiento.owl/oops/OOPSevaluation/evaluation/jquery-1.11.0.js
+ create mode 100644 auton/alojamiento.owl/oops/OOPSevaluation/evaluation/jquery.tablesorter.min.js
+ create mode 100644 auton/alojamiento.owl/oops/OOPSevaluation/evaluation/style.css
+ create mode 100644 auton/alojamiento.owl/oops/OOPSevaluation/oopsEval.html
+ create mode 100644 auton/alojamiento.owl/oops/index.html
+ create mode 100644 auton/alojamiento.owl/oops/provenance/provenance.html
+ create mode 100644 auton/alojamiento.owl/oops/provenance/provenance.ttl
+ create mode 100644 auton/alojamiento.owl/oops/resources/extra.css
+ create mode 100644 auton/alojamiento.owl/oops/resources/jquery.js
+ create mode 100644 auton/alojamiento.owl/oops/resources/owl.css
+ create mode 100644 auton/alojamiento.owl/oops/resources/primer.css
+ create mode 100644 auton/alojamiento.owl/oops/resources/rec.css
+ create mode 100644 auton/alojamiento.owl/oops/sections/abstract.html
+ create mode 100644 auton/alojamiento.owl/oops/sections/crossref.html
+ create mode 100644 auton/alojamiento.owl/oops/sections/description.html
+ create mode 100644 auton/alojamiento.owl/oops/sections/introduction.html
+ create mode 100644 auton/alojamiento.owl/oops/sections/overview.html
+ create mode 100644 auton/alojamiento.owl/oops/sections/references.html
+ create mode 100644 auton/org/daniel.owl/auton.cfg
+ create mode 100644 auton/org/daniel.owl/diagrams/ar2dtool-class/daniel.owl.png
+ create mode 100644 auton/org/daniel.owl/diagrams/ar2dtool-class/daniel.owl.png.dot
+ create mode 100644 auton/org/daniel.owl/diagrams/ar2dtool-class/daniel.owl.png.graphml
+ create mode 100644 auton/org/daniel.owl/diagrams/ar2dtool-taxonomy/daniel.owl.png
+ create mode 100644 auton/org/daniel.owl/diagrams/ar2dtool-taxonomy/daniel.owl.png.dot
+ create mode 100644 auton/org/daniel.owl/diagrams/ar2dtool-taxonomy/daniel.owl.png.graphml
+ create mode 100644 auton/org/daniel.owl/diagrams/config/ar2dtool-class.conf
+ create mode 100644 auton/org/daniel.owl/diagrams/config/ar2dtool-taxonomy.conf
+ create mode 100644 auton/org/daniel.owl/documentation/daniel.owl.widoco.conf
+ create mode 100644 auton/org/daniel.owl/documentation/index.html
+ create mode 100644 auton/org/daniel.owl/documentation/provenance/provenance.html
+ create mode 100644 auton/org/daniel.owl/documentation/provenance/provenance.ttl
+ create mode 100644 auton/org/daniel.owl/documentation/resources/extra.css
+ create mode 100644 auton/org/daniel.owl/documentation/resources/jquery.js
+ create mode 100644 auton/org/daniel.owl/documentation/resources/owl.css
+ create mode 100644 auton/org/daniel.owl/documentation/resources/primer.css
+ create mode 100644 auton/org/daniel.owl/documentation/resources/rec.css
+ create mode 100644 auton/org/daniel.owl/documentation/sections/abstract.html
+ create mode 100644 auton/org/daniel.owl/documentation/sections/crossref.html
+ create mode 100644 auton/org/daniel.owl/documentation/sections/description.html
+ create mode 100644 auton/org/daniel.owl/documentation/sections/introduction.html
+ create mode 100644 auton/org/daniel.owl/documentation/sections/overview.html
+ create mode 100644 auton/org/daniel.owl/documentation/sections/references.html
+ create mode 100644 auton/org/daniel.owl/oops/OOPSevaluation/evaluation/bootstrap.css
+ create mode 100644 auton/org/daniel.owl/oops/OOPSevaluation/evaluation/bootstrap.min.js
+ create mode 100644 auton/org/daniel.owl/oops/OOPSevaluation/evaluation/jquery-1.11.0.js
+ create mode 100644 auton/org/daniel.owl/oops/OOPSevaluation/evaluation/jquery.tablesorter.min.js
+ create mode 100644 auton/org/daniel.owl/oops/OOPSevaluation/evaluation/style.css
+ create mode 100644 auton/org/daniel.owl/oops/OOPSevaluation/oopsEval.html
+ create mode 100644 auton/org/daniel.owl/oops/index.html
+ create mode 100644 auton/org/daniel.owl/oops/provenance/provenance.html
+ create mode 100644 auton/org/daniel.owl/oops/provenance/provenance.ttl
+ create mode 100644 auton/org/daniel.owl/oops/resources/extra.css
+ create mode 100644 auton/org/daniel.owl/oops/resources/jquery.js
+ create mode 100644 auton/org/daniel.owl/oops/resources/owl.css
+ create mode 100644 auton/org/daniel.owl/oops/resources/primer.css
+ create mode 100644 auton/org/daniel.owl/oops/resources/rec.css
+ create mode 100644 auton/org/daniel.owl/oops/sections/abstract.html
+ create mode 100644 auton/org/daniel.owl/oops/sections/crossref.html
+ create mode 100644 auton/org/daniel.owl/oops/sections/description.html
+ create mode 100644 auton/org/daniel.owl/oops/sections/introduction.html
+ create mode 100644 auton/org/daniel.owl/oops/sections/overview.html
+ create mode 100644 auton/org/daniel.owl/oops/sections/references.html
