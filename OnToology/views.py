@@ -243,6 +243,71 @@ def add_hook(request):
 
 
 
+def add_hook_for_tests(request):
+    try:
+        print 'trying in add_hook_for_tests'
+        s = str(request.POST['payload'])
+        print 'take payload: '
+        #print s
+        j = json.loads(s,strict=False)
+        print 'json loaded'
+        s = j['repository']['url']+'updated files: '+str(j['head_commit']['modified'])
+        print 's: '+s
+        cloning_repo = j['repository']['git_url']
+        print 'cloning_repo'
+        target_repo = j['repository']['full_name']
+        print 'target_repo'
+        user = j['repository']['owner']['email']
+        print 'user'
+        changed_files = j['head_commit']['modified']
+        print 'changed files'
+        #changed_files+= j['head_commit']['removed']
+        changed_files+= j['head_commit']['added']
+        if 'Merge pull request' in  j['head_commit']['message'] :
+            print 'This is a merge request'
+            mont = get_auton_configuration(user)
+            s = ""
+            print "the configuration: "+str(mont)
+            for i in mont:
+                s+=i+"="+str(mont[i])+", "
+                try:
+                    repo = Repo.objects.get(url=target_repo)
+                    print 'got the repo'
+                    repo.last_used = datetime.today()
+                    print 'monitoring is: '+s
+                    repo.monitoring = s
+                    repo.save()
+                    print 'repo saved'
+                except DoesNotExist:
+                    repo = Repo()
+                    repo.url=target_repo
+                    repo.monitoring = s
+                    repo.save()
+                except Exception as e:
+                    print 'database_exception: '+str(e)
+            print 'This is merge'
+            return # render_to_response('msg.html',{'msg': 'This indicate that this merge request will be ignored'},context_instance=RequestContext(request))
+    except:
+        print 'This should be a webhook ping'
+        return #render_to_response('msg.html',{'msg': 'This request should be a webhook ping'},context_instance=RequestContext(request))
+    print '##################################################'
+    print 'changed_files: '+str(changed_files)
+    # cloning_repo should look like 'git@github.com:AutonUser/target.git'
+    tar = cloning_repo.split('/')[-2]
+    cloning_repo = cloning_repo.replace(tar,ToolUser)
+    cloning_repo = cloning_repo.replace('git://github.com/','git@github.com:')
+    comm = "python /home/ubuntu/auton/Auton/autoncore.py "
+    comm+=' "'+target_repo+'" "'+user+'" "'+cloning_repo+'" '
+    for c in changed_files:
+        comm+='"'+c+'" '
+    print 'running autoncore code as: '+comm
+    git_magic(target_repo, user, cloning_repo, changed_files)
+    #subprocess.Popen(comm,shell=True)
+    r=""
+    return #render_to_response('msg.html',{'msg': ''+s+'<>'+r},context_instance=RequestContext(request))
+
+
+
 
 
 
@@ -301,7 +366,7 @@ def login_get_access(request):
         print '<%s>'%(email)
         sys.stdout.flush()
         sys.stderr.flush()
-        user = OUser.create_user(email, password=request.session['state'], email=email)
+        user = OUser.create_user(username=email, password=request.session['state'], email=email)
         user.backend = 'mongoengine.django.auth.MongoEngineBackend'
         user.save()
     #user.backend = 'mongoengine.django.auth.MongoEngineBackend'

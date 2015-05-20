@@ -6,6 +6,7 @@ from subprocess import call
 import string, random
 import time
 
+import settings
 
 # from models import Repo
 
@@ -13,8 +14,9 @@ from mongoengine import *
 
 use_database = True
 
-ToolUser = 'AutonUser'
+ToolUser = 'OnToologyUser'
 
+sys.stdout = sys.stderr
 default_stdout = sys.stderr
 default_stderr = sys.stderr
 
@@ -32,7 +34,7 @@ ontology_formats = ['.rdf','.owl','.ttl']
 
 g = None
 
-log_file_dir = None#'&1'#which is stdout #sys.stdout#by default
+log_file_dir = None #'&1'#which is stdout #sys.stdout#by default
 
 def git_magic(target_repo,user,cloning_repo,changed_filesss):
     global g
@@ -41,6 +43,7 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
     prepare_log(user)
     print str(datetime.today())
     print '############################### magic #############################'
+    print 'target_repo: '+target_repo
     change_status(target_repo,'Preparing')
     #so the tool user can takeover and do stuff
     username = os.environ['github_username']
@@ -57,7 +60,7 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
     print 'repo cloned'
     for chf in changed_filesss:
         auton_conf = {'ar2dtool_enable':False , 'widoco_enable': False, 'oops_enable': False}
-        if chf[-4:] not in ontology_formats:
+        if chf[-4:] not in ontology_formats: #validate ontology formats
             if get_file_from_path(chf) =='auton.cfg':
                 print 'auton.cfg is changed'
                 fi = get_level_up(chf)
@@ -89,9 +92,11 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
             change_status(target_repo,'drawing diagrams')
             try:
                 draw_diagrams(changed_files)
+                print 'diagrams drawn successfully'
+
             except Exception as e:
-                exception_if_exists+=str(e)
-            print 'diagrams drawn'
+                exception_if_exists+=chf+": "+str(e)+"\n"
+                print 'diagrams not drawn: '+str(e)
         else: 
             print 'ar2dtool_enable is false'
         if auton_conf['widoco_enable']:
@@ -173,6 +178,7 @@ def fork_repo(target_repo,username,password):
     #this is a workaround and not a proper way to do a fork
     comm = "curl --user \"%s:%s\" --request POST --data \'{}\' https://api.github.com/repos/%s/forks" % (username,password,target_repo)
     comm+= ' >> "'+log_file_dir+'"'
+    print comm
     call(comm,shell=True)
     print 'fork'
     
@@ -194,7 +200,7 @@ def clone_repo(cloning_repo,parent_folder,dosleep=True):
     comm+= ' >> "'+log_file_dir+'"'
     print comm
     call(comm, shell=True)
-    comm =  "chmod 777 -R "+home+parent_folder
+    comm =  "chmod -R 777 "+home+parent_folder
     comm+= ' >> "'+log_file_dir+'"'
     print comm
     call(comm, shell=True)
@@ -326,9 +332,8 @@ def draw_diagrams(rdf_files):
         #print r+' is changed '
         if r[-4:] in ontology_formats:
             for t in ar2dtool_config_types:
-                draw_file(r,t)
-        else:
-            pass
+                assert draw_file(r,t), "failed in generating diagram for %s" %(r)       
+
 
 
 
@@ -352,6 +357,10 @@ def draw_file(rdf_file,config_type):
         f.close()
     except Exception as e:
         print 'in draw_file: exception opening the file: '+str(e)
+    
+    #now will delete the drawing type folder
+    delete_dir(get_parent_path(rdf_file_abs))
+        
     comm = 'java -jar '
     comm+= ar2dtool_dir+'ar2dtool.jar -i '
     comm+= get_abs_path(rdf_file)+' -o '
@@ -359,6 +368,7 @@ def draw_file(rdf_file,config_type):
     comm+= ' >> "'+log_file_dir+'"'
     print comm
     call(comm,shell=True)
+    return os.path.isfile(rdf_file_abs+'.gml') 
 
 
 ########################################################################
@@ -726,6 +736,11 @@ def nicer_oops_output(issues):
 
 
 
+def delete_dir(target_directory):
+    comm="cp -Rf "+target_directory
+    print comm  
+    call(comm,shell=True)
+
 
 def valid_ont_file(r):
     if r[-4:] in ontology_formats:
@@ -819,7 +834,7 @@ def change_status(target_repo, state):
 #just for the development phase 
 
 def generate_user_log(log_file_name):
-    comm='cp '+home+'log/'+log_file_name+' /home/ubuntu/auton/media/logs/'
+    comm='cp '+home+'log/'+log_file_name+ '  ' +os.path.join(settings.MEDIA_ROOT,'logs') #' /home/ubuntu/auton/media/logs/'
     print comm
     sys.stdout.flush()
     if sys.stdout == default_stdout:

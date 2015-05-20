@@ -1,0 +1,232 @@
+2015-05-20 13:21:28.701280
+############################### magic #############################
+target_repo: aaarunzbuzz/ontoologyautotest
+the repo doesn't exists [not an error]
+curl --user "AutonUser:auton88" --request POST --data '{}' https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/forks >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
+fork
+repo forked
+rm -Rf /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
+git clone git@github.com:OnToologyUser/ontoologyautotest /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
+chmod -R 777 /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
+repo cloned
+working with: org/daniel.owl
+auton config is called: 
+auton configuration file does not exists
+will create conf file: /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/org/daniel.owl/auton.cfg
+{'widoco_enable': True, 'ar2dtool_enable': True, 'oops_enable': True}
+ar2dtool_enable is true
+1 changed files
+cp -Rf /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/org/daniel.owl/diagrams/ar2dtool-taxonomy
+java -jar /Users/blakxu/test123/OnToologyTestEnv/ar2dtool/bin/ar2dtool.jar -i /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/org/daniel.owl -o /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/org/daniel.owl/diagrams/ar2dtool-taxonomy/daniel.owl.png -t png -c /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/org/daniel.owl/diagrams/config/ar2dtool-taxonomy.conf -GV -gml  >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
+diagrams not drawn: failed in generating diagram for org/daniel.owl
+widoco_enable is true
+will widoco org/daniel.owl
+cd /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/; java -jar  -Dfile.encoding=utf-8 /Users/blakxu/test123/OnToologyTestEnv/Widoco/JAR/widoco-0.0.1-jar-with-dependencies.jar  -rewriteAll  -ontFile /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/org/daniel.owl -outFolder /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/org/daniel.owl/documentation -confFile /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/org/daniel.owl/documentation/daniel.owl.widoco.conf >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
+generated docs
+oops_enable is true
+will oops: org/daniel.owl
+oops checked ontology for pitfalls
+working with: alojamiento.owl
+auton config is called: 
+auton configuration file does not exists
+will create conf file: /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/alojamiento.owl/auton.cfg
+{'widoco_enable': True, 'ar2dtool_enable': True, 'oops_enable': True}
+ar2dtool_enable is true
+1 changed files
+cp -Rf /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/alojamiento.owl/diagrams/ar2dtool-taxonomy
+java -jar /Users/blakxu/test123/OnToologyTestEnv/ar2dtool/bin/ar2dtool.jar -i /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/alojamiento.owl -o /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/alojamiento.owl/diagrams/ar2dtool-taxonomy/alojamiento.owl.png -t png -c /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/alojamiento.owl/diagrams/config/ar2dtool-taxonomy.conf -GV -gml  >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
+diagrams not drawn: failed in generating diagram for alojamiento.owl
+widoco_enable is true
+will widoco alojamiento.owl
+cd /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/; java -jar  -Dfile.encoding=utf-8 /Users/blakxu/test123/OnToologyTestEnv/Widoco/JAR/widoco-0.0.1-jar-with-dependencies.jar  -rewriteAll  -ontFile /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/alojamiento.owl -outFolder /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/alojamiento.owl/documentation -confFile /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/auton/alojamiento.owl/documentation/alojamiento.owl.widoco.conf >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
+generated docs
+oops_enable is true
+will oops: alojamiento.owl
+oops checked ontology for pitfalls
+cd /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com;git config  user.email "ahmad88csc@gmail.com";git config  user.name "AutonUser" ; git add .  >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
+cd /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com;git config  user.email "ahmad88csc@gmail.com";git config  user.name "AutonUser" ; git commit -m 'automated change'  >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
+cd /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com;git config  user.email "ahmad88csc@gmail.com";git config  user.name "AutonUser" ;git config push.default matching; git push  >> "/Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log"
+changes committed
+pull request error: 422 {u'documentation_url': u'https://developer.github.com/v3/pulls/#create-a-pull-request', u'message': u'Validation Failed', u'errors': [{u'field': u'head_sha', u'code': u'missing_field', u'resource': u'PullRequest'}, {u'field': u'base_sha', u'code': u'missing_field', u'resource': u'PullRequest'}, {u'message': u'No commits between aaarunzbuzz:master and ghost:master', u'code': u'custom', u'resource': u'PullRequest'}]}
+pull request is sent
+database_exception: ValidationError (Repo:555c877aa54d751b4a598ccd) (String value is too long: ['state'])
+will generate user log
+cp /Users/blakxu/test123/OnToologyTestEnv/temp/log/aaa@runzbuzz.com.log  /Users/blakxu/workspace/OnToology/media/logs
+followers_url": "https://api.github.com/users/aaarunzbuzz/followers",
+      "following_url": "https://api.github.com/users/aaarunzbuzz/following{/other_user}",
+      "gists_url": "https://api.github.com/users/aaarunzbuzz/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/aaarunzbuzz/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/aaarunzbuzz/subscriptions",
+      "organizations_url": "https://api.github.com/users/aaarunzbuzz/orgs",
+      "repos_url": "https://api.github.com/users/aaarunzbuzz/repos",
+      "events_url": "https://api.github.com/users/aaarunzbuzz/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/aaarunzbuzz/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "private": false,
+    "html_url": "https://github.com/aaarunzbuzz/ontoologyautotest",
+    "description": "",
+    "fork": false,
+    "url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest",
+    "forks_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/forks",
+    "keys_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/teams",
+    "hooks_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/hooks",
+    "issue_events_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/events",
+    "assignees_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/tags",
+    "blobs_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/languages",
+    "stargazers_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/stargazers",
+    "contributors_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/contributors",
+    "subscribers_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/subscribers",
+    "subscription_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/subscription",
+    "commits_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/merges",
+    "archive_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/downloads",
+    "issues_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/labels{/name}",
+    "releases_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/releases{/id}",
+    "created_at": "2015-05-20T12:41:16Z",
+    "updated_at": "2015-05-20T12:45:04Z",
+    "pushed_at": "2015-05-20T12:45:04Z",
+    "git_url": "git://github.com/aaarunzbuzz/ontoologyautotest.git",
+    "ssh_url": "git@github.com:aaarunzbuzz/ontoologyautotest.git",
+    "clone_url": "https://github.com/aaarunzbuzz/ontoologyautotest.git",
+    "svn_url": "https://github.com/aaarunzbuzz/ontoologyautotest",
+    "homepage": null,
+    "size": 0,
+    "stargazers_count": 0,
+    "watchers_count": 0,
+    "language": "Web Ontology Language",
+    "has_issues": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "forks_count": 1,
+    "mirror_url": null,
+    "open_issues_count": 0,
+    "forks": 1,
+    "open_issues": 0,
+    "watchers": 0,
+    "default_branch": "master"
+  },
+  "source": {
+    "id": 35947092,
+    "name": "ontoologyautotest",
+    "full_name": "aaarunzbuzz/ontoologyautotest",
+    "owner": {
+      "login": "aaarunzbuzz",
+      "id": 12529109,
+      "avatar_url": "https://avatars.githubusercontent.com/u/12529109?v=3",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/aaarunzbuzz",
+      "html_url": "https://github.com/aaarunzbuzz",
+      "followers_url": "https://api.github.com/users/aaarunzbuzz/followers",
+      "following_url": "https://api.github.com/users/aaarunzbuzz/following{/other_user}",
+      "gists_url": "https://api.github.com/users/aaarunzbuzz/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/aaarunzbuzz/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/aaarunzbuzz/subscriptions",
+      "organizations_url": "https://api.github.com/users/aaarunzbuzz/orgs",
+      "repos_url": "https://api.github.com/users/aaarunzbuzz/repos",
+      "events_url": "https://api.github.com/users/aaarunzbuzz/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/aaarunzbuzz/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "private": false,
+    "html_url": "https://github.com/aaarunzbuzz/ontoologyautotest",
+    "description": "",
+    "fork": false,
+    "url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest",
+    "forks_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/forks",
+    "keys_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/teams",
+    "hooks_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/hooks",
+    "issue_events_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/events",
+    "assignees_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/tags",
+    "blobs_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/languages",
+    "stargazers_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/stargazers",
+    "contributors_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/contributors",
+    "subscribers_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/subscribers",
+    "subscription_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/subscription",
+    "commits_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/merges",
+    "archive_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/downloads",
+    "issues_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/labels{/name}",
+    "releases_url": "https://api.github.com/repos/aaarunzbuzz/ontoologyautotest/releases{/id}",
+    "created_at": "2015-05-20T12:41:16Z",
+    "updated_at": "2015-05-20T12:45:04Z",
+    "pushed_at": "2015-05-20T12:45:04Z",
+    "git_url": "git://github.com/aaarunzbuzz/ontoologyautotest.git",
+    "ssh_url": "git@github.com:aaarunzbuzz/ontoologyautotest.git",
+    "clone_url": "https://github.com/aaarunzbuzz/ontoologyautotest.git",
+    "svn_url": "https://github.com/aaarunzbuzz/ontoologyautotest",
+    "homepage": null,
+    "size": 0,
+    "stargazers_count": 0,
+    "watchers_count": 0,
+    "language": "Web Ontology Language",
+    "has_issues": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "forks_count": 1,
+    "mirror_url": null,
+    "open_issues_count": 0,
+    "forks": 1,
+    "open_issues": 0,
+    "watchers": 0,
+    "default_branch": "master"
+  },
+  "network_count": 1,
+  "subscribers_count": 1
+}
+
+
+--WIzard for DOCumenting Ontologies-- Powered by LODE.
+
+Generating documentation for /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/org/daniel.owl
+Documentation generated successfully
+
+
+--WIzard for DOCumenting Ontologies-- Powered by LODE.
+
+Generating documentation for /Users/blakxu/test123/OnToologyTestEnv/temp/aaa@runzbuzz.com/alojamiento.owl
+Documentation generated successfully
