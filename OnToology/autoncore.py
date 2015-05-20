@@ -285,7 +285,7 @@ def webhook_access(client_id,redirect_url):
 
 
 
-def add_webhook(target_repo,notification_url,g=g):
+def add_webhook(target_repo,notification_url,newg=g):
     name = "web"
     active = True
     events = ["push"]
@@ -294,16 +294,16 @@ def add_webhook(target_repo,notification_url,g=g):
                "content_type": "form"
     }
     try:
-        g.get_repo(target_repo).create_hook(name,config,events,active)
+        newg.get_repo(target_repo).create_hook(name,config,events,active)
         return {'status': True}
     except Exception as e:
         return {'status': False, 'error': str(e)}#e.data}
 
 
 
-def add_collaborator(target_repo,user,g=g):
+def add_collaborator(target_repo,user,newg=g):
     try:
-        msg = g.get_repo(target_repo).add_to_collaborators(user)
+        msg = newg.get_repo(target_repo).add_to_collaborators(user)
         return {'status': True, 'msg': str(msg) }
     except Exception as e:
         return {'status': False, 'error': str(e)}#e.data}
