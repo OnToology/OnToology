@@ -69,8 +69,9 @@ To install pip follow the instructions here https://pip.pypa.io/en/latest/instal
 note: you may need to change some of the hardcoded variables, since the system still in early stage
 
 ##Working with Multiple ssh keys
-at some point in time, you may need to perform tests locally (django tests), you may need 
-to have multiple ssh keys for github at the same time. If So there is good example on
+At some point, you may need to perform tests locally (django tests), you may need 
+to have multiple ssh keys for github at the same time. If so there is good example on
+how to do them 
  http://techamad.blogspot.com.es/2015/05/github-with-multiple-keys.html or
  https://gist.github.com/jexchan/2351996
 
