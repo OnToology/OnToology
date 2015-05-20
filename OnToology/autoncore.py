@@ -12,8 +12,7 @@ import settings
 
 from mongoengine import *
 
-Test = False
-
+from settings import TEST
 use_database = True
 
 ToolUser = 'OnToologyUser'
@@ -51,6 +50,8 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
     print 'target_repo: '+target_repo
     change_status(target_repo,'Preparing')
     #so the tool user can takeover and do stuff
+    
+    
     username = os.environ['github_username']
     password = os.environ['github_password']
     g = Github(username,password)    
@@ -755,6 +756,10 @@ def nicer_oops_output(issues):
         for i in range(len(suggs)):
             s+="%d. "%(i+1) + suggs[i]+"\n"
     return s
+
+
+
+
 
 
 

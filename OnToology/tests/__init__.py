@@ -3,9 +3,10 @@ from django.test import TestCase
 from django.test.simple import DjangoTestSuiteRunner
 import os
 from github import Github
-from subprocess import call
+from subprocess import call, Popen, PIPE
 import time
 from OnToology import autoncore, views
+from _curses import ERR
 
 #import mimic_webhook
 
@@ -13,6 +14,9 @@ from OnToology import autoncore, views
 
 def suite():   
     return unittest.TestLoader().discover("OnToology.tests", pattern="test*.py")
+
+
+
 
 
 
@@ -35,13 +39,68 @@ for loader, module_name, is_pkg in pkgutil.walk_packages(__path__):
 
 
 
+old_keys = []
+ssh_keys_dir =''
 
+def use_test_key():
+    global ssh_keys_dir
+    global old_keys
+    if 'tests_ssh_key' in os.environ:
+        p = Popen(['ssh-add', '-l'], stdout=PIPE, stderr=PIPE)
+        (output, err) = p.communicate()
+        if err is None or err == '':  # successfull
+            lines = output.split('\n')[:-1]
+            if len(lines) > 0 and len(lines[0].split(' ')[0]) == 4 \
+                and lines[0].split(' ')[3].strip() == '(RSA)':
+                
+                for line in lines:
+                    print 'line: '+str(line.split(' '))
+                    k = line.split(' ')[2]
+                    old_keys.append(k)
+                if len(old_keys) > 0:
+                    (ssh_keys_dir, ssh_key_file) = os.path.split(os.environ['tests_ssh_key'])
+                    p = Popen(['ssh-add', '-D'], stdout=PIPE,stderr=PIPE)
+                    (output, err) = p.communicate()
+                    if err is None or err == '' or err.strip()=='All identities removed.':  # deleted successfully
+                        p = Popen(['ssh-add',
+                                os.environ['tests_ssh_key']],
+                                stdout=PIPE, stderr=PIPE)
+                        if err is None or err == '' or err.strip()=='All identities removed.':
+                            print 'Added the new key successfully'
+                        else:
+                            print 'error adding my key: '+err
+                    else:
+                        print 'error: '+err
+                else:
+                    print 'No old keys'
+        else:
+            print 'error: '+err
+    else:
+        print 'tests_ssh_key is not there, so it will not change'
+        
+           
+def use_old_keys():
+    global ssh_keys_dir
+    if len(old_keys) >0:
+        for k in old_keys:
+            p = Popen(['ssh-add',os.path.join(ssh_keys_dir,k)], stdout=PIPE, stderr=PIPE)
+            (output, err) = p.communicate()
+            if err is None or err=="":
+                pass
+            else:
+                print 'error: '+err
 
-
+                
+    
+    
+    
+           
 class NoSQLTestRunner(DjangoTestSuiteRunner):
     def setup_databases(self):
+        use_test_key()
         pass
     def teardown_databases(self, *args):
+        use_old_keys()
         pass
 
 
