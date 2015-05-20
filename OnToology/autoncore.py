@@ -285,7 +285,14 @@ def webhook_access(client_id,redirect_url):
 
 
 
-def add_webhook(target_repo,notification_url,newg=g):
+
+
+
+def add_webhook(target_repo,notification_url,newg=None):
+    global g
+    if newg is None:
+        newg = g
+        
     name = "web"
     active = True
     events = ["push"]
@@ -301,7 +308,10 @@ def add_webhook(target_repo,notification_url,newg=g):
 
 
 
-def add_collaborator(target_repo,user,newg=g):
+def add_collaborator(target_repo,user,newg=None):
+    global g
+    if newg is None:
+        newg = g
     try:
         msg = newg.get_repo(target_repo).add_to_collaborators(user)
         return {'status': True, 'msg': str(msg) }
