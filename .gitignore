@@ -6,7 +6,7 @@ __pycache__/
 .project
 .DS_Store
 .pydevproject
-#.settings
+.settings
 
 # C extensions
 *.so
