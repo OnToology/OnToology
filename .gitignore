@@ -3,9 +3,9 @@ __pycache__/
 *.py[cod]
 
 #
-.project
-.DS_Store
-.pydevproject
+#.project
+#.DS_Store
+#.pydevproject
 
 # C extensions
 *.so
