@@ -12,6 +12,8 @@ import settings
 
 from mongoengine import *
 
+Test = False
+
 use_database = True
 
 ToolUser = 'OnToologyUser'
@@ -212,7 +214,7 @@ def clone_repo(cloning_repo,parent_folder,dosleep=True):
 def commit_changes():
     gu = ""
     gu = "git config  user.email \"ahmad88csc@gmail.com\";"
-    gu+="git config  user.name \"AutonUser\" ;"
+    gu+="git config  user.name \"s%\" ;"%(ToolUser)
     #print "command: "+"cd "+home+parent_folder+";"+gu+" git add README.md "    
     #call("cd "+home+parent_folder+";"+gu+" git add README.md ",shell=True)
     comm =  "cd "+home+parent_folder+";"+gu+" git add . "    
@@ -342,7 +344,7 @@ def draw_diagrams(rdf_files):
         #print r+' is changed '
         if r[-4:] in ontology_formats:
             for t in ar2dtool_config_types:
-                assert draw_file(r,t), "failed in generating diagram for %s" %(r)       
+                draw_file(r,t) 
 
 
 
@@ -357,6 +359,11 @@ def draw_file(rdf_file,config_type):
     outtype="png"
     #config_file_abs = build_file_structure(config_type, [get_target_home(),'diagrams',config_type])
     #rdf_file_abs = build_file_structure(rdf_file, [get_target_home(),'diagrams',config_type])    
+    
+    
+    #rdf_file_abs = build_file_structure(get_file_from_path(rdf_file),[get_target_home(),rdf_file,'diagrams',config_type[:-5]])
+    #now will delete the drawing type folder
+    #delete_dir(get_parent_path(rdf_file_abs))
     rdf_file_abs = build_file_structure(get_file_from_path(rdf_file),[get_target_home(),rdf_file,'diagrams',config_type[:-5]])
     config_file_abs = build_file_structure(config_type, [get_target_home(),rdf_file,'diagrams','config'])
     try:
@@ -368,8 +375,7 @@ def draw_file(rdf_file,config_type):
     except Exception as e:
         print 'in draw_file: exception opening the file: '+str(e)
     
-    #now will delete the drawing type folder
-    delete_dir(get_parent_path(rdf_file_abs))
+
         
     comm = 'java -jar '
     comm+= ar2dtool_dir+'ar2dtool.jar -i '
@@ -378,7 +384,7 @@ def draw_file(rdf_file,config_type):
     comm+= ' >> "'+log_file_dir+'"'
     print comm
     call(comm,shell=True)
-    return os.path.isfile(rdf_file_abs+'.gml') 
+    #return os.path.isfile(rdf_file_abs+'.gml') 
 
 
 ########################################################################
@@ -747,7 +753,7 @@ def nicer_oops_output(issues):
 
 
 def delete_dir(target_directory):
-    comm="cp -Rf "+target_directory
+    comm="rm -Rf "+target_directory
     print comm  
     call(comm,shell=True)
 
