@@ -30,7 +30,6 @@ ar2dtool_dir = os.environ['ar2dtool_dir']
 #e.g. home = 'blahblah/temp/'
 home = os.environ['github_repos_dir']
 
-redirect_external_calls_output = False
 
 sleeping_time = 7
 
@@ -230,7 +229,7 @@ def fork_repo(target_repo,username,password):
     time.sleep(sleeping_time)#the wait time to give github sometime so the repo can be forked successfully
     #this is a workaround and not a proper way to do a fork
     comm = "curl --user \"%s:%s\" --request POST --data \'{}\' https://api.github.com/repos/%s/forks" % (username,password,target_repo)
-    if redirect_external_calls_output:
+    if not settings.TEST:
         comm+= ' >> "'+log_file_dir+'"'
     print comm
     call(comm,shell=True)
@@ -245,19 +244,19 @@ def clone_repo(cloning_repo,parent_folder,dosleep=True):
         time.sleep(sleeping_time)#the wait time to give github sometime so the repo can be cloned
     try:
         comm =  "rm"+" -Rf "+home+parent_folder
-        if redirect_external_calls_output:
+        if not settings.TEST:
             comm+= ' >> "'+log_file_dir+'"'
         print comm
         call(comm, shell=True)
     except:
         print 'rm failed'
     comm = "git"+" clone"+" "+cloning_repo+" "+home+parent_folder
-    if redirect_external_calls_output:
+    if not settings.TEST:
         comm+= ' >> "'+log_file_dir+'"'
     print comm
     call(comm, shell=True)
     comm =  "chmod -R 777 "+home+parent_folder
-    if redirect_external_calls_output:
+    if not settings.TEST:
         comm+= ' >> "'+log_file_dir+'"'
     print comm
     call(comm, shell=True)
@@ -273,19 +272,19 @@ def commit_changes():
     #print "command: "+"cd "+home+parent_folder+";"+gu+" git add README.md "    
     #call("cd "+home+parent_folder+";"+gu+" git add README.md ",shell=True)
     comm =  "cd "+home+parent_folder+";"+gu+" git add . "    
-    if redirect_external_calls_output:
+    if not settings.TEST:
         comm+= ' >> "'+log_file_dir+'"'
     print comm
     call(comm,shell=True)
     comm = "cd "+home+parent_folder+";"+gu+" git commit -m 'automated change' "
-    if redirect_external_calls_output:
+    if not settings.TEST:
         comm+= ' >> "'+log_file_dir+'"'
     print comm
     call(comm,shell=True)
     gup =""
     gup = "git config push.default matching;"
     comm =  "cd "+home+parent_folder+";"+gu+gup+" git push "
-    if redirect_external_calls_output:
+    if not settings.TEST:
         comm+= ' >> "'+log_file_dir+'"'
     print comm
     call(comm,shell=True)
@@ -439,7 +438,7 @@ def draw_file(rdf_file,config_type):
     comm+= ar2dtool_dir+'ar2dtool.jar -i '
     comm+= get_abs_path(rdf_file)+' -o '
     comm+= rdf_file_abs+'.'+outtype+' -t '+outtype+' -c '+config_file_abs+' -GV -gml '
-    if redirect_external_calls_output:
+    if not settings.TEST:
         comm+= ' >> "'+log_file_dir+'"'
     print comm
     call(comm,shell=True)
@@ -498,7 +497,7 @@ def create_widoco_doc(rdf_file):
     comm+=" -ontFile "+rdf_file_abs
     comm+=" -outFolder "+get_parent_path(config_file_abs)
     comm+=" -confFile "+config_file_abs
-    if redirect_external_calls_output:
+    if not settings.TEST:
         comm+= ' >> "'+log_file_dir+'" '
     print comm
     call(comm,shell=True)
@@ -648,8 +647,8 @@ def output_parsed_pitfalls(ont_file,oops_reply):
 #generate oops issues using widoco
 def generate_oops_pitfalls(ont_file):    
     ont_file_abs_path = get_abs_path(ont_file)
-    r = build_file_structure(get_file_from_path(ont_file)+'.oops', [get_target_home(),ont_file,'oops'])
-    #config_file_abs = build_file_structure(get_file_from_path(ont_file)+'.widoco.conf', [get_target_home(), ont_file, 'documentation'])     
+    r = build_file_structure(get_file_from_path(ont_file)+'.'+tools_conf['oops']['folder_name'], [get_target_home(),ont_file,tools_conf['oops']['folder_name']])
+    #r = build_file_structure(get_file_from_path(ont_file)+'.oops', [get_target_home(),ont_file,'oops'])
     comm = "cd "+get_abs_path('')+"; "
     comm+= "java -jar "
     comm+=' -Dfile.encoding=utf-8 '
@@ -657,58 +656,15 @@ def generate_oops_pitfalls(ont_file):
     comm+=" -ontFile "+ont_file_abs_path
     comm+=" -outFolder "+get_parent_path(r)
     #comm+=" -confFile "+config_file_abs
-    if redirect_external_calls_output:
+    if not settings.TEST:
         comm+= ' >> "'+log_file_dir+'"'
     print comm
     call(comm,shell=True)
-#     for root, dirs, files in os.walk(get_parent_path(r), topdown=False):
-#         for name in dirs:
-#             if 'OOPSevaluation' not in name:
-#                 print('will delete: '+os.path.join(root, name))
-#                 try:
-#                     shutil.rmtree(os.path.join(root, name))
-#                 except Exception as e:
-#                     if settings.TEST:
-#                         assert False, 'error in oops: '+str(e)
-#                     else:
-#                         print 'Error in oops: '+str(e)#maybe I need a handler
-#     for root, dirs, files in os.walk(get_parent_path(r), topdown=False):
-#         for name in files:
-#             if 'OOPSevaluation' not in root:
-#                 f = os.path.join(root, name)
-#                 print('will try to delete: '+f)
-#                 try:
-#                     os.remove(f)
-#                 except Exception as e:
-#                     print 'Error in oops: '+str(e)
     out_abs_dir = get_parent_path(r)                 
     shutil.move( os.path.join(out_abs_dir,'OOPSevaluation') , get_parent_path(out_abs_dir))
     shutil.rmtree(out_abs_dir)
     shutil.move(os.path.join(get_parent_path(out_abs_dir),'OOPSevaluation'), out_abs_dir)
 
-
-
-
-# def output_parsed_pitfalls(ont_file,oops_reply):
-#     #ont_file_abs_path = build_file_structure(ont_file+'.oops', [get_target_home(),'oops'])
-#     ont_file_abs_path = build_file_structure(get_file_from_path(ont_file)+'.oops', [get_target_home(),ont_file,'oops'])
-#     f = open(ont_file_abs_path,'w')
-#     issues, interesting_features = parse_oops_issues(oops_reply)
-#     s= ""
-#     #print str(issues)
-#     for i in issues:
-#         for intfea in interesting_features:
-#             if intfea in issues[i]:
-#                 val = issues[i][intfea].split('^^')[0]
-#                 key = intfea.split("#")[-1].replace('>','')
-#                 s+=key+": "+val+"\n"
-#         s+"\n"
-#         s+=20*"="
-#         s+="\n"
-#     f.write(s)
-#     f.close()
-#     print 'oops file written'
-#     return s
 
 
 
@@ -842,7 +798,7 @@ def nicer_oops_output(issues):
 
 def delete_dir(target_directory):
     comm="rm -Rf "+target_directory
-    if redirect_external_calls_output:
+    if not settings.TEST:
         comm += '  >> "'+log_file_dir+'" '
     print comm  
     call(comm,shell=True)
