@@ -24,8 +24,8 @@ class TestCoreLocalCycle(LocalRepoTestCase):
         print 'test_repo: '+self.test_repo
         request = mimic_webhook.get_fake_webhook_ontology_change_request(self.test_repo, self.username)
         connect('OnToology')
-        #views.add_hook(request)
-        views.add_hook_for_tests(request) 
+        views.add_hook(request)
+        #views.add_hook_for_tests(request) 
          
 #     def tearDown(self):
 #         LocalRepoTestCase.tearDown(self)

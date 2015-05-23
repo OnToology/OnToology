@@ -20,7 +20,7 @@ from models import *
 import requests
 import json
 import os
-
+#from settings import TEST
 import subprocess
 
 from github import Github
@@ -42,6 +42,7 @@ sys.stdout = sys.stderr
 
 
 def get_repos_formatted(the_repos):
+    return the_repos
     repos = []
     for orir in the_repos:
         r = {}
@@ -63,6 +64,7 @@ def get_repos_formatted(the_repos):
         r['monitoring'] = monit
         repos.append(r)
     return repos
+
 
 
 
@@ -168,99 +170,19 @@ def get_access_token(request):
     return render_to_response('msg.html',{'msg':'webhook attached and user added as collaborator' },context_instance=RequestContext(request))
     
 
-      
-
-@csrf_exempt
-def add_hook_test(request):
-    # cloning_repo should look like 'git@github.com:AutonUser/target.git'
-    cloning_repo = 'git://github.com/ahmad88me/target.git'#request.POST['cloning_repo']
-    tar = cloning_repo.split('/')[-2]
-    cloning_repo = cloning_repo.replace(tar,ToolUser)
-    cloning_repo = cloning_repo.replace('git://github.com/','git@github.com:')
-    target_repo = 'ahmad88me/target'#request.POST['target_repo']
-    user = 'test_user'#request.POST['username']
-    changed_files = ['a.txt']
-    r = git_magic(target_repo, user, cloning_repo, changed_files)
-    s='add_hook_test'
-    #request.session['updated_files'] = j['head_commit']['modified']
-    return render_to_response('msg.html',{'msg': ''+s+'<>'+r},context_instance=RequestContext(request))
-
-
 
 @csrf_exempt
 def add_hook(request):
+    if settings.TEST:
+        print 'We are in test mode'
     try:
         s = str(request.POST['payload'])
-        j = json.loads(s)
-        s = j['repository']['url']+'updated files: '+str(j['head_commit']['modified'])
-        cloning_repo = j['repository']['git_url']
-        target_repo = j['repository']['full_name']
-        user = j['repository']['owner']['email']
-        changed_files = j['head_commit']['modified']
-        #changed_files+= j['head_commit']['removed']
-        changed_files+= j['head_commit']['added']
-        if 'Merge pull request' in  j['head_commit']['message'] :
-            print 'This is a merge request'
-            mont = get_auton_configuration(user)
-            s = ""
-            print "the configuration: "+str(mont)
-            for i in mont:
-                s+=i+"="+str(mont[i])+", "
-                try:
-                    repo = Repo.objects.get(url=target_repo)
-                    print 'got the repo'
-                    repo.last_used = datetime.today()
-                    print 'monitoring is: '+s
-                    repo.monitoring = s
-                    repo.save()
-                    print 'repo saved'
-                except DoesNotExist:
-                    repo = Repo()
-                    repo.url=target_repo
-                    repo.monitoring = s
-                    repo.save()
-                except Exception as e:
-                    print 'database_exception: '+str(e)
-            return render_to_response('msg.html',{'msg': 'This indicate that this merge request will be ignored'},context_instance=RequestContext(request))
-    except:
-        return render_to_response('msg.html',{'msg': 'This request should be a webhook ping'},context_instance=RequestContext(request))
-    print '##################################################'
-    print 'changed_files: '+str(changed_files)
-    # cloning_repo should look like 'git@github.com:AutonUser/target.git'
-    tar = cloning_repo.split('/')[-2]
-    cloning_repo = cloning_repo.replace(tar,ToolUser)
-    cloning_repo = cloning_repo.replace('git://github.com/','git@github.com:')
-    comm = "python /home/ubuntu/auton/Auton/autoncore.py "
-    comm+=' "'+target_repo+'" "'+user+'" "'+cloning_repo+'" '
-    for c in changed_files:
-        comm+='"'+c+'" '
-    print 'running autoncore code as: '+comm
-    subprocess.Popen(comm,shell=True)
-    r=""
-    return render_to_response('msg.html',{'msg': ''+s+'<>'+r},context_instance=RequestContext(request))
-
-
-
-
-
-def add_hook_for_tests(request):
-    try:
-        print 'trying in add_hook_for_tests'
-        s = str(request.POST['payload'])
-        print 'take payload: '
-        #print s
         j = json.loads(s,strict=False)
-        print 'json loaded'
         s = j['repository']['url']+'updated files: '+str(j['head_commit']['modified'])
-        print 's: '+s
         cloning_repo = j['repository']['git_url']
-        print 'cloning_repo'
         target_repo = j['repository']['full_name']
-        print 'target_repo'
         user = j['repository']['owner']['email']
-        print 'user'
         changed_files = j['head_commit']['modified']
-        print 'changed files'
         #changed_files+= j['head_commit']['removed']
         changed_files+= j['head_commit']['added']
         if 'Merge pull request' in  j['head_commit']['message'] :
@@ -285,11 +207,20 @@ def add_hook_for_tests(request):
                     repo.save()
                 except Exception as e:
                     print 'database_exception: '+str(e)
-            print 'This is merge'
-            return # render_to_response('msg.html',{'msg': 'This indicate that this merge request will be ignored'},context_instance=RequestContext(request))
+            msg = 'This indicate that this merge request will be ignored'
+            if settings.TEST:
+                print msg
+                return
+            else:
+                return render_to_response('msg.html',{'msg': msg},context_instance=RequestContext(request))
     except:
-        print 'This should be a webhook ping'
-        return #render_to_response('msg.html',{'msg': 'This request should be a webhook ping'},context_instance=RequestContext(request))
+        
+        msg = 'This request should be a webhook ping'
+        if settings.TEST:
+            print msg 
+            return
+        else:
+            return render_to_response('msg.html',{'msg': msg},context_instance=RequestContext(request))
     print '##################################################'
     print 'changed_files: '+str(changed_files)
     # cloning_repo should look like 'git@github.com:AutonUser/target.git'
@@ -300,11 +231,154 @@ def add_hook_for_tests(request):
     comm+=' "'+target_repo+'" "'+user+'" "'+cloning_repo+'" '
     for c in changed_files:
         comm+='"'+c+'" '
-    print 'running autoncore code as: '+comm
-    git_magic(target_repo, user, cloning_repo, changed_files)
-    #subprocess.Popen(comm,shell=True)
-    r=""
-    return #render_to_response('msg.html',{'msg': ''+s+'<>'+r},context_instance=RequestContext(request))
+    if settings.TEST:
+        print 'will call git_magic with target=%s, user=%s, cloning_repo=%s, changed_files=%s'%(target_repo, user, cloning_repo, str(changed_files))
+        git_magic(target_repo, user, cloning_repo, changed_files)
+        return
+    else:
+        print 'running autoncore code as: '+comm
+        subprocess.Popen(comm,shell=True)
+        return render_to_response('msg.html',{'msg': ''+s},context_instance=RequestContext(request))
+
+
+
+      
+
+# @csrf_exempt
+# def add_hook_test(request):
+#     # cloning_repo should look like 'git@github.com:AutonUser/target.git'
+#     cloning_repo = 'git://github.com/ahmad88me/target.git'#request.POST['cloning_repo']
+#     tar = cloning_repo.split('/')[-2]
+#     cloning_repo = cloning_repo.replace(tar,ToolUser)
+#     cloning_repo = cloning_repo.replace('git://github.com/','git@github.com:')
+#     target_repo = 'ahmad88me/target'#request.POST['target_repo']
+#     user = 'test_user'#request.POST['username']
+#     changed_files = ['a.txt']
+#     r = git_magic(target_repo, user, cloning_repo, changed_files)
+#     s='add_hook_test'
+#     #request.session['updated_files'] = j['head_commit']['modified']
+#     return render_to_response('msg.html',{'msg': ''+s+'<>'+r},context_instance=RequestContext(request))
+
+
+# Will merge two functions add_hook and add_hook_for_tests
+# @csrf_exempt
+# def add_hook(request):
+#     try:
+#         s = str(request.POST['payload'])
+#         j = json.loads(s)
+#         s = j['repository']['url']+'updated files: '+str(j['head_commit']['modified'])
+#         cloning_repo = j['repository']['git_url']
+#         target_repo = j['repository']['full_name']
+#         user = j['repository']['owner']['email']
+#         changed_files = j['head_commit']['modified']
+#         #changed_files+= j['head_commit']['removed']
+#         changed_files+= j['head_commit']['added']
+#         if 'Merge pull request' in  j['head_commit']['message'] :
+#             print 'This is a merge request'
+#             mont = get_auton_configuration(user)
+#             s = ""
+#             print "the configuration: "+str(mont)
+#             for i in mont:
+#                 s+=i+"="+str(mont[i])+", "
+#                 try:
+#                     repo = Repo.objects.get(url=target_repo)
+#                     print 'got the repo'
+#                     repo.last_used = datetime.today()
+#                     print 'monitoring is: '+s
+#                     repo.monitoring = s
+#                     repo.save()
+#                     print 'repo saved'
+#                 except DoesNotExist:
+#                     repo = Repo()
+#                     repo.url=target_repo
+#                     repo.monitoring = s
+#                     repo.save()
+#                 except Exception as e:
+#                     print 'database_exception: '+str(e)
+#             return render_to_response('msg.html',{'msg': 'This indicate that this merge request will be ignored'},context_instance=RequestContext(request))
+#     except:
+#         return render_to_response('msg.html',{'msg': 'This request should be a webhook ping'},context_instance=RequestContext(request))
+#     print '##################################################'
+#     print 'changed_files: '+str(changed_files)
+#     # cloning_repo should look like 'git@github.com:AutonUser/target.git'
+#     tar = cloning_repo.split('/')[-2]
+#     cloning_repo = cloning_repo.replace(tar,ToolUser)
+#     cloning_repo = cloning_repo.replace('git://github.com/','git@github.com:')
+#     comm = "python /home/ubuntu/auton/Auton/autoncore.py "
+#     comm+=' "'+target_repo+'" "'+user+'" "'+cloning_repo+'" '
+#     for c in changed_files:
+#         comm+='"'+c+'" '
+#     print 'running autoncore code as: '+comm
+#     subprocess.Popen(comm,shell=True)
+#     r=""
+#     return render_to_response('msg.html',{'msg': ''+s+'<>'+r},context_instance=RequestContext(request))
+
+
+
+
+# Will have only one function add_hook
+# def add_hook_for_tests(request):
+#     try:
+#         print 'trying in add_hook_for_tests'
+#         s = str(request.POST['payload'])
+#         print 'take payload: '
+#         #print s
+#         j = json.loads(s,strict=False)
+#         print 'json loaded'
+#         s = j['repository']['url']+'updated files: '+str(j['head_commit']['modified'])
+#         print 's: '+s
+#         cloning_repo = j['repository']['git_url']
+#         print 'cloning_repo'
+#         target_repo = j['repository']['full_name']
+#         print 'target_repo'
+#         user = j['repository']['owner']['email']
+#         print 'user'
+#         changed_files = j['head_commit']['modified']
+#         print 'changed files'
+#         #changed_files+= j['head_commit']['removed']
+#         changed_files+= j['head_commit']['added']
+#         if 'Merge pull request' in  j['head_commit']['message'] :
+#             print 'This is a merge request'
+#             mont = get_auton_configuration(user)
+#             s = ""
+#             print "the configuration: "+str(mont)
+#             for i in mont:
+#                 s+=i+"="+str(mont[i])+", "
+#                 try:
+#                     repo = Repo.objects.get(url=target_repo)
+#                     print 'got the repo'
+#                     repo.last_used = datetime.today()
+#                     print 'monitoring is: '+s
+#                     repo.monitoring = s
+#                     repo.save()
+#                     print 'repo saved'
+#                 except DoesNotExist:
+#                     repo = Repo()
+#                     repo.url=target_repo
+#                     repo.monitoring = s
+#                     repo.save()
+#                 except Exception as e:
+#                     print 'database_exception: '+str(e)
+#             print 'This is merge'
+#             return # render_to_response('msg.html',{'msg': 'This indicate that this merge request will be ignored'},context_instance=RequestContext(request))
+#     except:
+#         print 'This should be a webhook ping'
+#         return #render_to_response('msg.html',{'msg': 'This request should be a webhook ping'},context_instance=RequestContext(request))
+#     print '##################################################'
+#     print 'changed_files: '+str(changed_files)
+#     # cloning_repo should look like 'git@github.com:AutonUser/target.git'
+#     tar = cloning_repo.split('/')[-2]
+#     cloning_repo = cloning_repo.replace(tar,ToolUser)
+#     cloning_repo = cloning_repo.replace('git://github.com/','git@github.com:')
+#     comm = "python /home/ubuntu/auton/Auton/autoncore.py "
+#     comm+=' "'+target_repo+'" "'+user+'" "'+cloning_repo+'" '
+#     for c in changed_files:
+#         comm+='"'+c+'" '
+#     print 'running autoncore code as: '+comm
+#     git_magic(target_repo, user, cloning_repo, changed_files)
+#     #subprocess.Popen(comm,shell=True)
+#     r=""
+#     return #render_to_response('msg.html',{'msg': ''+s+'<>'+r},context_instance=RequestContext(request))
 
 
 

@@ -5,8 +5,9 @@ import os
 from github import Github
 from subprocess import call, Popen, PIPE
 import time
-from OnToology import autoncore, views
+from OnToology import autoncore, views, settings
 from _curses import ERR
+
 
 #import mimic_webhook
 
@@ -65,8 +66,8 @@ def use_test_key():
                         p = Popen(['ssh-add',
                                 os.environ['tests_ssh_key']],
                                 stdout=PIPE, stderr=PIPE)
-                        if err is None or err == '' or err.strip()=='All identities removed.':
-                            print 'Added the new key successfully'
+                        if err is None or err == '' or 'Identity added' in err:
+                            print 'Added new key %s successfully'%(os.environ['tests_ssh_key'])
                         else:
                             print 'error adding my key: '+err
                     else:
@@ -79,14 +80,24 @@ def use_test_key():
         print 'tests_ssh_key is not there, so it will not change'
         
            
+           
 def use_old_keys():
     global ssh_keys_dir
+    p = Popen(['ssh-add','-D'],stdout=PIPE, stderr=PIPE)
+    (output, err) = p.communicate()
+    if err is None or err=='' or err.strip()=='All identities removed.':
+        print 'The key %s is removed successfully'%(os.environ['tests_ssh_key'])
+    else:
+        print 'error: '+err
     if len(old_keys) >0:
         for k in old_keys:
+            if k.strip() == os.environ['tests_ssh_key']:
+                continue
+            print 'will add key '+k
             p = Popen(['ssh-add',os.path.join(ssh_keys_dir,k)], stdout=PIPE, stderr=PIPE)
             (output, err) = p.communicate()
-            if err is None or err=="":
-                pass
+            if err is None or err=="" or 'Identity added' in err:
+                print 'Added old key %s successfully'%(k)
             else:
                 print 'error: '+err
 
@@ -97,6 +108,8 @@ def use_old_keys():
            
 class NoSQLTestRunner(DjangoTestSuiteRunner):
     def setup_databases(self):
+        settings.TEST = True
+        print 'I just set TEST to true'
         use_test_key()
         pass
     def teardown_databases(self, *args):

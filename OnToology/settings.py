@@ -80,8 +80,8 @@ MEDIA_ROOT = BASE_DIR+'/media/'
 
 MEDIA_URL = '/media/'
 
-TEST = True
-
+TEST = False    
+    
 # Application definition
 
 INSTALLED_APPS = (
@@ -93,7 +93,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'mongoengine.django.mongo_auth',
     'OnToology',
-   # 'tests',
 )
 
 MIDDLEWARE_CLASSES = (

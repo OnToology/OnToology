@@ -8,11 +8,12 @@ import time
 
 import settings
 
+import shutil
+
 # from models import Repo
 
 from mongoengine import *
 
-from settings import TEST
 use_database = True
 
 ToolUser = 'OnToologyUser'
@@ -39,12 +40,24 @@ g = None
 
 log_file_dir = None #'&1'#which is stdout #sys.stdout#by default
 
+tools_conf = {
+           'ar2dtool': { 'folder_name': 'diagrams',  
+                        'type': 'png'
+                        },
+            'widoco': { 'folder_name': 'documentation' 
+                       },
+            'oops': {'folder_name' : 'evaluation'}
+}
+
+
+
 
 def git_magic(target_repo,user,cloning_repo,changed_filesss):
     global g
     global parent_folder
     parent_folder = user
-    #prepare_log(user)
+    if not settings.TEST:
+        prepare_log(user)
     print str(datetime.today())
     print '############################### magic #############################'
     print 'target_repo: '+target_repo
@@ -64,6 +77,7 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
     change_status(target_repo,'cloning repo')
     clone_repo(cloning_repo,user)
     print 'repo cloned'
+    files_to_verify=[]
     for chf in changed_filesss:
         auton_conf = {'ar2dtool_enable':False , 'widoco_enable': False, 'oops_enable': False}
         if chf[-4:] not in ontology_formats: #validate ontology formats
@@ -91,6 +105,10 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
             print 'working with: '+chf
             changed_files = [chf]
             auton_conf = get_auton_configuration(chf)
+            #The below three lines is to add files to verify their output later on
+            ftvcomp = auton_conf
+            ftvcomp['file'] = chf
+            files_to_verify.append(ftvcomp)
         print str(auton_conf)
         exception_if_exists = ""
         if auton_conf['ar2dtool_enable']:
@@ -143,6 +161,35 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
     #return r
 
 
+
+def verify_tools_generation(ver_file_comp,repo=None):
+    #AR2DTool
+    if ver_file_comp['ar2dtool_enable']:
+        target_file = os.path.join(get_abs_path(get_target_home()),ver_file_comp['file'] ,
+          tools_conf['ar2dtool']['folder_name'],ar2dtool_config_types[0][:-4],
+          get_file_from_path(f)+"."+tools_conf['ar2dtool']['type']+'.graphml')
+        file_exists = os.path.isfile(target_file)
+        if settings.TEST:
+             assert file_exists, 'the file %s is not generated'%(target_file)
+        else:
+            if repo is not None:
+                repo.state+='The Diagram of the file %s if not generated '%(ver_file_comp['file'])
+                repo.save()
+            print 'The Diagram of the file %s if not generated '%(ver_file_comp['file'])
+    #Widoco
+    if ver_file_comp['widoco_enable']:
+        target_file = os.path.join(get_abs_path(get_target_home()),ver_file_comp['file'] ,
+          tools_conf['widoco']['folder_name'],
+          'index.html')
+        file_exists = os.path.isfile(target_file)
+        if settings.TEST:
+             assert file_exists, 'the file %s is not generated'%(target_file)
+        else:
+            if repo is not None:
+                repo.state+='The Documentation of the file %s if not generated '%(ver_file_comp['file'])
+                repo.save()
+            print 'The Documentation of the file %s if not generated '%(ver_file_comp['file'])
+    #OOPS
 
 
 
@@ -431,9 +478,11 @@ def generate_widoco_docs(changed_files):
 
 
 def create_widoco_doc(rdf_file):
+    print 'in Widoco function'
     rdf_file_abs = get_abs_path(rdf_file)
     #config_file_abs = build_file_structure(rdf_file+'.widoco.conf', [get_target_home(),'documentation'])     
     config_file_abs = build_file_structure(get_file_from_path(rdf_file)+'.widoco.conf', [get_target_home(), rdf_file, 'documentation'])     
+    print 'rdf_abs: %s and config_file_abs %s'%(rdf_file_abs,config_file_abs)
     try:
         open(config_file_abs,"r")
     except IOError:
@@ -441,7 +490,7 @@ def create_widoco_doc(rdf_file):
         f.write(get_widoco_config())
         f.close()
     except Exception as e:
-        print 'in create_widoco_doc: exception opening the file: '+str(e)
+        print 'in create_widoco_doc: exception opening the file: '+str(e)        
     comm = "cd "+get_abs_path('')+"; "
     comm+= "java -jar "
     comm+=' -Dfile.encoding=utf-8 '
@@ -449,7 +498,8 @@ def create_widoco_doc(rdf_file):
     comm+=" -ontFile "+rdf_file_abs
     comm+=" -outFolder "+get_parent_path(config_file_abs)
     comm+=" -confFile "+config_file_abs
-    comm+= ' >> "'+log_file_dir+'"'
+    if redirect_external_calls_output:
+        comm+= ' >> "'+log_file_dir+'" '
     print comm
     call(comm,shell=True)
     
@@ -611,9 +661,30 @@ def generate_oops_pitfalls(ont_file):
         comm+= ' >> "'+log_file_dir+'"'
     print comm
     call(comm,shell=True)
-    
-
-
+#     for root, dirs, files in os.walk(get_parent_path(r), topdown=False):
+#         for name in dirs:
+#             if 'OOPSevaluation' not in name:
+#                 print('will delete: '+os.path.join(root, name))
+#                 try:
+#                     shutil.rmtree(os.path.join(root, name))
+#                 except Exception as e:
+#                     if settings.TEST:
+#                         assert False, 'error in oops: '+str(e)
+#                     else:
+#                         print 'Error in oops: '+str(e)#maybe I need a handler
+#     for root, dirs, files in os.walk(get_parent_path(r), topdown=False):
+#         for name in files:
+#             if 'OOPSevaluation' not in root:
+#                 f = os.path.join(root, name)
+#                 print('will try to delete: '+f)
+#                 try:
+#                     os.remove(f)
+#                 except Exception as e:
+#                     print 'Error in oops: '+str(e)
+    out_abs_dir = get_parent_path(r)                 
+    shutil.move( os.path.join(out_abs_dir,'OOPSevaluation') , get_parent_path(out_abs_dir))
+    shutil.rmtree(out_abs_dir)
+    shutil.move(os.path.join(get_parent_path(out_abs_dir),'OOPSevaluation'), out_abs_dir)
 
 
 
