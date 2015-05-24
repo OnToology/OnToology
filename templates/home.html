@@ -36,9 +36,11 @@ A system to automate part of the collaborative ontology development process. Giv
 	<td>Status</td>
 	<td>Log file</td>
 	<td>Last used</td>
+	<!--
 	<td>ar2dtool</td>
 	<td>OOPS</td>
 	<td >Widoco</td>
+	-->
 </tr>
 {%for r in repos%}
 	<tr>
@@ -46,9 +48,10 @@ A system to automate part of the collaborative ontology development process. Giv
 		<td>{{r.state}}</td>
 		<td><a href="media/logs/{{r.owner}}.log">log</a></td>
 		<td>{{r.last_used}}</td>
-		<td>{{r.ar2dtool_enable}}</td>
+		<!-- <td>{{r.ar2dtool_enable}}</td>
 		<td>{{r.oops_enable}}</td>
 		<td>{{r.widoco_enable}}</td>
+		 -->
 	<tr>
 {%endfor%}
 </table>
