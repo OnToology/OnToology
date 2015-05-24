@@ -83,8 +83,8 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
     for chf in changed_filesss:
         auton_conf = {'ar2dtool_enable':False , 'widoco_enable': False, 'oops_enable': False}
         if chf[-4:] not in ontology_formats: #validate ontology formats
-            if get_file_from_path(chf) =='auton.cfg':
-                print 'auton.cfg is changed'
+            if get_file_from_path(chf) =='OnToology.cfg':
+                print 'OnToology.cfg is changed'
                 fi = get_level_up(chf)
                 fi = fi[6:]
                 print 'ont file is: '+fi
@@ -368,7 +368,7 @@ def refresh_repo(target_repo):
 
 
 def remove_old_pull_requests(target_repo):
-    title = 'AutonTool update'
+    title = 'OnToology update'
     for p in g.get_repo(target_repo).get_pulls():
         if p.title == title:
             p.edit(state="closed")
@@ -378,7 +378,7 @@ def remove_old_pull_requests(target_repo):
 
 
 def send_pull_request(target_repo,username):
-    title = 'AutonTool update'
+    title = 'OnToology update'
     body = title
     err = ""
 #    for i in range(3):
@@ -593,11 +593,11 @@ def get_auton_configuration(f=None,abs_folder=None):
     widoco_enable = True
     oops_enable = True
     if abs_folder!=None:
-        conf_file_abs = os.path.join(abs_folder,'auton.cfg')
+        conf_file_abs = os.path.join(abs_folder,'OnToology.cfg')
     elif f != None:
-        conf_file_abs = build_file_structure('auton.cfg',[get_target_home(),f] )
+        conf_file_abs = build_file_structure('OnToology.cfg',[get_target_home(),f] )
     else:
-        conf_file_abs = build_file_structure('auton.cfg',[get_target_home()] )
+        conf_file_abs = build_file_structure('OnToology.cfg',[get_target_home()] )
     opened_conf_files = config.read(conf_file_abs)
     if len(opened_conf_files) == 1:
         print 'auton configuration file exists'
@@ -685,10 +685,10 @@ def get_pitfalls(target_repo,ont_file):
     oops_reply = oops_reply.text
     print 'got oops reply'#+oops_reply 
     issues_s = output_parsed_pitfalls(ont_file,oops_reply)
-    close_old_oops_issues_in_github(target_repo)
+    close_old_oops_issues_in_github(target_repo,ont_file)
     nicer_issues = nicer_oops_output(issues_s)
     if nicer_issues!="":
-        create_oops_issue_in_github(target_repo, nicer_issues)
+        create_oops_issue_in_github(target_repo,ont_file,nicer_issues)
         
     
 
@@ -786,20 +786,20 @@ def parse_oops_issues(oops_rdf):
 
 
 
-def create_oops_issue_in_github(target_repo,oops_issues):
+def create_oops_issue_in_github(target_repo,ont_file,oops_issues):
     print 'will create an oops issue'
     try:
-        g.get_repo(target_repo).create_issue('OOPS! Evaluation', oops_issues)
+        g.get_repo(target_repo).create_issue('OOPS! Evaluation for '+ont_file, oops_issues)
     except Exception as e:
         print 'exception when creating issue: '+str(e)#e.data}#e.data
         
     
 
 
-def close_old_oops_issues_in_github(target_repo):
+def close_old_oops_issues_in_github(target_repo,ont_file):
     print 'will close old issues'
     for i in g.get_repo(target_repo).get_issues(state='open'):
-        if i.title=='OOPS! Evaluation':
+        if i.title == ('OOPS! Evaluation for '+ont_file) :
             i.edit(state='closed')
 
 
@@ -880,7 +880,7 @@ def valid_ont_file(r):
 
 
 def get_target_home():
-    return 'auton'
+    return 'OnToology'
 
 
 def get_abs_path(relative_path):
