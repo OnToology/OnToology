@@ -166,9 +166,9 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
         if Repo.objects.get(url=target_repo).state!='validating':
             r = Repo.objects.get(url=target_repo)
             s = r.state
-            s.replace('validating','')
+            s = s.replace('validating','')
             r.state = s 
-            s.save()
+            r.save()
             return 
 
     if not settings.TEST or not settings.test_conf['local']:
