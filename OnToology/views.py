@@ -78,7 +78,6 @@ def home(request):
         webhook_access_url, state = webhook_access(client_id,host+'/get_access_token')
         request.session['target_repo'] = target_repo
         request.session['state'] = state 
-        
         try: 
             repo = Repo.objects.get(url=target_repo)
         except Exception as e:
@@ -93,7 +92,9 @@ def home(request):
             ouser.save()
         sys.stdout.flush()
         sys.stderr.flush()
-        return  HttpResponseRedirect(webhook_access_url)
+        
+        if '127.0.0.1:8000' not in request.META['HTTP_HOST'] :
+            return  HttpResponseRedirect(webhook_access_url)
 #     repos = []
 #     for orir in Repo.objects.all():
 #         r = {}

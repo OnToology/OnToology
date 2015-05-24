@@ -13,6 +13,7 @@ import time
 from OnToology import autoncore, views
  
 from OnToology.tests import  mimic_webhook
+from OnToology import settings
  
  
 class LocalRepoTestCase(TestCase):
@@ -52,6 +53,8 @@ class LocalRepoTestCase(TestCase):
          
      
     def addWebhook(self):
+        if settings.test_conf['local']:
+            return
         self.removeWebhook()
         res = autoncore.add_webhook(self.test_repo,self.notification_url,self.g)
         if 'error' not in res:
@@ -60,7 +63,8 @@ class LocalRepoTestCase(TestCase):
          
          
     def removeWebhook(self):
-        #res = True
+        if settings.test_conf['local']:
+            return
         for hook in self.getRepo().get_hooks():
             print 'hook_url: '+hook.url
             if self.notification_url in hook.config['url']:
@@ -74,6 +78,8 @@ class LocalRepoTestCase(TestCase):
          
      
     def addCollaborator(self):
+        if settings.test_conf['local']:
+            return
         g_auth_user = self.g.get_user()# this to get authenticated if login is not passed
         # and add collaborator expects NamedUser
         res = autoncore.add_collaborator(self.test_repo,self.g.get_user(g_auth_user.login),self.g)
@@ -83,6 +89,8 @@ class LocalRepoTestCase(TestCase):
          
      
     def removeCollaborator(self):
+        if settings.test_conf['local']:
+            return
         self.getRepo().remove_from_collaborators(self.collaborator)
          
          

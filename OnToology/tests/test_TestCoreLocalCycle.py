@@ -6,6 +6,8 @@ import mimic_webhook
  
 from mongoengine import connect  
 
+from OnToology import settings
+
 class TestCoreLocalCycle(LocalRepoTestCase):
  
 

@@ -82,6 +82,9 @@ MEDIA_URL = '/media/'
 
 TEST = False    
     
+test_conf = { 'local': True #don't interact with github at all, just mimic
+             
+             }
 # Application definition
 
 INSTALLED_APPS = (

@@ -30,6 +30,8 @@ ar2dtool_dir = os.environ['ar2dtool_dir']
 #e.g. home = 'blahblah/temp/'
 home = os.environ['github_repos_dir']
 
+verification_log_fname='verification.log'
+
 
 sleeping_time = 7
 
@@ -62,20 +64,21 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
     print 'target_repo: '+target_repo
     change_status(target_repo,'Preparing')
     #so the tool user can takeover and do stuff
-    
-    
     username = os.environ['github_username']
     password = os.environ['github_password']
     g = Github(username,password)    
     local_repo = target_repo.replace(target_repo.split('/')[-2] ,ToolUser)
-    delete_repo(local_repo)
+    if not settings.TEST or not settings.test_conf['local']:
+        delete_repo(local_repo)
     #print 'repo deleted'
-    change_status(target_repo, 'forking repo')
-    fork_repo(target_repo,username,password)
-    print 'repo forked'
-    change_status(target_repo,'cloning repo')
-    clone_repo(cloning_repo,user)
-    print 'repo cloned'
+    if not settings.TEST or not settings.test_conf['local']:
+        change_status(target_repo, 'forking repo')
+        fork_repo(target_repo,username,password)
+        print 'repo forked'
+    if not settings.TEST or not settings.test_conf['local']:
+        change_status(target_repo,'cloning repo')
+        clone_repo(cloning_repo,user)
+        print 'repo cloned'
     files_to_verify=[]
     for chf in changed_filesss:
         auton_conf = {'ar2dtool_enable':False , 'widoco_enable': False, 'oops_enable': False}
@@ -99,7 +102,6 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
                 fi = get_level_up(fi)
                 fi = fi[6:]
                 changed_files = [fi]
-            
         else:
             print 'working with: '+chf
             changed_files = [chf]
@@ -142,15 +144,17 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
             print 'oops checked ontology for pitfalls'
         else:
             print 'oops_enable is false'
-    commit_changes()
-    print 'changes committed'
-    remove_old_pull_requests(target_repo)
-    change_status(target_repo, 'creating a pull request')
-    try:
-        r = send_pull_request(target_repo,ToolUser)
-    except Exception as e:
-        exception_if_exists+=str(e)
-    print 'pull request is sent'
+    if not settings.TEST or not settings.test_conf['local']:
+        commit_changes()
+        print 'changes committed'
+        remove_old_pull_requests(target_repo)
+        change_status(target_repo, 'creating a pull request')
+    if not settings.TEST or not settings.test_conf['local']:
+        try:
+            r = send_pull_request(target_repo,ToolUser)
+        except Exception as e:
+            exception_if_exists+=str(e)
+        print 'pull request is sent'
     if exception_if_exists=="": #no errors
         change_status(target_repo, 'Ready')
     else:
@@ -158,6 +162,41 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
     print 'will generate user log'
     generate_user_log(parent_folder+'.log')
     #return r
+    for f in files_to_verify:
+        repo=None
+        if use_database:
+            from models import Repo
+            repo = Repo.objects.get(url=target_repo)
+        verify_tools_generation_when_ready(f, repo)
+
+
+
+def verify_tools_generation_when_ready(ver_file_comp,repo=None):
+    ver_file = os.path.join(get_target_home(),ver_file_comp['file'],verification_log_fname)
+    ver_file = get_abs_path(ver_file) 
+    print 'ver file: '+ver_file
+    if ver_file_comp['ar2dtool_enable'] == ver_file_comp['widoco_enable'] == ver_file_comp['oops_enable'] == False:
+        return
+    for i in range(10):
+        time.sleep(15)
+        f = open(ver_file, "r")
+        s = f.read()
+        f.close()
+        if ver_file_comp['ar2dtool_enable'] and 'ar2dtool' not in s:
+            continue
+        if ver_file_comp['widoco_enable'] and 'widoco' not in s:
+            continue
+        if ver_file_comp['oops_enable'] and 'oops' not in s:
+            continue 
+         
+        os.remove(ver_file)# the verification file is no longer needed
+        return verify_tools_generation(ver_file_comp, repo)
+    repo.state=ver_file_comp['file']+' is talking too much time to generate output'
+    if settings.TEST:
+        assert False, 'Taking too much time for verification'
+        
+                    
+            
 
 
 
@@ -165,8 +204,8 @@ def verify_tools_generation(ver_file_comp,repo=None):
     #AR2DTool
     if ver_file_comp['ar2dtool_enable']:
         target_file = os.path.join(get_abs_path(get_target_home()),ver_file_comp['file'] ,
-          tools_conf['ar2dtool']['folder_name'],ar2dtool_config_types[0][:-4],
-          get_file_from_path(f)+"."+tools_conf['ar2dtool']['type']+'.graphml')
+          tools_conf['ar2dtool']['folder_name'],ar2dtool_config_types[0][:-5],
+          get_file_from_path(ver_file_comp['file'])+"."+tools_conf['ar2dtool']['type']+'.graphml')
         file_exists = os.path.isfile(target_file)
         if settings.TEST:
              assert file_exists, 'the file %s is not generated'%(target_file)
@@ -189,6 +228,18 @@ def verify_tools_generation(ver_file_comp,repo=None):
                 repo.save()
             print 'The Documentation of the file %s if not generated '%(ver_file_comp['file'])
     #OOPS
+    if ver_file_comp['oops_enable']:
+        target_file = os.path.join(get_abs_path(get_target_home()),ver_file_comp['file'] ,
+          tools_conf['oops']['folder_name'],
+          'oopsEval.html')
+        file_exists = os.path.isfile(target_file)
+        if settings.TEST:
+             assert file_exists, 'the file %s is not generated'%(target_file)
+        else:
+            if repo is not None:
+                repo.state+='The Evaluation report of the file %s if not generated '%(ver_file_comp['file'])
+                repo.save()
+            print 'The Evaluation report of the file %s if not generated '%(ver_file_comp['file'])
 
 
 
@@ -440,6 +491,7 @@ def draw_file(rdf_file,config_type):
     comm+= rdf_file_abs+'.'+outtype+' -t '+outtype+' -c '+config_file_abs+' -GV -gml '
     if not settings.TEST:
         comm+= ' >> "'+log_file_dir+'"'
+    comm+=" ; echo 'ar2dtool' >> "+ os.path.join(get_parent_path(get_parent_path(get_parent_path(rdf_file_abs+'.'+outtype))),verification_log_fname)
     print comm
     call(comm,shell=True)
     #return os.path.isfile(rdf_file_abs+'.gml') 
@@ -490,15 +542,17 @@ def create_widoco_doc(rdf_file):
         f.close()
     except Exception as e:
         print 'in create_widoco_doc: exception opening the file: '+str(e)        
+    out_abs_dir = get_parent_path(config_file_abs)
     comm = "cd "+get_abs_path('')+"; "
     comm+= "java -jar "
     comm+=' -Dfile.encoding=utf-8 '
     comm+=widoco_dir+"widoco-0.0.1-jar-with-dependencies.jar  -rewriteAll "
     comm+=" -ontFile "+rdf_file_abs
-    comm+=" -outFolder "+get_parent_path(config_file_abs)
+    comm+=" -outFolder "+out_abs_dir
     comm+=" -confFile "+config_file_abs
     if not settings.TEST:
         comm+= ' >> "'+log_file_dir+'" '
+    comm+=" ; echo 'widoco' >> "+ os.path.join(get_parent_path(out_abs_dir),verification_log_fname)
     print comm
     call(comm,shell=True)
     
@@ -594,6 +648,9 @@ def oops_ont_files(target_repo,changed_files):
 
 
 def get_pitfalls(target_repo,ont_file):
+    generate_oops_pitfalls(ont_file)
+    if setting.TEST and test_conf['local']:
+        return
     ont_file_full_path = get_abs_path(ont_file)
     f = open(ont_file_full_path,'r')
     ont_file_content = f.read()
@@ -621,7 +678,7 @@ def get_pitfalls(target_repo,ont_file):
     nicer_issues = nicer_oops_output(issues_s)
     if nicer_issues!="":
         create_oops_issue_in_github(target_repo, nicer_issues)
-        generate_oops_pitfalls(ont_file)
+        
     
 
 
@@ -649,18 +706,19 @@ def generate_oops_pitfalls(ont_file):
     ont_file_abs_path = get_abs_path(ont_file)
     r = build_file_structure(get_file_from_path(ont_file)+'.'+tools_conf['oops']['folder_name'], [get_target_home(),ont_file,tools_conf['oops']['folder_name']])
     #r = build_file_structure(get_file_from_path(ont_file)+'.oops', [get_target_home(),ont_file,'oops'])
+    out_abs_dir = get_parent_path(r)
     comm = "cd "+get_abs_path('')+"; "
     comm+= "java -jar "
     comm+=' -Dfile.encoding=utf-8 '
     comm+=widoco_dir+"widoco-0.0.1-jar-with-dependencies.jar -oops "
     comm+=" -ontFile "+ont_file_abs_path
-    comm+=" -outFolder "+get_parent_path(r)
+    comm+=" -outFolder "+out_abs_dir
     #comm+=" -confFile "+config_file_abs
     if not settings.TEST:
         comm+= ' >> "'+log_file_dir+'"'
+    comm+=" ; echo 'oops' >> "+ os.path.join(get_parent_path(out_abs_dir),verification_log_fname)
     print comm
-    call(comm,shell=True)
-    out_abs_dir = get_parent_path(r)                 
+    call(comm,shell=True)                 
     shutil.move( os.path.join(out_abs_dir,'OOPSevaluation') , get_parent_path(out_abs_dir))
     shutil.rmtree(out_abs_dir)
     shutil.move(os.path.join(get_parent_path(out_abs_dir),'OOPSevaluation'), out_abs_dir)
