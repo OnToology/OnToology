@@ -93,7 +93,7 @@ def home(request):
         sys.stdout.flush()
         sys.stderr.flush()
         
-        if '127.0.0.1:8000' not in request.META['HTTP_HOST'] :
+        if '127.0.0.1:8000' not in request.META['HTTP_HOST'] or not settings.test_conf['local']:
             return  HttpResponseRedirect(webhook_access_url)
 #     repos = []
 #     for orir in Repo.objects.all():
@@ -167,6 +167,8 @@ def get_access_token(request):
     else:
         print 'adding collaborator: '+rpy_coll['msg']
     if error_msg != "":
+        if 'Hook already exists on this repository' in error_msg:
+            error_msg = 'This repository already watched'
         return render_to_response('msg.html',{'msg':error_msg },context_instance=RequestContext(request))
     return render_to_response('msg.html',{'msg':'webhook attached and user added as collaborator' },context_instance=RequestContext(request))
     
