@@ -230,7 +230,7 @@ def add_hook(request):
     tar = cloning_repo.split('/')[-2]
     cloning_repo = cloning_repo.replace(tar,ToolUser)
     cloning_repo = cloning_repo.replace('git://github.com/','git@github.com:')
-    comm = "python /home/ubuntu/auton/Auton/autoncore.py "
+    comm = "python /home/ubuntu/OnToology/OnToology/autoncore.py "
     comm+=' "'+target_repo+'" "'+user+'" "'+cloning_repo+'" '
     for c in changed_files:
         comm+='"'+c+'" '
