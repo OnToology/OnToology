@@ -505,7 +505,7 @@ def parse_folder_for_ontologies(ontologies_abs_folder):
     print 'will be searching in: '+ontologies_abs_folder
     for root, dirs, files in os.walk(ontologies_abs_folder):
         for name in files:
-            if name=="auton.cfg":
+            if name=="OnToology.cfg":
                 ontologies.append({'ontology': root})#os.path.join(root, name)})
     for o in ontologies:
         confs = get_auton_configuration(f=None, abs_folder=o['ontology'])
