@@ -116,6 +116,7 @@ def use_old_keys():
            
 class NoSQLTestRunner(DjangoTestSuiteRunner):
     def setup_databases(self):
+        settings.test_conf['local']=True
         settings.TEST = True
         print 'I just set TEST to true'
         use_test_key()

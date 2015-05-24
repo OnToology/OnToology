@@ -156,7 +156,7 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
             exception_if_exists+=str(e)
         print 'pull request is sent'
     if exception_if_exists=="": #no errors
-        change_status(target_repo, 'Ready')
+        change_status(target_repo, 'validating')
     else:
         change_status(target_repo, exception_if_exists)
     print 'will generate user log'
@@ -168,6 +168,9 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
             from models import Repo
             repo = Repo.objects.get(url=target_repo)
         verify_tools_generation_when_ready(f, repo)
+    if use_database:
+        if Repo.objects.get(url=target_repo).state=='validating':
+            change_status(target_repo, 'Ready')
 
 
 
@@ -177,7 +180,7 @@ def verify_tools_generation_when_ready(ver_file_comp,repo=None):
     print 'ver file: '+ver_file
     if ver_file_comp['ar2dtool_enable'] == ver_file_comp['widoco_enable'] == ver_file_comp['oops_enable'] == False:
         return
-    for i in range(10):
+    for i in range(20):
         time.sleep(15)
         f = open(ver_file, "r")
         s = f.read()
@@ -207,12 +210,12 @@ def verify_tools_generation(ver_file_comp,repo=None):
           tools_conf['ar2dtool']['folder_name'],ar2dtool_config_types[0][:-5],
           get_file_from_path(ver_file_comp['file'])+"."+tools_conf['ar2dtool']['type']+'.graphml')
         file_exists = os.path.isfile(target_file)
+        if repo is not None and not file_exists:
+            repo.state+='The Diagram of the file %s if not generated '%(ver_file_comp['file'])
+            repo.save()
         if settings.TEST:
              assert file_exists, 'the file %s is not generated'%(target_file)
-        else:
-            if repo is not None:
-                repo.state+='The Diagram of the file %s if not generated '%(ver_file_comp['file'])
-                repo.save()
+        elif not file_exists:
             print 'The Diagram of the file %s if not generated '%(ver_file_comp['file'])
     #Widoco
     if ver_file_comp['widoco_enable']:
@@ -220,12 +223,12 @@ def verify_tools_generation(ver_file_comp,repo=None):
           tools_conf['widoco']['folder_name'],
           'index.html')
         file_exists = os.path.isfile(target_file)
+        if repo is not None and not file_exists:
+            repo.state+='The Documentation of the file %s if not generated '%(ver_file_comp['file'])
+            repo.save()
         if settings.TEST:
              assert file_exists, 'the file %s is not generated'%(target_file)
-        else:
-            if repo is not None:
-                repo.state+='The Documentation of the file %s if not generated '%(ver_file_comp['file'])
-                repo.save()
+        elif not file_exists:
             print 'The Documentation of the file %s if not generated '%(ver_file_comp['file'])
     #OOPS
     if ver_file_comp['oops_enable']:
@@ -233,12 +236,12 @@ def verify_tools_generation(ver_file_comp,repo=None):
           tools_conf['oops']['folder_name'],
           'oopsEval.html')
         file_exists = os.path.isfile(target_file)
+        if repo is not None and not file_exists:
+            repo.state+='The Evaluation report of the file %s if not generated '%(ver_file_comp['file'])
+            repo.save()
         if settings.TEST:
              assert file_exists, 'the file %s is not generated'%(target_file)
-        else:
-            if repo is not None:
-                repo.state+='The Evaluation report of the file %s if not generated '%(ver_file_comp['file'])
-                repo.save()
+        elif not file_exists:
             print 'The Evaluation report of the file %s if not generated '%(ver_file_comp['file'])
 
 
@@ -649,7 +652,7 @@ def oops_ont_files(target_repo,changed_files):
 
 def get_pitfalls(target_repo,ont_file):
     generate_oops_pitfalls(ont_file)
-    if setting.TEST and test_conf['local']:
+    if settings.TEST and settings.test_conf['local']:
         return
     ont_file_full_path = get_abs_path(ont_file)
     f = open(ont_file_full_path,'r')

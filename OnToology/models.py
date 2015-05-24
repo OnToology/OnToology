@@ -7,11 +7,11 @@ from datetime import datetime
 
 
 class Repo(Document):
-    url = StringField(max_length=100,default='Not set yet')
+    url = StringField(max_length=200,default='Not set yet')
     last_used = DateTimeField(default=datetime.now())
     created_on = DateTimeField(default=datetime.now())
-    state = StringField(max_length=50,default='Ready')
-    owner = StringField(max_length=50,default='no')
+    state = StringField(max_length=300,default='Ready')
+    owner = StringField(max_length=100,default='no')
 
 
 
