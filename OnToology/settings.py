@@ -82,7 +82,7 @@ MEDIA_URL = '/media/'
 
 TEST = False    
     
-test_conf = { 'local': True #don't interact with github at all, just mimic
+test_conf = { 'local': False #don't interact with github at all, just mimic
              
              }
 # Application definition

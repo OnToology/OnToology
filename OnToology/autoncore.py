@@ -958,7 +958,7 @@ def generate_user_log(log_file_name):
     print comm
     sys.stdout.flush()
     if sys.stdout == default_stdout:
-        print 'Error: trying to close sys.stdout in generate_user_log function, I am disabling the closing for now'
+        print 'Warning: trying to close sys.stdout in generate_user_log function, I am disabling the closing for now'
     
         
     return_default_log()

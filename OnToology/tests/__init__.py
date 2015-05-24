@@ -74,6 +74,14 @@ def use_test_key():
                         print 'error: '+err
                 else:
                     print 'No old keys'
+            else:
+                print 'There are no keys loaded'
+                p = Popen(['ssh-add',os.environ['tests_ssh_key']],
+                          stdout=PIPE, stderr=PIPE)
+                if err is None or err == '' or 'Identity added' in err:
+                    print 'Added new key %s successfully'%(os.environ['tests_ssh_key'])
+                else:
+                    print 'error adding my key: '+err
         else:
             print 'error: '+err
     else:
