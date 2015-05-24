@@ -148,13 +148,6 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
         commit_changes()
         print 'changes committed'
         remove_old_pull_requests(target_repo)
-        change_status(target_repo, 'creating a pull request')
-    if not settings.TEST or not settings.test_conf['local']:
-        try:
-            r = send_pull_request(target_repo,ToolUser)
-        except Exception as e:
-            exception_if_exists+=str(e)
-        print 'pull request is sent'
     if exception_if_exists=="": #no errors
         change_status(target_repo, 'validating')
     else:
@@ -168,10 +161,25 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
             from models import Repo
             repo = Repo.objects.get(url=target_repo)
         verify_tools_generation_when_ready(f, repo)
-    if use_database:
-        if Repo.objects.get(url=target_repo).state=='validating':
-            change_status(target_repo, 'Ready')
 
+    if use_database:
+        if Repo.objects.get(url=target_repo).state!='validating':
+            r = Repo.objects.get(url=target_repo)
+            s = r.state
+            s.replace('validating','')
+            r.state = s 
+            s.save()
+            return 
+
+    if not settings.TEST or not settings.test_conf['local']:
+        change_status(target_repo, 'creating a pull request')
+        try:
+            r = send_pull_request(target_repo,ToolUser)
+        except Exception as e:
+            exception_if_exists+=str(e)
+        print 'pull request is sent'
+    
+    change_status(target_repo, 'Ready')
 
 
 def verify_tools_generation_when_ready(ver_file_comp,repo=None):
@@ -211,12 +219,12 @@ def verify_tools_generation(ver_file_comp,repo=None):
           get_file_from_path(ver_file_comp['file'])+"."+tools_conf['ar2dtool']['type']+'.graphml')
         file_exists = os.path.isfile(target_file)
         if repo is not None and not file_exists:
-            repo.state+='The Diagram of the file %s if not generated '%(ver_file_comp['file'])
+            repo.state+=' The Diagram of the file %s is not generated '%(ver_file_comp['file'])
             repo.save()
         if settings.TEST:
              assert file_exists, 'the file %s is not generated'%(target_file)
         elif not file_exists:
-            print 'The Diagram of the file %s if not generated '%(ver_file_comp['file'])
+            print 'The Diagram of the file %s is not generated '%(ver_file_comp['file'])
     #Widoco
     if ver_file_comp['widoco_enable']:
         target_file = os.path.join(get_abs_path(get_target_home()),ver_file_comp['file'] ,
@@ -224,7 +232,7 @@ def verify_tools_generation(ver_file_comp,repo=None):
           'index.html')
         file_exists = os.path.isfile(target_file)
         if repo is not None and not file_exists:
-            repo.state+='The Documentation of the file %s if not generated '%(ver_file_comp['file'])
+            repo.state+=' The Documentation of the file %s if not generated '%(ver_file_comp['file'])
             repo.save()
         if settings.TEST:
              assert file_exists, 'the file %s is not generated'%(target_file)
@@ -237,7 +245,7 @@ def verify_tools_generation(ver_file_comp,repo=None):
           'oopsEval.html')
         file_exists = os.path.isfile(target_file)
         if repo is not None and not file_exists:
-            repo.state+='The Evaluation report of the file %s if not generated '%(ver_file_comp['file'])
+            repo.state+=' The Evaluation report of the file %s if not generated '%(ver_file_comp['file'])
             repo.save()
         if settings.TEST:
              assert file_exists, 'the file %s is not generated'%(target_file)
