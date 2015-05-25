@@ -2,7 +2,50 @@
 {%block body%}
 
 
+<script src="http://fgnass.github.io/spin.js/spin.min.js"></script>
+
+
+
+
+<input type="hidden" id="button"/>
+	<div id="box">
+		<!-- Click Me To Return! -->
+	</div>
+	
+	
+	<div id="myspinner"></div>
+	<div id="screen" >
+		
+	</div>
+
+
+
+<style>
+
+
+#myspinner{
+	z-index: 10;
+}
+
+
+#screen
+{
+
+	position: absolute;	
+	left: 0;
+	top: 0;
+	background: #000;
+	
+}
+
+
+</style>
+
+
+
 <script>
+
+
 function GetURLParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
@@ -18,27 +61,20 @@ function GetURLParameter(sParam)
     return '';
 }
 
-$( document ).ready(function() {
-	
-	$(".repo").click(function() {
-		 window.location.href = "?repo="+$(this).attr('url');
-	});
-	
-	$('.repo').each(function(){
-		var r = GetURLParameter('repo');
-		//alert("<"+r+">");
-		if (r==$(this).attr('url')){
-			$(this).addClass("highl");
-		}
-		else{
-			$(this).removeClass("highl");			
-		}
-	});
 
-	
-});
 </script>
+
+
+
+
+
+
+
 </br>
+
+<span id="profiletables">
+
+
 <h3>Choose one of the below repo by clicking on it</h3>
 <table class="table table-hover">
 <tr class="">
@@ -84,6 +120,8 @@ $( document ).ready(function() {
 	<tr>
 {%endfor%}
 </table>
+
+
 
 
 </br>
@@ -158,6 +196,113 @@ $( document ).ready(function() {
 });
 
 </script>
+
+
+
+</span>
+
+
+
+
+
+
+
+
+
+<script>
+
+
+$( document ).ready(function() {
+	
+	var opts = {
+		  lines: 13, // The number of lines to draw
+		  length: 40, // The length of each line
+		  width: 22, // The line thickness
+		  radius: 60, // The radius of the inner circle
+		  corners: 1, // Corner roundness (0..1)
+		  rotate: 0, // The rotation offset
+		  direction: 1, // 1: clockwise, -1: counterclockwise
+		  color: '#BBB', // #rgb or #rrggbb or array of colors
+		  speed: 1, // Rounds per second
+		  trail: 60, // Afterglow percentage
+		  shadow: false, // Whether to render a shadow
+		  hwaccel: false, // Whether to use hardware acceleration
+		  className: 'spinner', // The CSS class to assign to the spinner
+		  zIndex: 2e9, // The z-index (defaults to 2000000000)
+		  top: '50%', // Top position relative to parent
+		  left: '50%' // Left position relative to parent
+		};
+	var target = document.getElementById('myspinner');
+	var spinner = new Spinner(opts);//.spin(target);
+	//var spinner = new Spinner(opts).spin(target);
+	
+	
+	
+	var greyout = function(){
+		//alert("clicked");
+		spinner.spin(target);
+		//$('#screen').css({"position": "absolute"});
+		$('#screen').css({	"display": "block", opacity: 0.7, "width":$(document).width(),"height":$(document).height()});
+		$('#box').css({"display": "block"}).click(function(){$(this).css("display", "none");$('#screen').css("display", "none")});
+	}
+
+		
+	
+	$(".repo").click(function() {
+		 //window.location.href = "?repo="+$(this).attr('url');
+		//spinner.spin(target);
+		//alert("check1");
+		greyout(); 
+		$.ajax({
+		  method: "GET",
+		  url: window.location.href+"?repo="+$(this).attr('url'),
+		  //data: { name: "John", location: "Boston" }
+		}).done(function( resp ) {
+		    //alert("Done");
+		    spinner.stop();
+		    $('#box').click();
+
+		    //$( "body" ).off( "click");
+		    
+		    
+			var startBody = resp.indexOf('<span id="profiletables">');
+			var newresp = resp.substring(startBody,resp.length-1);
+			var endBody = newresp.indexOf("</span>")+startBody;
+			var bodyString = resp.substring(startBody+25,endBody);
+			//alert("startBody: "+startBody+", endBody: "+endBody)
+			//console.log(bodyString);
+	       //jQuery('head').html(headString);
+	       //$('#hoo').html("<h1>For some reason</h1>");
+	       $('#profiletables').html(bodyString);
+		    
+		    //var htmlbody = newhtml.split("<body")[1].split(">").slice(1).join(">").split("</body")[0];
+			//alert(htmlbody);
+			//$("body").html(htmlbody)
+		});
+		 
+	});
+	$('.repo').each(function(){
+		var r = GetURLParameter('repo');
+		//alert("<"+r+">");
+		if (r==$(this).attr('url')){
+			$(this).addClass("highl");
+		}
+		else{
+			$(this).removeClass("highl");			
+		}
+	});
+
+	
+});
+
+
+
+	
+
+
+</script>
+
+
 
 
 
