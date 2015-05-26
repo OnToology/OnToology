@@ -270,8 +270,7 @@ def login_get_access(request):
 def profile(request):
     
     try:
-        pass
-        #prepare_log(request.user.email)
+        prepare_log(request.user.email)
     except Exception as e:
         print 'profile preparing log error [normal]: '+str(e)
     print '************* profile ************'

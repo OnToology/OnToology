@@ -628,7 +628,7 @@ def get_auton_configuration(f=None,abs_folder=None):
     else:
         conf_file_abs = build_file_structure('OnToology.cfg',[get_target_home()] )
    
-    return get_auton_config(conf_file_abs,from_strin=False)    
+    return get_auton_config(conf_file_abs,from_string=False)    
     
     
 def get_auton_config(conf_file_abs,from_string=True):
