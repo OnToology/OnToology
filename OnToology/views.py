@@ -289,8 +289,8 @@ def profile(request):
             if hackatt: # trying to access a repo that does not belong to the use currently logged in
                 return render(request,'msg.html',{'msg': 'This repo is not added, please do so in the main page'})
             print 'try to get abs folder'
-            #ontologies_abs_folder = clone_repo('git@github.com:'+repo, request.user.email, dosleep=False)
-            ontologies_abs_folder ='/Users/blakxu/test123/OnToologyTestEnv/temp/ahmad88me@gmail.com'
+            ontologies_abs_folder = clone_repo('git@github.com:'+repo, request.user.email, dosleep=False)
+            
             print 'abs folder: '+ontologies_abs_folder
             ontologies = parse_folder_for_ontologies(ontologies_abs_folder)
             print 'ontologies: '+str(len(ontologies))
