@@ -15,12 +15,14 @@ import sys
 import string
 import random
 from datetime import datetime
-from autoncore import git_magic, add_webhook,ToolUser, webhook_access, update_g, add_collaborator, get_auton_configuration, clone_repo, prepare_log, return_default_log
+from autoncore import git_magic, add_webhook,ToolUser, webhook_access, update_g, add_collaborator, get_auton_configuration, clone_repo, prepare_log, parse_online_repo_for_ontologies ,return_default_log
 from models import *
 import requests
 import json
 import os
 import subprocess
+
+import autoncore
 
 from github import Github
 from settings import client_id,client_secret, host
@@ -268,7 +270,8 @@ def login_get_access(request):
 def profile(request):
     
     try:
-        prepare_log(request.user.email)
+        pass
+        #prepare_log(request.user.email)
     except Exception as e:
         print 'profile preparing log error [normal]: '+str(e)
     print '************* profile ************'
@@ -279,6 +282,7 @@ def profile(request):
         repo = request.GET['repo']
         print 'repo :<%s>'%(repo)
         print 'got the repo'
+        #if True:
         try:
             print 'trying to validate repo' 
             hackatt = True
@@ -289,10 +293,14 @@ def profile(request):
             if hackatt: # trying to access a repo that does not belong to the use currently logged in
                 return render(request,'msg.html',{'msg': 'This repo is not added, please do so in the main page'})
             print 'try to get abs folder'
-            ontologies_abs_folder = clone_repo('git@github.com:'+repo, request.user.email, dosleep=False)
-            
-            print 'abs folder: '+ontologies_abs_folder
-            ontologies = parse_folder_for_ontologies(ontologies_abs_folder)
+            #ontologies_abs_folder = clone_repo('git@github.com:'+repo, request.user.email, dosleep=False)
+            #ontologies_abs_folder ='/Users/blakxu/test123/OnToologyTestEnv/temp/ahmad88me@gmail.com'
+            #print 'abs folder: '+ontologies_abs_folder
+            #ontologies = parse_folder_for_ontologies(ontologies_abs_folder)
+            if type(autoncore.g) == type(None):
+                print 'access token is: '+request.session['access_token']
+                update_g(request.session['access_token'])
+            ontologies = parse_online_repo_for_ontologies(repo)
             print 'ontologies: '+str(len(ontologies))
             for o in ontologies:
                 for d in o:
@@ -304,6 +312,7 @@ def profile(request):
             #return JsonResponse({'foo': 'bar'})
             return JsonResponse({'ontologies':ontologies})
             #return render(request,'profile.html',{'repos': get_repos_formatted(ouser.repos), 'ontologies': ontologies})
+        #else:
         except Exception as e:
             print 'exception: '+str(e)
 #     sys.stdout= sys.__stdout__
@@ -313,25 +322,24 @@ def profile(request):
     return render(request,'profile.html',{'repos': get_repos_formatted(ouser.repos)})
 
 
-
-
-def parse_folder_for_ontologies(ontologies_abs_folder):        
-    ontologies=[] 
-    print 'will be searching in: '+ontologies_abs_folder
-    for root, dirs, files in os.walk(ontologies_abs_folder):
-        for name in files:
-            if name=="OnToology.cfg":
-                ontologies.append({'ontology': root})#os.path.join(root, name)})
-    for o in ontologies:
-        confs = get_auton_configuration(f=None, abs_folder=o['ontology'])
-        #This to only show the relative path on the profile page
-        o['ontology'] = o['ontology'].replace(ontologies_abs_folder,'')
-        #o['ontology'] = o['ontology'].replace('/','')
-
-        for c in confs:
-            tool = c.replace('_enable','')
-            o[tool] = confs[c]
-    return ontologies
+# 
+# def parse_folder_for_ontologies(ontologies_abs_folder):        
+#     ontologies=[] 
+#     print 'will be searching in: '+ontologies_abs_folder
+#     for root, dirs, files in os.walk(ontologies_abs_folder):
+#         for name in files:
+#             if name=="OnToology.cfg":
+#                 ontologies.append({'ontology': root})#os.path.join(root, name)})
+#     for o in ontologies:
+#         confs = get_auton_configuration(f=None, abs_folder=o['ontology'])
+#         #This to only show the relative path on the profile page
+#         o['ontology'] = o['ontology'].replace(ontologies_abs_folder,'')
+#         #o['ontology'] = o['ontology'].replace('/','')
+# 
+#         for c in confs:
+#             tool = c.replace('_enable','')
+#             o[tool] = confs[c]
+#     return ontologies
 
 
 

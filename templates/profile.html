@@ -259,7 +259,7 @@ function GetURLParameter(sParam)
 
 </br>
 <form  id="toolsform" action="" method="POST">
-<input id="savebtn" type="submit" value="Save" class="form-control btn btn-default "/>
+<input id="savebtn" type="submit" value="Save" text="Save" name="Save" class="form-control btn btn-default "/>
 <input id="toolsvalues" name="toolsvalues" type="hidden" value=""/>
 </form>
 
@@ -437,6 +437,9 @@ $( document ).ready(function() {
 		  url: window.location.href+"?repo="+$(this).attr('url'),
 		}).done(function( resp ) {
 		    ontologies = resp.ontologies;
+		    if (ontologies.length==0){
+		    	alert("There is no OnToology configurations on this repo");
+			}
 		    var o;
 		    var temp;
 		    bodypanel.html('<div class="col-md-6 col-xs-6" >Ontology</div><div class="col-md-2 col-xs-2" >Diagrams</div><div class="col-md-2 col-xs-2" >Evaluation</div><div class="col-md-2 col-xs-2" >Documentation</div></br><hr>');
@@ -467,7 +470,25 @@ $( document ).ready(function() {
 	
 });
 
+
+
+/*
+  
+ var v;
+ $.ajax({
+		  method: "GET",
+		  url: "http://127.0.0.1:8000/profile?repo=ahmad88me/target",
+		}).done(function( resp ) {
+		    v = resp;
+		});
+		    
+		    */
+
 </script>
+
+
+
+
 
 
 {% endblock %}

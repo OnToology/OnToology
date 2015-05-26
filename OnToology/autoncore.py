@@ -5,6 +5,7 @@ from datetime import datetime
 from subprocess import call
 import string, random
 import time
+import StringIO
 
 import settings
 
@@ -582,29 +583,73 @@ def create_widoco_doc(rdf_file):
 
 import ConfigParser
 
+
+def get_confs_from_repo(target_repo):
+    global g
+    repo = g.get_repo(target_repo)
+    sha = repo.get_commits()[0].sha
+    files = repo.get_git_tree(sha=sha,recursive=True).tree
+    conf_files=[]
+    for f in files:
+        if 'OnToology.cfg' in f.path:
+            conf_files.append(f)
+    return repo, conf_files
+
+
+
+
+def parse_online_repo_for_ontologies(target_repo):
+    repo, conf_paths = get_confs_from_repo(target_repo)
+    ontologies=[]
+    for cpath in conf_paths:
+        file_content = repo.get_file_contents(cpath.path).decoded_content
+        #print 'file_content : '+file_content
+        buffile = StringIO.StringIO(file_content)
+        confs = get_auton_config(buffile)
+        #print 'confs: '+str(confs)
+        o={}
+        #This to only show the relative path on the profile page
+        o['ontology'] = get_parent_path(cpath.path)[len(get_target_home()):] #o['ontology'].replace(ontologies_abs_folder,'')
+        #o['ontology'] = o['ontology'].replace('/','')
+        for c in confs:
+            tool = c.replace('_enable','')
+            o[tool] = confs[c]
+        ontologies.append(o)
+    return ontologies
+
+
+
+
 def get_auton_configuration(f=None,abs_folder=None):
-#     if f==None:
-#         f=parent_folder 
-#     else:
-#         f=parent_folder+'/'+f
-    print 'auton config is called: '
-    config = ConfigParser.RawConfigParser()
-    ar2dtool_sec_name = 'ar2dtool'
-    widoco_sec_name = 'widoco'
-    oops_sec_name = 'oops'
-    ar2dtool_enable = True
-    widoco_enable = True
-    oops_enable = True
     if abs_folder!=None:
         conf_file_abs = os.path.join(abs_folder,'OnToology.cfg')
     elif f != None:
         conf_file_abs = build_file_structure('OnToology.cfg',[get_target_home(),f] )
     else:
         conf_file_abs = build_file_structure('OnToology.cfg',[get_target_home()] )
-    opened_conf_files = config.read(conf_file_abs)
-    if len(opened_conf_files) == 1:
+   
+    return get_auton_config(conf_file_abs,from_strin=False)    
+    
+    
+def get_auton_config(conf_file_abs,from_string=True):
+ 
+
+    print 'auton config is called: '
+    ar2dtool_sec_name = 'ar2dtool'
+    widoco_sec_name = 'widoco'
+    oops_sec_name = 'oops'
+    ar2dtool_enable = True
+    widoco_enable = True
+    oops_enable = True
+    
+    config = ConfigParser.RawConfigParser()
+    if from_string:
+        opened_conf_files = config.readfp(conf_file_abs)
+    else:
+        opened_conf_files = config.read(conf_file_abs)
+    if from_string or len(opened_conf_files) == 1:
         print 'auton configuration file exists'
-        print opened_conf_files[0]
+        #print opened_conf_files[0]
         try:
             ar2dtool_enable = config.getboolean(ar2dtool_sec_name,'enable')
             print 'got ar2dtool enable value: '+str(ar2dtool_enable)
@@ -639,6 +684,70 @@ def get_auton_configuration(f=None,abs_folder=None):
             print 'expection: '
             print e
     return {'ar2dtool_enable':ar2dtool_enable , 'widoco_enable': widoco_enable, 'oops_enable': oops_enable}
+
+
+
+
+
+
+
+# def get_auton_configuration(f=None,abs_folder=None):
+# #     if f==None:
+# #         f=parent_folder 
+# #     else:
+# #         f=parent_folder+'/'+f
+#     print 'auton config is called: '
+#     config = ConfigParser.RawConfigParser()
+#     ar2dtool_sec_name = 'ar2dtool'
+#     widoco_sec_name = 'widoco'
+#     oops_sec_name = 'oops'
+#     ar2dtool_enable = True
+#     widoco_enable = True
+#     oops_enable = True
+#     if abs_folder!=None:
+#         conf_file_abs = os.path.join(abs_folder,'OnToology.cfg')
+#     elif f != None:
+#         conf_file_abs = build_file_structure('OnToology.cfg',[get_target_home(),f] )
+#     else:
+#         conf_file_abs = build_file_structure('OnToology.cfg',[get_target_home()] )
+#     opened_conf_files = config.read(conf_file_abs)
+#     if len(opened_conf_files) == 1:
+#         print 'auton configuration file exists'
+#         print opened_conf_files[0]
+#         try:
+#             ar2dtool_enable = config.getboolean(ar2dtool_sec_name,'enable')
+#             print 'got ar2dtool enable value: '+str(ar2dtool_enable)
+#         except:
+#             print 'ar2dtool enable value doesnot exist'
+#             pass
+#         try:
+#             widoco_enable = config.getboolean(widoco_sec_name, 'enable')
+#             print 'got widoco enable value: '+str(widoco_enable)
+#         except:
+#             print 'widoco enable value doesnot exist'
+#             pass
+#         try:
+#             oops_enable = config.getboolean(oops_sec_name, 'enable')
+#             print 'got oops enable value: '+str(oops_enable)
+#         except:
+#             print 'oops enable value doesnot exist'
+#     else:  
+#         print 'auton configuration file does not exists'
+#         config.add_section(ar2dtool_sec_name)
+#         config.set(ar2dtool_sec_name, 'enable', ar2dtool_enable) 
+#         config.add_section(widoco_sec_name)
+#         config.set(widoco_sec_name,'enable',widoco_enable)
+#         config.add_section(oops_sec_name)
+#         config.set(oops_sec_name,'enable',oops_enable)
+#         conff = conf_file_abs
+#         print 'will create conf file: '+ conff
+#         try:
+#             with open(conff, 'wb') as configfile:
+#                 config.write(configfile)
+#         except Exception as e:
+#             print 'expection: '
+#             print e
+#     return {'ar2dtool_enable':ar2dtool_enable , 'widoco_enable': widoco_enable, 'oops_enable': oops_enable}
 
 
 
@@ -866,6 +975,7 @@ def nicer_oops_output(issues):
 ################################# generic helper functions ##################################
 #############################################################################################
 
+    
 
 
 def delete_dir(target_directory):
