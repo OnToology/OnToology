@@ -2,7 +2,7 @@ from django.shortcuts import render, render_to_response, redirect
 from django.http import HttpResponseRedirect
 from mongoengine.django.auth import User
 from django.contrib.auth import authenticate, login as django_login, logout as django_logout
-
+from django.http import JsonResponse
 from django import forms
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
@@ -289,7 +289,8 @@ def profile(request):
             if hackatt: # trying to access a repo that does not belong to the use currently logged in
                 return render(request,'msg.html',{'msg': 'This repo is not added, please do so in the main page'})
             print 'try to get abs folder'
-            ontologies_abs_folder = clone_repo('git@github.com:'+repo, request.user.email, dosleep=False)
+            #ontologies_abs_folder = clone_repo('git@github.com:'+repo, request.user.email, dosleep=False)
+            ontologies_abs_folder ='/Users/blakxu/test123/OnToologyTestEnv/temp/ahmad88me@gmail.com'
             print 'abs folder: '+ontologies_abs_folder
             ontologies = parse_folder_for_ontologies(ontologies_abs_folder)
             print 'ontologies: '+str(len(ontologies))
@@ -299,7 +300,10 @@ def profile(request):
             #return_default_log()
             print 'testing redirect'
             #f.close()
-            return render(request,'profile.html',{'repos': get_repos_formatted(ouser.repos), 'ontologies': ontologies})
+            print 'will return the Json'
+            #return JsonResponse({'foo': 'bar'})
+            return JsonResponse({'ontologies':ontologies})
+            #return render(request,'profile.html',{'repos': get_repos_formatted(ouser.repos), 'ontologies': ontologies})
         except Exception as e:
             print 'exception: '+str(e)
 #     sys.stdout= sys.__stdout__
@@ -322,6 +326,8 @@ def parse_folder_for_ontologies(ontologies_abs_folder):
         confs = get_auton_configuration(f=None, abs_folder=o['ontology'])
         #This to only show the relative path on the profile page
         o['ontology'] = o['ontology'].replace(ontologies_abs_folder,'')
+        #o['ontology'] = o['ontology'].replace('/','')
+
         for c in confs:
             tool = c.replace('_enable','')
             o[tool] = confs[c]

@@ -1,42 +1,44 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Auton</title>
+    <title>OnToology</title>
 
     <!-- Bootstrap -->
    
    <!-- local bootstrap>
-	<script src="{{MEDIA_URL}}js/jquery-2.1.3.min.js"></script>
-	<link rel="stylesheet" href="{{MEDIA_URL}}css/bootstrap.min.css">
-	<link rel="stylesheet" href="{{MEDIA_URL}}css/bootstrap-theme.min.css">
-	<link rel="stylesheet" href="{{MEDIA_URL}}css/cover.css">
-	<script src="{{MEDIA_URL}}js/bootstrap.min.js"></script-->
+	<script src="/media/js/jquery-2.1.3.min.js"></script>
+	<link rel="stylesheet" href="/media/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/media/css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="/media/css/cover.css">
+	<script src="/media/js/bootstrap.min.js"></script-->
 
-	<style> .highl{background-color: #FBFBFB; color: #333333;} </style>
+	<style> .highl{background-color: #FBFBFB; color: #333333;}
+			.curfont{font-family: "Comic Sans MS", cursive, sans-serif;}
+			*{font-family: "Comic Sans MS", cursive, sans-serif;}
+	 </style>
 
 
 
 <!-- Latest compiled and minified CSS -->
 	
-	<!-- Optional theme -->
-
-
+	
 	<!-- Jquery -->
-	<script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
-	<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-
-
-	<!-- Latest compiled and minified JavaScript-->
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+	<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+	<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+	
+	
 	
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
 	<link rel="stylesheet" href="http://getbootstrap.com/examples/cover/cover.css">
+	<!-- Latest compiled and minified JavaScript-->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 
-	<!-- This is for bootstrap switch only [for testing purposes]-->
+	<!-- This is for bootstrap switch only-->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css">
 
@@ -60,22 +62,73 @@
           <div class="masthead1 clearfix1 col-md-8 col-md-offset-2">
             <div class="inner">
               <a href="/">
-              <h3 class="masthead-brand">Auton</h3>
+              <h3 class="masthead-brand"><img height="70px" src="https://raw.githubusercontent.com/OnToology/OnToology/master/ontoology.png"/></h3>
               </a>
               <nav>
                 <ul class="nav masthead-nav">
                   <!-- >
-                  <li {% block home_head %} class="active" {% endblock %} ><a href="/">Home</a></li>
-
+                  <li  class="active"  ><a href="/">Home</a></li>
                 	<-->
+                	
+						
+							<a href="/profile">
+								<img src="https://avatars.githubusercontent.com/u/6922709?v=3" class="img-circle" height="50px"/>
+								<span class="curfont">ahmad88me@gmail.com</span>
+							</a>
+							<p><a class="curfont" href="/logout">Logout</a></p>
+						
+						
+					
+                </ul>
+              </nav>
+            </div>
+            </br></br>
+            
+
+
+<script src="http://fgnass.github.io/spin.js/spin.min.js"></script>
 
 
 
 
-<input type="checkbox" name="my-checkbox" checked>
+<input type="hidden" id="button"/>
+	<div id="box">
+		<!-- Click Me To Return! -->
+	</div>
+	
+	
+	<div id="myspinner"></div>
+	<div id="screen" >
+		
+	</div>
+
+
+
+<style>
+
+
+#myspinner{
+	z-index: 10;
+}
+
+
+#screen
+{
+
+	position: absolute;	
+	left: 0;
+	top: 0;
+	background: #000;
+	
+}
+
+
+</style>
+
 
 
 <script>
+
 
 function GetURLParameter(sParam)
 {
@@ -91,28 +144,308 @@ function GetURLParameter(sParam)
     }
     return '';
 }
+
+
+</script>
+
+
+
+
+
+
+
+</br>
+
+<span id="profiletables">
+
+
+<h3>Choose one of the below repo by clicking on it</h3>
+
+<!-- 
+
+  <div class="panel-group" id="accordion">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Collapsible Group 1</a>
+        </h4>
+      </div>
+      <div id="collapse1" class="panel-collapse collapse in">
+        <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Collapsible Group 2</a>
+        </h4>
+      </div>
+      <div id="collapse2" class="panel-collapse collapse">
+        <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Collapsible Group 3</a>
+        </h4>
+      </div>
+      <div id="collapse3" class="panel-collapse collapse">
+        <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+      </div>
+    </div>
+  </div> 
+
+-->
+
+
+ 
+
+
+
+
+
+
+<div class="panel-group" id="accordion">
+
+
+
+<div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Collapsible Group 2</a>
+        </h4>
+      </div>
+      <div id="collapse2" class="panel-collapse collapse">
+        <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+      </div>
+    </div>
+
+
+<!-- ->
+
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title">
+						<a data-toggle="collapse" data-parent="#accordion"
+							href="#ahmad88me/target">ahmad88me/target Ready May 15, 2015, 10:47 a.m.</a>
+					</h4>
+				</div>
+				<div id="ahmad88me/target" class="panel-collapse collapse">
+					<div class="panel-body">The body</div>
+				</div>
+			</div>
+
+
+
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title">
+						<a data-toggle="collapse" data-parent="#accordion"
+							href="#aaarunzbuzz/ontoologyautotest">aaarunzbuzz/ontoologyautotest Ready May 24, 2015, 6:51 p.m.</a>
+					</h4>
+				</div>
+				<div id="aaarunzbuzz/ontoologyautotest" class="panel-collapse collapse">
+					<div class="panel-body">The body</div>
+				</div>
+			</div>
+
+
+
+
+<!---->
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title">
+						<a data-toggle="collapse" data-parent="#accordion"
+							href="#colltest">Test coll</a>
+					</h4>
+				</div>
+				<div id="colltest" class="panel-collapse collapse">
+					<div class="panel-body">The body</div>
+				</div>
+			</div>
+
+
+
+
+
+</div>
+
+
+<!-- Original tables approach (working)
+<table class="table table-hover">
+<tr class="">
+	<td>Repository</td>
+	<td>Status</td>
+	<td>Last used</td>
+	<td>ar2dtool</td>
+	<td>OOPS</td>
+	<td >Widoco</td>
+</tr>
+
+	<tr class="repo" url="ahmad88me/target">
+		<td>ahmad88me/target</td>
+		<td>Ready</td>
+		<td>May 15, 2015, 10:47 a.m.</td>
+		<td></td>
+		<td></td>
+		<td></td>
+	<tr>
+
+	<tr class="repo" url="aaarunzbuzz/ontoologyautotest">
+		<td>aaarunzbuzz/ontoologyautotest</td>
+		<td>Ready</td>
+		<td>May 24, 2015, 6:51 p.m.</td>
+		<td></td>
+		<td></td>
+		<td></td>
+	<tr>
+
+</table>
+
+-->
+
+</br> </br> </br>
+
+
+<table class="table">
+<tr class="">
+	<td>Ontology</td>
+	<td>ar2dtool</td>
+	<td>OOPS</td>
+	<td >Widoco</td>
+</tr>
+
+</table>
+
+
+
+
+</br>
+<form  id="toolsform" action="" method="POST">
+<input id="savebtn" type="submit" value="Save" class="form-control btn btn-default "/>
+<input id="toolsvalues" name="toolsvalues" type="hidden" value=""/>
+</form>
+
+
+<style>
+.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary,
+.bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary {
+  color: #fff !important;
+  background: #333333 !important;
+}
+
+</style>
+
+
+<script>
+	var result={};
 $( document ).ready(function() {
-
-
-	$("[name='my-checkbox']").bootstrapSwitch();
-	//$("[name='my-checkbox']").bootstrapSwitch('state',false);
-	alert($("[name='my-checkbox']").bootstrapSwitch('state'));
-	$('input[name="my-checkbox"]').on('switchChange.bootstrapSwitch', function(event, state) {
-		  console.log(this); // DOM element
-		  console.log(event); // jQuery event
-		  console.log(state); // true | false
-		});
 	
-	$("tr").click(function() {
-		
-	    //alert($(this).attr('url'));
-	    window.location.href = '?repo='+$(this).attr('url');
-	});
-	$("p").click(function() {
-		alert('clicked');
-	    alert($(this).attr('url'));
-	});
+	var False=false;
+	var True=true;
+	
 
+});
+
+</script>
+
+
+
+</span>
+
+
+
+
+
+
+
+
+
+<script>
+
+
+$( document ).ready(function() {
+	
+	var opts = {
+		  lines: 13, // The number of lines to draw
+		  length: 40, // The length of each line
+		  width: 22, // The line thickness
+		  radius: 60, // The radius of the inner circle
+		  corners: 1, // Corner roundness (0..1)
+		  rotate: 0, // The rotation offset
+		  direction: 1, // 1: clockwise, -1: counterclockwise
+		  color: '#BBB', // #rgb or #rrggbb or array of colors
+		  speed: 1, // Rounds per second
+		  trail: 60, // Afterglow percentage
+		  shadow: false, // Whether to render a shadow
+		  hwaccel: false, // Whether to use hardware acceleration
+		  className: 'spinner', // The CSS class to assign to the spinner
+		  zIndex: 2e9, // The z-index (defaults to 2000000000)
+		  top: '50%', // Top position relative to parent
+		  left: '50%' // Left position relative to parent
+		};
+	var target = document.getElementById('myspinner');
+	var spinner = new Spinner(opts);//.spin(target);
+	//var spinner = new Spinner(opts).spin(target);
+	
+	
+	//taken from http://hungred.com/how-to/tutorial-simple-screen-grey-effect-jquery/
+	var greyout = function(){
+		//alert("clicked");
+		spinner.spin(target);
+		//$('#screen').css({"position": "absolute"});
+		$('#screen').css({	"display": "block", opacity: 0.7, "width":$(document).width(),"height":$(document).height()});
+		$('#box').css({"display": "block"}).click(function(){$(this).css("display", "none");$('#screen').css("display", "none")});
+	}
+
+		
+	
+	$(".repo").click(function() {
+		 //window.location.href = "?repo="+$(this).attr('url');
+		//spinner.spin(target);
+		//alert("check1");
+		greyout(); 
+		$.ajax({
+		  method: "GET",
+		  url: window.location.href+"?repo="+$(this).attr('url'),
+		  //data: { name: "John", location: "Boston" }
+		}).done(function( resp ) {
+		    //alert("Done");
+		    spinner.stop();
+		    $('#box').click();
+
+		    //$( "body" ).off( "click");
+		    
+		    
+			var startBody = resp.indexOf('<span id="profiletables">');
+			var newresp = resp.substring(startBody,resp.length-1);
+			var endBody = newresp.indexOf("</span>")+startBody;
+			var bodyString = resp.substring(startBody+25,endBody);
+			//alert("startBody: "+startBody+", endBody: "+endBody)
+			//console.log(bodyString);
+	       //jQuery('head').html(headString);
+	       //$('#hoo').html("<h1>For some reason</h1>");
+	       $('#profiletables').html(bodyString);
+		    
+		    //var htmlbody = newhtml.split("<body")[1].split(">").slice(1).join(">").split("</body")[0];
+			//alert(htmlbody);
+			//$("body").html(htmlbody)
+		});
+		 
+	});
 	$('.repo').each(function(){
 		var r = GetURLParameter('repo');
 		//alert("<"+r+">");
@@ -126,48 +459,13 @@ $( document ).ready(function() {
 
 	
 });
+
+
+
+	
+
+
 </script>
-
-<table class="table table-hover">
-	<tr class="">
-		<td>Repository</td>
-		<td>Status</td>
-		<td>Log file</td>
-		<td>Last used</td>
-		<td>ar2dtool</td>
-		<td>OOPS</td>
-		<td >Widoco</td>
-	</tr>
-	
-	<tr class="repo" url="ahmad">
-		<td>ahmad88me/target</td>
-		<td> anystate</td>
-		<td>log</td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-	<tr>
-	
-		<tr class="repo" url="daniel">
-		<td>daniel/target</td>
-		<td> anystate</td>
-		<td>log</td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-	<tr>
-</table>
-
-
-<input id="savebtn" type="button" value="Save" class="form-control btn btn-default "/>
-
-
-<p>This is a testing paragraph</p>
-
-
-
 
 
 
@@ -200,7 +498,8 @@ $( document ).ready(function() {
       </div>
 
     </div>
-
+	
+	
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) >
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed >

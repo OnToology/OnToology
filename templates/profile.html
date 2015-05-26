@@ -65,17 +65,147 @@ function GetURLParameter(sParam)
 </script>
 
 
-
-
-
-
-
 </br>
 
 <span id="profiletables">
 
 
 <h3>Choose one of the below repo by clicking on it</h3>
+
+<!-- 
+
+  <div class="panel-group" id="accordion">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Collapsible Group 1</a>
+        </h4>
+      </div>
+      <div id="collapse1" class="panel-collapse collapse in">
+        <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Collapsible Group 2</a>
+        </h4>
+      </div>
+      <div id="collapse2" class="panel-collapse collapse">
+        <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Collapsible Group 3</a>
+        </h4>
+      </div>
+      <div id="collapse3" class="panel-collapse collapse">
+        <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+      </div>
+    </div>
+  </div> 
+
+-->
+
+
+<div class="panel-group" id="accordion">
+
+<!-- 
+
+<div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Collapsible Group 2</a>
+        </h4>
+      </div>
+      <div id="collapse2" class="panel-collapse collapse">
+        <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+      </div>
+    </div>
+
+-->
+
+<div class="container-fluid">
+
+<!-- -->
+{%for r in repos%}
+
+			<div class="panel panel-default" >
+				<div class="panel-heading repo" url="{{r.url}}">
+					<h4 class="panel-title">
+						<a data-toggle="collapse" data-parent="#accordion"
+							href="#coll{{forloop.counter}}">		
+								<div class="col-md-4 col-xs-4">{{r.url}}</div>
+								<div class="col-md-4 col-xs-4">{{r.state}}</div>
+								<div class="col-md-4 col-xs-4">{{r.last_used}}</div>
+								</br>
+							</a>
+					</h4>
+				</div>
+				<div id="coll{{forloop.counter}}" class="panel-collapse collapse">
+					<div class="panel-body darkl" >The body</div>
+				</div>
+			</div>
+
+
+{%endfor%}
+
+
+</div>
+
+<!---->
+
+
+
+<!-- ->
+{%for r in repos%}
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title">
+						<a data-toggle="collapse" data-parent="#accordion"
+							href="#{{r.url}}">{{r.url}} {{r.state}} {{r.last_used}}</a>
+					</h4>
+				</div>
+				<div id="{{r.url}}" class="panel-collapse collapse">
+					<div class="panel-body">The body</div>
+				</div>
+			</div>
+
+
+{%endfor%}
+
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title">
+						<a data-toggle="collapse" data-parent="#accordion"
+							href="#colltest">Test coll</a>
+					</h4>
+				</div>
+				<div id="colltest" class="panel-collapse collapse">
+					<div class="panel-body">The body</div>
+				</div>
+			</div>
+
+
+<!---->
+
+
+</div>
+
+
+<!-- Original tables approach (working)
 <table class="table table-hover">
 <tr class="">
 	<td>Repository</td>
@@ -97,8 +227,11 @@ function GetURLParameter(sParam)
 {%endfor%}
 </table>
 
+-->
+
 </br> </br> </br>
 
+<!--  
 
 <table class="table">
 <tr class="">
@@ -121,7 +254,7 @@ function GetURLParameter(sParam)
 {%endfor%}
 </table>
 
-
+-->
 
 
 </br>
@@ -197,22 +330,68 @@ $( document ).ready(function() {
 
 </script>
 
-
-
 </span>
-
-
-
-
-
-
-
 
 
 <script>
 
 
 $( document ).ready(function() {
+	
+	
+
+	
+	
+	
+	
+	function initsliders(ontologies){
+
+		var o;
+		for (o=0;o<ontologies.length;o++){		
+			//init required
+			$("[name='"+ontologies[o].ontology+"-ar2dtool']").bootstrapSwitch();
+			$("[name='"+ontologies[o].ontology+"-oops']").bootstrapSwitch();
+			$("[name='"+ontologies[o].ontology+"-widoco']").bootstrapSwitch();
+		
+			//setting the values
+			$("[name='"+ontologies[o].ontology+"-ar2dtool']").bootstrapSwitch('state',ontologies[o].ar2dtool);
+			$("[name='"+ontologies[o].ontology+"-oops']").bootstrapSwitch('state',ontologies[o].oops);
+			$("[name='"+ontologies[o].ontology+"-widoco']").bootstrapSwitch('state',ontologies[o].widoco);
+
+			
+			
+			//appending the values to be send later to the server
+			result[ontologies[o].ontology+"-ar2dtool"] = $("[name='"+ontologies[o].ontology+"-ar2dtool']").bootstrapSwitch('state');
+			result[ontologies[o].ontology+"-oops"]     = $("[name='"+ontologies[o].ontology+"-oops']").bootstrapSwitch('state');
+			result[ontologies[o].ontology+"-widoco"]   = $("[name='"+ontologies[o].ontology+"-widoco']").bootstrapSwitch('state');
+		
+			
+			$("[name='"+ontologies[o].ontology+"-ar2dtool']").on('switchChange.bootstrapSwitch', function(event, state) {
+				console.log(state); // true | false
+				result[ontologies[o].ontology+"-ar2dtool"] = $("[name='"+ontologies[o].ontology+"-ar2dtool']").bootstrapSwitch('state');
+			});
+		
+			$("[name='"+ontologies[o].ontology+"-oops']").on('switchChange.bootstrapSwitch', function(event, state) {
+				console.log(state); // true | false
+				result[ontologies[o].ontology+"-oops"]     = $("[name='"+ontologies[o].ontology+"-oops']").bootstrapSwitch('state');
+			});
+		
+			$("[name='"+ontologies[o].ontology+"-widoco']").on('switchChange.bootstrapSwitch', function(event, state) {
+				console.log(state); // true | false
+				result[ontologies[o].ontology+"-widoco"]   = $("[name='"+ontologies[o].ontology+"-widoco']").bootstrapSwitch('state');
+			});
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	var opts = {
 		  lines: 13, // The number of lines to draw
@@ -237,74 +416,58 @@ $( document ).ready(function() {
 	//var spinner = new Spinner(opts).spin(target);
 	
 	
-	
+	//taken from http://hungred.com/how-to/tutorial-simple-screen-grey-effect-jquery/
 	var greyout = function(){
 		//alert("clicked");
 		spinner.spin(target);
 		//$('#screen').css({"position": "absolute"});
 		$('#screen').css({	"display": "block", opacity: 0.7, "width":$(document).width(),"height":$(document).height()});
-		$('#box').css({"display": "block"}).click(function(){$(this).css("display", "none");$('#screen').css("display", "none")});
+		$('#box').css({"display": "block"}).click(function(){spinner.stop();$(this).css("display", "none");$('#screen').css("display", "none")});
 	}
 
 		
 	
-	$(".repo").click(function() {
-		 //window.location.href = "?repo="+$(this).attr('url');
-		//spinner.spin(target);
-		//alert("check1");
+	
+	$(".repo").click(function() {		
+		var targetpanel = $(this);
+		var bodypanel = $(this).parent().find(".panel-body");
 		greyout(); 
 		$.ajax({
 		  method: "GET",
 		  url: window.location.href+"?repo="+$(this).attr('url'),
-		  //data: { name: "John", location: "Boston" }
 		}).done(function( resp ) {
-		    //alert("Done");
-		    spinner.stop();
+		    ontologies = resp.ontologies;
+		    var o;
+		    var temp;
+		    bodypanel.html('<div class="col-md-6 col-xs-6" >Ontology</div><div class="col-md-2 col-xs-2" >Diagrams</div><div class="col-md-2 col-xs-2" >Evaluation</div><div class="col-md-2 col-xs-2" >Documentation</div></br><hr>');
+		    for(o=0;o<ontologies.length;o++){
+		    	temp=bodypanel.html();
+		    	bodypanel.html(temp+"<span class='ontology col-md-6 col-xs-6'>"+ontologies[o].ontology+"</span>"+
+		    			'<input type="checkbox" class="col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-ar2dtool" checked>'+
+		    			'<input type="checkbox" class="col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-oops" checked>'+
+		    			'<input type="checkbox" class="col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-widoco" checked>'+	    	
+		    			"</br>");	
+		    }
+		    
+		    
+		    initsliders(ontologies);
+		    
 		    $('#box').click();
+		});	 
+	});//repo selector
+	
 
-		    //$( "body" ).off( "click");
-		    
-		    
-			var startBody = resp.indexOf('<span id="profiletables">');
-			var newresp = resp.substring(startBody,resp.length-1);
-			var endBody = newresp.indexOf("</span>")+startBody;
-			var bodyString = resp.substring(startBody+25,endBody);
-			//alert("startBody: "+startBody+", endBody: "+endBody)
-			//console.log(bodyString);
-	       //jQuery('head').html(headString);
-	       //$('#hoo').html("<h1>For some reason</h1>");
-	       $('#profiletables').html(bodyString);
-		    
-		    //var htmlbody = newhtml.split("<body")[1].split(">").slice(1).join(">").split("</body")[0];
-			//alert(htmlbody);
-			//$("body").html(htmlbody)
+	
+	$(".panel-body").click(function(){		
+		$(".ontology").click(function(){
+			console.log($(this).text());
 		});
-		 
+		
 	});
-	$('.repo').each(function(){
-		var r = GetURLParameter('repo');
-		//alert("<"+r+">");
-		if (r==$(this).attr('url')){
-			$(this).addClass("highl");
-		}
-		else{
-			$(this).removeClass("highl");			
-		}
-	});
-
 	
 });
 
-
-
-	
-
-
 </script>
-
-
-
-
 
 
 {% endblock %}
