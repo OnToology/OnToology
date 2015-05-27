@@ -45,7 +45,6 @@
 
 <script>
 
-
 function GetURLParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
@@ -61,7 +60,6 @@ function GetURLParameter(sParam)
     return '';
 }
 
-
 </script>
 
 
@@ -69,55 +67,9 @@ function GetURLParameter(sParam)
 
 <span id="profiletables">
 
-
 <h3>Choose one of the below repo by clicking on it</h3>
 
-<!-- 
-
-  <div class="panel-group" id="accordion">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4 class="panel-title">
-          <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Collapsible Group 1</a>
-        </h4>
-      </div>
-      <div id="collapse1" class="panel-collapse collapse in">
-        <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
-      </div>
-    </div>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4 class="panel-title">
-          <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Collapsible Group 2</a>
-        </h4>
-      </div>
-      <div id="collapse2" class="panel-collapse collapse">
-        <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
-      </div>
-    </div>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4 class="panel-title">
-          <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Collapsible Group 3</a>
-        </h4>
-      </div>
-      <div id="collapse3" class="panel-collapse collapse">
-        <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
-      </div>
-    </div>
-  </div> 
-
--->
-
-
 <div class="panel-group" id="accordion">
-
 <!-- 
 
 <div class="panel panel-default">
@@ -134,74 +86,26 @@ function GetURLParameter(sParam)
     </div>
 
 -->
-
-<div class="container-fluid">
-
-<!-- -->
-{%for r in repos%}
-
-			<div class="panel panel-default" >
-				<div class="panel-heading repo" url="{{r.url}}">
-					<h4 class="panel-title">
-						<a data-toggle="collapse" data-parent="#accordion"
-							href="#coll{{forloop.counter}}">		
-								<div class="col-md-4 col-xs-4">{{r.url}}</div>
-								<div class="col-md-4 col-xs-4">{{r.state}}</div>
-								<div class="col-md-4 col-xs-4">{{r.last_used}}</div>
-								</br>
-							</a>
-					</h4>
+	<div class="container-fluid">
+	{%for r in repos%}
+				<div class="panel panel-default" >
+					<div class="panel-heading repo" url="{{r.url}}">
+						<h4 class="panel-title">
+							<a data-toggle="collapse" data-parent="#accordion"
+								href="#coll{{forloop.counter}}">		
+									<div class="col-md-4 col-xs-4">{{r.url}}</div>
+									<div class="col-md-4 col-xs-4">{{r.state}}</div>
+									<div class="col-md-4 col-xs-4">{{r.last_used}}</div>
+									</br>
+								</a>
+						</h4>
+					</div>
+					<div id="coll{{forloop.counter}}" class="panel-collapse collapse">
+						<div class="panel-body darkl" >The body</div>
+					</div>
 				</div>
-				<div id="coll{{forloop.counter}}" class="panel-collapse collapse">
-					<div class="panel-body darkl" >The body</div>
-				</div>
-			</div>
-
-
-{%endfor%}
-
-
-</div>
-
-<!---->
-
-
-
-<!-- ->
-{%for r in repos%}
-
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h4 class="panel-title">
-						<a data-toggle="collapse" data-parent="#accordion"
-							href="#{{r.url}}">{{r.url}} {{r.state}} {{r.last_used}}</a>
-					</h4>
-				</div>
-				<div id="{{r.url}}" class="panel-collapse collapse">
-					<div class="panel-body">The body</div>
-				</div>
-			</div>
-
-
-{%endfor%}
-
-
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h4 class="panel-title">
-						<a data-toggle="collapse" data-parent="#accordion"
-							href="#colltest">Test coll</a>
-					</h4>
-				</div>
-				<div id="colltest" class="panel-collapse collapse">
-					<div class="panel-body">The body</div>
-				</div>
-			</div>
-
-
-<!---->
-
-
+	{%endfor%}
+	</div>
 </div>
 
 
@@ -260,7 +164,9 @@ function GetURLParameter(sParam)
 </br>
 <form  id="toolsform" action="" method="POST">
 <input id="savebtn" type="submit" value="Save" text="Save" name="Save" class="form-control btn btn-default "/>
+<!-- 
 <input id="toolsvalues" name="toolsvalues" type="hidden" value=""/>
+ -->
 </form>
 
 
@@ -275,11 +181,15 @@ function GetURLParameter(sParam)
 
 
 <script>
+
+/*
 	var result={};
 $( document ).ready(function() {
 	
 	var False=false;
 	var True=true;
+
+	
 	{%for o in ontologies%}
 	//init required
 	$("[name='{{o.ontology}}-ar2dtool']").bootstrapSwitch();
@@ -317,7 +227,7 @@ $( document ).ready(function() {
 		    url:   "",
 		    data:  result,
 		    async: false
-		}); */
+		}); /
 		$("#toolsvalues").attr("value") = result;
 		alert("savebtn is clicked");
 	});	
@@ -325,29 +235,42 @@ $( document ).ready(function() {
 	
 	
 	{%endfor%}
+	
+	
 
 });
 
+	*/
 </script>
+
+</span>
+
+
+<span id="slidertag">
 
 </span>
 
 
 <script>
 
+/*
+var False=false;
+var True=true;
+var result={};
+*/
+
+var current_url;
 
 $( document ).ready(function() {
 	
 	
-
-	
-	
-	
-	
+	/*
 	function initsliders(ontologies){
-
 		var o;
-		for (o=0;o<ontologies.length;o++){		
+		for (o=0;o<ontologies.length;o++){	
+			console.log("index: "+o);
+			var local=ontologies[o].ontology;
+			
 			//init required
 			$("[name='"+ontologies[o].ontology+"-ar2dtool']").bootstrapSwitch();
 			$("[name='"+ontologies[o].ontology+"-oops']").bootstrapSwitch();
@@ -357,18 +280,19 @@ $( document ).ready(function() {
 			$("[name='"+ontologies[o].ontology+"-ar2dtool']").bootstrapSwitch('state',ontologies[o].ar2dtool);
 			$("[name='"+ontologies[o].ontology+"-oops']").bootstrapSwitch('state',ontologies[o].oops);
 			$("[name='"+ontologies[o].ontology+"-widoco']").bootstrapSwitch('state',ontologies[o].widoco);
-
-			
-			
+						
 			//appending the values to be send later to the server
 			result[ontologies[o].ontology+"-ar2dtool"] = $("[name='"+ontologies[o].ontology+"-ar2dtool']").bootstrapSwitch('state');
 			result[ontologies[o].ontology+"-oops"]     = $("[name='"+ontologies[o].ontology+"-oops']").bootstrapSwitch('state');
 			result[ontologies[o].ontology+"-widoco"]   = $("[name='"+ontologies[o].ontology+"-widoco']").bootstrapSwitch('state');
 		
-			
 			$("[name='"+ontologies[o].ontology+"-ar2dtool']").on('switchChange.bootstrapSwitch', function(event, state) {
+				//var local=eval(ontologies[o].ontology);
+				console.log("local: "+local);
 				console.log(state); // true | false
-				result[ontologies[o].ontology+"-ar2dtool"] = $("[name='"+ontologies[o].ontology+"-ar2dtool']").bootstrapSwitch('state');
+				console.log("will check ontology: "+local);
+				result[local+"-ar2dtool"] = $("[name='"+local+"-ar2dtool']").bootstrapSwitch('state');
+				//result[ontologies[o].ontology+"-ar2dtool"] = $("[name='"+ontologies[o].ontology+"-ar2dtool']").bootstrapSwitch('state');
 			});
 		
 			$("[name='"+ontologies[o].ontology+"-oops']").on('switchChange.bootstrapSwitch', function(event, state) {
@@ -382,16 +306,8 @@ $( document ).ready(function() {
 			});
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	*/
+
 	
 	var opts = {
 		  lines: 13, // The number of lines to draw
@@ -419,6 +335,7 @@ $( document ).ready(function() {
 	//taken from http://hungred.com/how-to/tutorial-simple-screen-grey-effect-jquery/
 	var greyout = function(){
 		//alert("clicked");
+		//$('.panel .panel-heading .repo').click(function(){return false;});
 		spinner.spin(target);
 		//$('#screen').css({"position": "absolute"});
 		$('#screen').css({	"display": "block", opacity: 0.7, "width":$(document).width(),"height":$(document).height()});
@@ -426,17 +343,22 @@ $( document ).ready(function() {
 	}
 
 		
-	
+/* 	function updateslidertag(newhtml){
+		
+		$("#slidertag").html(newhtml);
+	} */
 	
 	$(".repo").click(function() {		
 		var targetpanel = $(this);
 		var bodypanel = $(this).parent().find(".panel-body");
+		current_url = $(this).attr('url');
 		greyout(); 
 		$.ajax({
 		  method: "GET",
 		  url: window.location.href+"?repo="+$(this).attr('url'),
 		}).done(function( resp ) {
 		    ontologies = resp.ontologies;
+		    
 		    if (ontologies.length==0){
 		    	alert("There is no OnToology configurations on this repo");
 			}
@@ -450,30 +372,46 @@ $( document ).ready(function() {
 		    			'<input type="checkbox" class="col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-oops" checked>'+
 		    			'<input type="checkbox" class="col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-widoco" checked>'+	    	
 		    			"</br>");	
-		    }
+		    }	
 		    
-		    
-		    initsliders(ontologies);
-		    
+		    $("#slidertag").html(resp.sliderhtml);
+		    initsliders();
+		    //alert(ontologies[0].ontology);
+		    //initsliders(ontologies);		    
 		    $('#box').click();
 		});	 
 	});//repo selector
 	
 
 	
+	/*
 	$(".panel-body").click(function(){		
 		$(".ontology").click(function(){
 			console.log($(this).text());
 		});
-		
+	});*/
+	
+	
+	$("#savebtn").click(function(){
+		result['repo'] = current_url;
+		result['csrfmiddlewaretoken'] = '{{csrf_token}}';		
+		 $.ajax({
+			  method: "POST",
+			  beforeSend: function (request)
+	           {
+	                request.setRequestHeader("X-CSRFToken", '{{csrf_token}}');
+	            },
+			  url: "/update_conf",
+			  data: result
+			}).always(function( resp ) {
+			    alert('Configuration changed successfully');
+
+			});
 	});
 	
-});
-
-
+}); 
 
 /*
-  
  var v;
  $.ajax({
 		  method: "GET",
@@ -483,7 +421,6 @@ $( document ).ready(function() {
 		});
 		    
 		    */
-
 </script>
 
 

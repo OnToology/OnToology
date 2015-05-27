@@ -208,8 +208,18 @@ def verify_tools_generation_when_ready(ver_file_comp,repo=None):
         assert False, 'Taking too much time for verification'
         
                     
-            
-
+   
+def update_file(target_repo,path,message,content):
+    global g
+    username = os.environ['github_username']
+    password = os.environ['github_password']
+    gg = Github(username,password)
+    repo = g.get_repo(target_repo)    
+    print 'will update the file <%s> on repo<%s> with the content <%s>'%(path,target_repo,content) 
+    #repo.update_content(path, message, content, committer=gg.get_user())
+    repo.update_content(path, message, content)
+    print 'file updated'
+    
 
 
 def verify_tools_generation(ver_file_comp,repo=None):

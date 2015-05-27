@@ -8,14 +8,15 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.core.urlresolvers import reverse
-from django.views.decorators.csrf import csrf_exempt
 import settings
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 
 import sys
 import string
 import random
 from datetime import datetime
-from autoncore import git_magic, add_webhook,ToolUser, webhook_access, update_g, add_collaborator, get_auton_configuration, clone_repo, prepare_log, parse_online_repo_for_ontologies ,return_default_log
+from autoncore import git_magic, add_webhook,ToolUser, webhook_access, update_g, add_collaborator, get_auton_configuration, clone_repo, prepare_log
+from autoncore import parse_online_repo_for_ontologies ,update_file ,return_default_log
 from models import *
 import requests
 import json
@@ -26,6 +27,8 @@ import autoncore
 
 from github import Github
 from settings import client_id,client_secret, host
+
+
 
 sys.stdout = sys.stderr
 
@@ -266,10 +269,14 @@ def login_get_access(request):
 
 
 
+
+
+
 @login_required
 def profile(request):
     
     try:
+        #pass
         prepare_log(request.user.email)
     except Exception as e:
         print 'profile preparing log error [normal]: '+str(e)
@@ -309,7 +316,8 @@ def profile(request):
             #f.close()
             print 'will return the Json'
             #return JsonResponse({'foo': 'bar'})
-            return JsonResponse({'ontologies':ontologies})
+            html = render(request,'profile_sliders.html',{'ontologies':ontologies}).content
+            return JsonResponse({'ontologies':ontologies, 'sliderhtml': html})
             #return render(request,'profile.html',{'repos': get_repos_formatted(ouser.repos), 'ontologies': ontologies})
         #else:
         except Exception as e:
@@ -321,24 +329,52 @@ def profile(request):
     return render(request,'profile.html',{'repos': get_repos_formatted(ouser.repos)})
 
 
-# 
-# def parse_folder_for_ontologies(ontologies_abs_folder):        
-#     ontologies=[] 
-#     print 'will be searching in: '+ontologies_abs_folder
-#     for root, dirs, files in os.walk(ontologies_abs_folder):
-#         for name in files:
-#             if name=="OnToology.cfg":
-#                 ontologies.append({'ontology': root})#os.path.join(root, name)})
-#     for o in ontologies:
-#         confs = get_auton_configuration(f=None, abs_folder=o['ontology'])
-#         #This to only show the relative path on the profile page
-#         o['ontology'] = o['ontology'].replace(ontologies_abs_folder,'')
-#         #o['ontology'] = o['ontology'].replace('/','')
-# 
-#         for c in confs:
-#             tool = c.replace('_enable','')
-#             o[tool] = confs[c]
-#     return ontologies
+
+def update_conf(request):
+    print 'inside update_conf'
+    #print request.META['csrfmiddlewaretoken']
+    if request.method =="GET":
+        return render(request,"msg.html",{"msg":"This method expects POST only"})
+    indic = '-ar2dtool'
+    data = request.POST
+    print 'will go to the loop'
+    for key  in data:
+        print 'inside the loop'
+        if indic in key:
+            print 'inside the if'
+            onto = key[:-len(indic)]
+            ar2dtool = data[onto+'-ar2dtool']
+            print 'ar2dtool: '+str(ar2dtool)
+            widoco = data[onto+'-widoco']
+            print 'widoco: '+str(widoco)
+            oops =  data[onto+'-oops']
+            print 'oops: '+str(oops)
+            print 'will call get_conf'
+            new_conf = get_conf(ar2dtool,widoco,oops)
+            print 'will call update_file'
+            onto = 'OnToology'+onto+'/OnToology.cfg'
+            update_file(data['repo'],onto,'OnToology Configuration',new_conf)
+            print 'returned from update_file'
+    print 'will return msg html'
+    return JsonResponse({'status': True,'msg': 'successfully'})
+    #return render(request,'msg.html',{'msg': 'updated repos'})
+
+
+
+def get_conf(ar2dtool,widoco,oops):
+    conf = """
+[ar2dtool]
+enable = %s
+
+[widoco]
+enable = %s
+
+[oops]
+enable = %s
+    """%(str(ar2dtool),str(widoco),str(oops))
+    return conf
+
+
 
 
 
