@@ -19,7 +19,7 @@ class Repo(Document):
 try:    
     from mongoengine.django.auth import User
     class OUser(User):
-        repos = ListField(ReferenceField(Repo),unique=True)
+        repos = ListField(ReferenceField(Repo),unique=True,required=False)
 
 except:
     pass
