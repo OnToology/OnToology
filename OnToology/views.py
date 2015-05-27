@@ -152,8 +152,8 @@ def add_hook(request):
         changed_files = j['head_commit']['modified']
         #changed_files+= j['head_commit']['removed']
         changed_files+= j['head_commit']['added']
-        if 'Merge pull request' in  j['head_commit']['message'] :
-            print 'This is a merge request'
+        if 'Merge pull request' in  j['head_commit']['message'] or 'OnToology Configuration' == j['head_commit']['message']:
+            print 'This is a merge request or Configuration push'
             try:
                 repo = Repo.objects.get(url=target_repo)
                 print 'got the repo'
