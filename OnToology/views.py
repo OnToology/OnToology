@@ -81,8 +81,9 @@ def home(request):
             
         if request.user.is_authenticated():
             ouser = OUser.objects.get(email=request.user.email)
-            ouser.repos.append(repo)
-            ouser.save()
+            if repo not in ouser.repos:
+                ouser.repos.append(repo)
+                ouser.save()
         sys.stdout.flush()
         sys.stderr.flush()        
         if '127.0.0.1:8000' not in request.META['HTTP_HOST'] or not settings.test_conf['local']:
