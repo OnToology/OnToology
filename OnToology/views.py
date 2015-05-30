@@ -16,7 +16,7 @@ import string
 import random
 from datetime import datetime
 from autoncore import git_magic, add_webhook,ToolUser, webhook_access, update_g, add_collaborator, get_auton_configuration, clone_repo, prepare_log
-from autoncore import parse_online_repo_for_ontologies ,update_file ,return_default_log
+from autoncore import parse_online_repo_for_ontologies ,update_file ,return_default_log, remove_webhook
 from models import *
 import requests
 import json
@@ -375,8 +375,20 @@ enable = %s
     """%(str(ar2dtool),str(widoco),str(oops))
     return conf
 
-
-
+@login_required
+def delete_repo(request):
+    repo = request.GET['repo']
+    user = OUser.objects.get(email=request.user.email)
+    for r in user.repos:
+        if r.url == repo:
+            try:
+                user.update(pull__repos=r)
+                user.save()
+                remove_webhook(repo, host+"/add_hook")
+                return JsonResponse({'status': True})
+            except Exception as e:
+                return JsonResponse({'status': False,'error': str(e)})
+    return JsonResponse({'status': False, 'error': 'You should add this repo first'})
 
 
 

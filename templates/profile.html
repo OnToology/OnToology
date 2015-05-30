@@ -92,10 +92,15 @@ function GetURLParameter(sParam)
 					<div class="panel-heading repo" url="{{r.url}}">
 						<h4 class="panel-title">
 							<a data-toggle="collapse" data-parent="#accordion"
-								href="#coll{{forloop.counter}}">		
-									<div class="col-md-4 col-xs-4">{{r.url}}</div>
-									<div class="col-md-4 col-xs-4">{{r.state}}</div>
-									<div class="col-md-4 col-xs-4">{{r.last_used}}</div>
+								href="#coll{{forloop.counter}}">
+								<div class="col-md-11 col-xs-11">
+									<div class="container-fluid">		
+										<div class="col-md-4 col-xs-4">{{r.url}}</div>
+										<div class="col-md-4 col-xs-4">{{r.state}}</div>
+										<div class="col-md-4 col-xs-4">{{r.last_used}}</div>
+									</div>
+								</div>
+									<div class="col-md-1 col-xs-1 glyphicon glyphicon-remove-circle close" url="{{r.url}}"></div>
 									</br>
 								</a>
 						</h4>
@@ -342,13 +347,34 @@ $( document ).ready(function() {
 		$('#box').css({"display": "block"}).click(function(){spinner.stop();$(this).css("display", "none");$('#screen').css("display", "none")});
 	}
 
-		
-/* 	function updateslidertag(newhtml){
-		
-		$("#slidertag").html(newhtml);
-	} */
+
+	var cc = false;
+	$(".close").click(function() {
+		//alert("close");
+		cc = true;
+		greyout();
+		$.ajax({
+			  method: "GET",
+			  url: "/delete_repo?repo="+$(this).attr('url'),
+			}).done(function(resp){
+				if(resp.status==false){
+					alert("error deleting the repo");
+				}
+				else{
+					location.reload(true);
+				}
+				remove_greyout();
+			});
+	});
 	
-	$(".repo").click(function() {		
+	function remove_greyout(){
+		$('#box').click();
+	}
+	
+	$(".repo").click(function() {
+		if (cc){
+			return;
+		}		
 		var targetpanel = $(this);
 		var bodypanel = $(this).parent().find(".panel-body");
 		current_url = $(this).attr('url');
@@ -357,8 +383,7 @@ $( document ).ready(function() {
 		  method: "GET",
 		  url: window.location.href+"?repo="+$(this).attr('url'),
 		}).done(function( resp ) {
-		    ontologies = resp.ontologies;
-		    
+		    ontologies = resp.ontologies;		    
 		    if (ontologies.length==0){
 		    	alert("There is no OnToology configurations on this repo");
 			}
@@ -372,8 +397,7 @@ $( document ).ready(function() {
 		    			'<input type="checkbox" class="col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-oops" checked>'+
 		    			'<input type="checkbox" class="col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-widoco" checked>'+	    	
 		    			"</br>");	
-		    }	
-		    
+		    }
 		    $("#slidertag").html(resp.sliderhtml);
 		    initsliders();
 		    //alert(ontologies[0].ontology);

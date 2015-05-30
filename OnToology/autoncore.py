@@ -417,11 +417,11 @@ def webhook_access(client_id,redirect_url):
     sec = ''.join([random.choice(string.ascii_letters+string.digits) for _ in range(9)])
     return "https://github.com/login/oauth/authorize?client_id="+client_id+"&redirect_uri="+redirect_url+"&scope="+scope+"&state="+sec, sec
 
-
-
-
-
-
+def remove_webhook(target_repo, notification_url):
+    global g
+    for hook in g.get_repo(target_repo).get_hooks():
+        if hook.config["url"] == notification_url:
+            hook.delete()
 
 def add_webhook(target_repo,notification_url,newg=None):
     global g

@@ -7,6 +7,7 @@ from django.conf import settings
 
 
 urlpatterns = patterns('',
+    url(r'^delete_repo',views.delete_repo,name="deleterepo"),
     url(r'^update_conf',views.update_conf,name='updateconf'),
     url(r'^add_hook',views.add_hook,name='addhook'),
     url(r'^get_access_token',views.get_access_token,name='getaccesstoken'),
