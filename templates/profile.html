@@ -428,15 +428,18 @@ $( document ).ready(function() {
 	            },
 			  url: "/update_conf",
 			  data: result
-			}).always(function( resp ) {
+			}).done(function( resp ) {
 				console.debug("status is: "+resp.status)
-			    if (resp.status == false){
-			    	alert("Error updating the configuration, please try again");
-			    	console.log(resp.error);
-			    }
-			    else{
+			    if (resp.status == true){
 			    	alert('Configuration changed successfully');
 			    }
+			    else{
+			    	alert("Error updating the configuration, please try again");
+			    	console.log("resp error"+resp.error);
+			    	alert(resp.error);
+			    }
+			}).fail(function(resp){
+				alert("Internal error, please try again");
 			});
 			
 	});
