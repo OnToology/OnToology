@@ -106,7 +106,10 @@ function GetURLParameter(sParam)
 						</h4>
 					</div>
 					<div id="coll{{forloop.counter}}" class="panel-collapse collapse">
-						<div class="panel-body darkl" >The body</div>
+						<div class="panel-body darkl">
+						<div class="ontologiesspace">Loading ontologies ...</div>
+						</br><form  id="toolsform" action="" method="POST"><input type="submit" value="Save" text="Save" name="Save" class="form-control btn btn-default savebtn"/></form>
+						</div>
 					</div>
 				</div>
 	{%endfor%}
@@ -138,7 +141,6 @@ function GetURLParameter(sParam)
 
 -->
 
-</br> </br> </br>
 
 <!--  
 
@@ -167,12 +169,30 @@ function GetURLParameter(sParam)
 
 
 </br>
+<!-- 
+
 <form  id="toolsform" action="" method="POST">
 <input id="savebtn" type="submit" value="Save" text="Save" name="Save" class="form-control btn btn-default "/>
-<!-- 
-<input id="toolsvalues" name="toolsvalues" type="hidden" value=""/>
- -->
 </form>
+
+-->
+
+
+<div class="container-fluid">
+
+<form action="/" method="GET" style="color: #999">
+<div class="form-group" >
+	<span class=" col-md-9 col-xs-9">
+		<input type="text" name="target_repo" id="target_repo_select" class="form-control" placeholder="user/repo" ></br>
+	</span>
+	<span class="col-md-3 col-xs-3">
+		<input type="submit" class="form-control btn" value="Watch this repo"/>
+	</span>
+</div>
+</form>
+</div>
+
+
 
 
 <style>
@@ -381,7 +401,8 @@ $( document ).ready(function() {
 			return;
 		}		
 		var targetpanel = $(this);
-		var bodypanel = $(this).parent().find(".panel-body");
+		//var bodypanel = $(this).parent().find(".panel-body");
+		var bodypanel = $(this).parent().find(".ontologiesspace");
 		current_url = $(this).attr('url');
 		greyout(); 
 		$.ajax({
@@ -403,6 +424,13 @@ $( document ).ready(function() {
 		    			'<input type="checkbox" class="col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-widoco" checked>'+	    	
 		    			"</br>");	
 		    }
+		    
+		    /*
+		    if (ontologies.length>0){
+		    	var savebtn = '</br><form  id="toolsform" action="" method="POST"><input class="savebtn" type="submit" value="Save" text="Save" name="Save" class="form-control btn btn-default "/></form>'
+		    	temp=bodypanel.html();
+		    	bodypanel.html(temp+savebtn);
+		    }*/
 		    $("#slidertag").html(resp.sliderhtml);
 		    initsliders();
 		    //alert(ontologies[0].ontology);
@@ -420,31 +448,39 @@ $( document ).ready(function() {
 		});
 	});*/
 	
-	
-	$("#savebtn").click(function(){
-		result['repo'] = current_url;
-		result['csrfmiddlewaretoken'] = '{{csrf_token}}';		
-		 $.ajax({
-			  method: "POST",
-			  beforeSend: function (request)
-	           {
-	                request.setRequestHeader("X-CSRFToken", '{{csrf_token}}');
-	            },
-			  url: "/update_conf",
-			  data: result
-			}).always(function( resp ) {
-				console.debug("status is: "+resp.status)
-			    if (resp.status == true){
-			    	alert('Configuration changed successfully');
-			    }
-			    else{
-			    	alert("Error updating the configuration of one of the ontologies, please try again");
-			    	console.log("resp error"+resp.error);
-			    	alert(resp.error);
-			    }
-			});
-			
+	$(".savebtn").click(function(){
+		//alert("panel body");
+		
+//		$(".savebtn").click(function(){
+			//alert("clicked");
+			result['repo'] = current_url;
+			result['csrfmiddlewaretoken'] = '{{csrf_token}}';		
+			 $.ajax({
+				  method: "POST",
+				  beforeSend: function (request)
+		           {
+		                request.setRequestHeader("X-CSRFToken", '{{csrf_token}}');
+		            },
+				  url: "/update_conf",
+				  data: result
+				}).always(function( resp ) {
+					console.debug("status is: "+resp.status)
+				    if (resp.status == true){
+				    	alert('Configuration changed successfully');
+				    }
+				    else{
+				    	alert("Error updating the configuration of one of the ontologies, please try again");
+				    	console.log("resp error"+resp.error);
+				    	alert(resp.error);
+				    }
+				});
+				
+		//});
+		
+		
 	});
+	
+
 	
 }); 
 
