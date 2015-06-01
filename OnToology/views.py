@@ -354,7 +354,10 @@ def update_conf(request):
             new_conf = get_conf(ar2dtool,widoco,oops)
             print 'will call update_file'
             onto = 'OnToology'+onto+'/OnToology.cfg'
-            update_file(data['repo'],onto,'OnToology Configuration',new_conf)
+            try:
+                update_file(data['repo'],onto,'OnToology Configuration',new_conf)
+            except Exception as e:
+                return render(request,'msg.html',{'msg': str(e)})
             print 'returned from update_file'
     print 'will return msg html'
     return JsonResponse({'status': True,'msg': 'successfully'})
