@@ -32,7 +32,7 @@ from settings import client_id,client_secret, host
 
 sys.stdout = sys.stderr
 
-
+settings.SECRET_KEY = os.environ['SECRET_KEY']
 
 def get_repos_formatted(the_repos):
     return the_repos
