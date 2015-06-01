@@ -428,17 +428,14 @@ $( document ).ready(function() {
 	            },
 			  url: "/update_conf",
 			  data: result
-			}).done(function( resp ) {
-			    alert('Configuration changed successfully');
+			}).always(function( resp ) {
 			    if (resp.status == false){
-			    	alert(resp.error);
+			    	alert("Error updating the configuration, please try again");
+			    	console.log(resp.error);
 			    }
-			    
-				m = resp
-			}).fail(function ( resp){
-				console.log(resp);
-				alert("Error");
-				m = resp
+			    else{
+			    	alert('Configuration changed successfully');
+			    }
 			});
 			
 	});

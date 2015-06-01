@@ -211,6 +211,7 @@ def verify_tools_generation_when_ready(ver_file_comp,repo=None):
    
 def update_file(target_repo,path,message,content):
     global g
+    assert False, 'testing error'
     username = os.environ['github_username']
     password = os.environ['github_password']
     if g is None:
