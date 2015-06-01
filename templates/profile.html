@@ -429,6 +429,7 @@ $( document ).ready(function() {
 			  url: "/update_conf",
 			  data: result
 			}).always(function( resp ) {
+				console.debug("status is: "+resp.status)
 			    if (resp.status == false){
 			    	alert("Error updating the configuration, please try again");
 			    	console.log(resp.error);
