@@ -265,7 +265,7 @@ var result={};
 */
 
 var current_url;
-
+var m;
 $( document ).ready(function() {
 	
 	
@@ -415,7 +415,7 @@ $( document ).ready(function() {
 		});
 	});*/
 	
-	var m;
+	
 	$("#savebtn").click(function(){
 		result['repo'] = current_url;
 		result['csrfmiddlewaretoken'] = '{{csrf_token}}';		
