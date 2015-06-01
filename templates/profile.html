@@ -427,7 +427,7 @@ $( document ).ready(function() {
 	            },
 			  url: "/update_conf",
 			  data: result
-			}).always(function( resp ) {
+			}).done(function( resp ) {
 			    alert('Configuration changed successfully');
 
 			});

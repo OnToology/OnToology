@@ -426,8 +426,7 @@ def remove_webhook(target_repo, notification_url):
 def add_webhook(target_repo,notification_url,newg=None):
     global g
     if newg is None:
-        newg = g
-        
+        newg = g        
     name = "web"
     active = True
     events = ["push"]
