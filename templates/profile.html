@@ -430,6 +430,10 @@ $( document ).ready(function() {
 			  data: result
 			}).done(function( resp ) {
 			    alert('Configuration changed successfully');
+			    if (resp.status == false){
+			    	alert(resp.error);
+			    }
+			    
 				m = resp
 			}).fail(function ( resp){
 				console.log(resp);
