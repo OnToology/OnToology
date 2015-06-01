@@ -352,13 +352,18 @@ $( document ).ready(function() {
 	$(".close").click(function() {
 		//alert("close");
 		cc = true;
+		if (confirm("Are you sure you want to unwatch this repo?")==false){
+			return
+		}
 		greyout();
 		$.ajax({
 			  method: "GET",
 			  url: "/delete_repo?repo="+$(this).attr('url'),
 			}).done(function(resp){
+				//alert("The status: "+resp.status)
 				if(resp.status==false){
 					alert("error deleting the repo");
+					console.log(resp.error);
 				}
 				else{
 					location.reload(true);
@@ -424,22 +429,19 @@ $( document ).ready(function() {
 			  beforeSend: function (request)
 	           {
 	                request.setRequestHeader("X-CSRFToken", '{{csrf_token}}');
-	                console.log(result)
 	            },
 			  url: "/update_conf",
 			  data: result
-			}).done(function( resp ) {
+			}).always(function( resp ) {
 				console.debug("status is: "+resp.status)
 			    if (resp.status == true){
 			    	alert('Configuration changed successfully');
 			    }
 			    else{
-			    	alert("Error updating the configuration, please try again");
+			    	alert("Error updating the configuration of one of the ontologies, please try again");
 			    	console.log("resp error"+resp.error);
 			    	alert(resp.error);
 			    }
-			}).fail(function(resp){
-				alert("Internal error, please try again");
 			});
 			
 	});
