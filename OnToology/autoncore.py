@@ -220,7 +220,7 @@ def update_file(target_repo,path,message,content):
     print 'will update the file <%s> on repo<%s> with the content <%s>'%(path,target_repo,content) 
     #repo.update_content(path, message, content, committer=gg.get_user())
     file = repo.update_content(path, message, content)
-    print '%s has the updated content as <%s>'%(path,file.decoded_content)
+    #print '%s has the updated content as <%s>'%(path,file.decoded_content)
     print 'file updated'
     
 
