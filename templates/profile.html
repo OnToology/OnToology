@@ -430,7 +430,11 @@ $( document ).ready(function() {
 			}).done(function( resp ) {
 			    alert('Configuration changed successfully');
 
+			}).fail(function ( resp){
+				console.log(resp);
+				alert("Error");
 			});
+			
 	});
 	
 }); 
