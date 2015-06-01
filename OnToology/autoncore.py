@@ -213,6 +213,8 @@ def update_file(target_repo,path,message,content):
     global g
     username = os.environ['github_username']
     password = os.environ['github_password']
+    if g is None:
+        g = Github(username, password)
     gg = Github(username,password)
     repo = g.get_repo(target_repo)    
     print 'will update the file <%s> on repo<%s> with the content <%s>'%(path,target_repo,content) 
