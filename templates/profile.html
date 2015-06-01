@@ -424,6 +424,7 @@ $( document ).ready(function() {
 			  beforeSend: function (request)
 	           {
 	                request.setRequestHeader("X-CSRFToken", '{{csrf_token}}');
+	                console.log(result)
 	            },
 			  url: "/update_conf",
 			  data: result
