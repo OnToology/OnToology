@@ -415,7 +415,7 @@ $( document ).ready(function() {
 		});
 	});*/
 	
-	
+	var m;
 	$("#savebtn").click(function(){
 		result['repo'] = current_url;
 		result['csrfmiddlewaretoken'] = '{{csrf_token}}';		
@@ -430,10 +430,11 @@ $( document ).ready(function() {
 			  data: result
 			}).done(function( resp ) {
 			    alert('Configuration changed successfully');
-
+				m = resp
 			}).fail(function ( resp){
 				console.log(resp);
 				alert("Error");
+				m = resp
 			});
 			
 	});
