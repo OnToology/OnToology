@@ -63,7 +63,7 @@ SESSION_SERIALIZER = 'mongoengine.django.sessions.BSONSerializer'
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'xj1c63qiywswa67s))0$fel(z5@=%(br!j)u155a71j*^u_b+2'
+SECRET_KEY = os.environ['SECRET_KEY']#'xj1c6fel(z5@=%(br!j)u155a71j*^u_b+2'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

@@ -219,7 +219,11 @@ def update_file(target_repo,path,message,content):
     repo = g.get_repo(target_repo)    
     print 'will update the file <%s> on repo<%s> with the content <%s>'%(path,target_repo,content) 
     #repo.update_content(path, message, content, committer=gg.get_user())
-    file = repo.update_content(path, message, content)
+    try:
+        repo.update_content(path, message, content)
+    except:
+        print 'second change of file update'
+        repo.update_content(path, message, content)
     #print '%s has the updated content as <%s>'%(path,file.decoded_content)
     print 'file updated'
     
