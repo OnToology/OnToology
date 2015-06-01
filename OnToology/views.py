@@ -357,7 +357,8 @@ def update_conf(request):
             try:
                 update_file(data['repo'],onto,'OnToology Configuration',new_conf)
             except Exception as e:
-                return render(request,'msg.html',{'msg': str(e)})
+                print 'Error in updating the configuration: '+str(e)
+                return JsonResponse({'status': False,'error': str(e)})#return render(request,'msg.html',{'msg': str(e)})
             print 'returned from update_file'
     print 'will return msg html'
     return JsonResponse({'status': True,'msg': 'successfully'})
