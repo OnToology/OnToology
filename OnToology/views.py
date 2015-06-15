@@ -15,23 +15,21 @@ import sys
 import string
 import random
 from datetime import datetime
-from autoncore import git_magic, add_webhook,ToolUser, webhook_access, update_g, add_collaborator, get_auton_configuration, clone_repo, prepare_log
-from autoncore import parse_online_repo_for_ontologies ,update_file ,return_default_log, remove_webhook
-from models import *
 import requests
 import json
 import os
 import subprocess
 
+from autoncore import git_magic, add_webhook,ToolUser, webhook_access, update_g, add_collaborator, get_auton_configuration, clone_repo, prepare_log
+from autoncore import parse_online_repo_for_ontologies ,update_file ,return_default_log, remove_webhook, has_access_to_repo, init_g
+from models import *
 import autoncore
 
 from github import Github
 from settings import client_id,client_secret, host
 
 
-
 sys.stdout = sys.stderr
-
 settings.SECRET_KEY = os.environ['SECRET_KEY']
 
 def get_repos_formatted(the_repos):
@@ -58,16 +56,15 @@ def get_repos_formatted(the_repos):
         repos.append(r)
     return repos
 
-
-
-
-
 def home(request):
     print '****** Welcome to home page ********'
     print >> sys.stderr,  '****** Welcome to the error output ******'
     if 'target_repo' in request.GET:
         #print request.GET
         target_repo = request.GET['target_repo']
+        init_g()
+        if not has_access_to_repo(target_repo):# this for the organization
+            return render(request,'msg.html',{'msg': 'repos under organizations are not supported at the moment'})
         webhook_access_url, state = webhook_access(client_id,host+'/get_access_token')
         request.session['target_repo'] = target_repo
         request.session['state'] = state 
@@ -77,8 +74,7 @@ def home(request):
             print str(e)
             repo = Repo()
             repo.url=target_repo
-            repo.save()
-            
+            repo.save()            
         if request.user.is_authenticated():
             ouser = OUser.objects.get(email=request.user.email)
             if repo not in ouser.repos:
@@ -93,13 +89,9 @@ def home(request):
     repos = get_repos_formatted(Repo.objects.all())
     return render(request,'home.html',{'repos': repos, 'user': request.user })    
 
-
 def grant_update(request):
     return render_to_response('msg.html',{'msg': 'Magic is done'},context_instance=RequestContext(request))
 
-  
-  
-  
 def get_access_token(request):
     if request.GET['state'] != request.session['state']:
         return render_to_response('msg.html',{'msg':'Error, ; not an ethical attempt' },context_instance=RequestContext(request))
@@ -136,8 +128,6 @@ def get_access_token(request):
         return render_to_response('msg.html',{'msg':error_msg },context_instance=RequestContext(request))
     return render_to_response('msg.html',{'msg':'webhook attached and user added as collaborator' },context_instance=RequestContext(request))
     
-
-
 @csrf_exempt
 def add_hook(request):
     if settings.TEST:
@@ -173,7 +163,6 @@ def add_hook(request):
             else:
                 return render_to_response('msg.html',{'msg': msg},context_instance=RequestContext(request))
     except:
-        
         msg = 'This request should be a webhook ping'
         if settings.TEST:
             print msg 
@@ -199,9 +188,6 @@ def add_hook(request):
         subprocess.Popen(comm,shell=True)
         return render_to_response('msg.html',{'msg': ''+s},context_instance=RequestContext(request))
 
-
-
-
 ##The below line is for login
 def login(request):
     print '******* login *********'
@@ -213,15 +199,11 @@ def login(request):
     redirect_url = "https://github.com/login/oauth/authorize?client_id="+client_id+"&redirect_uri="+redirect_url+"&scope="+scope+"&state="+sec
     return HttpResponseRedirect(redirect_url)
 
-
-
 def logout(request):
     print '*** logout ***'
     django_logout(request)
     return HttpResponseRedirect('/')
     #return render_to_response('msg.html',{'msg':'logged out' },context_instance=RequestContext(request))
-
-
 
 def login_get_access(request):
     print '*********** login_get_access ************'
@@ -266,16 +248,8 @@ def login_get_access(request):
     sys.stderr.flush()
     return HttpResponseRedirect('/')
 
-
-
-
-
-
-
-
 @login_required
 def profile(request):
-    
     try:
         #pass
         prepare_log(request.user.email)
@@ -329,8 +303,6 @@ def profile(request):
     #f.close()
     return render(request,'profile.html',{'repos': get_repos_formatted(ouser.repos)})
 
-
-
 def update_conf(request):
     print 'inside update_conf'
     #print request.META['csrfmiddlewaretoken']
@@ -364,8 +336,6 @@ def update_conf(request):
     return JsonResponse({'status': True,'msg': 'successfully'})
     #return render(request,'msg.html',{'msg': 'updated repos'})
 
-
-
 def get_conf(ar2dtool,widoco,oops):
     conf = """
 [ar2dtool]
@@ -393,8 +363,4 @@ def delete_repo(request):
             except Exception as e:
                 return JsonResponse({'status': False,'error': str(e)})
     return JsonResponse({'status': False, 'error': 'You should add this repo first'})
-
-
-
-
 

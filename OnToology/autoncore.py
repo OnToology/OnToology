@@ -30,29 +30,22 @@ ar2dtool_config = os.environ['ar2dtool_config']
 ar2dtool_dir = os.environ['ar2dtool_dir']
 #e.g. home = 'blahblah/temp/'
 home = os.environ['github_repos_dir']
-
 verification_log_fname='verification.log'
-
-
 sleeping_time = 7
-
 ontology_formats = ['.rdf','.owl','.ttl']
-
 g = None
-
 log_file_dir = None #'&1'#which is stdout #sys.stdout#by default
-
 tools_conf = {
-           'ar2dtool': { 'folder_name': 'diagrams',  
-                        'type': 'png'
-                        },
-            'widoco': { 'folder_name': 'documentation' 
-                       },
+           'ar2dtool': { 'folder_name': 'diagrams','type': 'png'},
+            'widoco': { 'folder_name': 'documentation'},
             'oops': {'folder_name' : 'evaluation'}
 }
 
-
-
+def init_g():
+    global g
+    username = os.environ['github_username']
+    password = os.environ['github_password']
+    g = Github(username,password)
 
 def git_magic(target_repo,user,cloning_repo,changed_filesss):
     global g
@@ -119,7 +112,6 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
             try:
                 draw_diagrams(changed_files)
                 print 'diagrams drawn successfully'
-
             except Exception as e:
                 exception_if_exists+=chf+": "+str(e)+"\n"
                 print 'diagrams not drawn: '+str(e)
@@ -162,7 +154,6 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
             from models import Repo
             repo = Repo.objects.get(url=target_repo)
         verify_tools_generation_when_ready(f, repo)
-
     if use_database:
         if Repo.objects.get(url=target_repo).state!='validating':
             r = Repo.objects.get(url=target_repo)
@@ -171,7 +162,6 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
             r.state = s 
             r.save()
             return 
-
     if not settings.TEST or not settings.test_conf['local']:
         change_status(target_repo, 'creating a pull request')
         try:
@@ -179,7 +169,6 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
         except Exception as e:
             exception_if_exists+=str(e)
         print 'pull request is sent'
-    
     change_status(target_repo, 'Ready')
 
 
@@ -200,15 +189,17 @@ def verify_tools_generation_when_ready(ver_file_comp,repo=None):
             continue
         if ver_file_comp['oops_enable'] and 'oops' not in s:
             continue 
-         
         os.remove(ver_file)# the verification file is no longer needed
+        #time.sleep(1)
+        
+        print 'The removed file is: '+ver_file
         return verify_tools_generation(ver_file_comp, repo)
     repo.state=ver_file_comp['file']+' is talking too much time to generate output'
     if settings.TEST:
         assert False, 'Taking too much time for verification'
-        
-                    
-   
+    else:# I want to see the file in case of testing
+        os.remove(ver_file)# the verification file is no longer needed
+
 def update_file(target_repo,path,message,content):
     global g
     username = os.environ['github_username']
@@ -226,8 +217,6 @@ def update_file(target_repo,path,message,content):
         repo.update_content(path, message, content)
     #print '%s has the updated content as <%s>'%(path,file.decoded_content)
     print 'file updated'
-    
-
 
 def verify_tools_generation(ver_file_comp,repo=None):
     #AR2DTool
@@ -270,8 +259,6 @@ def verify_tools_generation(ver_file_comp,repo=None):
         elif not file_exists:
             print 'The Evaluation report of the file %s if not generated '%(ver_file_comp['file'])
 
-
-
 def prepare_log(user):
     global log_file_dir
     global default_stderr
@@ -285,14 +272,28 @@ def prepare_log(user):
     log_file_dir = file_dir
     return f#, stdout, stderr
 
-
 def return_default_log():
     sys.stdout.flush()
     sys.stderr.flush()
     sys.stdout=default_stdout
     sys.stderr=default_stderr
 
-    
+def is_organization(target_repo):
+    return g.get_repo(target_repo).organization is not None
+
+def has_access_to_repo(target_repo):
+    global g
+    id = g.get_user().id
+    if is_organization(target_repo):
+        try:
+            collaborators = g.get_repo(target_repo).get_collaborators()
+            for coll in collaborators:
+                if id == coll.id:
+                    return True
+            return False
+        except: 
+            return False
+    return True
 
 def delete_repo(local_repo):
     try:
@@ -300,10 +301,6 @@ def delete_repo(local_repo):
         print 'repo deleted '
     except:
         print 'the repo doesn\'t exists [not an error]'
-
-
-
-
 
 def fork_repo(target_repo,username,password):
     time.sleep(sleeping_time)#the wait time to give github sometime so the repo can be forked successfully
@@ -314,9 +311,6 @@ def fork_repo(target_repo,username,password):
     print comm
     call(comm,shell=True)
     print 'fork'
-    
-    
-
 
 #def clone_repo(cloning_repo,user):
 def clone_repo(cloning_repo,parent_folder,dosleep=True):
@@ -345,9 +339,6 @@ def clone_repo(cloning_repo,parent_folder,dosleep=True):
     call(comm, shell=True)
     return home+parent_folder
 
-
-            
-
 def commit_changes():
     gu = ""
     gu = "git config  user.email \"ahmad88csc@gmail.com\";"
@@ -372,21 +363,10 @@ def commit_changes():
     print comm
     call(comm,shell=True)
 
-
-
-
-
-
-
 def refresh_repo(target_repo):
     local_repo = target_repo.split('/')[-1]
     g.get_user().get_repo(local_repo).delete()
     g.get_user().create_fork(target_repo)
-
-
-
-
-
 
 def remove_old_pull_requests(target_repo):
     title = 'OnToology update'
@@ -394,10 +374,6 @@ def remove_old_pull_requests(target_repo):
         if p.title == title:
             p.edit(state="closed")
     
-
-
-
-
 def send_pull_request(target_repo,username):
     title = 'OnToology update'
     body = title
@@ -414,9 +390,6 @@ def send_pull_request(target_repo,username):
         #print 'pull('+str(i)+'): '+err
     #return err
     return {'status': False, 'error': err}
-
-
-
 
 def webhook_access(client_id,redirect_url):
     scope = 'admin:org_hook'
@@ -447,8 +420,6 @@ def add_webhook(target_repo,notification_url,newg=None):
     except Exception as e:
         return {'status': False, 'error': str(e)}#e.data}
 
-
-
 def add_collaborator(target_repo,user,newg=None):
     global g
     if newg is None:
@@ -460,13 +431,9 @@ def add_collaborator(target_repo,user,newg=None):
     except Exception as e:
         return {'status': False, 'error': str(e)}#e.data}
 
-
-
 def update_g(token):
     global g
     g = Github(token)
-
-
 
 ##########################~~~~~~~~~~~~##################################
 ##########################~~~~~~~~~~~~##################################

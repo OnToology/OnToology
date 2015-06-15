@@ -78,7 +78,8 @@ how to do them
 ##Take a peek on the system
 * The system is currently host on the development server http://54.172.63.231/ 
 
-
+##How to deploy the on your server
+(To be written later)
 
 
 
