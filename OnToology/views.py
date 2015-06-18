@@ -28,6 +28,7 @@ import autoncore
 from github import Github
 from settings import client_id,client_secret, host
 
+import Integrator.previsual as previsual
 
 sys.stdout = sys.stderr
 settings.SECRET_KEY = os.environ['SECRET_KEY']
@@ -383,5 +384,33 @@ def revisual_toggle(request):
         target_repo.save()
     return HttpResponseRedirect('/profile')
         
+@login_required
+def renew_revisual(request):
+    user = OUser.objects.get()
+    # cloning_repo should look like 'git@github.com:AutonUser/target.git'
+    found = False
+    repo = None
+    for r in user.repos:
+        if target_repo == r.url:
+            found=True
+            repo = r
+            break
+    if found:
+        cloning_repo = 'git@github.com:%s.git'%(target_repo)
+        clone_repo(cloning_repo,user.email,dosleep=True)
+        repo_dir = os.path.join(autoncore.home,user.email,target_repo.split('/')[0])
+        previsual.start_previsual(repo_dir,target_repo)
+        return HttpResponseRedirect('/profile')
+    return render(request,'msg.html',{'msg': 'You should add the repo while you are logged in before the revisual renewal'})
+
+
+
+
+
+
+
+
+
+
 
 

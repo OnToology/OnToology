@@ -17,6 +17,7 @@ urlpatterns = patterns('',
     url(r'^login',views.login,name='login'),
     url(r'^logout',views.logout,name='logout'),
     url(r'^revisual_toggle',views.revisual_toggle,name='revisualtoggle'),
+    url(r'^renew_revisual',views.renew_revisual,name='renewrevisual'),
     url(r'',views.home, name='home'),
 )
 
