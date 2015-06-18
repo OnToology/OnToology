@@ -5,7 +5,8 @@ import os
 
 #import OnToology
 
-
+ToolUser = 'OnToologyUser'
+ToolEmail = 'ahmad88csc@gmail.com'
 
 def start_previsual(repo_dir,target_repo):
     """
@@ -64,6 +65,8 @@ def generate_previsual(repo_dir,ontologies_dir):
     print(get_main_index(links))
     f.close()
     comm = "cd "+repo_dir
+    comm+=';git config --global user.email "%s"'%(ToolEmail)
+    comm+=';git config --global user.name "%s"'%(ToolUser)
     comm+=';git add .'
     comm+=';git commit -m "ontoology generated"'
     comm+=";git push -f origin "+branch_name #git push -f origin branch
