@@ -309,7 +309,7 @@ def profile(request):
     repos = get_repos_formatted(ouser.repos)
     for r in repos:
         if len(r.url.split('/')) != 2:
-            r.remove()
+            r.delete()
             continue
         r.user = r.url.split('/')[0]
         r.rrepo = r.url.split('/')[1]
