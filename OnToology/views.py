@@ -386,7 +386,7 @@ def previsual_toggle(request):
         
 @login_required
 def renew_previsual(request):
-    user = OUser.objects.get()
+    user = OUser.objects.get(email=request.user.email)
     target_repo = request.GET['target_repo']
     found = False
     repo = None
