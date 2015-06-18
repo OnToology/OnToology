@@ -252,8 +252,8 @@ def login_get_access(request):
 @login_required
 def profile(request):
     try:
-        #pass
-        prepare_log(request.user.email)
+        pass
+        #prepare_log(request.user.email)
     except Exception as e:
         print 'profile preparing log error [normal]: '+str(e)
     print '************* profile ************'
