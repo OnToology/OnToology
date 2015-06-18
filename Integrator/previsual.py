@@ -74,7 +74,7 @@ def generate_previsual(repo_dir,ontologies_dir):
 def get_main_index(links):
     links_html=""
     for l in links:
-        links_html+= "<li class='btn'><a href='%s'>%s</a></li>"%(l,l)
+        links_html+= "<li class='btn btn-default highl'><a href='%s'>%s</a></li><br><br>"%(l,l)
     html = """
         <html>
             <head>
@@ -83,9 +83,14 @@ def get_main_index(links):
                 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
                 <link rel="stylesheet" href="http://getbootstrap.com/examples/cover/cover.css">
                 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+               <style>
+                   .highl{background-color: #FBFBFB; color: #333333;}
+               </style>
             </head>
-            <body>
+            <body><br><br>
+                <ul>
                 %s
+                </ul>
             </body>
         </html>
     """%(links_html)
