@@ -398,6 +398,8 @@ def renew_previsual(request):
             repo = r
             break
     if found:
+        repo.previsual = True
+        repo.save()
         autoncore.prepare_log(user.email)
         cloning_repo = 'git@github.com:%s.git'%(target_repo)    # cloning_repo should look like 'git@github.com:AutonUser/target.git'
         clone_repo(cloning_repo,user.email,dosleep=True)
