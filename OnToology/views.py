@@ -301,7 +301,11 @@ def profile(request):
 #     sys.stderr = sys.__stderr__
     print 'testing redirect'
     #f.close()
-    return render(request,'profile.html',{'repos': get_repos_formatted(ouser.repos)})
+    repos = get_repos_formatted(ouser.repos)
+    for r in repos:
+        r.user = r.split('/')[0]
+        r.rrepo = r.split('/')[1]
+    return render(request,'profile.html',{'repos': repos})
 
 def update_conf(request):
     print 'inside update_conf'

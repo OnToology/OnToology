@@ -21,7 +21,7 @@ def generate_previsual(repo_dir,ontologies_dir):
         repo_dir: is absolute repository dir e.g. '/home/.../targetrepo'
         ontologies_dir: a list of relative ontologies dir inside OnToology folder e.g.
             [ 'OnToology/org/daniel.owl',...
-            ]
+            ] 
     """
     #Create branch for Github pages
     branch_name = 'gh-pages'
