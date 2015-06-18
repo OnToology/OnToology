@@ -136,6 +136,8 @@ def add_hook(request):
     try:
         s = str(request.POST['payload'])
         j = json.loads(s,strict=False)
+        if j["ref"] == "refs/heads/gh-pages":
+            return render(request,'msg.html',{'msg': 'it is gh-pages, so nothing'})
         s = j['repository']['url']+'updated files: '+str(j['head_commit']['modified'])
         cloning_repo = j['repository']['git_url']
         target_repo = j['repository']['full_name']
