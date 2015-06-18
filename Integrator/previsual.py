@@ -68,13 +68,13 @@ def generate_previsual(repo_dir,ontologies_dir):
     comm+=';git commit -m "ontoology generated"'
     comm+=";git push -f origin "+branch_name #git push -f origin branch
     print('will call: '+comm)
-    #call(comm,shell=True)
+    call(comm,shell=True)
     
 
 def get_main_index(links):
     links_html=""
     for l in links:
-        links_html+= "<li class='btn btn-default highl'><a href='%s'>%s</a></li><br><br>"%(l,l)
+        links_html+= "<li class='btn btn-default highl'><a class='darktext' href='%s'>%s</a></li><br><br>"%(l,l)
     html = """
         <html>
             <head>
@@ -84,6 +84,7 @@ def get_main_index(links):
                 <link rel="stylesheet" href="http://getbootstrap.com/examples/cover/cover.css">
                 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
                <style>
+                    .darktext{color: #333333;}    
                    .highl{background-color: #FBFBFB; color: #333333;}
                </style>
             </head>
