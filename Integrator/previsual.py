@@ -68,7 +68,7 @@ def generate_previsual(repo_dir,ontologies_dir):
     comm+=';git commit -m "ontoology generated"'
     comm+=";git push -f origin "+branch_name #git push -f origin branch
     print('will call: '+comm)
-    call(comm,shell=True)
+    #call(comm,shell=True)
     
 
 def get_main_index(links):
@@ -103,15 +103,14 @@ def prep(target_repo,repo_dir):
     #The below like is to get ont_files from a local repo instead
     ont_files = get_confs_from_local(repo_dir)
     for ofi in ont_files:
-        owl_dir = os.path.split(ofi)[1]
-        o_owl_dir = os.path.join(owl_dir)
-        #o_owl_dir = os.path.join('OnToology',owl_dir)
-        if os.path.exists(os.path.join(o_owl_dir,'documentation','index.html')):
-            ontologies_dirs.append(o_owl_dir)
+        owl_abs = os.path.join(repo_dir,ofi,'documentation','index.html')
+        if os.path.exists(owl_abs):
+            ontologies_dirs.append(ofi)
             print("***************************************")
-            print("found is: "+o_owl_dir)
+            print("found is: "+ofi)
         else:
-            print("not found is: "+o_owl_dir)
+            print("not found is: "+ofi)
+            print("full dir: "+owl_abs)
     return ontologies_dirs
     
 def get_confs_from_local(repo_abs_dir):
