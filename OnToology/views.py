@@ -368,3 +368,20 @@ def delete_repo(request):
                 return JsonResponse({'status': False,'error': str(e)})
     return JsonResponse({'status': False, 'error': 'You should add this repo first'})
 
+@login_required 
+def revisual_toggle(request):
+    user = OUser.objects.get(email=request.user.email)
+    target_repo = request.GET['target_repo']
+    found = False
+    for repo in user.repos:
+        if target_repo == repo.url:
+            found = True
+            target_repo = repo
+            break
+    if found:
+        target_repo.previsual = not target_repo.previsual
+        target_repo.save()
+    return HttpResponseRedirect('/profile')
+        
+
+
