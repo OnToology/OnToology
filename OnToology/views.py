@@ -63,6 +63,8 @@ def home(request):
     if 'target_repo' in request.GET:
         #print request.GET
         target_repo = request.GET['target_repo']
+        if target_repo.strip() =="":
+            return render(request,'msg.html',{'msg': 'please enter a valid repo'})
         init_g()
         if not has_access_to_repo(target_repo):# this for the organization
             return render(request,'msg.html',{'msg': 'repos under organizations are not supported at the moment'})
@@ -306,6 +308,9 @@ def profile(request):
     #f.close()
     repos = get_repos_formatted(ouser.repos)
     for r in repos:
+        if len(r.url.split('/')) != 2:
+            r.remove()
+            continue
         r.user = r.url.split('/')[0]
         r.rrepo = r.url.split('/')[1]
     return render(request,'profile.html',{'repos': repos})
