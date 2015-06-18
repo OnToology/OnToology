@@ -387,7 +387,7 @@ def previsual_toggle(request):
 @login_required
 def renew_previsual(request):
     user = OUser.objects.get()
-    # cloning_repo should look like 'git@github.com:AutonUser/target.git'
+    targe_repo = request.GET['target_repo']
     found = False
     repo = None
     for r in user.repos:
@@ -396,7 +396,7 @@ def renew_previsual(request):
             repo = r
             break
     if found:
-        cloning_repo = 'git@github.com:%s.git'%(target_repo)
+        cloning_repo = 'git@github.com:%s.git'%(target_repo)    # cloning_repo should look like 'git@github.com:AutonUser/target.git'
         clone_repo(cloning_repo,user.email,dosleep=True)
         repo_dir = os.path.join(autoncore.home,user.email,target_repo.split('/')[0])
         previsual.start_previsual(repo_dir,target_repo)
