@@ -304,8 +304,8 @@ def profile(request):
     #f.close()
     repos = get_repos_formatted(ouser.repos)
     for r in repos:
-        r.user = r.split('/')[0]
-        r.rrepo = r.split('/')[1]
+        r.user = r.url.split('/')[0]
+        r.rrepo = r.url.split('/')[1]
     return render(request,'profile.html',{'repos': repos})
 
 def update_conf(request):
@@ -370,7 +370,7 @@ def delete_repo(request):
     return JsonResponse({'status': False, 'error': 'You should add this repo first'})
 
 @login_required 
-def revisual_toggle(request):
+def previsual_toggle(request):
     user = OUser.objects.get(email=request.user.email)
     target_repo = request.GET['target_repo']
     found = False
@@ -385,7 +385,7 @@ def revisual_toggle(request):
     return HttpResponseRedirect('/profile')
         
 @login_required
-def renew_revisual(request):
+def renew_previsual(request):
     user = OUser.objects.get()
     # cloning_repo should look like 'git@github.com:AutonUser/target.git'
     found = False
