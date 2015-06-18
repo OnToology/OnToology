@@ -399,7 +399,7 @@ def renew_previsual(request):
         autoncore.prepare_log(user.email)
         cloning_repo = 'git@github.com:%s.git'%(target_repo)    # cloning_repo should look like 'git@github.com:AutonUser/target.git'
         clone_repo(cloning_repo,user.email,dosleep=True)
-        repo_dir = os.path.join(autoncore.home,user.email,target_repo.split('/')[0])
+        repo_dir = os.path.join(autoncore.home,user.email)
         previsual.start_previsual(repo_dir,target_repo)
         return HttpResponseRedirect('/profile')
     return render(request,'msg.html',{'msg': 'You should add the repo while you are logged in before the revisual renewal'})

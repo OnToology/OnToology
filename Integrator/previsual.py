@@ -123,6 +123,7 @@ def get_confs_from_local(repo_abs_dir):
     if repo_abs_dir[-1] == os.sep:
         repo_abs_dir = repo_abs_dir[:-1]
     num_of_parent_dirs = len(full_path_split(repo_abs_dir))
+    print("searching for ont in %s"%(repo_abs_dir))
     for root, dirs, files in os.walk(repo_abs_dir, topdown=False):
         for name in files:
             file_abs_dir = os.path.join(root, name)
@@ -134,6 +135,9 @@ def get_confs_from_local(repo_abs_dir):
                     ont = os.path.join(*ont)
                     ont_files.append(ont)
             #print(os.path.join(root, name))
+    print 'There are %d ontologies'%(len(ont_files))
+    for o in ont_files:
+        print o
     return ont_files
 
 def full_path_split(dir):
