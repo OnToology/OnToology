@@ -76,7 +76,7 @@ how to do them
  https://gist.github.com/jexchan/2351996
 
 ##Take a peek on the system
-* The system is currently host on the development server http://54.172.63.231/ 
+* The system is currently host on the development server http://ontoology.linkeddata.es/ 
 
 ##How to deploy the on your server
 (To be written later)
