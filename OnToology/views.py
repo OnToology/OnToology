@@ -212,8 +212,10 @@ def logout(request):
 
 def login_get_access(request):
     print '*********** login_get_access ************'
+    if 'state' not in request.session:
+        request.session['state']=''
     if request.GET['state'] != request.session['state']:
-        return render_to_response('msg.html',{'msg':'Error, ; non-ethical attempt' },context_instance=RequestContext(request))
+        return render_to_response('msg.html',{'msg':'Error, ; unauthorised attempt' },context_instance=RequestContext(request))
     data = {
         'client_id': client_id,
         'client_secret': client_secret,
@@ -309,7 +311,9 @@ def profile(request):
     repos = get_repos_formatted(ouser.repos)
     for r in repos:
         if len(r.url.split('/')) != 2:
+            ouser.update(pull__repos=r)
             r.delete()
+            ouser.save()
             continue
         r.user = r.url.split('/')[0]
         r.rrepo = r.url.split('/')[1]
