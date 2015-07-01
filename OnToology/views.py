@@ -213,9 +213,11 @@ def logout(request):
 def login_get_access(request):
     print '*********** login_get_access ************'
     if 'state' not in request.session:
-        return render_to_response('msg.html',{'msg':'Error, ; Session expired, please try to login again' },context_instance=RequestContext(request))
+        request.session = 'state'
+        #return render_to_response('msg.html',{'msg':'Error, ; Session expired, please try to login again' },context_instance=RequestContext(request))
     if request.GET['state'] != request.session['state']:
-        return render_to_response('msg.html',{'msg':'Error, ; unauthorised attempt' },context_instance=RequestContext(request))
+        return HttpResponseRedirect('/')
+        #return render_to_response('msg.html',{'msg':'Error, ; unauthorised attempt' },context_instance=RequestContext(request))
     data = {
         'client_id': client_id,
         'client_secret': client_secret,
