@@ -96,7 +96,7 @@ def grant_update(request):
     return render_to_response('msg.html',{'msg': 'Magic is done'},context_instance=RequestContext(request))
 
 def get_access_token(request):
-    if request.GET['state'] != request.session['state']:
+    if 'state' not in request.session or request.GET['state'] != request.session['state']:
         return HttpResponseRedirect('/')
         #return render_to_response('msg.html',{'msg':'Error, ; not an ethical attempt' },context_instance=RequestContext(request))
     data = {
