@@ -97,7 +97,8 @@ def grant_update(request):
 
 def get_access_token(request):
     if request.GET['state'] != request.session['state']:
-        return render_to_response('msg.html',{'msg':'Error, ; not an ethical attempt' },context_instance=RequestContext(request))
+        return HttpResponseRedirect('/')
+        #return render_to_response('msg.html',{'msg':'Error, ; not an ethical attempt' },context_instance=RequestContext(request))
     data = {
         'client_id': client_id,
         'client_secret': client_secret,
