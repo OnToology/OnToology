@@ -129,6 +129,8 @@ def get_access_token(request):
     if error_msg != "":
         if 'Hook already exists on this repository' in error_msg:
             error_msg = 'This repository already watched'
+        elif '404' in error_msg:# so no enough access according to Github troubleshooting guide
+            error_msg = 'You do not have permission over this repository'
         return render_to_response('msg.html',{'msg':error_msg },context_instance=RequestContext(request))
     return render_to_response('msg.html',{'msg':'webhook attached and user added as collaborator' },context_instance=RequestContext(request))
     
