@@ -574,7 +574,8 @@ def create_widoco_doc(rdf_file):
     if use_conf_file:
         comm+=" -confFile "+config_file_abs
     else:
-        comm+=" -getOntologyMetadata"
+        comm+=" -getOntologyMetadata "
+        comm+=" -saveConfig "+config_file_abs
 
     if not settings.TEST:
         comm+= ' >> "'+log_file_dir+'" '
