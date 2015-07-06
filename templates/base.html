@@ -22,7 +22,23 @@
 			.darkl{background-color: #333333; color: #FBFBFB;}
 			.curfont{font-family: "Comic Sans MS", cursive, sans-serif;}
 			*{font-family: "Comic Sans MS", cursive, sans-serif;}
+
+
+			.mastfoot {
+			  position: fixed;
+			  top: 0; !important
+			  bottom: auto; !important
+			  right: 0;!important
+			}
+
+
+
+
+
 	 </style>
+
+
+
 
 
 
@@ -70,10 +86,13 @@
               <h3 class="masthead-brand"><img height="70px" src="https://raw.githubusercontent.com/OnToology/OnToology/master/ontoology.png"/></h3>
               </a>
               <nav>
+              <!-- <ul class="nav masthead-nav">  -->
                 <ul class="nav masthead-nav">
-                  <!-- >
-                  <li {% block home_head %} class="active" {% endblock %} ><a href="/">Home</a></li>
-                	<-->
+                	<!-- 
+                	<li {% block home_head %} class="active" {% endblock %} ><a href="/">Home</a></li>
+                	<li {% block step_head %}  {% endblock %} ><a href="/stepbystep">Step by Step</a></li>
+                	<li {% block about_head %}  {% endblock %} ><a href="/about">About</a></li>
+                	 -->
                 	{%block teapot%}
 						{% if request.user.is_authenticated %}
 							<a href="/profile">
@@ -96,23 +115,7 @@
             
             
             
-        <footer class="footer">
-            <div class="row">
-    	<div class="col-md-10" align="left">
-    		Developed by 	        <a href = "http://oeg-upm.net" target="_blank">Ontology Engineering Group</a>
-	        <br>
-    	Built with <a target="_blank" href="http://getbootstrap.com/">Bootstrap</a>
-    	Icons from <a target="_blank" href="http://glyphicons.com/">Glyphicons</a>
- 	        <br>
-	        Latest revision February, 2015
-           <br><p>&copy; Ontology Engineering Group</p>
-           <p>Powered by Widoco, AR2DTool and OOPS!</p>
-        </div>
-    	<div class="col-md-2">
-    		<a href="http://www.oeg-upm.net/" target="_blank"><img src="https://raw.githubusercontent.com/OnToology/OnToology/Integrator/media/home/oeg.gif" alt="OEG logo" class="img-rounded" class="img-responsive" /></a>
-    	</div>
-      </div>
-      </footer>
+       
             
             
             
@@ -130,11 +133,35 @@
             </p> 
           </div-->
 
-          <!-- div class="mastfoot">
-            <div class="inner">
+          <div class="mastfoot">
+            <div class="row">
+           <div class="col-md-1 col-md-offset-0">
+    			<a href="http://www.oeg-upm.net/" target="_blank"><img src="https://raw.githubusercontent.com/OnToology/OnToology/Integrator/media/home/oeg.png" alt="OEG logo" class="img-rounded" class="img-responsive" /></a>
+    		</div>
+    		<br> <br><br><br><br>
+    		<div class="col-md-1 col-md-offset-0">
+    		Developed by 	        <a href = "http://oeg-upm.net" target="_blank">Ontology Engineering Group</a>
+	        <br>
+    		Built with <a target="_blank" href="http://getbootstrap.com/">Bootstrap</a>
+    		Icons from <a target="_blank" href="http://glyphicons.com/">Glyphicons</a>
+ 	        <br>
+	        Latest revision February, 2015
+           <br><p>&copy; Ontology Engineering Group</p>
+           <p>Powered by Widoco, AR2DTool and OOPS!</p>
+        	</div>
+			<br> <br><br><br><br>
+      	</div>
+      	
+      	     <!--
+            <div class="inner"> 
+         
               <p>Cover template for <a href="http://getbootstrap.com">Bootstrap</a>, by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+            
             </div>
-          </div-->
+             -->
+            
+            
+          </div>
 
         </div>
 
@@ -147,5 +174,32 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed >
     <script src="js/bootstrap.min.js"></script-->
+
+	<!--  
+	
+	
+	footer class="footer">
+        	<div class="container">
+            <div class="row">
+    		<div class="col-md-10" align="left">
+    		Developed by 	        <a href = "http://oeg-upm.net" target="_blank">Ontology Engineering Group</a>
+	        <br>
+    		Built with <a target="_blank" href="http://getbootstrap.com/">Bootstrap</a>
+    		Icons from <a target="_blank" href="http://glyphicons.com/">Glyphicons</a>
+ 	        <br>
+	        Latest revision February, 2015
+           <br><p>&copy; Ontology Engineering Group</p>
+           <p>Powered by Widoco, AR2DTool and OOPS!</p>
+        	</div>
+    		<div class="col-md-2">
+    			<a href="http://www.oeg-upm.net/" target="_blank"><img src="https://raw.githubusercontent.com/OnToology/OnToology/Integrator/media/home/oeg.gif" alt="OEG logo" class="img-rounded" class="img-responsive" /></a>
+    		</div>
+      	</div>
+      	</div>
+      </footer>
+	
+	
+	-->
+
   </body>
 </html>
