@@ -441,7 +441,8 @@ def renew_previsual(request):
         return HttpResponseRedirect('/profile')
     return render(request,'msg.html',{'msg': 'You should add the repo while you are logged in before the revisual renewal'})
 
-
+def stepbystep(request):
+    return render(request,'stepbystep.html')
 
 
 
