@@ -54,27 +54,27 @@ settings.SECRET_KEY = os.environ['SECRET_KEY']
 
 def get_repos_formatted(the_repos):
     return the_repos
-    repos = []
-    for orir in the_repos:
-        r = {}
-        for ke in orir:
-            r[ke]  = orir[ke]
-        tools = r['monitoring'].split(",")
-        monit=""
-        for t in tools:   
-            keyval = t.split("=")
-            if len(keyval) != 2:
-                break
-            if keyval[1].lower().strip()=='true':
-                keyval[1]='Yes'
-            else:
-                keyval[1]='No'
-            print r['url']+" "+keyval[0]+"="+str(keyval[1])
-            r[keyval[0].strip()]=keyval[1]
-            monit+="=".join(keyval) +","
-        r['monitoring'] = monit
-        repos.append(r)
-    return repos
+#     repos = []
+#     for orir in the_repos:
+#         r = {}
+#         for ke in orir:
+#             r[ke]  = orir[ke]
+#         tools = r['monitoring'].split(",")
+#         monit=""
+#         for t in tools:   
+#             keyval = t.split("=")
+#             if len(keyval) != 2:
+#                 break
+#             if keyval[1].lower().strip()=='true':
+#                 keyval[1]='Yes'
+#             else:
+#                 keyval[1]='No'
+#             print r['url']+" "+keyval[0]+"="+str(keyval[1])
+#             r[keyval[0].strip()]=keyval[1]
+#             monit+="=".join(keyval) +","
+#         r['monitoring'] = monit
+#         repos.append(r)
+#     return repos
 
 def home(request):
     print '****** Welcome to home page ********'
@@ -108,7 +108,8 @@ def home(request):
             return  HttpResponseRedirect(webhook_access_url)
     sys.stdout.flush()
     sys.stderr.flush()
-    repos = get_repos_formatted(Repo.objects.all())
+    #repos = get_repos_formatted(Repo.objects.all())
+    repos = Repo.objects.latest('last_used')[:10]
     return render(request,'home.html',{'repos': repos, 'user': request.user })    
 
 def grant_update(request):
@@ -444,7 +445,8 @@ def renew_previsual(request):
 def stepbystep(request):
     return render(request,'stepbystep.html')
 
-
+def about(request):
+    return render(request,'about.html')
 
 
 

@@ -38,6 +38,7 @@ urlpatterns = patterns('',
     url(r'^previsual_toggle',views.previsual_toggle,name='previsualtoggle'),
     url(r'^renew_previsual',views.renew_previsual,name='renewprevisual'),
     url(r'stepbystep',views.stepbystep,name='stepbystep'),
+    url(r'about',views.about,name='about'),
     url(r'',views.home, name='home'),
 )
 
