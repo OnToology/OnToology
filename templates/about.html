@@ -25,7 +25,7 @@ Maria Poveda<br><br>
 
 -->
 
-
+<br><br>
 
 
 <h3>What does it generate</h3>
@@ -45,8 +45,13 @@ Maria Poveda<br><br>
 	<li align="left">Create an issue in Github with evaluation summary.</li>
 	<li align="left">Default configuration file for each ontology, to enable/disable the generation of documentation,
 	 diagrams and/or evaluation report.</li>
+	<li align="left">Default configuration files for Widoco and AR2DTool. It also allows you to modify the configuration 
+	of these tools.<!--  (see <a href="https://github.com/dgarijo/Widoco">Widoco configuration guide</a> and
+	 <a href="https://github.com/idafensp/ar2dtool">AR2DTool configuration guide</a>) --></li>
 </ul>
 </p>
+
+<br>
 <h3>What does it do</h3>
 <p>
 	Basically, it generates documentation, diagrams and evaluation report for your ontologies. It also creates an issue in Github with 
@@ -55,6 +60,7 @@ Whenever a change in an ontology is pushed, OnToology will generate documentatio
 After that, OnToology will create a pull request with the generated files. You can enable/disable documentation, 
 visualization or/and evaluation via a configuration file.
 </p>
+<br>
 <h3>Output Structure</h3>
 <p>
 	OnToology will create a folder named "OnToology" in the top level. Inside this folder, in will create the same structure of the repository. 
@@ -65,7 +71,7 @@ be configuration file "OnToology.cfg" beside these folders.
 <p>An example of a repository before OnToology is triggered</p>
 <img src="https://raw.githubusercontent.com/OnToology/OnToology/Integrator/media/home/structure_after.png" width="480px"  class="img-rounded">
 <p>After OnToology is triggered</p>
-
+<br>
 <h3>Configuration file</h3>
 <p>
 The configuation file is per ontology (a repository can has multiple ontologies). It will be created automatically if it does not exist.
