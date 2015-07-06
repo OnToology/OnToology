@@ -109,7 +109,7 @@ def home(request):
     sys.stdout.flush()
     sys.stderr.flush()
     #repos = get_repos_formatted(Repo.objects.all())
-    repos = Repo.objects.order_by('last_used')[10:]
+    repos = Repo.objects.order_by('last_used')[:10]
     return render(request,'home.html',{'repos': repos, 'user': request.user })    
 
 def grant_update(request):
