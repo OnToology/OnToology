@@ -554,12 +554,14 @@ def create_widoco_doc(rdf_file):
     #config_file_abs = build_file_structure(rdf_file+'.widoco.conf', [get_target_home(),'documentation'])     
     config_file_abs = build_file_structure(get_file_from_path(rdf_file)+'.widoco.conf', [get_target_home(), rdf_file, 'documentation'])     
     print 'rdf_abs: %s and config_file_abs %s'%(rdf_file_abs,config_file_abs)
+    use_conf_file = True
     try:
         open(config_file_abs,"r")
     except IOError:
-        f = open(config_file_abs,"w")
-        f.write(get_widoco_config())
-        f.close()
+        use_conf_file = False
+#         f = open(config_file_abs,"w")
+#         f.write(get_widoco_config())
+#         f.close()
     except Exception as e:
         print 'in create_widoco_doc: exception opening the file: '+str(e)        
     out_abs_dir = get_parent_path(config_file_abs)
@@ -569,7 +571,11 @@ def create_widoco_doc(rdf_file):
     comm+=widoco_dir+"widoco-0.0.1-jar-with-dependencies.jar  -rewriteAll "
     comm+=" -ontFile "+rdf_file_abs
     comm+=" -outFolder "+out_abs_dir
-    comm+=" -confFile "+config_file_abs
+    if use_conf_file:
+        comm+=" -confFile "+config_file_abs
+    else:
+        comm+=" -getOntologyMetadata"
+
     if not settings.TEST:
         comm+= ' >> "'+log_file_dir+'" '
     comm+=" ; echo 'widoco' >> "+ os.path.join(get_parent_path(out_abs_dir),verification_log_fname)
