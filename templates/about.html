@@ -28,6 +28,44 @@ Maria Poveda<br><br>
 
 
 
+<h3>What does it generate</h3>
+	Once you push changes to Github, OnToology will do the below for each changed ontology
+<ul>
+	<li align="left">Generate documentation</li>
+	<li align="left">Generate diagrams</li>
+	<li align="left">Generate evaluation report</li>
+	<li align="left">Create an issue in Github with evaluation summary</li>
+	<li align="left">Default configuration file for each ontology</li>
+</ul>
+<h3>What does it do</h3>
+<p>
+	Basically, it generates documentation, diagrams and evaluation report for your ontologies. It also creates an issue in Github with 
+evaluation summary.Once you register your repository OnToology will track your ontologies (in the registered repository) for changes. 
+Whenever a change in an ontology is pushed, OnToology will generate documentation, diagrams and evaluation report for the changed ontologies.
+After that, OnToology will create a pull request with the generated files. You can enable/disable documentation, 
+visualization or/and evaluation via a configuration file.
+</p>
+<h3>Output Structure</h3>
+<p>
+	OnToology will create a folder named "OnToology" in the top level. Inside this folder, in will create the same structure of the repository. 
+Inside the folder that is named after ontology file, there will be three folders, "documentation", "diagrams" and "evaluation". There will 
+be configuration file "OnToology.cfg" beside these folders. 
+</p>
+<img src="https://raw.githubusercontent.com/OnToology/OnToology/Integrator/media/home/structure_before.png" width="480px"  class="img-rounded">
+<p>An example of a repository before OnToology is triggered</p>
+<img src="https://raw.githubusercontent.com/OnToology/OnToology/Integrator/media/home/structure_after.png" width="480px"  class="img-rounded">
+<p>After OnToology is triggered</p>
+
+<h3>Configuration file</h3>
+<p>
+The configuation file is per ontology (a repository can has multiple ontologies). It will be created automatically if it does not exist.
+It is used to enable/disable the generation of documentation, diagrams and/or evaluation.The configuration file has three sections, "widoco",
+ "ar2dtool" and "oops", for documentation, diagrams and evaluation, respectivly. Each of the sections has a key called "enable" and can 
+has the values "true" or "false". 
+</p>
+<img src="https://raw.githubusercontent.com/OnToology/OnToology/Integrator/media/home/configuration.png" width="480px" class="img-rounded">
+<p>A sample configuration file</p>
+
 
 
 
