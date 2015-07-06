@@ -29,14 +29,24 @@ Maria Poveda<br><br>
 
 
 <h3>What does it generate</h3>
+<p>
 	Once you push changes to Github, OnToology will do the below for each changed ontology
-<ul>
-	<li align="left">Generate documentation</li>
-	<li align="left">Generate diagrams</li>
-	<li align="left">Generate evaluation report</li>
-	<li align="left">Create an issue in Github with evaluation summary</li>
-	<li align="left">Default configuration file for each ontology</li>
+<ul class="col-md-offset-2">
+	<li align="left">Generate documentation into HTML using <a class="emph" href="https://github.com/dgarijo/Widoco">Widoco.</a> </li>
+	<li align="left">Generate diagrams using <a class="emph" href="https://github.com/idafensp/ar2dtool">AR2DTool</a>. It will generate two kinds
+	of diagrams:
+		<ul>
+			<li>Class diagram.</li>
+			<li>Taxonomy diagram.</li>
+		</ul>
+	</li>
+	<li align="left">Generate evaluation report using <a class="emph" href="http://oops.linkeddata.es/">OOPS!</a> which is 
+	an evaluation of ontology showing pitfalls in a nice organized HTML.</li>
+	<li align="left">Create an issue in Github with evaluation summary.</li>
+	<li align="left">Default configuration file for each ontology, to enable/disable the generation of documentation,
+	 diagrams and/or evaluation report.</li>
 </ul>
+</p>
 <h3>What does it do</h3>
 <p>
 	Basically, it generates documentation, diagrams and evaluation report for your ontologies. It also creates an issue in Github with 
