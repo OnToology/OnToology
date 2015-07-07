@@ -90,11 +90,15 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
     if not settings.TEST or not settings.test_conf['local']:
         change_status(target_repo, 'forking repo')
         fork_repo(target_repo,username,password)
-        print 'repo forked'
+        print 'repo forked'    
     if not settings.TEST or not settings.test_conf['local']:
-        change_status(target_repo,'cloning repo')
-        clone_repo(cloning_repo,user)
-        print 'repo cloned'
+        if len(changed_filesss) > 0:
+            change_status(target_repo,'cloning repo')
+            clone_repo(cloning_repo,user)
+            print 'repo cloned'
+        else:
+            change_status(target_repo,'Ready')
+            return#No changed files, so nothing to do
     files_to_verify=[]
     for chf in changed_filesss:
         auton_conf = {'ar2dtool_enable':False , 'widoco_enable': False, 'oops_enable': False}
