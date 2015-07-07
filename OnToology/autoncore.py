@@ -830,7 +830,7 @@ def get_pitfalls(target_repo,ont_file):
     if nicer_issues!="":
         repo = target_repo.split('/')[1]
         user = target_repo.split('/')[0]
-        nicer_issues+="https://rawgit.com/"+user+'/'+repo+'/master/OnToology/'+ont_file+'evaluation/index.html'
+        nicer_issues+="https://rawgit.com/"+user+'/'+repo+'/master/OnToology/'+ont_file+'/evaluation/oopsEval.html'
         create_oops_issue_in_github(target_repo,ont_file,nicer_issues)
         
     
