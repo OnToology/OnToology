@@ -828,6 +828,7 @@ def get_pitfalls(target_repo,ont_file):
     close_old_oops_issues_in_github(target_repo,ont_file)
     nicer_issues = nicer_oops_output(issues_s)
     if nicer_issues!="":
+        nicer_issues+="\n Please accept the merge request to see the evaluation report in this link\n Otherwise the URL won't work\n"
         repo = target_repo.split('/')[1]
         user = target_repo.split('/')[0]
         nicer_issues+="https://rawgit.com/"+user+'/'+repo+'/master/OnToology/'+ont_file+'/evaluation/oopsEval.html'
