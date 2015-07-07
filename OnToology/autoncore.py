@@ -167,6 +167,9 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
             print 'oops_enable is false'
     #After the loop
     print "number of files to verify %d"%(len(files_to_verify))
+    if len(files_to_verify) ==0:
+        change_status(target_repo,'Ready')
+        return
     if not settings.TEST or not settings.test_conf['local']:
         commit_changes()
         print 'changes committed'
@@ -177,9 +180,7 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
         change_status(target_repo, exception_if_exists)
         return #in case there is an error, abort and do not continue
     
-    if len(files_to_verify) ==0:
-        change_status(target_repo,'Ready')
-        return
+
     #Now to enabled
     #print 'will generate user log'
     #generate_user_log(parent_folder+'.log')
