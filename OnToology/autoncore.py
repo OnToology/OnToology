@@ -92,17 +92,16 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
         fork_repo(target_repo,username,password)
         print 'repo forked'    
     if not settings.TEST or not settings.test_conf['local']:
-        if len(changed_filesss) > 0:
-            change_status(target_repo,'cloning repo')
-            clone_repo(cloning_repo,user)
-            print 'repo cloned'
-        else:
-            change_status(target_repo,'Ready')
-            return#No changed files, so nothing to do
+        change_status(target_repo,'cloning repo')
+        clone_repo(cloning_repo,user)
+        print 'repo cloned'
+
     files_to_verify=[]
     for chf in changed_filesss:
         auton_conf = {'ar2dtool_enable':False , 'widoco_enable': False, 'oops_enable': False}
         if chf[-4:] not in ontology_formats: #validate ontology formats
+            #for now, do not detect the configuration
+            continue
             print 'check conf file changed is: %s'%(chf)
             if get_file_from_path(chf) =='OnToology.cfg':
                 print 'OnToology.cfg is changed'
@@ -175,8 +174,13 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
     else:
         change_status(target_repo, exception_if_exists)
         return #in case there is an error, abort and do not continue
-    print 'will generate user log'
-    generate_user_log(parent_folder+'.log')
+    if len(files_to_verify) ==0:
+        change_status(target_repo,'Ready')
+        return
+    #Now to enabled
+    #print 'will generate user log'
+    #generate_user_log(parent_folder+'.log')
+    
     #return r
     for f in files_to_verify:
         repo=None
