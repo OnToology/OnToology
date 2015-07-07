@@ -166,7 +166,7 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
         else:
             print 'oops_enable is false'
     #After the loop
-    print "number of files to verify %d"%(len(files_to_verifyn))
+    print "number of files to verify %d"%(len(files_to_verify))
     if not settings.TEST or not settings.test_conf['local']:
         commit_changes()
         print 'changes committed'
