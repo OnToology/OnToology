@@ -103,6 +103,7 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
     for chf in changed_filesss:
         auton_conf = {'ar2dtool_enable':False , 'widoco_enable': False, 'oops_enable': False}
         if chf[-4:] not in ontology_formats: #validate ontology formats
+            print 'check conf file changed is: %s'(chf)
             if get_file_from_path(chf) =='OnToology.cfg':
                 print 'OnToology.cfg is changed'
                 fi = get_level_up(chf)
