@@ -117,11 +117,13 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
                 fi = get_level_up(fi)
                 fi = fi[6:]
                 changed_files = [fi]
+                print 'change in AR2DTool file'
             elif  'widoco.conf' in  get_file_from_path(chf):
                 fi = get_level_up(chf)
                 fi = get_level_up(fi)
                 fi = fi[6:]
                 changed_files = [fi]
+                print 'change in Widoco file'
         else:
             print 'working with: '+chf
             changed_files = [chf]
