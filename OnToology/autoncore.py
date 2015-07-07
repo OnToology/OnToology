@@ -165,6 +165,8 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
             print 'oops checked ontology for pitfalls'
         else:
             print 'oops_enable is false'
+    #After the loop
+    print "number of files to verify %d"%(len(files_to_verifyn))
     if not settings.TEST or not settings.test_conf['local']:
         commit_changes()
         print 'changes committed'
@@ -174,7 +176,7 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
     else:
         change_status(target_repo, exception_if_exists)
         return #in case there is an error, abort and do not continue
-    print "number of files to verify %d"%(len(files_to_verifyn))
+    
     if len(files_to_verify) ==0:
         change_status(target_repo,'Ready')
         return
