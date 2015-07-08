@@ -99,6 +99,7 @@ def home(request):
                 for u in OUser.objects.all():
                     if u.email.strip() == username.strip():
                         is_private_access = u.private
+                        print "pfound"
                         break
         
         webhook_access_url, state = webhook_access(client_id,host+'/get_access_token',is_private_access)
