@@ -453,7 +453,13 @@ def stepbystep(request):
 def about(request):
     return render(request,'about.html')
 
-
+@login_required
+def superadmin(request):
+    if request.user.email not in ['ahmad88me@gmail.com']:
+        return HttpResponseRedirect('/')
+    #if request.method == 'GET':
+    return render(request,'superadmin.html')
+    
 
 
 
