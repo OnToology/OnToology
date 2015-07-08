@@ -296,6 +296,10 @@ def verify_tools_generation(ver_file_comp,repo=None):
              assert file_exists, 'the file %s is not generated'%(target_file)
         elif not file_exists:
             print 'The Evaluation report of the file %s if not generated '%(ver_file_comp['file'])
+    if 'not generated' in repo.state:
+        repo.create_issue('OnToology error notification', repo.state)
+    
+    
 
 def prepare_log(user):
     global log_file_dir
