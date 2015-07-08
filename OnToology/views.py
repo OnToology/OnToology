@@ -335,13 +335,16 @@ def profile(request):
     #f.close()
     repos = get_repos_formatted(ouser.repos)
     for r in repos:
-        if len(r.url.split('/')) != 2:
-            ouser.update(pull__repos=r)
+        try:
+            if len(r.url.split('/')) != 2:
+                ouser.update(pull__repos=r)
+                r.delete()
+                ouser.save()
+                continue
+            r.user = r.url.split('/')[0]
+            r.rrepo = r.url.split('/')[1]
+        except:
             r.delete()
-            ouser.save()
-            continue
-        r.user = r.url.split('/')[0]
-        r.rrepo = r.url.split('/')[1]
     return render(request,'profile.html',{'repos': repos})
 
 def update_conf(request):
