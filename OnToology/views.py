@@ -82,12 +82,28 @@ def home(request):
     if 'target_repo' in request.GET:
         #print request.GET
         target_repo = request.GET['target_repo']
-        if target_repo.strip() =="":
+        if target_repo.strip() =="" or len(target_repo.split('/')) !=2:
             return render(request,'msg.html',{'msg': 'please enter a valid repo'})
         init_g()
         if not has_access_to_repo(target_repo):# this for the organization
             return render(request,'msg.html',{'msg': 'repos under organizations are not supported at the moment'})
-        webhook_access_url, state = webhook_access(client_id,host+'/get_access_token')
+        if 'private' not in request.GET:
+            return HttpResponseRedirect('/')
+        is_private_access = True
+        if not request.GET['private']:#public repo
+            if request.user.is_authenticated():
+                ouser = OUser.objects.get(email=request.user.email)
+                is_private_access = ouser.private
+            else:
+                username = target_repo.split('/')[1]
+                email = get_user_github_email(username)
+                is_private_access = False
+                for u in OUser.objects.all():
+                    if u.email.strip() == username.strip():
+                        is_private_access = u.private
+                        break
+        
+        webhook_access_url, state = webhook_access(client_id,host+'/get_access_token',is_private_access)
         request.session['target_repo'] = target_repo
         request.session['state'] = state 
         try: 

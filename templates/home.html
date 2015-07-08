@@ -4,19 +4,37 @@
 
 </br></br>
 
-<div class="container-fluid">
+<script>
+$.fn.bootstrapSwitch.defaults.onColor = 'dark';
+$.fn.bootstrapSwitch.defaults.labelText='Repo';
+$.fn.bootstrapSwitch.defaults.onText='Private';
+$.fn.bootstrapSwitch.defaults.offText='Public';
+</script>
 
 <form action="" method="GET" style="color: #999">
 <div class="form-group" >
+	<div class="container-fluid">
+
 	<span class=" col-md-9 col-xs-9">
 		<input type="text" name="target_repo" id="target_repo_select" class="form-control" placeholder="user/repo" ></br>
 	</span>
 	<span class="col-md-3 col-xs-3">
 		<input type="submit" class="form-control btn" value="Watch this repo"/>
 	</span>
+	</div>
+	
+	<div class="row">
+		<div class="col-md-2 col-md-offset-9">
+		<input type="checkbox" name="private" checked>
+		</div>
+	</div>
 </div>
 </form>
-</div>
+
+<script>
+$("[name='private']").bootstrapSwitch();
+
+</script>
 
 </br>
 <h3 class="curfont">
