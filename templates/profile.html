@@ -136,6 +136,44 @@ $("[name='{{r.id}}']").bootstrapSwitch('state',{{r.previsual}});
 
 
 
+
+
+
+
+<form action="/" method="GET" style="color: #999">
+<div class="form-group" >
+	<div class="container-fluid">
+
+	<span class=" col-md-9 col-xs-9">
+		<input type="text" name="target_repo" id="target_repo_select" class="form-control" placeholder="user/repo" ></br>
+	</span>
+	<span class="col-md-3 col-xs-3">
+		<input type="submit" class="form-control btn" value="Watch this repo"/>
+	</span>
+	</div>
+	
+	<div class="container-fluid">
+		<div class="col-md-3 col-md-offset-9">
+		<input id="private" type="checkbox" name="private" checked>
+		</div>
+	</div>
+</div>
+</form>
+
+<script>
+
+$("[name='private']").bootstrapSwitch();
+$('input[name="private"]').bootstrapSwitch('onColor', 'dark', true);
+$('input[name="private"]').bootstrapSwitch('labelText', 'Repo', true);
+$('input[name="private"]').bootstrapSwitch('offText', 'Public', true);
+$('input[name="private"]').bootstrapSwitch('onText', 'Private',true);
+$('input[name="private"]').bootstrapSwitch('handleWidth', 50,true);
+
+
+</script>
+
+<!-- 
+
 <div class="container-fluid">
 
 	<form action="/" method="GET" style="color: #999">
@@ -151,7 +189,7 @@ $("[name='{{r.id}}']").bootstrapSwitch('state',{{r.previsual}});
 </div>
 
 
-
+ -->
 
 <style>
 .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary,.bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary

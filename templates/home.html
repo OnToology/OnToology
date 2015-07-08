@@ -4,12 +4,7 @@
 
 </br></br>
 
-<script>
-$.fn.bootstrapSwitch.defaults.onColor = 'dark';
-$.fn.bootstrapSwitch.defaults.labelText='Repo';
-$.fn.bootstrapSwitch.defaults.onText='Private';
-$.fn.bootstrapSwitch.defaults.offText='Public';
-</script>
+
 
 <form action="" method="GET" style="color: #999">
 <div class="form-group" >
@@ -23,16 +18,23 @@ $.fn.bootstrapSwitch.defaults.offText='Public';
 	</span>
 	</div>
 	
-	<div class="row">
-		<div class="col-md-2 col-md-offset-9">
-		<input type="checkbox" name="private" checked>
+	<div class="container-fluid">
+		<div class="col-md-3 col-md-offset-9">
+		<input id="private" type="checkbox" name="private" checked>
 		</div>
 	</div>
 </div>
 </form>
 
 <script>
+
 $("[name='private']").bootstrapSwitch();
+$('input[name="private"]').bootstrapSwitch('onColor', 'dark', true);
+$('input[name="private"]').bootstrapSwitch('labelText', 'Repo', true);
+$('input[name="private"]').bootstrapSwitch('offText', 'Public', true);
+$('input[name="private"]').bootstrapSwitch('onText', 'Private',true);
+$('input[name="private"]').bootstrapSwitch('handleWidth', 50,true);
+
 
 </script>
 
