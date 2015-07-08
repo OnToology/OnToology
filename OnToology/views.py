@@ -98,12 +98,12 @@ def home(request):
                 email = get_user_github_email(username)
                 is_private_access = False
                 for u in OUser.objects.all():
-                    if u.email.strip() == username.strip():
+                    if u.email.strip() == email.strip():
                         is_private_access = u.private
                         print "found the puser"
                         break
                     else:
-                        print u.email.strip()+" not =  "+username.strip()
+                        print u.email.strip()+" not =  "+email.strip()
         webhook_access_url, state = webhook_access(client_id,host+'/get_access_token',is_private_access)
         request.session['target_repo'] = target_repo
         request.session['state'] = state 
