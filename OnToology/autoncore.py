@@ -430,8 +430,9 @@ def send_pull_request(target_repo,username):
     return {'status': False, 'error': err}
 
 def webhook_access(client_id,redirect_url):
-    scope = 'admin:org_hook'
-    scope+=',admin:org,admin:public_key,admin:repo_hook,gist,notifications,delete_repo,repo_deployment,repo,public_repo,user,admin:public_key'
+    scope = 'repo' 
+    #scope = 'admin:org_hook'
+    #scope+=',admin:org,admin:public_key,admin:repo_hook,gist,notifications,delete_repo,repo_deployment,repo,public_repo,user,admin:public_key'
     sec = ''.join([random.choice(string.ascii_letters+string.digits) for _ in range(9)])
     return "https://github.com/login/oauth/authorize?client_id="+client_id+"&redirect_uri="+redirect_url+"&scope="+scope+"&state="+sec, sec
 
