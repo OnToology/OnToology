@@ -87,10 +87,8 @@ def home(request):
         init_g()
         if not has_access_to_repo(target_repo):# this for the organization
             return render(request,'msg.html',{'msg': 'repos under organizations are not supported at the moment'})
-        if 'private' not in request.GET:
-            return HttpResponseRedirect('/')
         is_private_access = True
-        if not request.GET['private']:#public repo
+        if 'private' not in request.GET:#public repo
             if request.user.is_authenticated():
                 ouser = OUser.objects.get(email=request.user.email)
                 is_private_access = ouser.private
