@@ -346,6 +346,7 @@ def profile(request):
             r.rrepo = r.url.split('/')[1]
         except:
             ouser.update(pull__repos=r)
+            ouser.save()
     return render(request,'profile.html',{'repos': repos})
 
 def update_conf(request):
