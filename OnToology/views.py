@@ -344,7 +344,7 @@ def profile(request):
             r.user = r.url.split('/')[0]
             r.rrepo = r.url.split('/')[1]
         except:
-            r.delete()
+            r.remove()
     return render(request,'profile.html',{'repos': repos})
 
 def update_conf(request):
