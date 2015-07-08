@@ -94,7 +94,7 @@ def home(request):
                 ouser = OUser.objects.get(email=request.user.email)
                 is_private_access = ouser.private
             else:
-                username = target_repo.split('/')[1]
+                username = target_repo.split('/')[0]
                 email = get_user_github_email(username)
                 is_private_access = False
                 for u in OUser.objects.all():
@@ -102,7 +102,8 @@ def home(request):
                         is_private_access = u.private
                         print "found the puser"
                         break
-        
+                    else:
+                        print u.email.strip()+" not =  "+username.strip()
         webhook_access_url, state = webhook_access(client_id,host+'/get_access_token',is_private_access)
         request.session['target_repo'] = target_repo
         request.session['state'] = state 
