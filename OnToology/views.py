@@ -40,7 +40,7 @@ import os
 import subprocess
 
 from autoncore import git_magic, add_webhook,ToolUser, webhook_access, update_g, add_collaborator, get_auton_configuration, clone_repo, prepare_log
-from autoncore import parse_online_repo_for_ontologies ,update_file ,return_default_log, remove_webhook, has_access_to_repo, init_g
+from autoncore import parse_online_repo_for_ontologies ,update_file ,return_default_log, remove_webhook, has_access_to_repo, init_g, get_user_github_email
 from models import *
 import autoncore
 
