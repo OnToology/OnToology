@@ -80,6 +80,7 @@ def home(request):
     print '****** Welcome to home page ********'
     print >> sys.stderr,  '****** Welcome to the error output ******'
     if 'target_repo' in request.GET:
+        print "we are inside"
         #print request.GET
         target_repo = request.GET['target_repo']
         if target_repo.strip() =="" or len(target_repo.split('/')) !=2:
@@ -99,7 +100,7 @@ def home(request):
                 for u in OUser.objects.all():
                     if u.email.strip() == username.strip():
                         is_private_access = u.private
-                        print "pfound"
+                        print "found the puser"
                         break
         
         webhook_access_url, state = webhook_access(client_id,host+'/get_access_token',is_private_access)
