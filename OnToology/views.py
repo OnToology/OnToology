@@ -333,7 +333,8 @@ def profile(request):
 #     sys.stderr = sys.__stderr__
     print 'testing redirect'
     #f.close()
-    repos = get_repos_formatted(ouser.repos)
+    #repos = get_repos_formatted(ouser.repos)
+    repos = ouser.repos
     for r in repos:
         try:
             if len(r.url.split('/')) != 2:
@@ -344,7 +345,7 @@ def profile(request):
             r.user = r.url.split('/')[0]
             r.rrepo = r.url.split('/')[1]
         except:
-            r.remove()
+            ouser.update(pull__repos=r)
     return render(request,'profile.html',{'repos': repos})
 
 def update_conf(request):
