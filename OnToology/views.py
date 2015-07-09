@@ -495,19 +495,18 @@ def superadmin(request):
 
 
 def get_proper_scope_to_login(username):
-    print "target username: <%s>"%(username)
-    if True:
-    #try:#The user is registered
+    #print "target username: <%s>"%(username)
+    try:#The user is registered
         ouser = OUser.objects.get(username=username)
-        print "ouser is found"
+        #print "ouser is found"
         if ouser.private:
-            print "user it private"
+            #print "user it private"
             return 'repo'
-        print "user is public"
+        #print "user is public"
         return 'public_repo' #the user is not private and neither the repo
-    #except:#new user
-    #    print "user is new"
-    #    return 'public_repo'
+    except:#new user
+        #print "user is new"
+        return 'public_repo'
         
 
 
