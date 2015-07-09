@@ -41,7 +41,7 @@ import subprocess
 
 from autoncore import git_magic, add_webhook,ToolUser, webhook_access, update_g, add_collaborator, get_auton_configuration, clone_repo, prepare_log
 from autoncore import parse_online_repo_for_ontologies ,update_file ,return_default_log, remove_webhook, has_access_to_repo, init_g, get_user_github_email
-from autoncore import get_proper_scope_to_login, get_proper_loggedin_scope
+from autoncore import get_proper_loggedin_scope
 from models import *
 import autoncore
 
@@ -494,6 +494,20 @@ def superadmin(request):
     
 
 
+def get_proper_scope_to_login(username):
+    print "target username: <%s>"%(username)
+    if True:
+    #try:#The user is registered
+        ouser = OUser.objects.get(username=username)
+        print "ouser is found"
+        if ouser.private:
+            print "user it private"
+            return 'repo'
+        print "user is public"
+        return 'public_repo' #the user is not private and neither the repo
+    #except:#new user
+    #    print "user is new"
+    #    return 'public_repo'
         
 
 
