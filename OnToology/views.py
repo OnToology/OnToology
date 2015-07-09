@@ -146,7 +146,7 @@ def get_access_token(request):
     print 'access_token: '+access_token
     if request.user.is_authenticated() and request.session['access_token_time'] == '1':
         request.session['access_token_time'] ='2'#so we do not loop
-        isprivate=get_proper_loggedin_scope(ouser.objects.get(username=request.user.username))
+        isprivate=get_proper_loggedin_scope(OUser.objects.get(username=request.user.username))
         webhook_access_url, state = webhook_access(client_id,host+'/get_access_token',isprivate)
         request.session['state'] = state   
         return  HttpResponseRedirect(webhook_access_url)
