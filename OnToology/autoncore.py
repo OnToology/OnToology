@@ -435,11 +435,16 @@ def send_pull_request(target_repo,username):
     #return err
     return {'status': False, 'error': err}
 
-def webhook_access(client_id,redirect_url,private):
-    if private:
-        scope = 'repo' 
+def webhook_access(client_id,redirect_url,isprivate):
+#     if private:
+#         scope = 'repo' 
+#     else:
+#         scope = 'public_repo'
+#    scope = get_proper_scope(username, isprivate)
+    if isprivate:
+        scope='repo'
     else:
-        scope = 'public_repo'
+        scope='public_repo'
     #scope = 'admin:org_hook'
     #scope+=',admin:org,admin:public_key,admin:repo_hook,gist,notifications,delete_repo,repo_deployment,repo,public_repo,user,admin:public_key'
     sec = ''.join([random.choice(string.ascii_letters+string.digits) for _ in range(9)])
@@ -677,7 +682,6 @@ def get_auton_configuration(f=None,abs_folder=None):
     
 def get_auton_config(conf_file_abs,from_string=True):
  
-
     print 'auton config is called: '
     ar2dtool_sec_name = 'ar2dtool'
     widoco_sec_name = 'widoco'
@@ -1116,6 +1120,35 @@ def change_status(target_repo, state):
     except Exception as e:
         print 'database_exception: '+str(e)
 
+
+#Before calling this function, the g must belong to the user not OnToologyUser
+def get_proper_loggedin_scope(ouser,target_repo):
+    #ouser = OUser.objects.get(username=username)
+    if ouser.private:
+        return True
+        #return 'repo'
+    try:
+        repo = g.get_repo(target_repo)
+        if repo.private:
+            ouser.private=True
+            ouser.save()
+            return True
+            #return 'repo'
+        return False
+        #return 'public_repo'
+    except:#Since we do not have access, it should be private or invalid
+        return False
+        #return 'public_repo'
+
+
+def get_proper_scope_to_login(username):
+    try:#The user is registered
+        ouser = OUser.objects.get(username=username)
+        if ouser.private:
+            return 'repo'
+        return 'public_repo' #the user is not private and neither the repo
+    except:#new user
+        return 'public_repo'
 
 
 

@@ -73,13 +73,20 @@
 	
 	
 	
+	<!-- This is the one I use ->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+	-->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
 	
 	
 	<link rel="stylesheet" href="http://getbootstrap.com/examples/cover/cover.css">
-	<!-- Latest compiled and minified JavaScript-->
+	<!-- Latest compiled and minified JavaScript-> This is the one I use
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+	-->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+
 
 	<!-- This is for bootstrap switch only-->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"></script>
@@ -133,8 +140,14 @@
 							
 						{% else %}
 							<li>
+							<a type="button" class="darkl" data-toggle="modal" data-target="#myModal">
+							
 							<img src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png" class="img-circle" height="50px"/>
-						   <a class="curfont" href="/login">Login through Github</a>
+						   <span>Login through Github</span>
+						   
+						   
+						   </a>
+						   
 						   </li>
 						{% endif %}
 					{% endblock %}
@@ -148,6 +161,32 @@
               </nav>
             </div>
             </br></br></br></br></br>
+            
+            
+            
+            
+              <!-- Modal -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        
+        <form action="/login">
+	        <div class="modal-body darkl">
+	        <button type="button" class="close" data-dismiss="modal">&times;</button><br>
+	         Enter your Github username<br>
+	         <input type="text" class="form-control" name="username"></input><br>
+	         <input type="submit" class="form-control"></input><br>
+	        </div>
+	    </form>
+      </div>
+      
+    </div>
+  </div>
+            
+            
+            
             
             {% block body%}
             {% endblock %}

@@ -41,6 +41,7 @@ import subprocess
 
 from autoncore import git_magic, add_webhook,ToolUser, webhook_access, update_g, add_collaborator, get_auton_configuration, clone_repo, prepare_log
 from autoncore import parse_online_repo_for_ontologies ,update_file ,return_default_log, remove_webhook, has_access_to_repo, init_g, get_user_github_email
+from autoncore import get_proper_scope_to_login, get_proper_loggedin_scope
 from models import *
 import autoncore
 
@@ -86,25 +87,15 @@ def home(request):
         if target_repo.strip() =="" or len(target_repo.split('/')) !=2:
             return render(request,'msg.html',{'msg': 'please enter a valid repo'})
         init_g()
-        if not has_access_to_repo(target_repo):# this for the organization
-            return render(request,'msg.html',{'msg': 'repos under organizations are not supported at the moment'})
-        is_private_access = True
-        if 'private' not in request.GET:#public repo
-            if request.user.is_authenticated():
-                ouser = OUser.objects.get(email=request.user.email)
-                is_private_access = ouser.private
-            else:
-                username = target_repo.split('/')[0]
-                email = get_user_github_email(username)
-                is_private_access = False
-                for u in OUser.objects.all():
-                    if u.email.strip() == email.strip():
-                        is_private_access = u.private
-                        print "found the puser"
-                        break
-                    else:
-                        print u.email.strip()+" not =  "+email.strip()
-        webhook_access_url, state = webhook_access(client_id,host+'/get_access_token',is_private_access)
+#         if not has_access_to_repo(target_repo):# this for the organization
+#             return render(request,'msg.html',{'msg': 'repos under organizations are not supported at the moment'})
+ 
+        if request.user.is_authenticated():
+            ouser = OUser.objects.get(username=request.user.username)
+            #this is initially to get the access key for the user
+            webhook_access_url, state = webhook_access(client_id,host+'/get_access_token', ouser.private)
+        else:
+            webhook_access_url, state = webhook_access(client_id,host+'/get_access_token', True)#private access in case not loggedin
         request.session['target_repo'] = target_repo
         request.session['state'] = state 
         try: 
@@ -122,6 +113,7 @@ def home(request):
         sys.stdout.flush()
         sys.stderr.flush()        
         if '127.0.0.1:8000' not in request.META['HTTP_HOST'] or not settings.test_conf['local']:
+            request.session['access_token_time'] = '1'
             return  HttpResponseRedirect(webhook_access_url)
     sys.stdout.flush()
     sys.stderr.flush()
@@ -152,6 +144,14 @@ def get_access_token(request):
     request.session['access_token'] = access_token
     update_g(access_token)
     print 'access_token: '+access_token
+    if request.user.is_authenticated() and request.session['access_token_time'] == '1':
+        request.session['access_token_time'] ='2'#so we do not loop
+        isprivate=get_proper_loggedin_scope(ouser.objects.get(username=request.user.username))
+        webhook_access_url, state = webhook_access(client_id,host+'/get_access_token',isprivate)
+        request.session['state'] = state   
+        return  HttpResponseRedirect(webhook_access_url)
+        
+        
     rpy_wh = add_webhook(request.session['target_repo'], host+"/add_hook")
     rpy_coll = add_collaborator(request.session['target_repo'], ToolUser)
     error_msg = ""
@@ -233,14 +233,18 @@ def add_hook(request):
         subprocess.Popen(comm,shell=True)
         return render_to_response('msg.html',{'msg': ''+s},context_instance=RequestContext(request))
 
-##The below line is for login
+
 def login(request):
     print '******* login *********'
+    if 'username' not in request.GET:
+        return HttpResponseRedirect('/')
+    username = request.GET['username']
     redirect_url = host+'/login_get_access'
     sec = ''.join([random.choice(string.ascii_letters+string.digits) for _ in range(9)])
     request.session['state'] = sec
-    scope = 'admin:org_hook'
-    scope+=',admin:org,admin:public_key,admin:repo_hook,gist,notifications,delete_repo,repo_deployment,repo,public_repo,user,admin:public_key'
+    scope = get_proper_scope_to_login(username)
+    #scope = 'admin:org_hook'
+    #scope+=',admin:org,admin:public_key,admin:repo_hook,gist,notifications,delete_repo,repo_deployment,repo,public_repo,user,admin:public_key'
     redirect_url = "https://github.com/login/oauth/authorize?client_id="+client_id+"&redirect_uri="+redirect_url+"&scope="+scope+"&state="+sec
     return HttpResponseRedirect(redirect_url)
 
@@ -275,21 +279,30 @@ def login_get_access(request):
     print 'access_token: '+access_token
     g = Github(access_token)
     email = g.get_user().email
+    username = g.get_user().login
     if email=='' or type(email) == type(None):
         return render(request,'msg.html',{'msg': 'You have to make you email public and try again'})
     request.session['avatar_url'] = g.get_user().avatar_url
     print 'avatar_url: '+request.session['avatar_url']
     try: 
         user = OUser.objects.get(email=email)
+        user.username=username
         user.backend = 'mongoengine.django.auth.MongoEngineBackend'
         user.save()
-    except:#The password is never important but we set it here because it is required by User class
-        print '<%s>'%(email)
-        sys.stdout.flush()
-        sys.stderr.flush()
-        user = OUser.create_user(username=email, password=request.session['state'], email=email)
-        user.backend = 'mongoengine.django.auth.MongoEngineBackend'
-        user.save()
+    except:
+        try: 
+            user = OUser.objects.get(username=username)
+            user.email=email
+            user.backend = 'mongoengine.django.auth.MongoEngineBackend'
+            user.save()
+        except:
+            print '<%s,%s>'%(email,username)
+            sys.stdout.flush()
+            sys.stderr.flush()
+            #The password is never important but we set it here because it is required by User class
+            user = OUser.create_user(username=username, password=request.session['state'], email=email)
+            user.backend = 'mongoengine.django.auth.MongoEngineBackend'
+            user.save()
     #user.backend = 'mongoengine.django.auth.MongoEngineBackend'
     django_login(request, user)
     print 'access_token: '+access_token
@@ -477,6 +490,9 @@ def superadmin(request):
     #if request.method == 'GET':
     return render(request,'superadmin.html')
     
+
+
+        
 
 
 
