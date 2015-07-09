@@ -1137,7 +1137,7 @@ def get_proper_loggedin_scope(ouser,target_repo):
         return False
         #return 'public_repo'
     except:#Since we do not have access, it should be private or invalid
-        return False
+        return True
         #return 'repo'
 
 
