@@ -1144,6 +1144,7 @@ def get_proper_loggedin_scope(ouser,target_repo):
 
 
 def get_proper_scope_to_login(username):
+    print "target username: <%s>"%(username)
     try:#The user is registered
         ouser = OUser.objects.get(username=username)
         print "ouser is found"
