@@ -199,7 +199,8 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
             s = s.replace('validating','')
             r.state = s 
             r.save()
-            return 
+            #The below "return" is commented so pull request are created even if there are files that are not generated 
+            #return 
     if not settings.TEST or not settings.test_conf['local']:
         change_status(target_repo, 'creating a pull request')
         try:
