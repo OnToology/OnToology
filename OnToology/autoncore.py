@@ -136,7 +136,7 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
         exception_if_exists = ""
         if auton_conf['ar2dtool_enable']:
             print 'ar2dtool_enable is true'
-            change_status(target_repo,'drawing diagrams')
+            change_status(target_repo,'drawing diagrams for '+changed_files[0])
             try:
                 draw_diagrams(changed_files)
                 print 'diagrams drawn successfully'
@@ -147,7 +147,7 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
             print 'ar2dtool_enable is false'
         if auton_conf['widoco_enable']:
             print  'widoco_enable is true'
-            change_status(target_repo, 'generating documents')
+            change_status(target_repo, 'generating documents for '+changed_files[0])
             try:
                 generate_widoco_docs(changed_files)
             except Exception as e:
@@ -157,7 +157,7 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
             print  'widoco_enable is false'
         if auton_conf['oops_enable']:
             print 'oops_enable is true'
-            change_status(target_repo, 'OOPS is checking for errors')
+            change_status(target_repo, 'OOPS is checking for errors for '+changed_files[0])
             try:
                 oops_ont_files(target_repo,changed_files)
             except Exception as e:
