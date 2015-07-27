@@ -245,7 +245,6 @@ def generateforall(request):
     tar = cloning_repo.split('/')[-2]
     cloning_repo = cloning_repo.replace(tar,ToolUser)
     user = request.user.username
-    
     ontologies = parse_online_repo_for_ontologies(target_repo)
     changed_files = []
     for o in ontologies:
@@ -261,7 +260,7 @@ def generateforall(request):
     else:
         print 'running autoncore code as: '+comm
         subprocess.Popen(comm,shell=True)
-        return render_to_response('msg.html',{'msg': ''+s},context_instance=RequestContext(request))
+        return render_to_response('msg.html',{'msg': 'Soon you will find generated files included in a pull request in your repository'},context_instance=RequestContext(request))
 
 
 
