@@ -649,6 +649,9 @@ def get_confs_from_repo(target_repo):
 
 
 def parse_online_repo_for_ontologies(target_repo):
+    global g
+    if type(g) == type(None):
+        init_g() 
     repo, conf_paths = get_confs_from_repo(target_repo)
     ontologies=[]
     for cpath in conf_paths:
