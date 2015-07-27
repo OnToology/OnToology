@@ -531,6 +531,14 @@ def superadmin(request):
     if request.user.email not in ['ahmad88me@gmail.com']:
         return HttpResponseRedirect('/')
     #if request.method == 'GET':
+    if 'newstatus' in request.POST:
+        
+        new_status = request.POST['newstatus'] 
+        for r in Repo.objects.all():
+            r.state = new_status
+            r.save()
+        return render(request,'superadmin.html',{'msg':'statuses of all repos are changed to: '+new_status})
+        
     return render(request,'superadmin.html')
     
 

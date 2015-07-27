@@ -1,8 +1,14 @@
 {% extends "base.html"%}
 {%block body%}
 </br></br>
-I'm super admin
-</br></br></br></br>
-</br></br></br></br>
+<h1>Admin page</h1>
+</br></br>
+{{msg}}
+</br></br>
+<form method="POST" enctype="application/x-www-form-urlencoded">{% csrf_token %}
+<input type="text" name="newstatus" class="form-control" placeholder="New status"></input></br>
+<input type="submit" class="btn btn-default form-control" value="Update status of all repos" ></input>
+</form>
+
 
 {% endblock %}
