@@ -484,7 +484,7 @@ def add_collaborator(target_repo,user,newg=None):
     global g
     if newg is None:
         newg = g
-    print 'let us try this: '+newg.get_user().email
+    #print 'let us try this: '+newg.get_user().email
     try:
         msg = newg.get_repo(target_repo).add_to_collaborators(user)
         return {'status': True, 'msg': str(msg) }
