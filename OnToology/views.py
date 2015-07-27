@@ -262,7 +262,7 @@ def generateforall(request):
     comm = "python /home/ubuntu/OnToology/OnToology/autoncore.py "
     comm+=' "'+target_repo+'" "'+user+'" "'+cloning_repo+'" '
     for c in changed_files:
-        comm+='"'+c.strip()[1:]+'" '
+        comm+='"'+c.strip()+'" '
     if settings.TEST:
         print 'will call git_magic with target=%s, user=%s, cloning_repo=%s, changed_files=%s'%(target_repo, user, cloning_repo, str(changed_files))
         git_magic(target_repo, user, cloning_repo, changed_files)
