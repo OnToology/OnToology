@@ -303,6 +303,24 @@ def verify_tools_generation(ver_file_comp,repo=None):
     #    g.get_repo(repo.url).create_issue('OnToology testing', repo.state)
         
     
+def get_ontologies_in_online_repo(target_repo):
+    global g
+    if type(g) == type(None):
+        init_g() 
+    repo = g.get_repo(target_repo)
+    sha = repo.get_commits()[0].sha
+    files = repo.get_git_tree(sha=sha,recursive=True).tree
+    ontologies=[]
+    ontoology_home_name = 'OnToology'
+    for f in files:
+        if f.path[:len(ontoology_home_name)]!=ontoology_home_name:
+            for ontfot in ontology_formats:
+                f.path[:-len(ontfot)] == ontfot
+                ontologies.append(f.path)
+                break
+    return ontologies
+    
+    
 
 def prepare_log(user):
     global log_file_dir
@@ -634,6 +652,7 @@ def create_widoco_doc(rdf_file):
 import ConfigParser
 
 
+
 def get_confs_from_repo(target_repo):
     global g
     repo = g.get_repo(target_repo)
@@ -649,6 +668,8 @@ def get_confs_from_repo(target_repo):
 
 
 def parse_online_repo_for_ontologies(target_repo):
+    """ This is parse repositories for ontologies configuration files OnToology.cfg
+    """
     global g
     if type(g) == type(None):
         init_g() 

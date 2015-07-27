@@ -41,7 +41,7 @@ import subprocess
 
 from autoncore import git_magic, add_webhook,ToolUser, webhook_access, update_g, add_collaborator, get_auton_configuration, clone_repo, prepare_log
 from autoncore import parse_online_repo_for_ontologies ,update_file ,return_default_log, remove_webhook, has_access_to_repo, init_g, get_user_github_email
-from autoncore import get_proper_loggedin_scope
+from autoncore import get_proper_loggedin_scope, get_ontologies_in_online_repo
 from models import *
 import autoncore
 
@@ -257,10 +257,8 @@ def generateforall(request):
     tar = cloning_repo.split('/')[-2].split(':')[1]
     cloning_repo = cloning_repo.replace(tar,ToolUser)
     user = request.user.email
-    ontologies = parse_online_repo_for_ontologies(target_repo)
-    changed_files = []
-    for o in ontologies:
-        changed_files.append(o['ontology'] )
+    ontologies = get_ontologies_in_online_repo(target_repo)
+    changed_files = ontologies
     comm = "python /home/ubuntu/OnToology/OnToology/autoncore.py "
     comm+=' "'+target_repo+'" "'+user+'" "'+cloning_repo+'" '
     for c in changed_files:
@@ -277,7 +275,6 @@ def generateforall(request):
 
 
     
-    return render(request,'msg.html',{'msg': 'running OnToology for all your ontologies of the chosen repository'})
 
 
 def login(request):
