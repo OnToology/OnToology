@@ -236,6 +236,38 @@ def add_hook(request):
         return render_to_response('msg.html',{'msg': ''+s},context_instance=RequestContext(request))
 
 
+@login_required 
+def generateforall(request):
+    if 'repo' not in request.POST:
+        return HttpResponseRedirect('/')
+    target_repo = request.POST['repo'].strip()
+    cloning_repo = 'git@github.com:'+target_repo
+    tar = cloning_repo.split('/')[-2]
+    cloning_repo = cloning_repo.replace(tar,ToolUser)
+    user = request.user.username
+    ontologies = parse_online_repo_for_ontologies(target_repo)
+    changed_files = []
+    for o in ontologies:
+        changed_files.append(o['ontology'] )
+    comm = "python /home/ubuntu/OnToology/OnToology/autoncore.py "
+    comm+=' "'+target_repo+'" "'+user+'" "'+cloning_repo+'" '
+    for c in changed_files:
+        comm+='"'+c+'" '
+    if settings.TEST:
+        print 'will call git_magic with target=%s, user=%s, cloning_repo=%s, changed_files=%s'%(target_repo, user, cloning_repo, str(changed_files))
+        git_magic(target_repo, user, cloning_repo, changed_files)
+        return
+    else:
+        print 'running autoncore code as: '+comm
+        subprocess.Popen(comm,shell=True)
+        return render_to_response('msg.html',{'msg': ''+s},context_instance=RequestContext(request))
+
+
+
+    
+    return render(request,'msg.html',{'msg': 'running OnToology for all your ontologies of the chosen repository'})
+
+
 def login(request):
     print '******* login *********'
     if 'username' not in request.GET:
