@@ -244,7 +244,7 @@ def generateforall(request):
     cloning_repo = 'git@github.com:'+target_repo
     tar = cloning_repo.split('/')[-2]
     cloning_repo = cloning_repo.replace(tar,ToolUser)
-    user = request.user.username
+    user = request.user.email
     ontologies = parse_online_repo_for_ontologies(target_repo)
     changed_files = []
     for o in ontologies:
