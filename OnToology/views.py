@@ -242,7 +242,7 @@ def generateforall(request):
         return HttpResponseRedirect('/')
     target_repo = request.GET['repo'].strip()
     cloning_repo = 'git@github.com:'+target_repo
-    tar = cloning_repo.split('/')[-2]
+    tar = cloning_repo.split('/')[-2].split(':')[1]
     cloning_repo = cloning_repo.replace(tar,ToolUser)
     user = request.user.email
     ontologies = parse_online_repo_for_ontologies(target_repo)
