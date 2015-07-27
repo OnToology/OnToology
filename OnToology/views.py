@@ -238,9 +238,9 @@ def add_hook(request):
 
 @login_required 
 def generateforall(request):
-    if 'repo' not in request.POST:
+    if 'repo' not in request.GET:
         return HttpResponseRedirect('/')
-    target_repo = request.POST['repo'].strip()
+    target_repo = request.GET['repo'].strip()
     cloning_repo = 'git@github.com:'+target_repo
     tar = cloning_repo.split('/')[-2]
     cloning_repo = cloning_repo.replace(tar,ToolUser)
