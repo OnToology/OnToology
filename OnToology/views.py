@@ -241,6 +241,18 @@ def generateforall(request):
     if 'repo' not in request.GET:
         return HttpResponseRedirect('/')
     target_repo = request.GET['repo'].strip()
+    found = False
+    #The below couple of lines are to check that the user currently have permission over the repository
+    try:
+        ouser = OUser.objects.get(email=request.user.email)
+        for r in ouser.repos:
+            if r.url == target_repo:
+                found = True
+                break
+    except:
+        return render(request,'msg.html',{'msg': 'Please contact ontoology@delicias.dia.fi.upm.es'})
+    if not found:
+        return render(request,'msg.html',{'msg': 'You need to register/watch this repository while you are logged in'})
     cloning_repo = 'git@github.com:'+target_repo
     tar = cloning_repo.split('/')[-2].split(':')[1]
     cloning_repo = cloning_repo.replace(tar,ToolUser)
