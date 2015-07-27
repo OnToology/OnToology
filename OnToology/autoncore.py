@@ -298,7 +298,11 @@ def verify_tools_generation(ver_file_comp,repo=None):
         elif not file_exists:
             print 'The Evaluation report of the file %s if not generated '%(ver_file_comp['file'])
     if 'not generated' in repo.state:
-        g.get_repo(repo.url).create_issue('OnToology error notification', repo.state)
+        repo = g.get_repo(repo.url)
+        for iss in repo.get_issues():
+            if 'OnToology error notification' in  iss.title:
+                iss.edit(state='closed')
+        repo.create_issue('OnToology error notification', repo.state)
     #else:
     #    g.get_repo(repo.url).create_issue('OnToology testing', repo.state)
         
