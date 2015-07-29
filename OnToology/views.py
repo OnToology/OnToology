@@ -300,7 +300,7 @@ def logout(request):
 def login_get_access(request):
     print '*********** login_get_access ************'
     if 'state' not in request.session:
-        request.session = 'state'
+        request.session['state'] = 'blah123'#'state'
         #return render_to_response('msg.html',{'msg':'Error, ; Session expired, please try to login again' },context_instance=RequestContext(request))
     if request.GET['state'] != request.session['state']:
         return HttpResponseRedirect('/')
