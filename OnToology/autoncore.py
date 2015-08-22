@@ -877,7 +877,8 @@ def get_pitfalls(target_repo,ont_file):
     close_old_oops_issues_in_github(target_repo,ont_file)
     nicer_issues = nicer_oops_output(issues_s)
     if nicer_issues!="":
-        nicer_issues+="\n Please accept the merge request to see the evaluation report in this link\n Otherwise the URL won't work\n"
+        #nicer_issues+="\n Please accept the merge request to see the evaluation report in this link\n Otherwise the URL won't work\n"
+        nicer_issues+="\n Please accept the merge request to see the evaluation report in this link. Otherwise the URL won't work.\n"
         repo = target_repo.split('/')[1]
         user = target_repo.split('/')[0]
         nicer_issues+="https://rawgit.com/"+user+'/'+repo+'/master/OnToology/'+ont_file+'/evaluation/oopsEval.html'
@@ -1004,11 +1005,15 @@ def nicer_oops_output(issues):
     num_of_suggestions = issues.count(sugg_flag)
     num_of_pitfalls = issues.count(pitf_flag)
     num_of_warnings = issues.count(warn_flag)
-    s=" OOPS has encountered %d pitfalls and %d warnings"%(num_of_pitfalls,num_of_warnings)
+    #s=" OOPS has encountered %d pitfalls and %d warnings"%(num_of_pitfalls,num_of_warnings)
+    s=" OOPS! has encountered %d pitfalls"%(num_of_pitfalls)
+    if num_of_warnings>0:
+        s+=' and %d warnings'%(num_of_warnings)
     if num_of_pitfalls == num_of_suggestions == num_of_warnings ==0:
         return ""
     if num_of_suggestions >0:
         s+="  and have %d suggestions"%(num_of_suggestions)
+    s+="."
     nodes = issues.split("====================")
     suggs=[]
     pitfs=[]
