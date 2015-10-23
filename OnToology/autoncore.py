@@ -25,14 +25,15 @@ import sys, os
 from github import Github
 from datetime import datetime
 from subprocess import call
-import string, random
+import string
+import random
 import time
 import StringIO
-
+import logging
 import settings
 
 import shutil
-
+import logging
 # from models import Repo
 
 from mongoengine import *
@@ -46,7 +47,7 @@ default_stdout = sys.stderr
 default_stderr = sys.stderr
 
 parent_folder = None
-ar2dtool_config_types = ['ar2dtool-taxonomy.conf','ar2dtool-class.conf']
+ar2dtool_config_types = ['ar2dtool-taxonomy.conf',  'ar2dtool-class.conf']
 ar2dtool_config = os.environ['ar2dtool_config']
 #e.g. ar2dtool_dir = 'blahblah/ar2dtool/bin/'
 ar2dtool_dir = os.environ['ar2dtool_dir']
@@ -59,17 +60,24 @@ g = None
 log_file_dir = None #'&1'#which is stdout #sys.stdout#by default
 tools_conf = {
            'ar2dtool': { 'folder_name': 'diagrams','type': 'png'},
-            'widoco': { 'folder_name': 'documentation'},
-            'oops': {'folder_name' : 'evaluation'}
+           'widoco': { 'folder_name': 'documentation'},
+           'oops': {'folder_name': 'evaluation'}
 }
+
+
+def get_log_dir(user):
+    return os.path.join(home, 'log', user+'.log_new')
+
 
 def init_g():
     global g
     username = os.environ['github_username']
     password = os.environ['github_password']
-    g = Github(username,password)
+    g = Github(username, password)
 
-def git_magic(target_repo,user,cloning_repo,changed_filesss):
+
+def git_magic(target_repo, user, cloning_repo, changed_filesss):
+    logging.basicConfig(filename=get_log_dir(user), level=logging.DEBUG)
     global g
     global parent_folder
     parent_folder = user
@@ -78,6 +86,7 @@ def git_magic(target_repo,user,cloning_repo,changed_filesss):
     print str(datetime.today())
     print '############################### magic #############################'
     print 'target_repo: '+target_repo
+    logging.debug('############################### magic #############################')
     change_status(target_repo,'Preparing')
     #so the tool user can takeover and do stuff
     username = os.environ['github_username']
@@ -239,6 +248,7 @@ def verify_tools_generation_when_ready(ver_file_comp,repo=None):
     else:# I want to see the file in case of testing
         os.remove(ver_file)# the verification file is no longer needed
 
+
 def update_file(target_repo,path,message,content):
     global g
     username = os.environ['github_username']
@@ -256,6 +266,7 @@ def update_file(target_repo,path,message,content):
         repo.update_content(path, message, content)
     #print '%s has the updated content as <%s>'%(path,file.decoded_content)
     print 'file updated'
+
 
 def verify_tools_generation(ver_file_comp,repo=None):
     #AR2DTool

@@ -121,8 +121,10 @@ def home(request):
     repos = Repo.objects.order_by('-last_used')[:10]
     return render(request,'home.html',{'repos': repos, 'user': request.user })    
 
+
 def grant_update(request):
     return render_to_response('msg.html',{'msg': 'Magic is done'},context_instance=RequestContext(request))
+
 
 def get_access_token(request):
     if 'state' not in request.session or request.GET['state'] != request.session['state']:
@@ -147,11 +149,12 @@ def get_access_token(request):
     
     if request.user.is_authenticated() and request.session['access_token_time'] == '1':
         request.session['access_token_time'] ='2'#so we do not loop
-        isprivate=get_proper_loggedin_scope(OUser.objects.get(username=request.user.username),request.session['target_repo'])
+        isprivate=get_proper_loggedin_scope(OUser.objects.get(username=request.user.username),
+                                            request.session['target_repo'])
         print 'isprivate is: '+str(isprivate)
         webhook_access_url, state = webhook_access(client_id,host+'/get_access_token',isprivate)
         request.session['state'] = state   
-        return  HttpResponseRedirect(webhook_access_url)
+        return HttpResponseRedirect(webhook_access_url)
         
         
     rpy_wh = add_webhook(request.session['target_repo'], host+"/add_hook")
@@ -171,8 +174,10 @@ def get_access_token(request):
         elif '404' in error_msg:# so no enough access according to Github troubleshooting guide
             error_msg = 'You do not have permission over this repository'
         return render_to_response('msg.html',{'msg':error_msg },context_instance=RequestContext(request))
-    return render_to_response('msg.html',{'msg':'webhook attached and user added as collaborator' },context_instance=RequestContext(request))
-    
+    return render_to_response('msg.html', {'msg': 'webhook attached and user added as collaborator'},
+                              context_instance=RequestContext(request))
+
+
 @csrf_exempt
 def add_hook(request):
     if settings.TEST:
@@ -291,11 +296,13 @@ def login(request):
     redirect_url = "https://github.com/login/oauth/authorize?client_id="+client_id+"&redirect_uri="+redirect_url+"&scope="+scope+"&state="+sec
     return HttpResponseRedirect(redirect_url)
 
+
 def logout(request):
     print '*** logout ***'
     django_logout(request)
     return HttpResponseRedirect('/')
     #return render_to_response('msg.html',{'msg':'logged out' },context_instance=RequestContext(request))
+
 
 def login_get_access(request):
     print '*********** login_get_access ************'
@@ -352,6 +359,7 @@ def login_get_access(request):
     sys.stdout.flush()
     sys.stderr.flush()
     return HttpResponseRedirect('/')
+
 
 @login_required
 def profile(request):
@@ -422,6 +430,7 @@ def profile(request):
             ouser.save()
     return render(request,'profile.html',{'repos': repos})
 
+
 def update_conf(request):
     print 'inside update_conf'
     #print request.META['csrfmiddlewaretoken']
@@ -455,6 +464,7 @@ def update_conf(request):
     return JsonResponse({'status': True,'msg': 'successfully'})
     #return render(request,'msg.html',{'msg': 'updated repos'})
 
+
 def get_conf(ar2dtool,widoco,oops):
     conf = """
 [ar2dtool]
@@ -467,6 +477,7 @@ enable = %s
 enable = %s
     """%(str(ar2dtool),str(widoco),str(oops))
     return conf
+
 
 @login_required
 def delete_repo(request):
@@ -483,6 +494,7 @@ def delete_repo(request):
                 return JsonResponse({'status': False,'error': str(e)})
     return JsonResponse({'status': False, 'error': 'You should add this repo first'})
 
+
 @login_required 
 def previsual_toggle(request):
     user = OUser.objects.get(email=request.user.email)
@@ -497,7 +509,8 @@ def previsual_toggle(request):
         target_repo.previsual = not target_repo.previsual
         target_repo.save()
     return HttpResponseRedirect('/profile')
-        
+
+
 @login_required
 def renew_previsual(request):
     user = OUser.objects.get(email=request.user.email)
@@ -520,11 +533,14 @@ def renew_previsual(request):
         return HttpResponseRedirect('/profile')
     return render(request,'msg.html',{'msg': 'You should add the repo while you are logged in before the revisual renewal'})
 
+
 def stepbystep(request):
     return render(request,'stepbystep.html')
 
+
 def about(request):
     return render(request,'about.html')
+
 
 @login_required
 def superadmin(request):
@@ -540,7 +556,6 @@ def superadmin(request):
         return render(request,'superadmin.html',{'msg':'statuses of all repos are changed to: '+new_status})
         
     return render(request,'superadmin.html')
-    
 
 
 def get_proper_scope_to_login(username):
