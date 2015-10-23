@@ -65,8 +65,13 @@ tools_conf = {
 }
 
 
-def get_log_dir(user):
-    return os.path.join(home, 'log', user+'.log_new')
+def prepare_logger(user):
+    l = os.path.join(home, 'log', user+'.log_new')
+    logging.basicConfig(filename=l, format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
+
+
+def dolog(msg):
+    logging.critical(msg)
 
 
 def init_g():
@@ -77,7 +82,7 @@ def init_g():
 
 
 def git_magic(target_repo, user, cloning_repo, changed_filesss):
-    logging.basicConfig(filename=get_log_dir(user), level=logging.DEBUG)
+    prepare_logger(user)
     global g
     global parent_folder
     parent_folder = user
@@ -86,7 +91,7 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
     print str(datetime.today())
     print '############################### magic #############################'
     print 'target_repo: '+target_repo
-    logging.debug('############################### magic #############################')
+    dolog('############################### magic #############################')
     change_status(target_repo,'Preparing')
     #so the tool user can takeover and do stuff
     username = os.environ['github_username']
