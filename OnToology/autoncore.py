@@ -67,7 +67,7 @@ tools_conf = {
 
 def prepare_logger(user):
     l = os.path.join(home, 'log', user+'.log_new')
-    logging.basicConfig(filename=l, format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
+    logging.basicConfig(filename=l, format='%(asctime)s %(levelname)s: %(message)s', level=logging.CRITICAL)
 
 
 def dolog(msg):
