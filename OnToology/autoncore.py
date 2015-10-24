@@ -105,7 +105,9 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
     if not settings.TEST or not settings.test_conf['local']:
         delete_repo(local_repo)
     #print 'repo deleted'
+    dolog('repo deleted')
     if not settings.TEST or not settings.test_conf['local']:
+        dolog('will fork the repo')
         change_status(target_repo, 'forking repo')
         fork_repo(target_repo, username, password)
         #print 'repo forked'
