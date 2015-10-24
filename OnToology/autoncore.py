@@ -55,7 +55,7 @@ ar2dtool_dir = os.environ['ar2dtool_dir']
 home = os.environ['github_repos_dir']
 verification_log_fname='verification.log'
 sleeping_time = 7
-ontology_formats = ['.rdf','.owl','.ttl']
+ontology_formats = ['.rdf', '.owl', '.ttl']
 g = None
 log_file_dir = None #'&1'#which is stdout #sys.stdout#by default
 tools_conf = {
@@ -67,6 +67,8 @@ tools_conf = {
 
 def prepare_logger(user):
     l = os.path.join(home, 'log', user+'.log_new')
+    f = open(l, 'w')
+    f.close()
     logging.basicConfig(filename=l, format='%(asctime)s %(levelname)s: %(message)s', level=logging.CRITICAL)
 
 
@@ -377,7 +379,7 @@ def prepare_log(user):
     global default_stderr
     global default_stdout
     file_dir = build_file_structure(user+'.log', 'log', home)
-    f = open(file_dir,'w')
+    f = open(file_dir, 'w')
     sys.stdout.flush()
     sys.stderr.flush()
     sys.stdout=f
@@ -1207,15 +1209,6 @@ def build_file_structure(file_with_rel_dir,category_folder='',abs_home=''):#e.g.
 #import it for now
 def change_status(target_repo, state):
     from models import Repo
-#     class Repo(Document):
-#         url = StringField(max_length=100,default='Not set yet')
-#         last_used = DateTimeField(default=datetime.now())
-#         created_on = DateTimeField(default=datetime.now())
-#         monitoring = StringField(max_length=100,default='Not set yet')
-#         state = StringField(max_length=50,default='Ready')
-#         owner = StringField(max_length=50,default='no')
-    
-    
     if not use_database:
         return ''
     try:
@@ -1271,8 +1264,6 @@ def generate_user_log(log_file_name):
     sys.stdout.flush()
     if sys.stdout == default_stdout:
         print 'Warning: trying to close sys.stdout in generate_user_log function, I am disabling the closing for now'
-    
-        
     return_default_log()
     call(comm,shell=True)
     
