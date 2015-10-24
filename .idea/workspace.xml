@@ -66,8 +66,8 @@
       <file leaf-file-name="autoncore.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/OnToology/autoncore.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.20664206">
-              <caret line="69" column="107" selection-start-line="69" selection-start-column="107" selection-end-line="69" selection-end-column="107" />
+            <state vertical-scroll-proportion="-3.633508">
+              <caret line="1129" column="17" selection-start-line="1129" selection-start-column="17" selection-end-line="1129" selection-end-column="17" />
               <folding>
                 <element signature="e#699#713#0" expanded="true" />
               </folding>
@@ -142,10 +142,10 @@
     <order />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="2" />
+    <option name="x" value="-1" />
     <option name="y" value="23" />
     <option name="width" value="1245" />
-    <option name="height" value="937" />
+    <option name="height" value="697" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -375,7 +375,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="2" y="23" width="1245" height="937" extended-state="0" />
+    <frame x="-1" y="23" width="1245" height="697" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3289941" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -584,8 +584,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/OnToology/autoncore.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.20664206">
-          <caret line="69" column="107" selection-start-line="69" selection-start-column="107" selection-end-line="69" selection-end-column="107" />
+        <state vertical-scroll-proportion="-3.633508">
+          <caret line="1129" column="17" selection-start-line="1129" selection-start-column="17" selection-end-line="1129" selection-end-column="17" />
           <folding>
             <element signature="e#699#713#0" expanded="true" />
           </folding>

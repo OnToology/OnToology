@@ -86,12 +86,13 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
     global g
     global parent_folder
     parent_folder = user
-    if not settings.TEST:
-        prepare_log(user)
-    print str(datetime.today())
-    print '############################### magic #############################'
-    print 'target_repo: '+target_repo
+    #if not settings.TEST:
+    #    prepare_log(user)
+    #print str(datetime.today())
+    #print '############################### magic #############################'
+    #print 'target_repo: '+target_repo
     dolog('############################### magic #############################')
+    dolog('target_repo: '+target_repo)
     change_status(target_repo,'Preparing')
     #so the tool user can takeover and do stuff
     username = os.environ['github_username']
@@ -104,24 +105,28 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
     if not settings.TEST or not settings.test_conf['local']:
         change_status(target_repo, 'forking repo')
         fork_repo(target_repo,username,password)
-        print 'repo forked'    
+        #print 'repo forked'
+        dolog('repo forked')
     if not settings.TEST or not settings.test_conf['local']:
         change_status(target_repo,'cloning repo')
         clone_repo(cloning_repo,user)
-        print 'repo cloned'
-
+        #print 'repo cloned'
+        dolog('repo cloned')
     files_to_verify=[]
     for chf in changed_filesss:
         auton_conf = {'ar2dtool_enable':False , 'widoco_enable': False, 'oops_enable': False}
         if chf[-4:] not in ontology_formats: #validate ontology formats
             #for now, do not detect the configuration
             continue
-            print 'check conf file changed is: %s'%(chf)
+            #print 'check conf file changed is: %s'%(chf)
+            dolog('check conf file changed is: %s'%(chf))
             if get_file_from_path(chf) =='OnToology.cfg':
-                print 'OnToology.cfg is changed'
+                #print 'OnToology.cfg is changed'
+                dolog('OnToology.cfg is changed')
                 fi = get_level_up(chf)
                 fi = fi[6:]
-                print 'ont file is: '+fi
+                #print 'ont file is: '+fi
+                dolog('ont file is: '+fi)
                 changed_files = [fi]
                 auton_conf = get_auton_configuration(fi)
             elif get_file_from_path(chf) in ar2dtool_config_types:
@@ -131,62 +136,78 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
                 fi = get_level_up(fi)
                 fi = fi[6:]
                 changed_files = [fi]
-                print 'change in AR2DTool file %s'%(fi)
+                #print 'change in AR2DTool file %s'%(fi)
+                dolog('change in AR2DTool file %s'%(fi))
             elif  'widoco.conf' in  get_file_from_path(chf):
                 fi = get_level_up(chf)
                 fi = get_level_up(fi)
                 fi = fi[6:]
                 changed_files = [fi]
-                print 'change in Widoco file %s'%(fi)
+                #print 'change in Widoco file %s'%(fi)
+                dolog('change in Widoco file %s'%(fi))
         else:
-            print 'working with: '+chf
+            #print 'working with: '+chf
+            dolog('working with: '+chf)
             changed_files = [chf]
             auton_conf = get_auton_configuration(chf)
             #The below three lines is to add files to verify their output later on
             ftvcomp = auton_conf
             ftvcomp['file'] = chf
             files_to_verify.append(ftvcomp)
-        print str(auton_conf)
+        #print str(auton_conf)
+        dolog(str(auton_conf))
         exception_if_exists = ""
         if auton_conf['ar2dtool_enable']:
-            print 'ar2dtool_enable is true'
+            #print 'ar2dtool_enable is true'
+            dolog('ar2dtool_enable is true')
             change_status(target_repo,'drawing diagrams for '+changed_files[0])
             try:
                 draw_diagrams(changed_files)
-                print 'diagrams drawn successfully'
+                #print 'diagrams drawn successfully'
+                dolog('diagrams drawn successfully')
             except Exception as e:
                 exception_if_exists+=chf+": "+str(e)+"\n"
-                print 'diagrams not drawn: '+str(e)
+                #print 'diagrams not drawn: '+str(e)
+                dolog('diagrams not drawn: '+str(e))
         else: 
-            print 'ar2dtool_enable is false'
+            #print 'ar2dtool_enable is false'
+            dolog('ar2dtool_enable is false')
         if auton_conf['widoco_enable']:
-            print  'widoco_enable is true'
+            #print  'widoco_enable is true'
+            dolog('ar2dtool_enable is false')
             change_status(target_repo, 'generating documents for '+changed_files[0])
             try:
                 generate_widoco_docs(changed_files)
             except Exception as e:
                 exception_if_exists+=str(e)
-            print 'generated docs'
+            #print 'generated docs'
+            dolog('generated docs')
         else:
-            print  'widoco_enable is false'
+            #print  'widoco_enable is false'
+            dolog('widoco_enable is false')
         if auton_conf['oops_enable']:
-            print 'oops_enable is true'
+            #print 'oops_enable is true'
+            dolog('oops_enable is true')
             change_status(target_repo, 'OOPS is checking for errors for '+changed_files[0])
             try:
                 oops_ont_files(target_repo,changed_files)
             except Exception as e:
                 exception_if_exists+=str(e)
-            print 'oops checked ontology for pitfalls'
+            #print 'oops checked ontology for pitfalls'
+            dolog('oops checked ontology for pitfalls')
         else:
-            print 'oops_enable is false'
+            #print 'oops_enable is false'
+            dolog('oops_enable is false')
     #After the loop
-    print "number of files to verify %d"%(len(files_to_verify))
+    #print "number of files to verify %d"%(len(files_to_verify))
+    dolog("number of files to verify %d"%(len(files_to_verify)))
     if len(files_to_verify) ==0:
         change_status(target_repo,'Ready')
         return
     if not settings.TEST or not settings.test_conf['local']:
         commit_changes()
-        print 'changes committed'
+        #print 'changes committed'
+        dolog('changes committed')
         remove_old_pull_requests(target_repo)
     if exception_if_exists=="": #no errors
         change_status(target_repo, 'validating')
@@ -221,14 +242,16 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
             r = send_pull_request(target_repo,ToolUser)
         except Exception as e:
             exception_if_exists+=str(e)
-        print 'pull request is sent'
+        #print 'pull request is sent'
+        dolog('pull request is sent')
     change_status(target_repo, 'Ready')
 
 
 def verify_tools_generation_when_ready(ver_file_comp,repo=None):
     ver_file = os.path.join(get_target_home(),ver_file_comp['file'],verification_log_fname)
     ver_file = get_abs_path(ver_file) 
-    print 'ver file: '+ver_file
+    #print 'ver file: '+ver_file
+    dolog('ver file: '+ver_file)
     if ver_file_comp['ar2dtool_enable'] == ver_file_comp['widoco_enable'] == ver_file_comp['oops_enable'] == False:
         return
     for i in range(20):
@@ -245,7 +268,8 @@ def verify_tools_generation_when_ready(ver_file_comp,repo=None):
         os.remove(ver_file)# the verification file is no longer needed
         #time.sleep(1)
         
-        print 'The removed file is: '+ver_file
+        #print 'The removed file is: '+ver_file
+        dolog('The removed file is: '+ver_file)
         return verify_tools_generation(ver_file_comp, repo)
     repo.state=ver_file_comp['file']+' is talking too much time to generate output'
     if settings.TEST:
@@ -262,15 +286,18 @@ def update_file(target_repo,path,message,content):
         g = Github(username, password)
     gg = Github(username,password)
     repo = g.get_repo(target_repo)    
-    print 'will update the file <%s> on repo<%s> with the content <%s>'%(path,target_repo,content) 
+    #print 'will update the file <%s> on repo<%s> with the content <%s>'%(path,target_repo,content)
+    dolog('will update the file <%s> on repo<%s> with the content <%s>'%(path,target_repo,content))
     #repo.update_content(path, message, content, committer=gg.get_user())
     try:
         repo.update_content(path, message, content)
     except:
-        print 'second change of file update'
+        #print 'second change of file update'
+        dolog('second change of file update')
         repo.update_content(path, message, content)
     #print '%s has the updated content as <%s>'%(path,file.decoded_content)
-    print 'file updated'
+    #print 'file updated'
+    dolog('file updated')
 
 
 def verify_tools_generation(ver_file_comp,repo=None):
@@ -286,7 +313,8 @@ def verify_tools_generation(ver_file_comp,repo=None):
         if settings.TEST:
              assert file_exists, 'the file %s is not generated'%(target_file)
         elif not file_exists:
-            print 'The Diagram of the file %s is not generated '%(ver_file_comp['file'])
+            #print 'The Diagram of the file %s is not generated '%(ver_file_comp['file'])
+            dolog('The Diagram of the file %s is not generated '%(ver_file_comp['file']))
     #Widoco
     if ver_file_comp['widoco_enable']:
         target_file = os.path.join(get_abs_path(get_target_home()),ver_file_comp['file'] ,
@@ -299,7 +327,8 @@ def verify_tools_generation(ver_file_comp,repo=None):
         if settings.TEST:
              assert file_exists, 'the file %s is not generated'%(target_file)
         elif not file_exists:
-            print 'The Documentation of the file %s if not generated '%(ver_file_comp['file'])
+            #print 'The Documentation of the file %s if not generated '%(ver_file_comp['file'])
+            dolog('The Documentation of the file %s if not generated '%(ver_file_comp['file']))
     #OOPS
     if ver_file_comp['oops_enable']:
         target_file = os.path.join(get_abs_path(get_target_home()),ver_file_comp['file'] ,
@@ -312,11 +341,12 @@ def verify_tools_generation(ver_file_comp,repo=None):
         if settings.TEST:
              assert file_exists, 'the file %s is not generated'%(target_file)
         elif not file_exists:
-            print 'The Evaluation report of the file %s if not generated '%(ver_file_comp['file'])
+            #print 'The Evaluation report of the file %s if not generated '%(ver_file_comp['file'])
+            dolog('The Evaluation report of the file %s if not generated '%(ver_file_comp['file']))
     if 'not generated' in repo.state:
         repo = g.get_repo(repo.url)
         for iss in repo.get_issues():
-            if 'OnToology error notification' in  iss.title:
+            if 'OnToology error notification' in iss.title:
                 iss.edit(state='closed')
         repo.create_issue('OnToology error notification', repo.state)
     #else:
@@ -355,14 +385,17 @@ def prepare_log(user):
     log_file_dir = file_dir
     return f#, stdout, stderr
 
+
 def return_default_log():
     sys.stdout.flush()
     sys.stderr.flush()
-    sys.stdout=default_stdout
-    sys.stderr=default_stderr
+    sys.stdout = default_stdout
+    sys.stderr = default_stderr
+
 
 def is_organization(target_repo):
     return g.get_repo(target_repo).organization is not None
+
 
 def has_access_to_repo(target_repo):
     global g
@@ -378,12 +411,16 @@ def has_access_to_repo(target_repo):
             return False
     return True
 
+
 def delete_repo(local_repo):
     try:
         g.get_repo(local_repo).delete()
-        print 'repo deleted '
+        #print 'repo deleted '
+        dolog('repo deleted ')
     except:
-        print 'the repo doesn\'t exists [not an error]'
+        #print 'the repo doesn\'t exists [not an error]'
+        dolog('the repo doesn\'t exists [not an error]')
+
 
 def fork_repo(target_repo,username,password):
     time.sleep(sleeping_time)#the wait time to give github sometime so the repo can be forked successfully
@@ -391,36 +428,47 @@ def fork_repo(target_repo,username,password):
     comm = "curl --user \"%s:%s\" --request POST --data \'{}\' https://api.github.com/repos/%s/forks" % (username,password,target_repo)
     if not settings.TEST:
         comm+= ' >> "'+log_file_dir+'"'
-    print comm
+    #print comm
+    dolog(comm)
     call(comm,shell=True)
-    print 'fork'
+    #print 'fork'
+    dolog('fork')
+
 
 #def clone_repo(cloning_repo,user):
-def clone_repo(cloning_repo,parent_folder,dosleep=True):
-    print 'home: %s'%(home)
-    print 'parent_folder: %s'%(parent_folder)
-    print 'logfile: %s'%(log_file_dir)
+def clone_repo(cloning_repo, parent_folder, dosleep=True):
+    #print 'home: %s'%(home)
+    #print 'parent_folder: %s'%(parent_folder)
+    #print 'logfile: %s'%(log_file_dir)
+    dolog('home: %s'%(home))
+    dolog('parent_folder: %s'%(parent_folder))
+    dolog('logfile: %s'%(log_file_dir))
     if dosleep:
         time.sleep(sleeping_time)#the wait time to give github sometime so the repo can be cloned
     try:
-        comm =  "rm"+" -Rf "+home+parent_folder
+        comm = "rm"+" -Rf "+home+parent_folder
         if not settings.TEST:
-            comm+= ' >> "'+log_file_dir+'"'
-        print comm
+            comm += ' >> "'+log_file_dir+'"'
+        #print comm
+        dolog(comm)
         call(comm, shell=True)
     except Exception as e:
-        print 'rm failed: '+str(e)
+        #print 'rm failed: '+str(e)
+        dolog('rm failed: '+str(e))
     comm = "git"+" clone"+" "+cloning_repo+" "+home+parent_folder
     if not settings.TEST:
-        comm+= ' >> "'+log_file_dir+'"'
-    print comm
+        comm += ' >> "'+log_file_dir+'"'
+    #print comm
+    dolog(comm)
     call(comm, shell=True)
     comm =  "chmod -R 777 "+home+parent_folder
     if not settings.TEST:
         comm+= ' >> "'+log_file_dir+'"'
-    print comm
+    #print comm
+    dolog(comm)
     call(comm, shell=True)
     return home+parent_folder
+
 
 def commit_changes():
     gu = ""
@@ -431,32 +479,38 @@ def commit_changes():
     comm =  "cd "+home+parent_folder+";"+gu+" git add . "    
     if not settings.TEST:
         comm+= ' >> "'+log_file_dir+'"'
-    print comm
+    #print comm
+    dolog(comm)
     call(comm,shell=True)
     comm = "cd "+home+parent_folder+";"+gu+" git commit -m 'automated change' "
     if not settings.TEST:
         comm+= ' >> "'+log_file_dir+'"'
-    print comm
+    #print comm
+    dolog(comm)
     call(comm,shell=True)
     gup =""
     gup = "git config push.default matching;"
     comm =  "cd "+home+parent_folder+";"+gu+gup+" git push "
     if not settings.TEST:
         comm+= ' >> "'+log_file_dir+'"'
-    print comm
-    call(comm,shell=True)
+    #print comm
+    dolog(comm)
+    call(comm, shell=True)
+
 
 def refresh_repo(target_repo):
     local_repo = target_repo.split('/')[-1]
     g.get_user().get_repo(local_repo).delete()
     g.get_user().create_fork(target_repo)
 
+
 def remove_old_pull_requests(target_repo):
     title = 'OnToology update'
     for p in g.get_repo(target_repo).get_pulls():
         if p.title == title:
             p.edit(state="closed")
-    
+
+
 def send_pull_request(target_repo,username):
     title = 'OnToology update'
     body = title
@@ -469,7 +523,8 @@ def send_pull_request(target_repo,username):
         return {'status': True, 'msg':'pull request created successfully' }
     except Exception as e:
         err = str(e)#e.data}#str(e.data)
-        print 'pull request error: '+err
+        #print 'pull request error: '+err
+        dolog('pull request error: '+err)
         #print 'pull('+str(i)+'): '+err
     #return err
     return {'status': False, 'error': err}
@@ -489,17 +544,20 @@ def webhook_access(client_id,redirect_url,isprivate):
     sec = ''.join([random.choice(string.ascii_letters+string.digits) for _ in range(9)])
     return "https://github.com/login/oauth/authorize?client_id="+client_id+"&redirect_uri="+redirect_url+"&scope="+scope+"&state="+sec, sec
 
+
 def get_user_github_email(username):
     try:
         return g.get_user(username).email
     except:
         return None
 
+
 def remove_webhook(target_repo, notification_url):
     global g
     for hook in g.get_repo(target_repo).get_hooks():
         if hook.config["url"] == notification_url:
             hook.delete()
+
 
 def add_webhook(target_repo,notification_url,newg=None):
     global g
@@ -518,6 +576,7 @@ def add_webhook(target_repo,notification_url,newg=None):
     except Exception as e:
         return {'status': False, 'error': str(e)}#e.data}
 
+
 def add_collaborator(target_repo,user,newg=None):
     global g
     if newg is None:
@@ -528,6 +587,7 @@ def add_collaborator(target_repo,user,newg=None):
         return {'status': True, 'msg': str(msg) }
     except Exception as e:
         return {'status': False, 'error': str(e)}#e.data}
+
 
 def update_g(token):
     global g
@@ -543,20 +603,18 @@ def update_g(token):
 
 
 def draw_diagrams(rdf_files):
-    print str(len(rdf_files))+' changed files'
+    #print str(len(rdf_files))+' changed files'
+    dolog(str(len(rdf_files))+' changed files')
     for r in rdf_files:
         #print r+' is changed '
         if r[-4:] in ontology_formats:
             for t in ar2dtool_config_types:
-                draw_file(r,t) 
-
-
+                draw_file(r, t)
 
 
 def get_ar2dtool_config(config_type):
     f = open(ar2dtool_config+'/'+config_type,"r")
     return f.read()
-
 
 
 def draw_file(rdf_file,config_type):
@@ -577,10 +635,8 @@ def draw_file(rdf_file,config_type):
         f.write(get_ar2dtool_config(config_type))
         f.close()
     except Exception as e:
-        print 'in draw_file: exception opening the file: '+str(e)
-    
-
-        
+        #print 'in draw_file: exception opening the file: '+str(e)
+        dolog('in draw_file: exception opening the file: '+str(e))
     comm = 'java -jar '
     comm+= ar2dtool_dir+'ar2dtool.jar -i '
     comm+= get_abs_path(rdf_file)+' -o '
@@ -588,8 +644,9 @@ def draw_file(rdf_file,config_type):
     if not settings.TEST:
         comm+= ' >> "'+log_file_dir+'"'
     comm+=" ; echo 'ar2dtool' >> "+ os.path.join(get_parent_path(get_parent_path(get_parent_path(rdf_file_abs+'.'+outtype))),verification_log_fname)
-    print comm
-    call(comm,shell=True)
+    #print comm
+    dolog(comm)
+    call(comm, shell=True)
     #return os.path.isfile(rdf_file_abs+'.gml') 
 
 
@@ -611,7 +668,6 @@ def get_widoco_config():
     return f.read()
 
 
-
 def generate_widoco_docs(changed_files):
     for r in changed_files:
         if r[-4:] in ontology_formats:
@@ -622,14 +678,14 @@ def generate_widoco_docs(changed_files):
             #print r+' does not belong to supported ontology formats for widoco'
 
 
-
-
 def create_widoco_doc(rdf_file):
-    print 'in Widoco function'
+    #print 'in Widoco function'
+    dolog('in Widoco function')
     rdf_file_abs = get_abs_path(rdf_file)
     #config_file_abs = build_file_structure(rdf_file+'.widoco.conf', [get_target_home(),'documentation'])     
     config_file_abs = build_file_structure(get_file_from_path(rdf_file)+'.widoco.conf', [get_target_home(), rdf_file, 'documentation'])     
-    print 'rdf_abs: %s and config_file_abs %s'%(rdf_file_abs,config_file_abs)
+    #print 'rdf_abs: %s and config_file_abs %s'%(rdf_file_abs,config_file_abs)
+    dolog('rdf_abs: %s and config_file_abs %s'%(rdf_file_abs,config_file_abs))
     use_conf_file = True
     try:
         open(config_file_abs,"r")
@@ -639,7 +695,8 @@ def create_widoco_doc(rdf_file):
 #         f.write(get_widoco_config())
 #         f.close()
     except Exception as e:
-        print 'in create_widoco_doc: exception opening the file: '+str(e)        
+        #print 'in create_widoco_doc: exception opening the file: '+str(e)
+        dolog('in create_widoco_doc: exception opening the file: '+str(e))
     out_abs_dir = get_parent_path(config_file_abs)
     comm = "cd "+get_abs_path('')+"; "
     comm+= "java -jar "
@@ -656,8 +713,9 @@ def create_widoco_doc(rdf_file):
     if not settings.TEST:
         comm+= ' >> "'+log_file_dir+'" '
     comm+=" ; echo 'widoco' >> "+ os.path.join(get_parent_path(out_abs_dir),verification_log_fname)
-    print comm
-    call(comm,shell=True)
+    #print comm
+    dolog(comm)
+    call(comm, shell=True)
     
     
 
@@ -721,47 +779,53 @@ def get_auton_configuration(f=None,abs_folder=None):
         conf_file_abs = build_file_structure('OnToology.cfg',[get_target_home(),f] )
     else:
         conf_file_abs = build_file_structure('OnToology.cfg',[get_target_home()] )
-   
     return get_auton_config(conf_file_abs,from_string=False)    
     
     
 def get_auton_config(conf_file_abs,from_string=True):
- 
-    print 'auton config is called: '
+    #print 'auton config is called: '
+    dolog('auton config is called: ')
     ar2dtool_sec_name = 'ar2dtool'
     widoco_sec_name = 'widoco'
     oops_sec_name = 'oops'
     ar2dtool_enable = True
     widoco_enable = True
     oops_enable = True
-    
     config = ConfigParser.RawConfigParser()
     if from_string:
         opened_conf_files = config.readfp(conf_file_abs)
     else:
         opened_conf_files = config.read(conf_file_abs)
     if from_string or len(opened_conf_files) == 1:
-        print 'auton configuration file exists'
+        #print 'auton configuration file exists'
+        dolog('auton configuration file exists')
         #print opened_conf_files[0]
         try:
             ar2dtool_enable = config.getboolean(ar2dtool_sec_name,'enable')
-            print 'got ar2dtool enable value: '+str(ar2dtool_enable)
+            #print 'got ar2dtool enable value: '+str(ar2dtool_enable)
+            dolog('got ar2dtool enable value: '+str(ar2dtool_enable))
         except:
-            print 'ar2dtool enable value doesnot exist'
+            #print 'ar2dtool enable value doesnot exist'
+            dolog('ar2dtool enable value doesnot exist')
             pass
         try:
             widoco_enable = config.getboolean(widoco_sec_name, 'enable')
-            print 'got widoco enable value: '+str(widoco_enable)
+            #print 'got widoco enable value: '+str(widoco_enable)
+            dolog('got widoco enable value: '+str(widoco_enable))
         except:
-            print 'widoco enable value doesnot exist'
+            #print 'widoco enable value doesnot exist'
+            dolog('widoco enable value doesnot exist')
             pass
         try:
             oops_enable = config.getboolean(oops_sec_name, 'enable')
-            print 'got oops enable value: '+str(oops_enable)
+            #print 'got oops enable value: '+str(oops_enable)
+            dolog('got oops enable value: '+str(oops_enable))
         except:
-            print 'oops enable value doesnot exist'
+            #print 'oops enable value doesnot exist'
+            dolog('oops enable value doesnot exist')
     else:  
-        print 'auton configuration file does not exists'
+        #print 'auton configuration file does not exists'
+        dolog('auton configuration file does not exists')
         config.add_section(ar2dtool_sec_name)
         config.set(ar2dtool_sec_name, 'enable', ar2dtool_enable) 
         config.add_section(widoco_sec_name)
@@ -769,13 +833,16 @@ def get_auton_config(conf_file_abs,from_string=True):
         config.add_section(oops_sec_name)
         config.set(oops_sec_name,'enable',oops_enable)
         conff = conf_file_abs
-        print 'will create conf file: '+ conff
+        #print 'will create conf file: '+ conff
+        dolog('will create conf file: '+ conff)
         try:
             with open(conff, 'wb') as configfile:
                 config.write(configfile)
         except Exception as e:
-            print 'expection: '
-            print e
+            #print 'expection: '
+            #print e
+            dolog('expection: ')
+            dolog(e)
     return {'ar2dtool_enable':ar2dtool_enable , 'widoco_enable': widoco_enable, 'oops_enable': oops_enable}
 
 
@@ -857,10 +924,9 @@ import rdfxml
 def oops_ont_files(target_repo,changed_files):
     for r in changed_files:
         if valid_ont_file(r):
-            print 'will oops: '+r
+            #print 'will oops: '+r
+            dolog('will oops: '+r)
             get_pitfalls(target_repo,r) 
-
-
 
 
 def get_pitfalls(target_repo,ont_file):
@@ -888,7 +954,8 @@ def get_pitfalls(target_repo,ont_file):
                 }
     oops_reply = requests.post(url, data=xml_content, headers=headers)
     oops_reply = oops_reply.text
-    print 'got oops reply'#+oops_reply 
+    #print 'got oops reply'#+oops_reply
+    dolog('got oops reply')
     issues_s = output_parsed_pitfalls(ont_file,oops_reply)
     close_old_oops_issues_in_github(target_repo,ont_file)
     nicer_issues = nicer_oops_output(issues_s)
@@ -900,12 +967,8 @@ def get_pitfalls(target_repo,ont_file):
         nicer_issues+="https://rawgit.com/"+user+'/'+repo+'/master/OnToology/'+ont_file+'/evaluation/oopsEval.html'
         create_oops_issue_in_github(target_repo,ont_file,nicer_issues)
         
-    
 
-
-
-
-def output_parsed_pitfalls(ont_file,oops_reply):
+def output_parsed_pitfalls(ont_file, oops_reply):
     issues, interesting_features = parse_oops_issues(oops_reply)
     s= ""
     for i in issues:
@@ -917,9 +980,9 @@ def output_parsed_pitfalls(ont_file,oops_reply):
         s+"\n"
         s+=20*"="
         s+="\n"
-    print 'oops issues gotten'
+    #print 'oops issues gotten'
+    dolog('oops issues gotten')
     return s
-
 
 
 #generate oops issues using widoco
@@ -938,19 +1001,18 @@ def generate_oops_pitfalls(ont_file):
     if not settings.TEST:
         comm+= ' >> "'+log_file_dir+'"'
     comm+=" ; echo 'oops' >> "+ os.path.join(get_parent_path(out_abs_dir),verification_log_fname)
-    print comm
+    #print comm
+    dolog(comm)
     call(comm,shell=True)                 
-    shutil.move( os.path.join(out_abs_dir,'OOPSevaluation') , get_parent_path(out_abs_dir))
+    shutil.move(os.path.join(out_abs_dir, 'OOPSevaluation'), get_parent_path(out_abs_dir))
     shutil.rmtree(out_abs_dir)
-    shutil.move(os.path.join(get_parent_path(out_abs_dir),'OOPSevaluation'), out_abs_dir)
-
-
+    shutil.move(os.path.join(get_parent_path(out_abs_dir), 'OOPSevaluation'), out_abs_dir)
 
 
 def parse_oops_issues(oops_rdf):
     p = rdfxml.parseRDF(oops_rdf)
     raw_oops_list = p.result
-    oops_issues={}
+    oops_issues = {}
     
     #Filter #1
     #Construct combine all data of a single elements into one json like format
@@ -997,21 +1059,21 @@ def parse_oops_issues(oops_rdf):
 
 
 def create_oops_issue_in_github(target_repo,ont_file,oops_issues):
-    print 'will create an oops issue'
+    #print 'will create an oops issue'
+    dolog('will create an oops issue')
     try:
         g.get_repo(target_repo).create_issue('OOPS! Evaluation for '+ont_file, oops_issues)
     except Exception as e:
-        print 'exception when creating issue: '+str(e)#e.data}#e.data
-        
+        #print 'exception when creating issue: '+str(e)#e.data}#e.data
+        dolog('exception when creating issue: '+str(e))
     
 
-
 def close_old_oops_issues_in_github(target_repo,ont_file):
-    print 'will close old issues'
+    #print 'will close old issues'
+    dolog('will close old issues')
     for i in g.get_repo(target_repo).get_issues(state='open'):
         if i.title == ('OOPS! Evaluation for '+ont_file) :
             i.edit(state='closed')
-
 
 
 def nicer_oops_output(issues):
@@ -1022,18 +1084,18 @@ def nicer_oops_output(issues):
     num_of_pitfalls = issues.count(pitf_flag)
     num_of_warnings = issues.count(warn_flag)
     #s=" OOPS has encountered %d pitfalls and %d warnings"%(num_of_pitfalls,num_of_warnings)
-    s=" OOPS! has encountered %d pitfalls"%(num_of_pitfalls)
+    s = " OOPS! has encountered %d pitfalls"%(num_of_pitfalls)
     if num_of_warnings>0:
-        s+=' and %d warnings'%(num_of_warnings)
-    if num_of_pitfalls == num_of_suggestions == num_of_warnings ==0:
+        s += ' and %d warnings'%(num_of_warnings)
+    if num_of_pitfalls == num_of_suggestions == num_of_warnings == 0:
         return ""
     if num_of_suggestions >0:
-        s+="  and have %d suggestions"%(num_of_suggestions)
-    s+="."
+        s += "  and have %d suggestions"%(num_of_suggestions)
+    s += "."
     nodes = issues.split("====================")
-    suggs=[]
-    pitfs=[]
-    warns=[]
+    suggs = []
+    pitfs = []
+    warns = []
     for node in nodes[:-1]:
         attrs = node.split("\n")
         if sugg_flag in node:
@@ -1052,19 +1114,20 @@ def nicer_oops_output(issues):
                     warns.append(attr.replace('hasName: ',''))
                     break
         else:
-            print 'in nicer_oops_output: strange node: '+node
+            #print 'in nicer_oops_output: strange node: '+node
+            dolog('in nicer_oops_output: strange node: '+node)
     if len(pitfs) >0:
-        s+="The Pitfalls are the following:\n"
+        s += "The Pitfalls are the following:\n"
         for i in range(len(pitfs)):
-            s+='%d. '%(i+1) + pitfs[i]+"\n"
+            s += '%d. '%(i+1) + pitfs[i]+"\n"
     if len(warns) >0:
-        s+="The Warning are the following:\n"
+        s += "The Warning are the following:\n"
         for i in range(len(warns)):
-            s+="%d. "%(i+1) + warns[i]+"\n"
+            s += "%d. "%(i+1) + warns[i]+"\n"
     if len(suggs) >0:
-        s+="The Suggestions are the following:\n"
+        s += "The Suggestions are the following:\n"
         for i in range(len(suggs)):
-            s+="%d. "%(i+1) + suggs[i]+"\n"
+            s += "%d. "%(i+1) + suggs[i]+"\n"
     return s
 
 
