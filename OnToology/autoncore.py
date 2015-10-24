@@ -89,8 +89,8 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
     global g
     global parent_folder
     parent_folder = user
-    #if not settings.TEST:
-    #    prepare_log(user)
+    if not settings.TEST:
+        prepare_log(user)
     #print str(datetime.today())
     #print '############################### magic #############################'
     #print 'target_repo: '+target_repo

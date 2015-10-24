@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="66e50091-b8ae-4ef0-9074-2583ca14006f" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/OnToology/autoncore.py" afterPath="$PROJECT_DIR$/OnToology/autoncore.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="OnToology.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -67,8 +66,8 @@
       <file leaf-file-name="autoncore.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/OnToology/autoncore.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.46333334">
-              <caret line="109" column="34" selection-start-line="109" selection-start-column="34" selection-end-line="109" selection-end-column="34" />
+            <state vertical-scroll-proportion="0.5183333">
+              <caret line="92" column="4" selection-start-line="92" selection-start-column="4" selection-end-line="92" selection-end-column="4" />
               <folding>
                 <element signature="e#699#713#0" expanded="true" />
               </folding>
@@ -119,8 +118,8 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/OnToology/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-7.0740743">
-              <caret line="533" column="70" selection-start-line="533" selection-start-column="61" selection-end-line="533" selection-end-column="70" />
+            <state vertical-scroll-proportion="-9.407408">
+              <caret line="79" column="18" selection-start-line="79" selection-start-column="18" selection-end-line="79" selection-end-column="18" />
               <folding>
                 <element signature="e#678#743#0" expanded="true" />
               </folding>
@@ -581,8 +580,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/OnToology/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.0740743">
-          <caret line="533" column="70" selection-start-line="533" selection-start-column="61" selection-end-line="533" selection-end-column="70" />
+        <state vertical-scroll-proportion="-9.407408">
+          <caret line="79" column="18" selection-start-line="79" selection-start-column="18" selection-end-line="79" selection-end-column="18" />
           <folding>
             <element signature="e#678#743#0" expanded="true" />
           </folding>
@@ -591,8 +590,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/OnToology/autoncore.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.46333334">
-          <caret line="109" column="34" selection-start-line="109" selection-start-column="34" selection-end-line="109" selection-end-column="34" />
+        <state vertical-scroll-proportion="0.5183333">
+          <caret line="92" column="4" selection-start-line="92" selection-start-column="4" selection-end-line="92" selection-end-column="4" />
           <folding>
             <element signature="e#699#713#0" expanded="true" />
           </folding>
