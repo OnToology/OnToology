@@ -69,7 +69,8 @@ def prepare_logger(user):
     l = os.path.join(home, 'log', user+'.log_new')
     #f = open(l, 'w')
     #f.close()
-    logging.basicConfig(filename=l, format='%(asctime)s %(levelname)s: %(message)s', level=logging.CRITICAL)
+    #logging.basicConfig(filename=l, format='%(asctime)s %(levelname)s: %(message)s', level=logging.CRITICAL)
+    logging.basicConfig(filename=l, format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
 
 
 def dolog(msg):
@@ -95,7 +96,7 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
     #print 'target_repo: '+target_repo
     dolog('############################### magic #############################')
     dolog('target_repo: '+target_repo)
-    change_status(target_repo,'Preparing')
+    change_status(target_repo, 'Preparing')
     #so the tool user can takeover and do stuff
     username = os.environ['github_username']
     password = os.environ['github_password']
@@ -106,11 +107,11 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
     #print 'repo deleted'
     if not settings.TEST or not settings.test_conf['local']:
         change_status(target_repo, 'forking repo')
-        fork_repo(target_repo,username,password)
+        fork_repo(target_repo, username, password)
         #print 'repo forked'
         dolog('repo forked')
     if not settings.TEST or not settings.test_conf['local']:
-        change_status(target_repo,'cloning repo')
+        change_status(target_repo, 'cloning repo')
         clone_repo(cloning_repo,user)
         #print 'repo cloned'
         dolog('repo cloned')
