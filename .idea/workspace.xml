@@ -66,8 +66,8 @@
       <file leaf-file-name="autoncore.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/OnToology/autoncore.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5183333">
-              <caret line="92" column="4" selection-start-line="92" selection-start-column="4" selection-end-line="92" selection-end-column="4" />
+            <state vertical-scroll-proportion="0.175">
+              <caret line="71" column="5" selection-start-line="71" selection-start-column="5" selection-end-line="71" selection-end-column="5" />
               <folding>
                 <element signature="e#699#713#0" expanded="true" />
               </folding>
@@ -590,8 +590,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/OnToology/autoncore.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5183333">
-          <caret line="92" column="4" selection-start-line="92" selection-start-column="4" selection-end-line="92" selection-end-column="4" />
+        <state vertical-scroll-proportion="0.175">
+          <caret line="71" column="5" selection-start-line="71" selection-start-column="5" selection-end-line="71" selection-end-column="5" />
           <folding>
             <element signature="e#699#713#0" expanded="true" />
           </folding>
