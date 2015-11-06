@@ -42,7 +42,7 @@ use_database = True
 
 ToolUser = 'OnToologyUser'
 
-sys.stdout = sys.stderr
+#sys.stdout = sys.stderr
 default_stdout = sys.stderr
 default_stderr = sys.stderr
 
@@ -383,10 +383,10 @@ def prepare_log(user):
     global default_stdout
     file_dir = build_file_structure(user+'.log', 'log', home)
     f = open(file_dir, 'w')
-    sys.stdout.flush()
-    sys.stderr.flush()
-    sys.stdout=f
-    sys.stderr=f
+    #sys.stdout.flush()
+    #sys.stderr.flush()
+    #sys.stdout=f
+    #sys.stderr=f
     log_file_dir = file_dir
     return f#, stdout, stderr
 
@@ -931,10 +931,10 @@ def oops_ont_files(target_repo,changed_files):
         if valid_ont_file(r):
             #print 'will oops: '+r
             dolog('will oops: '+r)
-            get_pitfalls(target_repo,r) 
+            get_pitfalls(target_repo, r)
 
 
-def get_pitfalls(target_repo,ont_file):
+def get_pitfalls(target_repo, ont_file):
     generate_oops_pitfalls(ont_file)
     if settings.TEST and settings.test_conf['local']:
         return
@@ -957,12 +957,14 @@ def get_pitfalls(target_repo,ont_file):
                 
                 'Accept-Charset': 'utf-8'
                 }
+    dolog("will call oops webservice")
     oops_reply = requests.post(url, data=xml_content, headers=headers)
+    dolog("will get oops text reply")
     oops_reply = oops_reply.text
     #print 'got oops reply'#+oops_reply
     dolog('got oops reply')
-    issues_s = output_parsed_pitfalls(ont_file,oops_reply)
-    close_old_oops_issues_in_github(target_repo,ont_file)
+    issues_s = output_parsed_pitfalls(ont_file, oops_reply)
+    close_old_oops_issues_in_github(target_repo, ont_file)
     nicer_issues = nicer_oops_output(issues_s)
     if nicer_issues!="":
         #nicer_issues+="\n Please accept the merge request to see the evaluation report in this link\n Otherwise the URL won't work\n"
