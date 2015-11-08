@@ -119,7 +119,7 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
         dolog('repo cloned')
     files_to_verify=[]
     for chf in changed_filesss:
-        auton_conf = {'ar2dtool_enable':False , 'widoco_enable': False, 'oops_enable': False}
+        auton_conf = {'ar2dtool_enable': False , 'widoco_enable': False, 'oops_enable': False}
         if chf[-4:] not in ontology_formats: #validate ontology formats
             #for now, do not detect the configuration
             continue
@@ -143,7 +143,7 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
                 changed_files = [fi]
                 #print 'change in AR2DTool file %s'%(fi)
                 dolog('change in AR2DTool file %s'%(fi))
-            elif  'widoco.conf' in  get_file_from_path(chf):
+            elif 'widoco.conf' in  get_file_from_path(chf):
                 fi = get_level_up(chf)
                 fi = get_level_up(fi)
                 fi = fi[6:]
@@ -195,9 +195,9 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
             dolog('oops_enable is true')
             change_status(target_repo, 'OOPS is checking for errors for '+changed_files[0])
             try:
-                oops_ont_files(target_repo,changed_files)
+                oops_ont_files(target_repo, changed_files)
             except Exception as e:
-                exception_if_exists+=str(e)
+                exception_if_exists += str(e)
             #print 'oops checked ontology for pitfalls'
             dolog('oops checked ontology for pitfalls')
         else:
@@ -962,10 +962,14 @@ def get_pitfalls(target_repo, ont_file):
     dolog("will get oops text reply")
     oops_reply = oops_reply.text
     #print 'got oops reply'#+oops_reply
-    dolog('got oops reply')
+    dolog('oops reply is: <<'+oops_reply+'>>')
+    dolog('<<<end of oops reply>>>')
     issues_s = output_parsed_pitfalls(ont_file, oops_reply)
+    dolog('got oops issues parsed')
     close_old_oops_issues_in_github(target_repo, ont_file)
+    dolog('closed old oops issues in github')
     nicer_issues = nicer_oops_output(issues_s)
+    dolog('get nicer issues')
     if nicer_issues!="":
         #nicer_issues+="\n Please accept the merge request to see the evaluation report in this link\n Otherwise the URL won't work\n"
         nicer_issues+="\n Please accept the merge request to see the evaluation report in this link. Otherwise the URL won't work.\n"
@@ -977,7 +981,7 @@ def get_pitfalls(target_repo, ont_file):
 
 def output_parsed_pitfalls(ont_file, oops_reply):
     issues, interesting_features = parse_oops_issues(oops_reply)
-    s= ""
+    s = ""
     for i in issues:
         for intfea in interesting_features:
             if intfea in issues[i]:
