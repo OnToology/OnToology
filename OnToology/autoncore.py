@@ -964,6 +964,11 @@ def get_pitfalls(target_repo, ont_file):
     #print 'got oops reply'#+oops_reply
     dolog('oops reply is: <<'+oops_reply+'>>')
     dolog('<<<end of oops reply>>>')
+    if oops_reply[:50] == '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">':
+        if '<title>502 Proxy Error</title>' in oops_reply:
+            raise Exception('Ontology is too big for OOPS')
+        else:
+            raise Exception('Generic error from OOPS')
     issues_s = output_parsed_pitfalls(ont_file, oops_reply)
     dolog('got oops issues parsed')
     close_old_oops_issues_in_github(target_repo, ont_file)
