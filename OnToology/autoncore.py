@@ -207,7 +207,7 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
     #print "number of files to verify %d"%(len(files_to_verify))
     dolog("number of files to verify %d"%(len(files_to_verify)))
     if len(files_to_verify) ==0:
-        change_status(target_repo,'Ready')
+        change_status(target_repo, 'Ready')
         return
     if not settings.TEST or not settings.test_conf['local']:
         commit_changes()
@@ -218,7 +218,8 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
         change_status(target_repo, 'validating')
     else:
         change_status(target_repo, exception_if_exists)
-        return #in case there is an error, abort and do not continue
+        #in case there is an error, create the pull request as well
+        #return #in case there is an error, abort and do not continue
     
 
     #Now to enabled
