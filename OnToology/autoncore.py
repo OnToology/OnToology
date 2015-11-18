@@ -175,36 +175,38 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
                 #print 'diagrams not drawn: '+str(e)
                 dolog('diagrams not drawn: '+str(e))
         else: 
-            #print 'ar2dtool_enable is false'
+            # print 'ar2dtool_enable is false'
             dolog('ar2dtool_enable is false')
         if auton_conf['widoco_enable']:
-            #print  'widoco_enable is true'
+            # print  'widoco_enable is true'
             dolog('ar2dtool_enable is false')
             change_status(target_repo, 'generating documents for '+changed_files[0])
             try:
                 generate_widoco_docs(changed_files)
+                dolog('generated docs')
             except Exception as e:
                 exception_if_exists+=str(e)
-            #print 'generated docs'
-            dolog('generated docs')
+            # print 'generated docs'
+                dolog('exception in generating documentation: '+str(e))
         else:
-            #print  'widoco_enable is false'
+            # print  'widoco_enable is false'
             dolog('widoco_enable is false')
         if auton_conf['oops_enable']:
-            #print 'oops_enable is true'
+            # print 'oops_enable is true'
             dolog('oops_enable is true')
             change_status(target_repo, 'OOPS is checking for errors for '+changed_files[0])
             try:
                 oops_ont_files(target_repo, changed_files)
+                dolog('oops checked ontology for pitfalls')
             except Exception as e:
                 exception_if_exists += str(e)
-            #print 'oops checked ontology for pitfalls'
-            dolog('oops checked ontology for pitfalls')
+            # print 'oops checked ontology for pitfalls'
+                dolog('exception in generating oops validation document: '+str(e))
         else:
-            #print 'oops_enable is false'
+            # print 'oops_enable is false'
             dolog('oops_enable is false')
-    #After the loop
-    #print "number of files to verify %d"%(len(files_to_verify))
+    # After the loop
+    # print "number of files to verify %d"%(len(files_to_verify))
     dolog("number of files to verify %d"%(len(files_to_verify)))
     if len(files_to_verify) ==0:
         change_status(target_repo, 'Ready')
@@ -228,16 +230,21 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
     
     #return r
     for f in files_to_verify:
-        repo=None
+        repo = None
         if use_database:
             from models import Repo
             repo = Repo.objects.get(url=target_repo)
-        verify_tools_generation_when_ready(f, repo)
+        try:
+            verify_tools_generation_when_ready(f, repo)
+            dolog('verification is done successfully')
+        except Exception as e:
+            dolog('verification have an exception: '+str(e))
+
     if use_database:
-        if Repo.objects.get(url=target_repo).state!='validating':
+        if Repo.objects.get(url=target_repo).state != 'validating':
             r = Repo.objects.get(url=target_repo)
             s = r.state
-            s = s.replace('validating','')
+            s = s.replace('validating', '')
             r.state = s 
             r.save()
             #The below "return" is commented so pull request are created even if there are files that are not generated 
@@ -245,16 +252,16 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
     if not settings.TEST or not settings.test_conf['local']:
         change_status(target_repo, 'creating a pull request')
         try:
-            r = send_pull_request(target_repo,ToolUser)
+            r = send_pull_request(target_repo, ToolUser)
         except Exception as e:
-            exception_if_exists+=str(e)
-        #print 'pull request is sent'
+            exception_if_exists += str(e)
+        # print 'pull request is sent'
         dolog('pull request is sent')
     change_status(target_repo, 'Ready')
 
 
-def verify_tools_generation_when_ready(ver_file_comp,repo=None):
-    ver_file = os.path.join(get_target_home(),ver_file_comp['file'],verification_log_fname)
+def verify_tools_generation_when_ready(ver_file_comp, repo=None):
+    ver_file = os.path.join(get_target_home(), ver_file_comp['file'], verification_log_fname)
     ver_file = get_abs_path(ver_file) 
     #print 'ver file: '+ver_file
     dolog('ver file: '+ver_file)
@@ -479,21 +486,21 @@ def clone_repo(cloning_repo, parent_folder, dosleep=True):
 def commit_changes():
     gu = ""
     gu = "git config  user.email \"ahmad88csc@gmail.com\";"
-    gu+='git config  user.name "%s" ;'%(ToolUser)
+    gu += 'git config  user.name "%s" ;' % (ToolUser)
     #print "command: "+"cd "+home+parent_folder+";"+gu+" git add README.md "    
     #call("cd "+home+parent_folder+";"+gu+" git add README.md ",shell=True)
-    comm =  "cd "+home+parent_folder+";"+gu+" git add . "    
+    comm = "cd "+home+parent_folder+";"+gu+" git add . "
     if not settings.TEST:
-        comm+= ' >> "'+log_file_dir+'"'
+        comm += ' >> "'+log_file_dir+'"'
     #print comm
     dolog(comm)
-    call(comm,shell=True)
+    call(comm, shell=True)
     comm = "cd "+home+parent_folder+";"+gu+" git commit -m 'automated change' "
     if not settings.TEST:
         comm+= ' >> "'+log_file_dir+'"'
     #print comm
     dolog(comm)
-    call(comm,shell=True)
+    call(comm, shell=True)
     gup =""
     gup = "git config push.default matching;"
     comm =  "cd "+home+parent_folder+";"+gu+gup+" git push "
@@ -524,9 +531,9 @@ def send_pull_request(target_repo,username):
 #    for i in range(3):
     time.sleep(sleeping_time)
     try:
-        g.get_repo(target_repo).create_pull(head=username+':master',base='master',title=title,body=body)
-        #return 'pull request created successfully'
-        return {'status': True, 'msg':'pull request created successfully' }
+        g.get_repo(target_repo).create_pull(head=username+':master', base='master', title=title, body=body)
+        # return 'pull request created successfully'
+        return {'status': True, 'msg': 'pull request created successfully'}
     except Exception as e:
         err = str(e)#e.data}#str(e.data)
         #print 'pull request error: '+err
