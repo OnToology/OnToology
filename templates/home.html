@@ -4,19 +4,24 @@
 
 </br></br>
 
-<div class="container-fluid">
+
 
 <form action="" method="GET" style="color: #999">
 <div class="form-group" >
+	<div class="container-fluid">
+
 	<span class=" col-md-9 col-xs-9">
 		<input type="text" name="target_repo" id="target_repo_select" class="form-control" placeholder="user/repo" ></br>
 	</span>
 	<span class="col-md-3 col-xs-3">
 		<input type="submit" class="form-control btn" value="Watch this repo"/>
 	</span>
+	</div>
+
 </div>
 </form>
-</div>
+
+
 
 </br>
 <h3 class="curfont">
@@ -24,25 +29,40 @@ What is OnToology
 </h3>
 <p class="curfont">
 A system to automate part of the collaborative ontology development process. Given a repository with an owl file,
- Ontoology will survey it and produce diagrams, a complete documentation and validation based on common pitfalls. 
+ OnToology will survey it and produce diagrams, a complete documentation and validation based on common pitfalls. 
 </p>
+
+<p>
+OnToology can handle <span class="underline">OWL</span> and <span class="underline">RDFS</span> vocabularies in <span class="underline">RDF+XML</span> and <span class="underline">Turtle</span> serialization.
+</p>
+
 
 <h3 class="curfont">How to use it</h3>
 <ol>
-	<li align="left" class="curfont">Enter your repo as user/repo i.e. myuser/myrepo (it does not work with organizations at the moment).</li>
-	<li align="left" class="curfont">Update your repo and push.</li>
-	<li align="left" class="curfont">If pull requests are created successfully you can find them in the pull requests pool with the diagram.</li>
+	<li align="left" class="alignleft">Enter your repo as user/repo i.e. myuser/myrepo (it does not work with organizations at the moment).</li>
+	<li align="left" class="alignleft">You will be redirected to Github to authorize OnToology to access your repo.</li>
+	<li align="left" class="alignleft">Update your ontology and push.</li>
+	<Li align="left" class="alignleft">OnToology will create pull request including generated files (documentation, diagrams and evaluation)</Li>
+	<li align="left" class="alignleft">Merge the pull request created by OnToology</li>
 </ol>
-</br>
-<a class="curfont" style="text-decoration: underline;" href="https://github.com/OnToology/OnToology">OnToology project is an open source project, click here to check it</a>
+	<p><a href="/stepbystep">Click here for a step by step guide</a></p>
+<br>
+
+<a class="emph" href="/about">For more info about the tool click here</a>
+
+</br></br>
+<a class="curfont" style="text-decoration: underline;" href="https://github.com/OnToology/OnToology">OnToology project is an open source project, click here to check it out</a>
 
 </br> </br>
 
+<h3>Latest Repositories</h3><br>
 <table class="table table-striped">
 <tr class="highl">
 	<td>Repository</td>
 	<td>Status</td>
+	<!--
 	<td>Log file</td>
+	-->
 	<td>Last used</td>
 	<!--
 	<td>ar2dtool</td>
@@ -54,7 +74,9 @@ A system to automate part of the collaborative ontology development process. Giv
 	<tr>
 		<td><a href="http://github.com/{{r.url}}">{{r.url}}</a></td>
 		<td>{{r.state}}</td>
+		<!-- 
 		<td><a href="media/logs/{{r.owner}}.log">log</a></td>
+		 -->
 		<td>{{r.last_used}}</td>
 		<!-- <td>{{r.ar2dtool_enable}}</td>
 		<td>{{r.oops_enable}}</td>
