@@ -5,9 +5,6 @@ Creator: Ahmad Alobaid
 
 Contributors: Daniel Garijo, Oscar Corcho, Maria Poveda
 
-The description of the project and the live development are being documented here: https://docs.google.com/document/d/1q8YT9PsgD4aLC-M0HIf2epQ0G6z0sKQuyHahVjNQdCE/edit#heading=h.k152uv43uqte
-
-
 
 
 ###What the system does now:
@@ -50,8 +47,7 @@ Note: you must navigate to the requirements.txt using the "cd" command
 rdfxml (can be downloaded from http://infomesh.net/2003/rdfparser/)
 note: I modified rdfxml to return a dictionary rather than a string, to see 
 the modification go the rdfxml.py file you will see the original Sink commented out
- and right beneath it is my Sink function (I need to send the updated back because of GPL2 license)
-
+ and right beneath it is my Sink function
 
 To install pip follow the instructions here https://pip.pypa.io/en/latest/installing.html
 
@@ -76,7 +72,7 @@ how to do them
  https://gist.github.com/jexchan/2351996
 
 ##Take a peek on the system
-* The system is currently host on the development server http://54.172.63.231/ 
+* The system is currently host on the development server http://ontoology.linkeddata.es/ 
 
 ##How to deploy the on your server
 (To be written later)

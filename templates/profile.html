@@ -1,5 +1,4 @@
-{% extends "base.html"%}
-{%block body%}
+{% extends "base.html"%} {%block body%}
 
 
 <script src="http://fgnass.github.io/spin.js/spin.min.js"></script>
@@ -7,38 +6,28 @@
 
 
 
-<input type="hidden" id="button"/>
-	<div id="box">
-		<!-- Click Me To Return! -->
-	</div>
-	
-	
-	<div id="myspinner"></div>
-	<div id="screen" >
-		
-	</div>
+<input type="hidden" id="button" />
+<div id="box">
+	<!-- Click Me To Return! -->
+</div>
+
+
+<div id="myspinner"></div>
+<div id="screen"></div>
 
 
 
 <style>
-
-
-#myspinner{
+#myspinner {
 	z-index: 10;
 }
 
-
-#screen
-{
-
-	position: absolute;	
+#screen {
+	position: absolute;
 	left: 0;
 	top: 0;
 	background: #000;
-	
 }
-
-
 </style>
 
 
@@ -67,271 +56,155 @@ function GetURLParameter(sParam)
 
 <span id="profiletables">
 
-<h3>Choose one of the below repo by clicking on it</h3>
+	<h3>Choose one of the below repo by clicking on it</h3>
 
-<div class="panel-group" id="accordion">
-<!-- 
-
-<div class="panel panel-default">
-      <div class="panel-heading">
-        <h4 class="panel-title">
-          <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Collapsible Group 2</a>
-        </h4>
-      </div>
-      <div id="collapse2" class="panel-collapse collapse">
-        <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
-      </div>
-    </div>
-
--->
-	<div class="container-fluid">
-	{%for r in repos%}
-				<div class="panel panel-default" >
-					<div class="panel-heading repo" url="{{r.url}}">
-						<h4 class="panel-title">
-							<a data-toggle="collapse" data-parent="#accordion"
-								href="#coll{{forloop.counter}}">
-								<div class="col-md-11 col-xs-11">
-									<div class="container-fluid">		
-										<div class="col-md-4 col-xs-4">{{r.url}}</div>
-										<div class="col-md-4 col-xs-4">{{r.state}}</div>
-										<div class="col-md-4 col-xs-4">{{r.last_used}}</div>
-									</div>
+	<div class="panel-group" id="accordion">
+		<div class="container-fluid">
+			{%for r in repos%}
+			<div class="panel panel-default">
+				<div class="panel-heading repo" url="{{r.url}}">
+					<h4 class="panel-title">
+						<a data-toggle="collapse" data-parent="#accordion"
+							href="#coll{{forloop.counter}}">
+							<div class="col-md-11 col-xs-11">
+								<div class="container-fluid">
+									<div class="col-md-4 col-xs-4">{{r.url}}</div>
+									<div class="col-md-4 col-xs-4">{{r.state}}</div>
+									<div class="col-md-4 col-xs-4">{{r.last_used}}</div>
 								</div>
+							</div>
+
+							<div class="col-md-1 col-xs-1 nonrepo">
+								<a class="dropdown-toggle darktext" data-toggle="dropdown"
+									href="#" role="button" aria-haspopup="true"
+									aria-expanded="false"> more<span class="caret"></span></a>
+									<ul class="dropdown-menu">
+										<li><a url="{{r.url}}" class="closee">Unwatch</a></li>
+										<li><a href="/renew_previsual?target_repo={{r.url}}">renew previsual</a></li>
+										{%if r.previsual_page_available %}
+										<li><a href="http://{{r.user}}.github.io/{{r.rrepo}}">go to previsual</a></li>
+										{%endif%} 
+										<li> 
+											<form id="generateall{{r.url}}" action="generateforall"><input type="hidden" name="repo" value={{r.url}} ></input>
+											</form>
+											<a  class="" onclick="document.getElementById('generateall{{r.url}}').submit()">Generate documentation, diagrams and evaluation</a>
+										</li>
+										<!-- maybe we will added it later
+										{%if r.previsual%}
+										<li><a href="/previsual_toggle?target_repo={{r.url}}">Disable previsual</a></li>
+										{%else%}
+										<li><a href="/previsual_toggle?target_repo={{r.url}}">Enable previsual</a></li>
+										{%endif%}
+										 -->
+									</ul>
+							</div> <!-- 
+								
 									<div class="col-md-1 col-xs-1 glyphicon glyphicon-remove-circle close" url="{{r.url}}"></div>
-									</br>
-								</a>
-						</h4>
-					</div>
-					<div id="coll{{forloop.counter}}" class="panel-collapse collapse">
-						<div class="panel-body darkl">
+								--> </br>
+						</a>
+					</h4>
+				</div>
+				<div id="coll{{forloop.counter}}" class="panel-collapse collapse">
+					<div class="panel-body darkl">
 						<div class="ontologiesspace">Loading ontologies ...</div>
-						</br><form  id="toolsform" action="" method="POST"><input type="submit" value="Save" text="Save" name="Save" class="form-control btn btn-default savebtn"/></form>
-						</div>
+						</br>
+						<form id="toolsform" action="" method="POST">
+							<input type="submit" value="Save" text="Save" name="Save"
+								class="form-control btn btn-default savebtn" />
+						</form>
 					</div>
 				</div>
-	{%endfor%}
+			</div>
+			{%endfor%}
+		</div>
 	</div>
-</div>
 
 
-<!-- Original tables approach (working)
-<table class="table table-hover">
-<tr class="">
-	<td>Repository</td>
-	<td>Status</td>
-	<td>Last used</td>
-	<td>ar2dtool</td>
-	<td>OOPS</td>
-	<td >Widoco</td>
-</tr>
+
+</span>
+
+<script> 
+//This script is for previsual checkboxes
+var False=false;
+var True=true;
 {%for r in repos%}
-	<tr class="repo" url="{{r.url}}">
-		<td>{{r.url}}</td>
-		<td>{{r.state}}</td>
-		<td>{{r.last_used}}</td>
-		<td>{{r.ar2dtool_enable}}</td>
-		<td>{{r.oops_enable}}</td>
-		<td>{{r.widoco_enable}}</td>
-	<tr>
+$("[name='{{r.id}}']").bootstrapSwitch();
+$("[name='{{r.id}}']").bootstrapSwitch('state',{{r.previsual}}); 
 {%endfor%}
-</table>
+ 
+</script>
 
--->
 
-
-<!--  
-
-<table class="table">
-<tr class="">
-	<td>Ontology</td>
-	<td>ar2dtool</td>
-	<td>OOPS</td>
-	<td >Widoco</td>
-</tr>
-{%for o in ontologies%}
-	<tr class="ontology" >
-		<td>{{o.ontology}}</td>
-		
-		<td><input type="checkbox" name="{{o.ontology}}-ar2dtool" checked>
-</td>
-		<td><input type="checkbox" name="{{o.ontology}}-oops" checked>
-</td>
-		<td><input type="checkbox" name="{{o.ontology}}-widoco" checked>
-</td>
-	<tr>
-{%endfor%}
-</table>
-
--->
 
 
 </br>
-<!-- 
-
-<form  id="toolsform" action="" method="POST">
-<input id="savebtn" type="submit" value="Save" text="Save" name="Save" class="form-control btn btn-default "/>
-</form>
-
--->
 
 
-<div class="container-fluid">
+
+
+
+
 
 <form action="/" method="GET" style="color: #999">
 <div class="form-group" >
+	<div class="container-fluid">
+
 	<span class=" col-md-9 col-xs-9">
 		<input type="text" name="target_repo" id="target_repo_select" class="form-control" placeholder="user/repo" ></br>
 	</span>
 	<span class="col-md-3 col-xs-3">
 		<input type="submit" class="form-control btn" value="Watch this repo"/>
 	</span>
+	</div>
+
 </div>
 </form>
+
+
+
+<!-- 
+
+<div class="container-fluid">
+
+	<form action="/" method="GET" style="color: #999">
+		<div class="form-group">
+			<span class=" col-md-9 col-xs-9"> <input type="text"
+				name="target_repo" id="target_repo_select" class="form-control"
+				placeholder="user/repo"></br>
+			</span> <span class="col-md-3 col-xs-3"> <input type="submit"
+				class="form-control btn" value="Watch this repo" />
+			</span>
+		</div>
+	</form>
 </div>
 
 
-
+ -->
 
 <style>
-.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary,
-.bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary {
-  color: #fff !important;
-  background: #333333 !important;
+.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary,.bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary
+	{
+	color: #fff !important;
+	background: #333333 !important;
 }
-
 </style>
 
 
-<script>
-
-/*
-	var result={};
-$( document ).ready(function() {
-	
-	var False=false;
-	var True=true;
-
-	
-	{%for o in ontologies%}
-	//init required
-	$("[name='{{o.ontology}}-ar2dtool']").bootstrapSwitch();
-	$("[name='{{o.ontology}}-oops']").bootstrapSwitch();
-	$("[name='{{o.ontology}}-widoco']").bootstrapSwitch();
-
-	//setting the values
-	$("[name='{{o.ontology}}-ar2dtool']").bootstrapSwitch('state',{{o.ar2dtool}});
-	$("[name='{{o.ontology}}-oops']").bootstrapSwitch('state',{{o.oops}});
-	$("[name='{{o.ontology}}-widoco']").bootstrapSwitch('state',{{o.widoco}});
-	
-	//appending the values to be send later to the server
-	result["{{o.ontology}}-ar2dtool"] = $("[name='{{o.ontology}}-ar2dtool']").bootstrapSwitch('state');
-	result["{{o.ontology}}-oops"]     = $("[name='{{o.ontology}}-oops']").bootstrapSwitch('state');
-	result["{{o.ontology}}-widoco"]   = $("[name='{{o.ontology}}-widoco']").bootstrapSwitch('state');
-
-	
-	$("[name='{{o.ontology}}-ar2dtool']").on('switchChange.bootstrapSwitch', function(event, state) {
-		console.log(state); // true | false
-		result["{{o.ontology}}-ar2dtool"] = $("[name='{{o.ontology}}-ar2dtool']").bootstrapSwitch('state');
-	});
-
-	$("[name='{{o.ontology}}-oops']").on('switchChange.bootstrapSwitch', function(event, state) {
-		console.log(state); // true | false
-		result["{{o.ontology}}-oops"]     = $("[name='{{o.ontology}}-oops']").bootstrapSwitch('state');
-	});
-
-	$("[name='{{o.ontology}}-widoco']").on('switchChange.bootstrapSwitch', function(event, state) {
-		console.log(state); // true | false
-		result["{{o.ontology}}-widoco"]   = $("[name='{{o.ontology}}-widoco']").bootstrapSwitch('state');
-	});
-
-	$("#toolsform").submit(function(event){
-/* 		$.ajax({
-		    url:   "",
-		    data:  result,
-		    async: false
-		}); /
-		$("#toolsvalues").attr("value") = result;
-		alert("savebtn is clicked");
-	});	
-	
-	
-	
-	{%endfor%}
-	
-	
-
-});
-
-	*/
-</script>
-
 </span>
 
 
-<span id="slidertag">
-
-</span>
+<span id="slidertag"> </span>
 
 
 <script>
 
-/*
-var False=false;
-var True=true;
-var result={};
-*/
 
 var current_url;
 var m;
 $( document ).ready(function() {
 	
 	
-	/*
-	function initsliders(ontologies){
-		var o;
-		for (o=0;o<ontologies.length;o++){	
-			console.log("index: "+o);
-			var local=ontologies[o].ontology;
-			
-			//init required
-			$("[name='"+ontologies[o].ontology+"-ar2dtool']").bootstrapSwitch();
-			$("[name='"+ontologies[o].ontology+"-oops']").bootstrapSwitch();
-			$("[name='"+ontologies[o].ontology+"-widoco']").bootstrapSwitch();
-		
-			//setting the values
-			$("[name='"+ontologies[o].ontology+"-ar2dtool']").bootstrapSwitch('state',ontologies[o].ar2dtool);
-			$("[name='"+ontologies[o].ontology+"-oops']").bootstrapSwitch('state',ontologies[o].oops);
-			$("[name='"+ontologies[o].ontology+"-widoco']").bootstrapSwitch('state',ontologies[o].widoco);
-						
-			//appending the values to be send later to the server
-			result[ontologies[o].ontology+"-ar2dtool"] = $("[name='"+ontologies[o].ontology+"-ar2dtool']").bootstrapSwitch('state');
-			result[ontologies[o].ontology+"-oops"]     = $("[name='"+ontologies[o].ontology+"-oops']").bootstrapSwitch('state');
-			result[ontologies[o].ontology+"-widoco"]   = $("[name='"+ontologies[o].ontology+"-widoco']").bootstrapSwitch('state');
-		
-			$("[name='"+ontologies[o].ontology+"-ar2dtool']").on('switchChange.bootstrapSwitch', function(event, state) {
-				//var local=eval(ontologies[o].ontology);
-				console.log("local: "+local);
-				console.log(state); // true | false
-				console.log("will check ontology: "+local);
-				result[local+"-ar2dtool"] = $("[name='"+local+"-ar2dtool']").bootstrapSwitch('state');
-				//result[ontologies[o].ontology+"-ar2dtool"] = $("[name='"+ontologies[o].ontology+"-ar2dtool']").bootstrapSwitch('state');
-			});
-		
-			$("[name='"+ontologies[o].ontology+"-oops']").on('switchChange.bootstrapSwitch', function(event, state) {
-				console.log(state); // true | false
-				result[ontologies[o].ontology+"-oops"]     = $("[name='"+ontologies[o].ontology+"-oops']").bootstrapSwitch('state');
-			});
-		
-			$("[name='"+ontologies[o].ontology+"-widoco']").on('switchChange.bootstrapSwitch', function(event, state) {
-				console.log(state); // true | false
-				result[ontologies[o].ontology+"-widoco"]   = $("[name='"+ontologies[o].ontology+"-widoco']").bootstrapSwitch('state');
-			});
-		}
-	}
-	*/
+
 
 	
 	var opts = {
@@ -369,9 +242,13 @@ $( document ).ready(function() {
 
 
 	var cc = false;
-	$(".close").click(function() {
-		//alert("close");
+	$(".nonrepo").click(function(){
+		//alert();
 		cc = true;
+	});
+	$(".closee").click(function() {
+		//alert("close");
+		//cc = true;
 		if (confirm("Are you sure you want to unwatch this repo?")==false){
 			return
 		}
@@ -398,10 +275,10 @@ $( document ).ready(function() {
 	
 	$(".repo").click(function() {
 		if (cc){
+			cc=false;
 			return;
 		}		
 		var targetpanel = $(this);
-		//var bodypanel = $(this).parent().find(".panel-body");
 		var bodypanel = $(this).parent().find(".ontologiesspace");
 		current_url = $(this).attr('url');
 		greyout(); 
@@ -411,7 +288,7 @@ $( document ).ready(function() {
 		}).done(function( resp ) {
 		    ontologies = resp.ontologies;		    
 		    if (ontologies.length==0){
-		    	alert("There is no OnToology configurations on this repo");
+		    	alert("Make sure you merge the pull request. If there is no pull request, made a change to the ontology and push it to your repository");
 			}
 		    var o;
 		    var temp;
@@ -425,34 +302,19 @@ $( document ).ready(function() {
 		    			"</br>");	
 		    }
 		    
-		    /*
-		    if (ontologies.length>0){
-		    	var savebtn = '</br><form  id="toolsform" action="" method="POST"><input class="savebtn" type="submit" value="Save" text="Save" name="Save" class="form-control btn btn-default "/></form>'
-		    	temp=bodypanel.html();
-		    	bodypanel.html(temp+savebtn);
-		    }*/
+	
 		    $("#slidertag").html(resp.sliderhtml);
-		    initsliders();
-		    //alert(ontologies[0].ontology);
-		    //initsliders(ontologies);		    
+		    initsliders();		    
 		    $('#box').click();
 		});	 
 	});//repo selector
 	
 
 	
-	/*
-	$(".panel-body").click(function(){		
-		$(".ontology").click(function(){
-			console.log($(this).text());
-		});
-	});*/
+
 	
 	$(".savebtn").click(function(){
-		//alert("panel body");
-		
-//		$(".savebtn").click(function(){
-			//alert("clicked");
+
 			result['repo'] = current_url;
 			result['csrfmiddlewaretoken'] = '{{csrf_token}}';		
 			 $.ajax({
@@ -474,13 +336,7 @@ $( document ).ready(function() {
 				    	//alert(resp.error);
 				    }
 				});
-				
-		//});
-		
-		
 	});
-	
-
 	
 }); 
 
@@ -499,6 +355,8 @@ $( document ).ready(function() {
 
 
 
+<br><br><br><br>
+<br><br><br><br>
 
 
 {% endblock %}
