@@ -6,12 +6,17 @@ Creator: Ahmad Alobaid
 Contributors: Daniel Garijo, Oscar Corcho, Maria Poveda
 
 
+###Project Plan
+* Provide a better solution for handling private and public repos.
+* Docker setup
+* Use front-end framework (e.g. AngularJS)
+* Add new features (e.g. integrate with GitLab)
+* Deploy on the live server (now on a testing server)
+* Prepare automated testing
+
+
 
 ###What the system does now:
-* Ask user for permission.
-* Add AutonUser as collaborator.
-* Add webhooks.
-* Fork project to AutonUser.
 * Draw two kinds of diagrams from rdf files using ar2dtool (https://github.com/idafensp/ar2dtool).
 * Create a documentation of the ontology using Widoco tool (https://github.com/dgarijo/Widoco).
 * Validate the ontology using OOPS tool and generate a summary of the issues found by OOPS (http://oops-ws.oeg-upm.net/).
@@ -51,18 +56,6 @@ the modification go the rdfxml.py file you will see the original Sink commented 
 
 To install pip follow the instructions here https://pip.pypa.io/en/latest/installing.html
 
-
-###Requirements guide (if you want to try in locally)
-* python 2.7 to be installed.
-* git to be installed.
-* curl to be installed.
-* AR2DTool to be installed https://github.com/idafensp/ar2dtool.
-* Widoco to be installed https://github.com/dgarijo/Widoco.
-* the above libraries to be installed (I recommend using pip to install them).
-* linux/unix operating system (it may work on Windows with after some adjustments).
-* You have to set environment variables.
-
-note: you may need to change some of the hardcoded variables, since the system still in early stage
 
 ##Working with Multiple ssh keys
 At some point, you may need to perform tests locally (django tests), you may need 
