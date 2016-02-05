@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="66e50091-b8ae-4ef0-9074-2583ca14006f" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Test Scenarios.md" afterPath="$PROJECT_DIR$/Test Scenarios.md" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Integrator/previsual.py" afterPath="$PROJECT_DIR$/Integrator/previsual.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="OnToology.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -28,8 +26,8 @@
       <file leaf-file-name="previsual.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Integrator/previsual.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.5553977">
-              <caret line="95" column="18" selection-start-line="95" selection-start-column="4" selection-end-line="95" selection-end-column="18" />
+            <state vertical-scroll-proportion="0.53125">
+              <caret line="99" column="73" selection-start-line="99" selection-start-column="73" selection-end-line="99" selection-end-column="73" />
               <folding />
             </state>
           </provider>
@@ -862,8 +860,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Integrator/previsual.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.5553977">
-          <caret line="95" column="18" selection-start-line="95" selection-start-column="4" selection-end-line="95" selection-end-column="18" />
+        <state vertical-scroll-proportion="0.53125">
+          <caret line="99" column="73" selection-start-line="99" selection-start-column="73" selection-end-line="99" selection-end-column="73" />
           <folding />
         </state>
       </provider>

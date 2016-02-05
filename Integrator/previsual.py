@@ -96,7 +96,9 @@ def generate_previsual(repo_dir,ontologies_dir):
 def get_main_index(links):
     links_html=""
     for i,l in enumerate(links, start=1):
-        links_html+= "<tr class='highl'><td>%d</td><td><a class='darktext' href='%s'>%s</a></td></tr>"%(i,l,l.split('/')[-3].split('.')[:-1])
+        name = l.split('/')[-3]  # get the file name from blah/blah/filename.someext/documentation/index.html
+        name = (name.split('.')[:-1])[0] # get file name without the file extension
+        links_html+= "<tr class='highl'><td>%d</td><td><a class='darktext' href='%s'>%s</a></td></tr>"%(i,l,name)
         #links_html+= "<li class='btn btn-default highl'><a class='darktext' href='%s'>%s</a></li><br><br>"%(l,l)
     html = """
         <html>
