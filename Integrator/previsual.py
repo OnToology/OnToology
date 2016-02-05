@@ -95,8 +95,9 @@ def generate_previsual(repo_dir,ontologies_dir):
 
 def get_main_index(links):
     links_html=""
-    for l in links:
-        links_html+= "<li class='btn btn-default highl'><a class='darktext' href='%s'>%s</a></li><br><br>"%(l,l)
+    for i,l in enumerate(links, start=1):
+        links_html+= "<tr class='highl'><td>%d</td><td><a class='darktext' href='%s'>%s</a></td></tr>"%(i,l,l.split('/')[-1])
+        #links_html+= "<li class='btn btn-default highl'><a class='darktext' href='%s'>%s</a></li><br><br>"%(l,l)
     html = """
         <html>
             <head>
@@ -111,9 +112,16 @@ def get_main_index(links):
                </style>
             </head>
             <body><br><br>
-                <ul>
-                %s
-                </ul>
+                <div class="container-fluid">
+                    <div class="table-responsive col-md-offset-2  col-md-8">
+                        <table class="table table-striped">
+                            <tr>
+                                <td>#</td> <td>URL to documentation</td>
+                            </tr>
+                        %s
+                        </table>
+                    </div>
+                </div>
             </body>
         </html>
     """%(links_html)
