@@ -37,11 +37,8 @@ AUTHENTICATION_BACKENDS = (
 LOGIN_URL = '/login'
 
 
-
-
 #Needed for the tests
 TEST_RUNNER = 'OnToology.tests.__init__.NoSQLTestRunner'
-
 
 
 #The below 5 lines are used for login with facebook purposes
@@ -53,10 +50,9 @@ GITHUB_LOCAL_APP_ID = '3995f5db01f035de44c6'
 GITHUB_LOCAL_API_SECRET = '141f896e53db4a4427db177f1ef2c9975e8a3c1f'
 
 
-
-client_id = GITHUB_APP_ID#'bbfc39dd5b6065bbe53b'
-client_secret = GITHUB_API_SECRET#'60014ba718601441f542213855607810573c391e'
-#host = 'http://54.172.63.231'
+client_id = GITHUB_APP_ID  # 'bbfc39dd5b6065bbe53b'
+client_secret = GITHUB_API_SECRET  # '60014ba718601441f542213855607810573c391e'
+# host = 'http://54.172.63.231'
 host = 'http://ontoology.linkeddata.es'
 local = False
 if 'OnToology_home' in os.environ and os.environ['OnToology_home'].lower() == "true":
@@ -97,7 +93,7 @@ MEDIA_URL = '/media/'
 
 TEST = False    
     
-test_conf = { 'local': False #don't interact with github at all, just mimic
+test_conf = {'local': False #don't interact with github at all, just mimic
              
              }
 # Application definition
@@ -136,7 +132,6 @@ TEMPLATE_CONTEXT_PROCESSORS=(
 )
 
 ROOT_URLCONF = 'OnToology.urls'
-
 WSGI_APPLICATION = 'OnToology.wsgi.application'
 
 
