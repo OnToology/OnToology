@@ -216,7 +216,7 @@ def add_hook(request):
                 return
             else:
                 return render_to_response('msg.html',{'msg': msg},context_instance=RequestContext(request))
-     except:
+    except:
         msg = 'This request should be a webhook ping'
         if settings.TEST:
             print msg 
