@@ -58,20 +58,16 @@ client_id = GITHUB_APP_ID#'bbfc39dd5b6065bbe53b'
 client_secret = GITHUB_API_SECRET#'60014ba718601441f542213855607810573c391e'
 #host = 'http://54.172.63.231'
 host = 'http://ontoology.linkeddata.es'
-local=False
-if 'OnToology_home' in os.environ and os.environ['OnToology_home'].lower()=="true":
-    local=True
+local = False
+if 'OnToology_home' in os.environ and os.environ['OnToology_home'].lower() == "true":
+    local = True
     host = 'http://127.0.0.1:8000'
     client_id = GITHUB_LOCAL_APP_ID
     client_secret = GITHUB_LOCAL_API_SECRET
 
 
-
-
 from mongoengine import connect
 connect("OnToology")
-
-
 
 
 AUTH_USER_MODEL = 'mongo_auth.MongoUser'
