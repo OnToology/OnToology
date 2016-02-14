@@ -138,6 +138,9 @@ def get_access_token(request):
     for att in atts:
         keyv = att.split('=')
         d[keyv[0]] = keyv[1]
+    if 'access_token' not in d:
+        print 'access_token is not there'
+        return HttpResponseRedirect('/')
     access_token = d['access_token']
     request.session['access_token'] = access_token
     update_g(access_token)
