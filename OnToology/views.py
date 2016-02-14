@@ -30,6 +30,8 @@ from django.core.urlresolvers import reverse
 import settings
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 
+from mongoengine.queryset import DoesNotExist
+
 import sys
 import string
 import random
@@ -77,53 +79,47 @@ def get_repos_formatted(the_repos):
 #         repos.append(r)
 #     return repos
 
+
 def home(request):
     print '****** Welcome to home page ********'
     print >> sys.stderr,  '****** Welcome to the error output ******'
     if 'target_repo' in request.GET:
         print "we are inside"
-        #print request.GET
         target_repo = request.GET['target_repo']
-        if target_repo.strip() =="" or len(target_repo.split('/')) !=2:
-            return render(request,'msg.html',{'msg': 'please enter a valid repo'})
+        if target_repo.strip() == "" or len(target_repo.split('/')) != 2:
+            return render(request, 'msg.html', {'msg': 'please enter a valid repo'})
         init_g()
 #         if not has_access_to_repo(target_repo):# this for the organization
 #             return render(request,'msg.html',{'msg': 'repos under organizations are not supported at the moment'})
- 
         if request.user.is_authenticated():
             ouser = OUser.objects.get(username=request.user.username)
-            #this is initially to get the access key for the user
-            webhook_access_url, state = webhook_access(client_id,host+'/get_access_token', ouser.private)
-        else:
-            webhook_access_url, state = webhook_access(client_id,host+'/get_access_token', True)#private access in case not loggedin
+            # this is initially to get the access key for the user
+            webhook_access_url, state = webhook_access(client_id, host+'/get_access_token', ouser.private)
+        else:  # private access in case not logged in
+            webhook_access_url, state = webhook_access(client_id, host+'/get_access_token', True)
         request.session['target_repo'] = target_repo
         request.session['state'] = state 
-        try: 
-            repo = Repo.objects.get(url=target_repo)
-        except Exception as e:
-            print str(e)
-            repo = Repo()
-            repo.url=target_repo
-            repo.save()            
-        if request.user.is_authenticated():
-            ouser = OUser.objects.get(email=request.user.email)
-            if repo not in ouser.repos:
-                ouser.repos.append(repo)
-                ouser.save()
-        sys.stdout.flush()
-        sys.stderr.flush()        
+        # try:
+        #     repo = Repo.objects.get(url=target_repo)
+        # except Exception as e:
+        #     print str(e)
+        #     repo = Repo()
+        #     repo.url = target_repo
+        #     repo.save()
+        # if request.user.is_authenticated():
+        #     ouser = OUser.objects.get(email=request.user.email)
+        #     if repo not in ouser.repos:
+        #         ouser.repos.append(repo)
+        #         ouser.save()
         if '127.0.0.1:8000' not in request.META['HTTP_HOST'] or not settings.test_conf['local']:
             request.session['access_token_time'] = '1'
-            return  HttpResponseRedirect(webhook_access_url)
-    sys.stdout.flush()
-    sys.stderr.flush()
-    #repos = get_repos_formatted(Repo.objects.all())
+            return HttpResponseRedirect(webhook_access_url)
     repos = Repo.objects.order_by('-last_used')[:10]
-    return render(request,'home.html',{'repos': repos, 'user': request.user })    
+    return render(request, 'home.html', {'repos': repos, 'user': request.user})
 
 
 def grant_update(request):
-    return render_to_response('msg.html',{'msg': 'Magic is done'},context_instance=RequestContext(request))
+    return render_to_response('msg.html', {'msg': 'Magic is done'}, context_instance=RequestContext(request))
 
 
 def get_access_token(request):
@@ -136,45 +132,61 @@ def get_access_token(request):
         'code': request.GET['code'],
         'redirect_uri': host+'/add_hook'
     }
-    res = requests.post('https://github.com/login/oauth/access_token',data=data)
+    res = requests.post('https://github.com/login/oauth/access_token', data=data)
     atts = res.text.split('&')
     d={}
     for att in atts:
         keyv = att.split('=')
         d[keyv[0]] = keyv[1]
+    if 'access_token' not in d:
+        print 'access_token is not there'
+        return HttpResponseRedirect('/')
     access_token = d['access_token']
     request.session['access_token'] = access_token
     update_g(access_token)
     print 'access_token: '+access_token
-    
+
     if request.user.is_authenticated() and request.session['access_token_time'] == '1':
-        request.session['access_token_time'] ='2'#so we do not loop
+        request.session['access_token_time'] ='2'  # so we do not loop
         isprivate=get_proper_loggedin_scope(OUser.objects.get(username=request.user.username),
                                             request.session['target_repo'])
         print 'isprivate is: '+str(isprivate)
-        webhook_access_url, state = webhook_access(client_id,host+'/get_access_token',isprivate)
+        webhook_access_url, state = webhook_access(client_id, host+'/get_access_token', isprivate)
         request.session['state'] = state   
         return HttpResponseRedirect(webhook_access_url)
-        
-        
+
     rpy_wh = add_webhook(request.session['target_repo'], host+"/add_hook")
     rpy_coll = add_collaborator(request.session['target_repo'], ToolUser)
     error_msg = ""
     if rpy_wh['status'] == False:
-        error_msg+=str(rpy_wh['error'])
+        error_msg += str(rpy_wh['error'])
         print 'error adding webhook: '+error_msg
     if rpy_coll['status'] == False:
-        error_msg+=str(rpy_coll['error'])
+        error_msg += str(rpy_coll['error'])
         print 'error adding collaborator: '+rpy_coll['error']
     else:
         print 'adding collaborator: '+rpy_coll['msg']
     if error_msg != "":
         if 'Hook already exists on this repository' in error_msg:
             error_msg = 'This repository already watched'
-        elif '404' in error_msg:# so no enough access according to Github troubleshooting guide
-            error_msg = 'You do not have permission over this repository'
-        return render_to_response('msg.html',{'msg':error_msg },context_instance=RequestContext(request))
-    return render_to_response('msg.html', {'msg': 'webhook attached and user added as collaborator'},
+        elif '404' in error_msg:  # so no enough access according to Github troubleshooting guide
+            error_msg = 'You don\'t have permission to add collaborators to this repo or this repo does not exist'
+        return render_to_response('msg.html', {'msg': error_msg}, context_instance=RequestContext(request))
+    else:
+        target_repo = request.session['target_repo']
+        try:
+            repo = Repo.objects.get(url=target_repo)
+        except Exception as e:
+            print str(e)
+            repo = Repo()
+            repo.url = target_repo
+            repo.save()
+        if request.user.is_authenticated():
+            ouser = OUser.objects.get(email=request.user.email)
+            if repo not in ouser.repos:
+                ouser.repos.append(repo)
+                ouser.save()
+        return render_to_response('msg.html', {'msg': 'webhook attached and user added as collaborator'},
                               context_instance=RequestContext(request))
 
 
@@ -184,17 +196,17 @@ def add_hook(request):
         print 'We are in test mode'
     try:
         s = str(request.POST['payload'])
-        j = json.loads(s,strict=False)
+        j = json.loads(s, strict=False)
         if j["ref"] == "refs/heads/gh-pages":
-            return render(request,'msg.html',{'msg': 'it is gh-pages, so nothing'})
+            return render(request, 'msg.html', {'msg': 'it is gh-pages, so nothing'})
         s = j['repository']['url']+'updated files: '+str(j['head_commit']['modified'])
         cloning_repo = j['repository']['git_url']
         target_repo = j['repository']['full_name']
         user = j['repository']['owner']['email']
         changed_files = j['head_commit']['modified']
         #changed_files+= j['head_commit']['removed']
-        changed_files+= j['head_commit']['added']
-        if 'Merge pull request' in  j['head_commit']['message'] or 'OnToology Configuration' == j['head_commit']['message']:
+        changed_files += j['head_commit']['added']
+        if 'Merge pull request' in j['head_commit']['message'] or 'OnToology Configuration' == j['head_commit']['message']:
             print 'This is a merge request or Configuration push'
             try:
                 repo = Repo.objects.get(url=target_repo)
@@ -213,14 +225,14 @@ def add_hook(request):
                 print msg
                 return
             else:
-                return render_to_response('msg.html',{'msg': msg},context_instance=RequestContext(request))
+                return render_to_response('msg.html', {'msg': msg}, context_instance=RequestContext(request))
     except:
         msg = 'This request should be a webhook ping'
         if settings.TEST:
             print msg 
             return
         else:
-            return render_to_response('msg.html',{'msg': msg},context_instance=RequestContext(request))
+            return render_to_response('msg.html', {'msg': msg}, context_instance=RequestContext(request))
     print '##################################################'
     print 'changed_files: '+str(changed_files)
     # cloning_repo should look like 'git@github.com:AutonUser/target.git'
@@ -230,15 +242,15 @@ def add_hook(request):
     comm = "python /home/ubuntu/OnToology/OnToology/autoncore.py "
     comm+=' "'+target_repo+'" "'+user+'" "'+cloning_repo+'" '
     for c in changed_files:
-        comm+='"'+c+'" '
+        comm += '"'+c+'" '
     if settings.TEST:
         print 'will call git_magic with target=%s, user=%s, cloning_repo=%s, changed_files=%s'%(target_repo, user, cloning_repo, str(changed_files))
         git_magic(target_repo, user, cloning_repo, changed_files)
         return
     else:
         print 'running autoncore code as: '+comm
-        subprocess.Popen(comm,shell=True)
-        return render_to_response('msg.html',{'msg': ''+s},context_instance=RequestContext(request))
+        subprocess.Popen(comm, shell=True)
+        return render_to_response('msg.html', {'msg': ''+s}, context_instance=RequestContext(request))
 
 
 @login_required 
@@ -276,10 +288,6 @@ def generateforall(request):
         print 'running autoncore code as: '+comm
         subprocess.Popen(comm,shell=True)
         return render_to_response('msg.html',{'msg': 'Soon you will find generated files included in a pull request in your repository'},context_instance=RequestContext(request))
-
-
-
-    
 
 
 def login(request):
