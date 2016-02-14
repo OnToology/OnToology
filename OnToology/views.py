@@ -30,6 +30,8 @@ from django.core.urlresolvers import reverse
 import settings
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 
+from mongoengine.queryset import DoesNotExist
+
 import sys
 import string
 import random
