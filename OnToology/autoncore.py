@@ -1280,14 +1280,15 @@ def get_proper_loggedin_scope(ouser,target_repo):
 
 #just for the development phase 
 
+
 def generate_user_log(log_file_name):
-    comm='cp '+home+'log/'+log_file_name+ '  ' +os.path.join(settings.MEDIA_ROOT,'logs') #' /home/ubuntu/auton/media/logs/'
+    comm = 'cp '+home+'log/'+log_file_name+ '  ' + os.path.join(settings.MEDIA_ROOT, 'logs') #' /home/ubuntu/auton/media/logs/'
     print comm
     sys.stdout.flush()
     if sys.stdout == default_stdout:
         print 'Warning: trying to close sys.stdout in generate_user_log function, I am disabling the closing for now'
     return_default_log()
-    call(comm,shell=True)
+    call(comm, shell=True)
     
 
 
