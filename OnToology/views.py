@@ -170,7 +170,8 @@ def get_access_token(request):
         if 'Hook already exists on this repository' in error_msg:
             error_msg = 'This repository already watched'
         elif '404' in error_msg:  # so no enough access according to Github troubleshooting guide
-            error_msg = 'You don\'t have permission to add collaborators to this repo or this repo does not exist: '+error_msg
+            error_msg = """You don\'t have permission to add collaborators and create webhooks to this repo or this
+            repo does not exist. Note that if you can fork this repo, you can add it here"""
         return render_to_response('msg.html', {'msg': error_msg}, context_instance=RequestContext(request))
     else:
         target_repo = request.session['target_repo']

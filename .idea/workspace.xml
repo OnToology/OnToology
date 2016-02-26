@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="66e50091-b8ae-4ef0-9074-2583ca14006f" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/OnToology/autoncore.py" afterPath="$PROJECT_DIR$/OnToology/autoncore.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/OnToology/views.py" afterPath="$PROJECT_DIR$/OnToology/views.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="OnToology.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -106,8 +104,8 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/OnToology/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.3323486">
-              <caret line="172" column="116" selection-start-line="172" selection-start-column="116" selection-end-line="172" selection-end-column="116" />
+            <state vertical-scroll-proportion="0.44313148">
+              <caret line="177" column="12" selection-start-line="177" selection-start-column="12" selection-end-line="177" selection-end-column="12" />
               <folding>
                 <element signature="e#678#743#0" expanded="true" />
               </folding>
@@ -820,8 +818,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/OnToology/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3323486">
-          <caret line="172" column="116" selection-start-line="172" selection-start-column="116" selection-end-line="172" selection-end-column="116" />
+        <state vertical-scroll-proportion="0.44313148">
+          <caret line="177" column="12" selection-start-line="177" selection-start-column="12" selection-end-line="177" selection-end-column="12" />
           <folding>
             <element signature="e#678#743#0" expanded="true" />
           </folding>
