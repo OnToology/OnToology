@@ -52,7 +52,7 @@ from settings import client_id,client_secret, host
 
 import Integrator.previsual as previsual
 
-sys.stdout = sys.stderr
+# sys.stdout = sys.stderr
 settings.SECRET_KEY = os.environ['SECRET_KEY']
 
 def get_repos_formatted(the_repos):
@@ -170,7 +170,7 @@ def get_access_token(request):
         if 'Hook already exists on this repository' in error_msg:
             error_msg = 'This repository already watched'
         elif '404' in error_msg:  # so no enough access according to Github troubleshooting guide
-            error_msg = 'You don\'t have permission to add collaborators to this repo or this repo does not exist'
+            error_msg = 'You don\'t have permission to add collaborators to this repo or this repo does not exist: '+error_msg
         return render_to_response('msg.html', {'msg': error_msg}, context_instance=RequestContext(request))
     else:
         target_repo = request.session['target_repo']
