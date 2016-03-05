@@ -67,6 +67,12 @@ how to do them
 ##Take a peek on the system
 * The system is currently host on the development server http://ontoology.linkeddata.es/ 
 
+##Tests
+ID | Test | Must
+:--|:----:|:----:
+1  | Adding non-existing repo | shouldn't add the non-existing repo and should
+
+
 ##How to deploy the on your server
 (To be written later)
 
