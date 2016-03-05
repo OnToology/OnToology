@@ -68,13 +68,17 @@ how to do them
 * The system is currently host on the development server http://ontoology.linkeddata.es/ 
 
 ##Tests
-ID | Test | Must  | status
-:--|:----:|:----: | :----:
+ID | Test Case | Expected Result  | Status
+:--|:---------:|:---------------: | :----:
 1  | Adding non-existing repo | shouldn't add the non-existing repo and should | :heavy_check_mark:
+2  | Very large ontology | To provide an error message | :heavy_minus_sign:
+3  | Ontology with wrong | To provide an error message | :heavy_minus_sign:
 
 
-:heavy_minus_sign:
-:heavy_check_mark:
+
+:heavy_minus_sign: | Test is not implemented
+:heavy_check_mark: | Test is completed
+:exclamation:      | Not working perfectly
 
 
 ##How to deploy the on your server
