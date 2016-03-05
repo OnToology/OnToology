@@ -68,9 +68,13 @@ how to do them
 * The system is currently host on the development server http://ontoology.linkeddata.es/ 
 
 ##Tests
-ID | Test | Must
-:--|:----:|:----:
-1  | Adding non-existing repo | shouldn't add the non-existing repo and should
+ID | Test | Must  | status
+:--|:----:|:----: | :----:
+1  | Adding non-existing repo | shouldn't add the non-existing repo and should | :heavy_check_mark:
+
+
+:heavy_minus_sign:
+:heavy_check_mark:
 
 
 ##How to deploy the on your server
