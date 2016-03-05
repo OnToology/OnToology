@@ -75,7 +75,8 @@ ID | Test Case | Expected Result  | Status
 3  | Ontology with wrong | To provide an error message | :heavy_minus_sign:
 
 
-
+Sign | Meaning
+:---:| :-----:
 :heavy_minus_sign: | Test is not implemented
 :heavy_check_mark: | Test is completed
 :exclamation:      | Not working perfectly
