@@ -70,7 +70,7 @@ how to do them
 ##Tests
 ID | Test Case | Expected Result  | Status
 :--|:---------:|:---------------: | :----:
-1  | Adding non-existing repo | shouldn't add the non-existing repo and should | :heavy_minus_sign:
+1  | Adding non-existing repo | shouldn't add the non-existing repo and should | :heavy_check_mark:
 2  | Very large ontology | To provide an error message | :heavy_minus_sign:
 3  | Ontology with wrong | To provide an error message | :heavy_minus_sign:
 
