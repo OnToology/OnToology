@@ -7,60 +7,57 @@ from subprocess import call, Popen, PIPE
 import time
 from OnToology import autoncore, views, settings
 from _curses import ERR
-
-
 #import mimic_webhook
 
 
-
-def suite():   
+def suite():
     return unittest.TestLoader().discover("OnToology.tests", pattern="test*.py")
 
 
-
-
-
-
- 
 import pkgutil
 import unittest
 from OnToology.tests import __path__
  
-#print str(__path__)
-#resource http://stackoverflow.com/questions/6248510/how-to-spread-django-unit-tests-over-multiple-files
+# print str(__path__)
+# resource http://stackoverflow.com/questions/6248510/how-to-spread-django-unit-tests-over-multiple-files
+# The below loop is to add test classes that are a subclass of unittest.case.TestCase
 for loader, module_name, is_pkg in pkgutil.walk_packages(__path__):
-    #print ' module_name: '+str(module_name)+', is_pkg: '+str(is_pkg)
+    # print ' module_name: '+str(module_name)+', is_pkg: '+str(is_pkg)
     module = loader.find_module(module_name).load_module(module_name)
-    #print 'dir module: '+str(dir(module))
+    # print 'dir module: '+str(dir(module))
     for name in dir(module):
-        #print 'name: '+str(name)
+        # print 'name: '+str(name)
         obj = getattr(module, name)
         if isinstance(obj, type) and issubclass(obj, unittest.case.TestCase):
             exec ('%s = obj' % obj.__name__)
 
 
-
 old_keys = []
-ssh_keys_dir =''
+ssh_keys_dir = ''
+
 
 def use_test_key():
     global ssh_keys_dir
     global old_keys
+    print "in function use_test_key"
+
     if 'tests_ssh_key' in os.environ:
-        p = Popen(['ssh-add', '-l'], stdout=PIPE, stderr=PIPE)
+        p = Popen(['ssh-add', '-l'], stdout=PIPE, stderr=PIPE)  # Add the key
         (output, err) = p.communicate()
-        if err is None or err == '':  # successfull
+        print "output: <%s>"%(output)
+        print "err: <%s>"%(err)
+        if err is None or err == '':  # successful
             lines = output.split('\n')[:-1]
-            if len(lines) > 0 and len(lines[0].split(' ')[0]) == 4 \
-                and lines[0].split(' ')[3].strip() == '(RSA)':
-                
+            # I have no idea (anymore) what is this if is doing !! but it works :D.
+            # I'll check it later, I should prepare the tests files for now
+            if len(lines) > 0 and len(lines[0].split(' ')[0]) == 4 and lines[0].split(' ')[3].strip() == '(RSA)':
                 for line in lines:
                     print 'line: '+str(line.split(' '))
                     k = line.split(' ')[2]
                     old_keys.append(k)
                 if len(old_keys) > 0:
                     (ssh_keys_dir, ssh_key_file) = os.path.split(os.environ['tests_ssh_key'])
-                    p = Popen(['ssh-add', '-D'], stdout=PIPE,stderr=PIPE)
+                    p = Popen(['ssh-add', '-D'], stdout=PIPE, stderr=PIPE)
                     (output, err) = p.communicate()
                     if err is None or err == '' or err.strip()=='All identities removed.':  # deleted successfully
                         p = Popen(['ssh-add',
@@ -76,7 +73,7 @@ def use_test_key():
                     print 'No old keys'
             else:
                 print 'There are no keys loaded'
-                p = Popen(['ssh-add',os.environ['tests_ssh_key']],
+                p = Popen(['ssh-add', os.environ['tests_ssh_key']],
                           stdout=PIPE, stderr=PIPE)
                 if err is None or err == '' or 'Identity added' in err:
                     print 'Added new key %s successfully'%(os.environ['tests_ssh_key'])
@@ -91,7 +88,7 @@ def use_test_key():
            
 def use_old_keys():
     global ssh_keys_dir
-    p = Popen(['ssh-add','-D'],stdout=PIPE, stderr=PIPE)
+    p = Popen(['ssh-add', '-D'],stdout=PIPE, stderr=PIPE)
     (output, err) = p.communicate()
     if err is None or err=='' or err.strip()=='All identities removed.':
         print 'The key %s is removed successfully'%(os.environ['tests_ssh_key'])
@@ -109,11 +106,7 @@ def use_old_keys():
             else:
                 print 'error: '+err
 
-                
-    
-    
-    
-           
+
 class NoSQLTestRunner(DjangoTestSuiteRunner):
     def setup_databases(self):
         settings.test_conf['local']=True
