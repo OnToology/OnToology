@@ -82,9 +82,28 @@ Sign | Meaning
 :exclamation:      | Not working perfectly
 
 
+
 ##How to deploy the on your server
 (To be written later)
-
-
+####Environment variables that need to be set
+```
+export github_username=xxxxxx
+export github_password=xxxxxxx
+export github_repos_dir=/xxx/xxx/xxx/temp/
+export ar2dtool_dir=/xxxx/xxxx/xxxx/xxx/ar2dtool/bin/
+export ar2dtool_config=/xxxx/xxxx/xxxx/config/
+export widoco_dir=/xxxxx/xxxx/xxxx/Widoco/JAR/
+export OnToology_home=True
+export SECRET_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+export user_github_username=xxx@xxxxx.xxx
+export user_github_password=xxxxxx
+export test_repo=xxx/xxx
+export test_folder=xxx/xxx/xxx
+export test_ont_hl=xxx/xxx
+export test_ont_nl=xxx/xxx
+export tests_ssh_key=/xxx/.xxx/id_rsa_xxx
+export test_github_username=xxx@xxx.xxx
+export test_github_password=xxx
+```
 
 
