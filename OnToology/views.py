@@ -327,7 +327,7 @@ def login_get_access(request):
         'code': request.GET['code'],
         'redirect_uri': host#host+'/add_hook'
     }
-    res = requests.post('https://github.com/login/oauth/access_token',data=data)
+    res = requests.post('https://github.com/login/oauth/access_token', data=data)
     atts = res.text.split('&')
     d={}
     for att in atts:
