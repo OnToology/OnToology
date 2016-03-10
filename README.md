@@ -76,7 +76,7 @@ ID | Test Case | Expected Result  | Status
 4  | If a tool is not able to generate an output | should not stop, should proceed with the other tools | :heavy_minus_sign:  
 5  | Add a new repo | should be added | :heavy_minus_sign:
 6  | Adding a repo that already added | should be accepted | :heavy_minus_sign:
-7  | Add a new repo, then delete this repo from github and try to do some actions e.g. generate previsualization | :heavy_minus_sign:
+7  | Add a new repo, then delete this repo from github and try to do some actions e.g. generate previsualization | should run the action without problems | :heavy_minus_sign:
 8  | Generate previsualization | should be regenerated | :heavy_minus_sign: 
 
 
