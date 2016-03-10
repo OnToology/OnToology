@@ -71,14 +71,19 @@ how to do them
 ID | Test Case | Expected Result  | Status
 :--|:---------:|:---------------: | :----:
 1  | Adding non-existing repo | shouldn't add the non-existing repo and should add an error page | :heavy_check_mark:
-2  | Very large ontology | To provide an error message | :warning: (takes literally days to perform the test, we are going to ignore this)
-3  | Ontology with syntax error | To provide an error message | :heavy_minus_sign:
+2  | Very large ontology | To show error message | :warning: (takes literally days to perform the test, we are going to ignore this)
+3  | Ontology with syntax error | To show error message | :heavy_minus_sign:
 4  | If a tool is not able to generate an output | should not stop, should proceed with the other tools | :heavy_minus_sign:  
+5  | Add a new repo | should be added | :heavy_minus_sign:
+6  | Adding a repo that already added | should be accepted | :heavy_minus_sign:
+7  | Add a new repo, then delete this repo from github and try to do some actions e.g. generate previsualization | :heavy_minus_sign:
+8  | Generate previsualization | should be regenerated | :heavy_minus_sign: 
+
 
 Sign | Meaning
 :---:| :-----:
-:heavy_minus_sign: | Test is not implemented
-:heavy_check_mark: | Test is completed
+:heavy_minus_sign: | Test automation is not implemented
+:heavy_check_mark: | Test automation is completed
 :warning:          | Warning
 
 
