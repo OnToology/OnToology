@@ -191,6 +191,14 @@ def get_access_token(request):
                               context_instance=RequestContext(request))
 
 
+def get_changed_files_from_payload(payload):
+    commits = payload['commits']
+    changed_files = []
+    for c in commits:
+        changed_files += c["added"] + c["modified"]
+    return changed_files
+
+
 @csrf_exempt
 def add_hook(request):
     if settings.TEST:
@@ -204,9 +212,10 @@ def add_hook(request):
         cloning_repo = j['repository']['git_url']
         target_repo = j['repository']['full_name']
         user = j['repository']['owner']['email']
-        changed_files = j['head_commit']['modified']
-        #changed_files+= j['head_commit']['removed']
-        changed_files += j['head_commit']['added']
+        # changed_files = j['head_commit']['modified']
+        # changed_files+= j['head_commit']['removed']
+        # changed_files += j['head_commit']['added']
+        changed_files = get_changed_files_from_payload(j)
         if 'Merge pull request' in j['head_commit']['message'] or 'OnToology Configuration' == j['head_commit']['message']:
             print 'This is a merge request or Configuration push'
             try:
