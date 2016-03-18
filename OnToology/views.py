@@ -379,6 +379,77 @@ def login_get_access(request):
     return HttpResponseRedirect('/')
 
 
+
+@login_required
+def profilebeta(request):
+    try:
+        pass
+        #prepare_log(request.user.email)
+    except Exception as e:
+        print 'profile preparing log error [normal]: '+str(e)
+    print '************* profile ************'
+    #f=prepare_log('webinterface-'+request.user.email) # I am disabling this for now
+    print str(datetime.today())
+    ouser = OUser.objects.get(email=request.user.email)
+    if 'repo' in request.GET:
+        repo = request.GET['repo']
+        print 'repo :<%s>'%(repo)
+        print 'got the repo'
+        #if True:
+        try:
+            print 'trying to validate repo'
+            hackatt = True
+            for repooo  in  ouser.repos:
+                if repooo.url == repo:
+                    hackatt=False
+                    break
+            if hackatt: # trying to access a repo that does not belong to the use currently logged in
+                return render(request,'msg.html',{'msg': 'This repo is not added, please do so in the main page'})
+            print 'try to get abs folder'
+            #ontologies_abs_folder = clone_repo('git@github.com:'+repo, request.user.email, dosleep=False)
+            #ontologies_abs_folder ='/Users/blakxu/test123/OnToologyTestEnv/temp/ahmad88me@gmail.com'
+            #print 'abs folder: '+ontologies_abs_folder
+            #ontologies = parse_folder_for_ontologies(ontologies_abs_folder)
+            if type(autoncore.g) == type(None):
+                print 'access token is: '+request.session['access_token']
+                update_g(request.session['access_token'])
+            ontologies = parse_online_repo_for_ontologies(repo)
+            print 'ontologies: '+str(len(ontologies))
+            for o in ontologies:
+                for d in o:
+                    print d+': '+str(o[d])
+            #return_default_log()
+            print 'testing redirect'
+            #f.close()
+            print 'will return the Json'
+            #return JsonResponse({'foo': 'bar'})
+            html = render(request,'profile_sliders.html',{'ontologies':ontologies}).content
+            return JsonResponse({'ontologies':ontologies, 'sliderhtml': html})
+            #return render(request,'profile.html',{'repos': get_repos_formatted(ouser.repos), 'ontologies': ontologies})
+        #else:
+        except Exception as e:
+            print 'exception: '+str(e)
+#     sys.stdout= sys.__stdout__
+#     sys.stderr = sys.__stderr__
+    print 'testing redirect'
+    #f.close()
+    #repos = get_repos_formatted(ouser.repos)
+    repos = ouser.repos
+    for r in repos:
+        try:
+            if len(r.url.split('/')) != 2:
+                ouser.update(pull__repos=r)
+                r.delete()
+                ouser.save()
+                continue
+            r.user = r.url.split('/')[0]
+            r.rrepo = r.url.split('/')[1]
+        except:
+            ouser.update(pull__repos=r)
+            ouser.save()
+    return render(request,'profilebeta.html',{'repos': repos})
+
+
 @login_required
 def profile(request):
     try:
