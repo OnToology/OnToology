@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>OnToology</title>
-	<link rel="shortcut icon" href="https://raw.githubusercontent.com/OnToology/OnToology/Integrator/media/home/ontoology_icon.png">
+	<link rel="shortcut icon" href="https://raw.githubusercontent.com/OnToology/OnToology/master/media/home/ontoology_icon.png">
     <!-- Bootstrap -->
    
    <!-- local bootstrap>
@@ -56,6 +56,14 @@
 				text-align: center;
 			}
 
+			html{
+				width: 100% !important;
+				margin: 0 !important;
+				padding: 0 !important;
+			}
+
+
+
 			
 	 </style>
 
@@ -85,7 +93,7 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
 	
-	
+
 	<link rel="stylesheet" href="http://getbootstrap.com/examples/cover/cover.css">
 	<!-- Latest compiled and minified JavaScript-> This is the one I use
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
@@ -115,14 +123,19 @@
   
   </head>
   <body>
-    
+
+
     <div class="site-wrapper1">
 
-      <div class="site-wrapper-inner1">
+    	<div class="site-wrapper-inner1">
 
         <div class="cover-container1">
 
-          <div class="masthead1 clearfix1 col-md-8 col-md-offset-2">
+          <div class="masthead1 clearfix1">
+			  <div class="container">
+			  <div class="row">
+			  	<div class=" col-md-8 col-md-offset-2">
+
             <div class="inner">
               <a href="/">
               <h3 class="masthead-brand"><img height="70px" src="https://raw.githubusercontent.com/OnToology/OnToology/master/ontoology.png"/></h3>
@@ -159,117 +172,59 @@
 						   </br>
 						{% endif %}
 					{% endblock %}
-					
-					
-                	
-					
-					
                 </ul>
                                  	
               </nav>
             </div>
             </br></br></br></br></br>
-            
-            
-            
-            
-              <!-- Modal -->
-  <div class="modal fade" id="myModal" role="dialog">
-    <div class="modal-dialog">
-    
-      <!-- Modal content-->
-      <div class="modal-content">
-        
-        <form action="/login">
-	        <div class="modal-body darkl">
-	        <button type="button" class="close" data-dismiss="modal">&times;</button><br>
-	         Enter your Github username<br>
-	         <input type="text" class="form-control" name="username"></input><br>
-	         <input type="submit" class="form-control"></input><br>
-	        </div>
-	    </form>
-      </div>
-      
-    </div>
-  </div>
-            
-            
-            
-            
+
+
+			  <div class="modal fade" id="myModal" role="dialog">
+				<div class="modal-dialog">
+
+				  <div class="modal-content">
+
+					<form action="/login">
+						<div class="modal-body darkl">
+						<button type="button" class="close" data-dismiss="modal">&times;</button><br>
+						 Enter your Github username<br>
+						 <input type="text" class="form-control" name="username"></input><br>
+						 <input type="submit" class="form-control"></input><br>
+						</div>
+					</form>
+				  </div>
+				</div>
+			  </div>
+
             {% block body%}
             {% endblock %}
-            
             <br><br><br><br><br><br>
-            
-       
-            
-            
-            
-          </div>
-   
-		  
-          <!--  div class="inner cover">
-            <h1 class="cover-heading">Cover your page.</h1>
-            <p class="lead">Cover is a one-page template for building simple and beautiful home pages. Download, edit the text, and add your own fullscreen background photo to make it your own.
-            
-          
-            </p>
-            <p class="lead">
-              <a href="#" class="btn btn-lg btn-default">Learn more</a>
-            </p> 
-          </div-->
+			</div>
+		  </div>
+		  </div>
+			  </div>
+		</div>
 
-		<!--  
-          <div class="mastfoot" id="myfoot">
-            <div class="row ">
+		</div>
 
-    		
-    		<div class="col-md-8 col-md-offset-0 ">
-    		Developed by 	        <a href = "http://oeg-upm.net" target="_blank">Ontology Engineering Group</a>
-	        <br>
-    		Built with <a target="_blank" href="http://getbootstrap.com/">Bootstrap</a>
-    		Icons from <a target="_blank" href="http://glyphicons.com/">Glyphicons</a>
- 	        <br>
-	        Latest revision February, 2015
-           <br>&copy; Ontology Engineering Group
-           <p>Powered by Widoco, AR2DTool and OOPS!</p>
-        	</div>
-        	<div class="col-md-1 col-md-offset-0 ">
-    			<a href="http://www.oeg-upm.net/" target="_blank"><img src="https://raw.githubusercontent.com/OnToology/OnToology/Integrator/media/home/oeg.gif" alt="OEG logo" class="img-rounded" class="img-responsive" /></a>
-    		</div>
+	</div>
 
-      	</div>
-      	-->
-      	
-      	
-      	     <!--
-            <div class="inner"> 
-         
-              <p>Cover template for <a href="http://getbootstrap.com">Bootstrap</a>, by <a href="https://twitter.com/mdo">@mdo</a>.</p>
-            
-            </div>
-             -->
-            
-            
-          </div>
 
-        </div>
-
-      </div>
-
-    </div>
 	{%block bel%}
 	{% endblock %}
-	
+
+
+
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) >
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed >
     <script src="js/bootstrap.min.js"></script-->
 
-	 
+
+
 	
-	
-	<footer class="footer " >
+	<footer class="footer" >
+			<div class="container">
             <div class="row">
     		<div class="col-md-6 col-md-offset-2 " align="left">
 	        <br>
@@ -284,9 +239,10 @@
     			<a href="http://www.oeg-upm.net/" target="_blank"><img src="https://raw.githubusercontent.com/OnToology/OnToology/Integrator/media/home/oeg.gif" alt="OEG logo" class="img-rounded" class="img-responsive" /></a>
     		</div>
       	</div>
+				</div>
       </footer>
 	
-	
+
 
   </body>
 </html>
