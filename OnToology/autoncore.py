@@ -119,8 +119,8 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
         dolog('repo cloned')
     files_to_verify = []
     for chf in changed_filesss:
-        auton_conf = {'ar2dtool_enable': False,
-                      'widoco_enable': False, 'oops_enable': False}
+        auton_conf = {'ar2dtool_enable': False, 'widoco_enable': False,
+                      'oops_enable': False, 'owl2jsonld_enable': False}
         if chf[-4:] not in ontology_formats:  # validate ontology formats
             # for now, do not detect the configuration
             continue
@@ -205,11 +205,28 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
                 dolog('oops checked ontology for pitfalls')
             except Exception as e:
                 exception_if_exists += str(e)
-            # print 'oops checked ontology for pitfalls'
+                # print 'oops checked ontology for pitfalls'
                 dolog('exception in generating oops validation document: ' + str(e))
         else:
             # print 'oops_enable is false'
             dolog('oops_enable is false')
+        if auton_conf['owl2jsonld_enable']:
+            # print 'owl2jsonld_enable is true'
+            dolog('oops_enable is true')
+            change_status(target_repo,
+                          'generating context document for ' +
+                          changed_files[0])
+            try:
+                # TODO !!!! CALL OWL2JSONLD FUNCTION HERE!! #################
+                dolog('generated context')
+            except Exception as e:
+                exception_if_exists += str(e)
+            # print 'generated context'
+                dolog('exception in generating context documentation: ' + str(e))
+        else:
+            # print 'owl2jsonld_enable is false'
+            dolog('owl2jsonld_enable is false')
+
     # After the loop
     # print "number of files to verify %d"%(len(files_to_verify))
     dolog("number of files to verify %d" % (len(files_to_verify)))
@@ -270,7 +287,7 @@ def verify_tools_generation_when_ready(ver_file_comp, repo=None):
     ver_file = get_abs_path(ver_file)
     # print 'ver file: '+ver_file
     dolog('ver file: ' + ver_file)
-    if ver_file_comp['ar2dtool_enable'] == ver_file_comp['widoco_enable'] == ver_file_comp['oops_enable'] == False:
+    if ver_file_comp['ar2dtool_enable'] == ver_file_comp['widoco_enable'] == ver_file_comp['oops_enable'] == ver_file_comp['owl2jsonld_enable'] == False:
         return
     for i in range(20):
         time.sleep(15)
@@ -282,6 +299,8 @@ def verify_tools_generation_when_ready(ver_file_comp, repo=None):
         if ver_file_comp['widoco_enable'] and 'widoco' not in s:
             continue
         if ver_file_comp['oops_enable'] and 'oops' not in s:
+            continue
+        if ver_file_comp['owl2jsonld_enable'] and 'owl2jsonld' not in s:
             continue
         os.remove(ver_file)  # the verification file is no longer needed
         # time.sleep(1)
@@ -324,14 +343,17 @@ def update_file(target_repo, path, message, content):
 def verify_tools_generation(ver_file_comp, repo=None):
     # AR2DTool
     if ver_file_comp['ar2dtool_enable']:
-        target_file = os.path.join(get_abs_path(get_target_home()), ver_file_comp['file'],
-                                   tools_conf['ar2dtool'][
-                                       'folder_name'], ar2dtool_config_types[0][:-5],
-                                   get_file_from_path(ver_file_comp['file']) + "." + tools_conf['ar2dtool']['type'] + '.graphml')
+        target_file = os.path.join(get_abs_path(get_target_home()),
+                                   ver_file_comp['file'],
+                                   tools_conf['ar2dtool']['folder_name'],
+                                   ar2dtool_config_types[0][:-5],
+                                   get_file_from_path(ver_file_comp['file']) +
+                                   "." + tools_conf['ar2dtool']['type'] +
+                                   '.graphml')
         file_exists = os.path.isfile(target_file)
         if repo is not None and not file_exists:
-            repo.state += ' The Diagram of the file %s is not generated ' % (ver_file_comp[
-                                                                             'file'])
+            repo.state += ' The Diagram of the file %s is not generated ' % \
+                (ver_file_comp['file'])
             repo.save()
         if settings.TEST:
             assert file_exists, 'the file %s is not generated' % (target_file)
@@ -374,6 +396,25 @@ def verify_tools_generation(ver_file_comp, repo=None):
             # '%(ver_file_comp['file'])
             dolog('The Evaluation report of the file %s if not generated ' %
                   (ver_file_comp['file']))
+    # owl2jsonld
+    if ver_file_comp['owl2jsonld_enable']:
+        target_file = os.path.join(get_abs_path(get_target_home()),
+                                   ver_file_comp['file'],
+                                   tools_conf['owl2jsonld']['folder_name'],
+                                   'context.jsonld')
+        file_exists = os.path.isfile(target_file)
+        if repo is not None and not file_exists:
+            repo.state += ' The Context documentation of the file %s if not generated ' % (
+                ver_file_comp['file'])
+            repo.save()
+        if settings.TEST:
+            assert file_exists, 'the file %s is not generated' % (target_file)
+        elif not file_exists:
+            # print 'The Context documentation of the file %s if not generated
+            # '%(ver_file_comp['file'])
+            dolog('The Context documentation of the file %s if not generated ' %
+                  (ver_file_comp['file']))
+
     if 'not generated' in repo.state:
         repo = g.get_repo(repo.url)
         for iss in repo.get_issues():
@@ -827,9 +868,11 @@ def get_auton_config(conf_file_abs, from_string=True):
     ar2dtool_sec_name = 'ar2dtool'
     widoco_sec_name = 'widoco'
     oops_sec_name = 'oops'
+    owl2jsonld_sec_name = 'owl2jsonld'
     ar2dtool_enable = True
     widoco_enable = True
     oops_enable = True
+    owl2jsonld_enable = True
     config = ConfigParser.RawConfigParser()
     if from_string:
         opened_conf_files = config.readfp(conf_file_abs)
@@ -862,6 +905,14 @@ def get_auton_config(conf_file_abs, from_string=True):
         except:
             # print 'oops enable value doesnot exist'
             dolog('oops enable value doesnot exist')
+        try:
+            owl2jsonld_enable = config.getboolean(
+                owl2jsonld_sec_name, 'enable')
+            # print 'got owl2jsonld enable value: '+str(owl2jsonld_enable)
+            dolog('got owl2jsonld enable value: ' + str(owl2jsonld_enable))
+        except:
+            # print 'owl2jsonld enable value doesnot exist'
+            dolog('owl2jsonld enable value doesnot exist')
     else:
         # print 'auton configuration file does not exists'
         dolog('auton configuration file does not exists')
@@ -871,6 +922,8 @@ def get_auton_config(conf_file_abs, from_string=True):
         config.set(widoco_sec_name, 'enable', widoco_enable)
         config.add_section(oops_sec_name)
         config.set(oops_sec_name, 'enable', oops_enable)
+        config.add_section(owl2jsonld_sec_name)
+        config.set(owl2jsonld_sec_name, 'enable', owl2jsonld_enable)
         conff = conf_file_abs
         # print 'will create conf file: '+ conff
         dolog('will create conf file: ' + conff)
@@ -882,7 +935,10 @@ def get_auton_config(conf_file_abs, from_string=True):
             # print e
             dolog('expection: ')
             dolog(e)
-    return {'ar2dtool_enable': ar2dtool_enable, 'widoco_enable': widoco_enable, 'oops_enable': oops_enable}
+    return {'ar2dtool_enable': ar2dtool_enable,
+            'widoco_enable': widoco_enable,
+            'oops_enable': oops_enable,
+            'owl2jsonld_enable': owl2jsonld_enable}
 
 
 # def get_auton_configuration(f=None,abs_folder=None):
