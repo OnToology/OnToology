@@ -217,7 +217,7 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
                           'generating context document for ' +
                           changed_files[0])
             try:
-                # TODO !!!! CALL OWL2JSONLD FUNCTION HERE!! #################
+                generate_owl2jsonld_file(changed_files)  # TODO <==============
                 dolog('generated context')
             except Exception as e:
                 exception_if_exists += str(e)
@@ -1234,6 +1234,43 @@ def nicer_oops_output(issues):
         for i in range(len(suggs)):
             s += "%d. " % (i + 1) + suggs[i] + "\n"
     return s
+
+
+##########################################################################
+##########################################################################
+############################  owl2jsonld  ################################
+##########################################################################
+##########################################################################
+
+owl2jsonld_dir = os.environ['owl2jsonld_dir']
+
+
+def generate_owl2jsonld_file(changed_files):
+    for r in changed_files:
+        if valid_ont_file(r):
+            # print 'will oops: '+r
+            dolog('will owl2jsonld: ' + r)
+            build_owl2jsonld_file(r)
+
+
+def build_owl2jsonld_file(ont_file):
+    # print 'in owl2jsonld function'
+    dolog('in owl2jsonld function')
+    ont_file_abs = get_abs_path(ont_file)
+
+    ctabs = build_file_structure(get_file_from_path(ont_file)[:-4] + '.jsonld',
+                                 [get_target_home(), ont_file, 'context'])
+    # print 'ont_abs: %s and config_file_abs %s'%(ontf_file_abs,ctabs)
+    dolog('ont_abs: %s and ctabs %s' % (ont_file_abs, ctabs))
+
+    comm = "cd " + get_parent_path(ctabs) + "; "  # Not neccesary
+    comm += "java -jar "
+    comm += owl2jsonld_dir + "owl2jsonld-0.2.1-standalone.jar "  # ToolLocation
+    comm += "-o " + ctabs  # Output File
+    comm += "file://" + ont_file_abs  # Ontology Location
+
+    dolog(comm)
+    call(comm, shell=True)
 
 
 ##########################################################################
