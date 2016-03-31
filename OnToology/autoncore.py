@@ -40,16 +40,16 @@ use_database = True
 
 ToolUser = 'OnToologyUser'
 
-#sys.stdout = sys.stderr
+# sys.stdout = sys.stderr
 default_stdout = sys.stderr
 default_stderr = sys.stderr
 
 parent_folder = None
 ar2dtool_config_types = ['ar2dtool-taxonomy.conf',  'ar2dtool-class.conf']
 ar2dtool_config = os.environ['ar2dtool_config']
-#e.g. ar2dtool_dir = 'blahblah/ar2dtool/bin/'
+# e.g. ar2dtool_dir = 'blahblah/ar2dtool/bin/'
 ar2dtool_dir = os.environ['ar2dtool_dir']
-#e.g. home = 'blahblah/temp/'
+# e.g. home = 'blahblah/temp/'
 home = os.environ['github_repos_dir']
 verification_log_fname = 'verification.log'
 sleeping_time = 7
@@ -68,7 +68,8 @@ def prepare_logger(user):
     l = os.path.join(home, 'log', user + '.log_new')
     f = open(l, 'w')
     f.close()
-    #logging.basicConfig(filename=l, format='%(asctime)s %(levelname)s: %(message)s', level=logging.CRITICAL)
+    # logging.basicConfig(filename=l, format='%(asctime)s %(levelname)s:
+    # %(message)s', level=logging.CRITICAL)
     logging.basicConfig(
         filename=l, format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
 
@@ -328,7 +329,7 @@ def update_file(target_repo, path, message, content):
     # <%s>'%(path,target_repo,content)
     dolog('will update the file <%s> on repo<%s> with the content <%s>' %
           (path, target_repo, content))
-    #repo.update_content(path, message, content, committer=gg.get_user())
+    # repo.update_content(path, message, content, committer=gg.get_user())
     try:
         repo.update_content(path, message, content)
     except:
@@ -550,7 +551,7 @@ def commit_changes():
     gu = "git config  user.email \"ahmad88csc@gmail.com\";"
     gu += 'git config  user.name "%s" ;' % (ToolUser)
     # print "command: "+"cd "+home+parent_folder+";"+gu+" git add README.md "
-    #call("cd "+home+parent_folder+";"+gu+" git add README.md ",shell=True)
+    # call("cd "+home+parent_folder+";"+gu+" git add README.md ",shell=True)
     comm = "cd " + home + parent_folder + ";" + gu + " git add . "
     if not settings.TEST:
         comm += ' >> "' + log_file_dir + '"'
@@ -617,7 +618,7 @@ def webhook_access(client_id, redirect_url, isprivate):
         scope = 'repo'
     else:
         scope = 'public_repo'
-    #scope = 'admin:org_hook'
+    # scope = 'admin:org_hook'
     # scope+=',admin:org,admin:public_key,admin:repo_hook,gist,notifications,delete_repo,repo_deployment,repo,public_repo,user,admin:public_key'
     sec = ''.join([random.choice(string.ascii_letters + string.digits)
                    for _ in range(9)])
@@ -696,8 +697,9 @@ def get_ar2dtool_config(config_type):
 
 def draw_file(rdf_file, config_type):
     outtype = "png"
-    #config_file_abs = build_file_structure(config_type, [get_target_home(),'diagrams',config_type])
-    #rdf_file_abs = build_file_structure(rdf_file, [get_target_home(),'diagrams',config_type])
+    # config_file_abs = build_file_structure(config_type, [get_target_home(),'diagrams',config_type])
+    # rdf_file_abs = build_file_structure(rdf_file,
+    # [get_target_home(),'diagrams',config_type])
 
     rdf_file_abs = build_file_structure(get_file_from_path(
         rdf_file), [get_target_home(), rdf_file, 'diagrams', config_type[:-5]])
@@ -738,7 +740,7 @@ def draw_file(rdf_file, config_type):
 ########################################################################
 
 
-#e.g. widoco_dir = 'blahblah/Widoco/JAR/'
+# e.g. widoco_dir = 'blahblah/Widoco/JAR/'
 widoco_dir = os.environ['widoco_dir']
 widoco_config = ar2dtool_config + '/' + 'widoco.conf'
 
@@ -763,7 +765,8 @@ def create_widoco_doc(rdf_file):
     # print 'in Widoco function'
     dolog('in Widoco function')
     rdf_file_abs = get_abs_path(rdf_file)
-    #config_file_abs = build_file_structure(rdf_file+'.widoco.conf', [get_target_home(),'documentation'])
+    # config_file_abs = build_file_structure(rdf_file+'.widoco.conf',
+    # [get_target_home(),'documentation'])
     config_file_abs = build_file_structure(get_file_from_path(
         rdf_file) + '.widoco.conf', [get_target_home(), rdf_file, 'documentation'])
     # print 'rdf_abs: %s and config_file_abs %s'%(rdf_file_abs,config_file_abs)
@@ -842,7 +845,7 @@ def parse_online_repo_for_ontologies(target_repo):
         # This to only show the relative path on the profile page
         # o['ontology'].replace(ontologies_abs_folder,'')
         o['ontology'] = get_parent_path(cpath.path)[len(get_target_home()):]
-        #o['ontology'] = o['ontology'].replace('/','')
+        # o['ontology'] = o['ontology'].replace('/','')
         for c in confs:
             tool = c.replace('_enable', '')
             o[tool] = confs[c]
@@ -1034,7 +1037,7 @@ def get_pitfalls(target_repo, ont_file):
           <OntologyContent>%s</OntologyContent>
           <Pitfalls></Pitfalls>
           <OutputFormat></OutputFormat>
-    </OOPSRequest>    
+    </OOPSRequest>
     """ % (ont_file_content)
     headers = {'Content-Type': 'application/xml',
                'Connection': 'Keep-Alive',
@@ -1061,7 +1064,8 @@ def get_pitfalls(target_repo, ont_file):
     nicer_issues = nicer_oops_output(issues_s)
     dolog('get nicer issues')
     if nicer_issues != "":
-        #nicer_issues+="\n Please accept the merge request to see the evaluation report in this link\n Otherwise the URL won't work\n"
+        # nicer_issues+="\n Please accept the merge request to see the
+        # evaluation report in this link\n Otherwise the URL won't work\n"
         nicer_issues += "\n Please accept the merge request to see the evaluation report in this link. Otherwise the URL won't work.\n"
         repo = target_repo.split('/')[1]
         user = target_repo.split('/')[0]
@@ -1092,7 +1096,8 @@ def generate_oops_pitfalls(ont_file):
     ont_file_abs_path = get_abs_path(ont_file)
     r = build_file_structure(get_file_from_path(ont_file) + '.' + tools_conf['oops'][
                              'folder_name'], [get_target_home(), ont_file, tools_conf['oops']['folder_name']])
-    #r = build_file_structure(get_file_from_path(ont_file)+'.oops', [get_target_home(),ont_file,'oops'])
+    # r = build_file_structure(get_file_from_path(ont_file)+'.oops',
+    # [get_target_home(),ont_file,'oops'])
     out_abs_dir = get_parent_path(r)
     comm = "cd " + get_abs_path('') + "; "
     comm += "java -jar "
@@ -1100,7 +1105,7 @@ def generate_oops_pitfalls(ont_file):
     comm += widoco_dir + "widoco-0.0.1-jar-with-dependencies.jar -oops "
     comm += " -ontFile " + ont_file_abs_path
     comm += " -outFolder " + out_abs_dir
-    #comm+=" -confFile "+config_file_abs
+    # comm+=" -confFile "+config_file_abs
     if not settings.TEST:
         comm += ' >> "' + log_file_dir + '"'
     comm += " ; echo 'oops' >> " + \
@@ -1188,7 +1193,8 @@ def nicer_oops_output(issues):
     num_of_suggestions = issues.count(sugg_flag)
     num_of_pitfalls = issues.count(pitf_flag)
     num_of_warnings = issues.count(warn_flag)
-    #s=" OOPS has encountered %d pitfalls and %d warnings"%(num_of_pitfalls,num_of_warnings)
+    # s=" OOPS has encountered %d pitfalls and %d
+    # warnings"%(num_of_pitfalls,num_of_warnings)
     s = " OOPS! has encountered %d pitfalls" % (num_of_pitfalls)
     if num_of_warnings > 0:
         s += ' and %d warnings' % (num_of_warnings)
@@ -1258,9 +1264,10 @@ def build_owl2jsonld_file(ont_file):
     # print 'in owl2jsonld function'
     dolog('in owl2jsonld function')
     ont_file_abs = get_abs_path(ont_file)
-
-    ctabs = build_file_structure(get_file_from_path(ont_file)[:-4] + '.jsonld',
-                                 [get_target_home(), ont_file, 'context'])
+    # get_file_from_path(ont_file)[:-4]
+    ctabs = build_file_structure('context.jsonld',
+                                 [get_target_home(), ont_file,
+                                  tools_conf['owl2jsonld']['folder_name']])
     # print 'ont_abs: %s and config_file_abs %s'%(ontf_file_abs,ctabs)
     dolog('ont_abs: %s and ctabs %s' % (ont_file_abs, ctabs))
 
@@ -1362,7 +1369,7 @@ def change_status(target_repo, state):
 
 # Before calling this function, the g must belong to the user not OnToologyUser
 def get_proper_loggedin_scope(ouser, target_repo):
-    #ouser = OUser.objects.get(username=username)
+    # ouser = OUser.objects.get(username=username)
     if ouser.private:
         return True
         # return 'repo'
