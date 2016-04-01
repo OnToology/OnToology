@@ -29,7 +29,6 @@ import string
 import random
 import time
 import StringIO
-import logging
 import settings
 
 import shutil
