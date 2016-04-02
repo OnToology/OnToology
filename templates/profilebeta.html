@@ -14,11 +14,19 @@
 				<div class="col-md-4 darktext">{{r.url}}</div>
 				<div class="col-md-3 darktext">{{r.state}}</div>
 				<div class="col-md-4 darktext">{{r.last_used}}</div>
-				<div class="col-md-1 darktext">
+				<div class="col-md-1 darktext ">
+
 					<div class="btn-group ">
+						<!--
 						  <button type="button" class="btn  dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-							  <span class="caret"></span>
-						  </button>
+							  -->
+						<span class="dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+
+							  &nbsp;&nbsp;<span class="caret"></span>&nbsp;&nbsp;
+
+						</span>
+						<!--
+						  </button> -->
 						  <ul class="dropdown-menu ">
 							<li><a href="/delete_repo?repo={{r.url}}">remove</a></li>
 							<li><a href="/renew_previsual?target_repo={{r.url}}">previsualize</a></li>
