@@ -213,7 +213,7 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
             dolog('oops_enable is false')
         if auton_conf['owl2jsonld_enable']:
             # print 'owl2jsonld_enable is true'
-            dolog('oops_enable is true')
+            dolog('owl2jsonld_enable is true')
             change_status(target_repo,
                           'generating context document for ' +
                           changed_files[0])
@@ -1255,7 +1255,6 @@ owl2jsonld_dir = os.environ['owl2jsonld_dir']
 def generate_owl2jsonld_file(changed_files):
     for r in changed_files:
         if valid_ont_file(r):
-            # print 'will oops: '+r
             dolog('will owl2jsonld: ' + r)
             build_owl2jsonld_file(r)
 
