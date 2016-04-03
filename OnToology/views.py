@@ -264,12 +264,12 @@ def add_hook(request):
 
 
 @login_required 
-def generateforall(request):
+def generateforall_view(request):
     if 'repo' not in request.GET:
         return HttpResponseRedirect('/')
     target_repo = request.GET['repo'].strip()
     found = False
-    #The below couple of lines are to check that the user currently have permission over the repository
+    # The below couple of lines are to check that the user currently have permission over the repository
     try:
         ouser = OUser.objects.get(email=request.user.email)
         for r in ouser.repos:
@@ -277,27 +277,30 @@ def generateforall(request):
                 found = True
                 break
     except:
-        return render(request,'msg.html',{'msg': 'Please contact ontoology@delicias.dia.fi.upm.es'})
+        return render(request, 'msg.html', {'msg': 'Please contact ontoology@delicias.dia.fi.upm.es'})
     if not found:
-        return render(request,'msg.html',{'msg': 'You need to register/watch this repository while you are logged in'})
+        return render(request, 'msg.html', {'msg': 'You need to register/watch this repository while you are logged in'})
+    generateforall(target_repo, request.user.email)
+    return render_to_response('msg.html', {'msg': 'Soon you will find generated files included in a pull request in your repository'}, context_instance=RequestContext(request))
+
+
+def generateforall(target_repo, user_email):
     cloning_repo = 'git@github.com:'+target_repo
     tar = cloning_repo.split('/')[-2].split(':')[1]
-    cloning_repo = cloning_repo.replace(tar,ToolUser)
-    user = request.user.email
+    cloning_repo = cloning_repo.replace(tar, ToolUser)
+    user = user_email
     ontologies = get_ontologies_in_online_repo(target_repo)
     changed_files = ontologies
     comm = "python /home/ubuntu/OnToology/OnToology/autoncore.py "
-    comm+=' "'+target_repo+'" "'+user+'" "'+cloning_repo+'" '
+    comm += ' "'+target_repo+'" "'+user+'" "'+cloning_repo+'" '
     for c in changed_files:
-        comm+='"'+c.strip()+'" '
+        comm += '"'+c.strip()+'" '
     if settings.TEST:
         print 'will call git_magic with target=%s, user=%s, cloning_repo=%s, changed_files=%s'%(target_repo, user, cloning_repo, str(changed_files))
         git_magic(target_repo, user, cloning_repo, changed_files)
-        return
     else:
         print 'running autoncore code as: '+comm
-        subprocess.Popen(comm,shell=True)
-        return render_to_response('msg.html',{'msg': 'Soon you will find generated files included in a pull request in your repository'},context_instance=RequestContext(request))
+        subprocess.Popen(comm, shell=True)
 
 
 def login(request):
