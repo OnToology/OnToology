@@ -16,16 +16,13 @@
 # @author Ahmad Alobaid
 #
 
-
-
 from subprocess import call
 import os
-
-
-#import OnToology
+# import OnToology
 
 ToolUser = 'OnToologyUser'
 ToolEmail = 'ahmad88csc@gmail.com'
+
 
 def start_previsual(repo_dir,target_repo):
     """
@@ -45,16 +42,16 @@ def generate_previsual(repo_dir,ontologies_dir):
     """
     #Create branch for Github pages
     branch_name = 'gh-pages'
-    from_branch_name='master'
+    from_branch_name = 'master'
     comm = "cd "+repo_dir
-    comm+=";git branch -D "+branch_name
+    comm += ";git branch -D "+branch_name
     #comm+=";git push origin :"+branch_name
-    comm+=";git checkout --orphan "+branch_name
+    comm += ";git checkout --orphan "+branch_name
     #print("will call: "+comm)
     #call(comm,shell=True)
     #Clear the website's branch 
     #comm+= ";cd "+repo_dir+
-    comm+=" ;git rm -rf ."
+    comm += " ;git rm -rf ."
     #print("will call: "+comm)
     #call(comm,shell=True)
     #Copy documentation files
@@ -66,40 +63,40 @@ def generate_previsual(repo_dir,ontologies_dir):
         #print('documentation join')
         links.append(os.path.join(doc_dir,'index.html'))
         #comm = "cd "+repo_dir+";git checkout "+from_branch_name+" "+os.path.join(doc_dir,'index.html')
-        comm+=";git checkout "+from_branch_name+" "+os.path.join(doc_dir,'index.html')
-        comm+=";git checkout "+from_branch_name+" "+os.path.join(doc_dir,'provenance')
-        comm+=";git checkout "+from_branch_name+" "+os.path.join(doc_dir,'resources')
-        comm+=";git checkout "+from_branch_name+" "+os.path.join(doc_dir,'sections')
+        comm += ";git checkout "+from_branch_name+" "+os.path.join(doc_dir,'index.html')
+        comm += ";git checkout "+from_branch_name+" "+os.path.join(doc_dir,'provenance')
+        comm += ";git checkout "+from_branch_name+" "+os.path.join(doc_dir,'resources')
+        comm += ";git checkout "+from_branch_name+" "+os.path.join(doc_dir,'sections')
         #print("will print")
         #print("will call: "+comm)
         #print("after print")
         #call(comm,shell=True)    
     print("will call: "+comm)
-    call(comm,shell=True)
-    main_index_file = os.path.join(repo_dir,'index.html')
-    f = open(main_index_file,'w')
+    call(comm, shell=True)
+    main_index_file = os.path.join(repo_dir, 'index.html')
+    f = open(main_index_file, 'w')
     print("opened file: "+f.name)
     f.write(get_main_index(links))
     print("after writing into the file")
     print(get_main_index(links))
     f.close()
     comm = "cd "+repo_dir
-    comm+=';git config user.email "%s"'%(ToolEmail)
-    comm+=';git config user.name "%s"'%(ToolUser)
-    comm+=';git add .'
-    comm+=';git commit -m "ontoology generated"'
-    comm+=";git push -f origin "+branch_name #git push -f origin branch
+    comm += ';git config user.email "%s"' % ToolEmail
+    comm += ';git config user.name "%s"' % ToolUser
+    comm += ';git add .'
+    comm += ';git commit -m "ontoology generated"'
+    comm += ";git push -f origin "+branch_name  # git push -f origin branch
     print('will call: '+comm)
-    call(comm,shell=True)
+    call(comm, shell=True)
     
 
 def get_main_index(links):
     links_html=""
-    for i,l in enumerate(links, start=1):
+    for i, l in enumerate(links, start=1):
         name = l.split('/')[-3]  # get the file name from blah/blah/filename.someext/documentation/index.html
         name = (name.split('.')[:-1])[0] # get file name without the file extension
-        links_html+= "<tr class='highl'><td>%d</td><td><a class='darktext' href='%s'>%s</a></td></tr>"%(i,l,name)
-        #links_html+= "<li class='btn btn-default highl'><a class='darktext' href='%s'>%s</a></li><br><br>"%(l,l)
+        links_html += "<tr class='highl'><td>%d</td><td><a class='darktext' href='%s'>%s</a></td></tr>" % (i, l, name)
+        # links_html+= "<li class='btn btn-default highl'><a class='darktext' href='%s'>%s</a></li><br><br>"%(l,l)
     html = """
         <html>
             <head>
@@ -136,9 +133,9 @@ def prep(target_repo,repo_dir):
         return list of ontologies dir under OnToology e.g. ['OnToology/daniel.owl',...]
     """
     ontologies_dirs = []
-    #The below line is to get ont_files from a master repo from github
-    #repo, ont_files = OnToology.autoncore.get_confs_from_repo(target_repo)
-    #The below like is to get ont_files from a local repo instead
+    # The below line is to get ont_files from a master repo from github
+    # repo, ont_files = OnToology.autoncore.get_confs_from_repo(target_repo)
+    # The below like is to get ont_files from a local repo instead
     ont_files = get_confs_from_local(repo_dir)
     for ofi in ont_files:
         owl_abs = os.path.join(repo_dir,ofi,'documentation','index.html')
@@ -150,7 +147,8 @@ def prep(target_repo,repo_dir):
             print("not found is: "+ofi)
             print("full dir: "+owl_abs)
     return ontologies_dirs
-    
+
+
 def get_confs_from_local(repo_abs_dir):
     """
         repo_abs_dir: abs dir for the repo
@@ -171,11 +169,12 @@ def get_confs_from_local(repo_abs_dir):
                     ont = full_path_split(parent_folder)[num_of_parent_dirs:]
                     ont = os.path.join(*ont)
                     ont_files.append(ont)
-            #print(os.path.join(root, name))
+            # print(os.path.join(root, name))
     print 'There are %d ontologies'%(len(ont_files))
     for o in ont_files:
         print o
     return ont_files
+
 
 def full_path_split(dir):
     t = os.path.split(dir)
@@ -188,9 +187,9 @@ def full_path_split(dir):
     return full_path_split(t[0]) + [t[1]]
     
     
-#start_previsual('/Users/blakxu/test123/pro/target','ahmad88me/target')
+# start_previsual('/Users/blakxu/test123/pro/target','ahmad88me/target')
         
-#generate_previsual('/Users/blakxu/test123/pro/target',['OnToology/org/daniel.owl'])
+# generate_previsual('/Users/blakxu/test123/pro/target',['OnToology/org/daniel.owl'])
 
 if __name__ == "__main__":
     print "autoncore command: "+str(sys.argv)
