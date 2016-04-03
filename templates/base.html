@@ -132,50 +132,49 @@
         <div class="cover-container1">
 
           <div class="masthead1 clearfix1">
-			  <div class="container">
+			  <div class="container-fluid">
 			  <div class="row">
 			  	<div class=" col-md-8 col-md-offset-2">
+					<div class="inner">
+					  <a href="/">
+					  <h3 class="masthead-brand"><img height="70px" src="https://raw.githubusercontent.com/OnToology/OnToology/master/ontoology.png"/></h3>
+					  </a>
+					  <nav>
+						<ul class="nav masthead-nav">
+							<li {% block home_head %} class="active" {% endblock %} ><a href="/">Home</a></li>
+							<li {% block step_head %}  {% endblock %} ><a href="/stepbystep">Step by Step</a></li>
+							<li {% block about_head %}  {% endblock %} ><a href="/about">About</a></li>
 
-            <div class="inner">
-              <a href="/">
-              <h3 class="masthead-brand"><img height="70px" src="https://raw.githubusercontent.com/OnToology/OnToology/master/ontoology.png"/></h3>
-              </a>
-              <nav>
-                <ul class="nav masthead-nav">
-                	<li {% block home_head %} class="active" {% endblock %} ><a href="/">Home</a></li>
-                	<li {% block step_head %}  {% endblock %} ><a href="/stepbystep">Step by Step</a></li>
-                	<li {% block about_head %}  {% endblock %} ><a href="/about">About</a></li>
-                	
-                	
-                	{%block teapot%}
-						{% if request.user.is_authenticated %}
-							<li><a class="curfont" href="/logout">Logout</a></li>
-							<li>
-							<a href="/profile">
-								<img src="{{request.session.avatar_url}}" class="img-rounded" height="30px"/>
-								<span class="curfont">My repositories</span>
-							</a>
-							</li>
-							
-						{% else %}
-							<li>
-							<a type="button" class="darkl" data-toggle="modal" data-target="#myModal">
-							
-							<img src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png" class="img-circle" height="50px"/>
-						   <span>Login through Github</span>
-						   
-						   
-						   </a>
-						   
-						   </li>
-						   
-						   </br>
-						{% endif %}
-					{% endblock %}
-                </ul>
-                                 	
-              </nav>
-            </div>
+
+							{%block teapot%}
+								{% if request.user.is_authenticated %}
+									<li><a class="curfont" href="/logout">Logout</a></li>
+									<li>
+									<a href="/profile">
+										<img src="{{request.session.avatar_url}}" class="img-rounded" height="30px"/>
+										<span class="curfont">My repositories</span>
+									</a>
+									</li>
+
+								{% else %}
+									<li>
+									<a type="button" class="darkl" data-toggle="modal" data-target="#myModal">
+
+									<img src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png" class="img-circle" height="50px"/>
+								   <span>Login through Github</span>
+
+
+								   </a>
+
+								   </li>
+
+								   </br>
+								{% endif %}
+							{% endblock %}
+						</ul>
+
+					  </nav>
+					</div>
             </br></br></br></br></br>
 
 
@@ -188,8 +187,8 @@
 						<div class="modal-body darkl">
 						<button type="button" class="close" data-dismiss="modal">&times;</button><br>
 						 Enter your Github username<br>
-						 <input type="text" class="form-control" name="username"></input><br>
-						 <input type="submit" class="form-control"></input><br>
+						 <input type="text" class="form-control" name="username"/><br>
+						 <input type="submit" class="form-control"/><br>
 						</div>
 					</form>
 				  </div>
@@ -223,23 +222,25 @@
 
 
 	
-	<footer class="footer" >
-			<div class="container">
+	<footer class="footer " >
+		<div class="container-fluid">
             <div class="row">
-    		<div class="col-md-6 col-md-offset-2 " align="left">
-	        <br>
-	        <p>
-	        Latest revision April, 2016<br>
-	         &copy; Ontology Engineering Group<br>	      		 
-          Contact: ontoology@delicias.dia.fi.upm.es<br>
-           Powered by <a class="emph underline" href="https://github.com/dgarijo/Widoco">Widoco</a>, <a class="emph underline" href="https://github.com/idafensp/ar2dtool">AR2DTool</a> and <a class="emph underline" href="http://oops.linkeddata.es/">OOPS!</a>
-        	</p>
-        	</div>
-    		<div class="col-md-2 ">
-    			<a href="http://www.oeg-upm.net/" target="_blank"><img src="https://raw.githubusercontent.com/OnToology/OnToology/Integrator/media/home/oeg.gif" alt="OEG logo" class="img-rounded" class="img-responsive" /></a>
-    		</div>
-      	</div>
+				<div class="col-md-6 col-md-offset-2 col-xs-6 " align="left">
+				<!-- >
+					<br>
+					<!-->
+				<p>
+				Latest revision April, 2016<br>
+				 &copy; Ontology Engineering Group<br>
+			  Contact: ontoology@delicias.dia.fi.upm.es<br>
+			   Powered by <a class="emph underline" href="https://github.com/dgarijo/Widoco">Widoco</a>, <a class="emph underline" href="https://github.com/idafensp/ar2dtool">AR2DTool</a> and <a class="emph underline" href="http://oops.linkeddata.es/">OOPS!</a>
+				</p>
 				</div>
+				<div class="col-md-2 col-xs-2 " align="right">
+					<a href="http://www.oeg-upm.net/" target="_blank"><img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/home/oeg.gif" alt="OEG logo" class="img-rounded" class="img-responsive" /></a>
+				</div>
+      		</div>
+		</div>
       </footer>
 	
 

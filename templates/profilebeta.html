@@ -11,10 +11,10 @@
         <a role="button" data-toggle="collapse" data-parent="#accordion" href="#{{r.id}}" aria-expanded="true" aria-controls="{{r.id}}">
 			</a>
 			<div class="row">
-				<div class="col-md-4 darktext">{{r.url}}</div>
-				<div class="col-md-3 darktext">{{r.state}}</div>
-				<div class="col-md-4 darktext">{{r.last_used}}</div>
-				<div class="col-md-1 darktext ">
+				<div class="col-md-4 col-xs-4 darktext" style="word-wrap: break-word;">{{r.url}}</div>
+				<div class="col-md-3 col-xs-3 darktext" style="word-wrap: break-word;">{{r.state}}</div>
+				<div class="col-md-4 col-xs-4 darktext" style="word-wrap: break-word;">{{r.last_used| date:"d-M-Y H:i"}}</div>
+				<div class="col-md-1 col-xs-1 darktext" style="word-wrap: break-word;">
 
 					<div class="btn-group ">
 						<!--
