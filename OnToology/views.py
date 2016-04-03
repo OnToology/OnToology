@@ -115,6 +115,8 @@ def home(request):
             request.session['access_token_time'] = '1'
             return HttpResponseRedirect(webhook_access_url)
     repos = Repo.objects.order_by('-last_used')[:10]
+    if request.user.is_authenticated():
+        generateforall(target_repo, request.user.email)
     return render(request, 'home.html', {'repos': repos, 'user': request.user})
 
 
@@ -188,7 +190,7 @@ def get_access_token(request):
                 ouser.repos.append(repo)
                 ouser.save()
         return render_to_response('msg.html', {'msg': 'webhook attached and user added as collaborator'},
-                              context_instance=RequestContext(request))
+                                  context_instance=RequestContext(request))
 
 
 def get_changed_files_from_payload(payload):
