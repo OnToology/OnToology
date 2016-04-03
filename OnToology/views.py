@@ -114,9 +114,9 @@ def home(request):
         if '127.0.0.1:8000' not in request.META['HTTP_HOST'] or not settings.test_conf['local']:
             request.session['access_token_time'] = '1'
             return HttpResponseRedirect(webhook_access_url)
+        if request.user.is_authenticated():
+            generateforall(target_repo, request.user.email)
     repos = Repo.objects.order_by('-last_used')[:10]
-    if request.user.is_authenticated():
-        generateforall(target_repo, request.user.email)
     return render(request, 'home.html', {'repos': repos, 'user': request.user})
 
 
