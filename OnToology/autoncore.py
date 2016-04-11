@@ -437,9 +437,9 @@ def get_ontologies_in_online_repo(target_repo):
     for f in files:
         if f.path[:len(ontoology_home_name)] != ontoology_home_name:
             for ontfot in ontology_formats:
-                f.path[:-len(ontfot)] == ontfot
-                ontologies.append(f.path)
-                break
+                if f.path[:-len(ontfot)] == ontfot:
+                    ontologies.append(f.path)
+                    break
     return ontologies
 
 
