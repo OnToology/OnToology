@@ -449,12 +449,8 @@ def prepare_log(user):
     global default_stdout
     file_dir = build_file_structure(user + '.log', 'log', home)
     f = open(file_dir, 'w')
-    # sys.stdout.flush()
-    # sys.stderr.flush()
-    # sys.stdout=f
-    # sys.stderr=f
     log_file_dir = file_dir
-    return f  # , stdout, stderr
+    return f
 
 
 def return_default_log():
@@ -486,10 +482,8 @@ def has_access_to_repo(target_repo):
 def delete_repo(local_repo):
     try:
         g.get_repo(local_repo).delete()
-        # print 'repo deleted '
         dolog('repo deleted ')
     except:
-        # print 'the repo doesn\'t exists [not an error]'
         dolog('the repo doesn\'t exists [not an error]')
 
 
@@ -502,18 +496,12 @@ def fork_repo(target_repo, username, password):
         username, password, target_repo)
     if not settings.TEST:
         comm += ' >> "' + log_file_dir + '"'
-    # print comm
     dolog(comm)
     call(comm, shell=True)
-    # print 'fork'
     dolog('fork')
 
 
-# def clone_repo(cloning_repo,user):
 def clone_repo(cloning_repo, parent_folder, dosleep=True):
-    # print 'home: %s'%(home)
-    # print 'parent_folder: %s'%(parent_folder)
-    # print 'logfile: %s'%(log_file_dir)
     dolog('home: %s' % (home))
     dolog('parent_folder: %s' % (parent_folder))
     dolog('logfile: %s' % (log_file_dir))
@@ -524,52 +512,41 @@ def clone_repo(cloning_repo, parent_folder, dosleep=True):
         comm = "rm" + " -Rf " + home + parent_folder
         if not settings.TEST:
             comm += ' >> "' + log_file_dir + '"'
-        # print comm
         dolog(comm)
         call(comm, shell=True)
     except Exception as e:
-        # print 'rm failed: '+str(e)
         dolog('rm failed: ' + str(e))
     comm = "git" + " clone" + " " + cloning_repo + " " + home + parent_folder
     if not settings.TEST:
         comm += ' >> "' + log_file_dir + '"'
-    # print comm
     dolog(comm)
     call(comm, shell=True)
     comm = "chmod -R 777 " + home + parent_folder
     if not settings.TEST:
         comm += ' >> "' + log_file_dir + '"'
-    # print comm
     dolog(comm)
     call(comm, shell=True)
     return home + parent_folder
 
 
 def commit_changes():
-    gu = ""
     gu = "git config  user.email \"ahmad88csc@gmail.com\";"
     gu += 'git config  user.name "%s" ;' % (ToolUser)
-    # print "command: "+"cd "+home+parent_folder+";"+gu+" git add README.md "
-    # call("cd "+home+parent_folder+";"+gu+" git add README.md ",shell=True)
     comm = "cd " + home + parent_folder + ";" + gu + " git add . "
     if not settings.TEST:
         comm += ' >> "' + log_file_dir + '"'
-    # print comm
     dolog(comm)
     call(comm, shell=True)
     comm = "cd " + home + parent_folder + ";" + \
         gu + " git commit -m 'automated change' "
     if not settings.TEST:
         comm += ' >> "' + log_file_dir + '"'
-    # print comm
     dolog(comm)
     call(comm, shell=True)
-    gup = ""
     gup = "git config push.default matching;"
     comm = "cd " + home + parent_folder + ";" + gu + gup + " git push "
     if not settings.TEST:
         comm += ' >> "' + log_file_dir + '"'
-    # print comm
     dolog(comm)
     call(comm, shell=True)
 
@@ -591,28 +568,18 @@ def send_pull_request(target_repo, username):
     title = 'OnToology update'
     body = title
     err = ""
-#    for i in range(3):
     time.sleep(sleeping_time)
     try:
         g.get_repo(target_repo).create_pull(head=username +
                                             ':master', base='master', title=title, body=body)
-        # return 'pull request created successfully'
         return {'status': True, 'msg': 'pull request created successfully'}
     except Exception as e:
-        err = str(e)  # e.data}#str(e.data)
-        # print 'pull request error: '+err
+        err = str(e)
         dolog('pull request error: ' + err)
-        # print 'pull('+str(i)+'): '+err
-    # return err
     return {'status': False, 'error': err}
 
 
 def webhook_access(client_id, redirect_url, isprivate):
-    #     if private:
-    #         scope = 'repo'
-    #     else:
-    #         scope = 'public_repo'
-    #    scope = get_proper_scope(username, isprivate)
     if isprivate:
         scope = 'repo'
     else:
@@ -660,7 +627,6 @@ def add_collaborator(target_repo, user, newg=None):
     global g
     if newg is None:
         newg = g
-    # print 'let us try this: '+newg.get_user().email
     try:
         msg = newg.get_repo(target_repo).add_to_collaborators(user)
         return {'status': True, 'msg': str(msg)}
@@ -680,10 +646,8 @@ def update_g(token):
 
 
 def draw_diagrams(rdf_files):
-    # print str(len(rdf_files))+' changed files'
     dolog(str(len(rdf_files)) + ' changed files')
     for r in rdf_files:
-        # print r+' is changed '
         if r[-4:] in ontology_formats:
             for t in ar2dtool_config_types:
                 draw_file(r, t)
@@ -696,10 +660,6 @@ def get_ar2dtool_config(config_type):
 
 def draw_file(rdf_file, config_type):
     outtype = "png"
-    # config_file_abs = build_file_structure(config_type, [get_target_home(),'diagrams',config_type])
-    # rdf_file_abs = build_file_structure(rdf_file,
-    # [get_target_home(),'diagrams',config_type])
-
     rdf_file_abs = build_file_structure(get_file_from_path(
         rdf_file), [get_target_home(), rdf_file, 'diagrams', config_type[:-5]])
     # now will delete the drawing type folder
@@ -715,7 +675,6 @@ def draw_file(rdf_file, config_type):
         f.write(get_ar2dtool_config(config_type))
         f.close()
     except Exception as e:
-        # print 'in draw_file: exception opening the file: '+str(e)
         dolog('in draw_file: exception opening the file: ' + str(e))
     comm = 'java -jar '
     comm += ar2dtool_dir + 'ar2dtool.jar -i '
@@ -726,10 +685,8 @@ def draw_file(rdf_file, config_type):
         comm += ' >> "' + log_file_dir + '"'
     comm += " ; echo 'ar2dtool' >> " + os.path.join(get_parent_path(get_parent_path(
         get_parent_path(rdf_file_abs + '.' + outtype))), verification_log_fname)
-    # print comm
     dolog(comm)
     call(comm, shell=True)
-    # return os.path.isfile(rdf_file_abs+'.gml')
 
 
 ########################################################################
@@ -756,19 +713,13 @@ def generate_widoco_docs(changed_files):
             create_widoco_doc(r)
         else:
             pass
-            # print r+' does not belong to supported ontology formats for
-            # widoco'
 
 
 def create_widoco_doc(rdf_file):
-    # print 'in Widoco function'
     dolog('in Widoco function')
     rdf_file_abs = get_abs_path(rdf_file)
-    # config_file_abs = build_file_structure(rdf_file+'.widoco.conf',
-    # [get_target_home(),'documentation'])
     config_file_abs = build_file_structure(get_file_from_path(
         rdf_file) + '.widoco.conf', [get_target_home(), rdf_file, 'documentation'])
-    # print 'rdf_abs: %s and config_file_abs %s'%(rdf_file_abs,config_file_abs)
     dolog('rdf_abs: %s and config_file_abs %s' %
           (rdf_file_abs, config_file_abs))
     use_conf_file = True
@@ -776,11 +727,7 @@ def create_widoco_doc(rdf_file):
         open(config_file_abs, "r")
     except IOError:
         use_conf_file = False
-#         f = open(config_file_abs,"w")
-#         f.write(get_widoco_config())
-#         f.close()
     except Exception as e:
-        # print 'in create_widoco_doc: exception opening the file: '+str(e)
         dolog('in create_widoco_doc: exception opening the file: ' + str(e))
     out_abs_dir = get_parent_path(config_file_abs)
     comm = "cd " + get_abs_path('') + "; "
@@ -836,15 +783,10 @@ def parse_online_repo_for_ontologies(target_repo):
     ontologies = []
     for cpath in conf_paths:
         file_content = repo.get_file_contents(cpath.path).decoded_content
-        # print 'file_content : '+file_content
         buffile = StringIO.StringIO(file_content)
         confs = get_auton_config(buffile)
-        # print 'confs: '+str(confs)
         o = {}
-        # This to only show the relative path on the profile page
-        # o['ontology'].replace(ontologies_abs_folder,'')
         o['ontology'] = get_parent_path(cpath.path)[len(get_target_home()):]
-        # o['ontology'] = o['ontology'].replace('/','')
         for c in confs:
             tool = c.replace('_enable', '')
             o[tool] = confs[c]
@@ -865,7 +807,6 @@ def get_auton_configuration(f=None, abs_folder=None):
 
 
 def get_auton_config(conf_file_abs, from_string=True):
-    # print 'auton config is called: '
     dolog('auton config is called: ')
     ar2dtool_sec_name = 'ar2dtool'
     widoco_sec_name = 'widoco'
@@ -881,42 +822,31 @@ def get_auton_config(conf_file_abs, from_string=True):
     else:
         opened_conf_files = config.read(conf_file_abs)
     if from_string or len(opened_conf_files) == 1:
-        # print 'auton configuration file exists'
         dolog('auton configuration file exists')
-        # print opened_conf_files[0]
         try:
             ar2dtool_enable = config.getboolean(ar2dtool_sec_name, 'enable')
-            # print 'got ar2dtool enable value: '+str(ar2dtool_enable)
             dolog('got ar2dtool enable value: ' + str(ar2dtool_enable))
         except:
-            # print 'ar2dtool enable value doesnot exist'
             dolog('ar2dtool enable value doesnot exist')
             pass
         try:
             widoco_enable = config.getboolean(widoco_sec_name, 'enable')
-            # print 'got widoco enable value: '+str(widoco_enable)
             dolog('got widoco enable value: ' + str(widoco_enable))
         except:
-            # print 'widoco enable value doesnot exist'
             dolog('widoco enable value doesnot exist')
             pass
         try:
             oops_enable = config.getboolean(oops_sec_name, 'enable')
-            # print 'got oops enable value: '+str(oops_enable)
             dolog('got oops enable value: ' + str(oops_enable))
         except:
-            # print 'oops enable value doesnot exist'
             dolog('oops enable value doesnot exist')
         try:
             owl2jsonld_enable = config.getboolean(
                 owl2jsonld_sec_name, 'enable')
-            # print 'got owl2jsonld enable value: '+str(owl2jsonld_enable)
             dolog('got owl2jsonld enable value: ' + str(owl2jsonld_enable))
         except:
-            # print 'owl2jsonld enable value doesnot exist'
             dolog('owl2jsonld enable value doesnot exist')
     else:
-        # print 'auton configuration file does not exists'
         dolog('auton configuration file does not exists')
         config.add_section(ar2dtool_sec_name)
         config.set(ar2dtool_sec_name, 'enable', ar2dtool_enable)
@@ -927,80 +857,17 @@ def get_auton_config(conf_file_abs, from_string=True):
         config.add_section(owl2jsonld_sec_name)
         config.set(owl2jsonld_sec_name, 'enable', owl2jsonld_enable)
         conff = conf_file_abs
-        # print 'will create conf file: '+ conff
         dolog('will create conf file: ' + conff)
         try:
             with open(conff, 'wb') as configfile:
                 config.write(configfile)
         except Exception as e:
-            # print 'expection: '
-            # print e
             dolog('expection: ')
             dolog(e)
     return {'ar2dtool_enable': ar2dtool_enable,
             'widoco_enable': widoco_enable,
             'oops_enable': oops_enable,
             'owl2jsonld_enable': owl2jsonld_enable}
-
-
-# def get_auton_configuration(f=None,abs_folder=None):
-# #     if f==None:
-# #         f=parent_folder
-# #     else:
-# #         f=parent_folder+'/'+f
-#     print 'auton config is called: '
-#     config = ConfigParser.RawConfigParser()
-#     ar2dtool_sec_name = 'ar2dtool'
-#     widoco_sec_name = 'widoco'
-#     oops_sec_name = 'oops'
-#     ar2dtool_enable = True
-#     widoco_enable = True
-#     oops_enable = True
-#     if abs_folder!=None:
-#         conf_file_abs = os.path.join(abs_folder,'OnToology.cfg')
-#     elif f != None:
-#         conf_file_abs = build_file_structure('OnToology.cfg',[get_target_home(),f] )
-#     else:
-#         conf_file_abs = build_file_structure('OnToology.cfg',[get_target_home()] )
-#     opened_conf_files = config.read(conf_file_abs)
-#     if len(opened_conf_files) == 1:
-#         print 'auton configuration file exists'
-#         print opened_conf_files[0]
-#         try:
-#             ar2dtool_enable = config.getboolean(ar2dtool_sec_name,'enable')
-#             print 'got ar2dtool enable value: '+str(ar2dtool_enable)
-#         except:
-#             print 'ar2dtool enable value doesnot exist'
-#             pass
-#         try:
-#             widoco_enable = config.getboolean(widoco_sec_name, 'enable')
-#             print 'got widoco enable value: '+str(widoco_enable)
-#         except:
-#             print 'widoco enable value doesnot exist'
-#             pass
-#         try:
-#             oops_enable = config.getboolean(oops_sec_name, 'enable')
-#             print 'got oops enable value: '+str(oops_enable)
-#         except:
-#             print 'oops enable value doesnot exist'
-#     else:
-#         print 'auton configuration file does not exists'
-#         config.add_section(ar2dtool_sec_name)
-#         config.set(ar2dtool_sec_name, 'enable', ar2dtool_enable)
-#         config.add_section(widoco_sec_name)
-#         config.set(widoco_sec_name,'enable',widoco_enable)
-#         config.add_section(oops_sec_name)
-#         config.set(oops_sec_name,'enable',oops_enable)
-#         conff = conf_file_abs
-#         print 'will create conf file: '+ conff
-#         try:
-#             with open(conff, 'wb') as configfile:
-#                 config.write(configfile)
-#         except Exception as e:
-#             print 'expection: '
-#             print e
-# return {'ar2dtool_enable':ar2dtool_enable , 'widoco_enable':
-# widoco_enable, 'oops_enable': oops_enable}
 
 
 ########################################################################
@@ -1016,7 +883,6 @@ import rdfxml
 def oops_ont_files(target_repo, changed_files):
     for r in changed_files:
         if valid_ont_file(r):
-            # print 'will oops: '+r
             dolog('will oops: ' + r)
             get_pitfalls(target_repo, r)
 
@@ -1063,7 +929,6 @@ def get_pitfalls(target_repo, ont_file):
     nicer_issues = nicer_oops_output(issues_s)
     dolog('get nicer issues')
     if nicer_issues != "":
-        # nicer_issues+="\n Please accept the merge request to see the
         # evaluation report in this link\n Otherwise the URL won't work\n"
         nicer_issues += "\n Please accept the merge request to see the evaluation report in this link. Otherwise the URL won't work.\n"
         repo = target_repo.split('/')[1]
@@ -1085,7 +950,6 @@ def output_parsed_pitfalls(ont_file, oops_reply):
         s + "\n"
         s += 20 * "="
         s += "\n"
-    # print 'oops issues gotten'
     dolog('oops issues gotten')
     return s
 
@@ -1095,8 +959,6 @@ def generate_oops_pitfalls(ont_file):
     ont_file_abs_path = get_abs_path(ont_file)
     r = build_file_structure(get_file_from_path(ont_file) + '.' + tools_conf['oops'][
                              'folder_name'], [get_target_home(), ont_file, tools_conf['oops']['folder_name']])
-    # r = build_file_structure(get_file_from_path(ont_file)+'.oops',
-    # [get_target_home(),ont_file,'oops'])
     out_abs_dir = get_parent_path(r)
     comm = "cd " + get_abs_path('') + "; "
     comm += "java -jar "
@@ -1109,7 +971,6 @@ def generate_oops_pitfalls(ont_file):
         comm += ' >> "' + log_file_dir + '"'
     comm += " ; echo 'oops' >> " + \
         os.path.join(get_parent_path(out_abs_dir), verification_log_fname)
-    # print comm
     dolog(comm)
     call(comm, shell=True)
     shutil.move(os.path.join(out_abs_dir, 'OOPSevaluation'),
@@ -1167,18 +1028,15 @@ def parse_oops_issues(oops_rdf):
 
 
 def create_oops_issue_in_github(target_repo, ont_file, oops_issues):
-    # print 'will create an oops issue'
     dolog('will create an oops issue')
     try:
         g.get_repo(target_repo).create_issue(
             'OOPS! Evaluation for ' + ont_file, oops_issues)
     except Exception as e:
-        # print 'exception when creating issue: '+str(e)#e.data}#e.data
         dolog('exception when creating issue: ' + str(e))
 
 
 def close_old_oops_issues_in_github(target_repo, ont_file):
-    # print 'will close old issues'
     dolog('will close old issues')
     for i in g.get_repo(target_repo).get_issues(state='open'):
         if i.title == ('OOPS! Evaluation for ' + ont_file):
@@ -1224,7 +1082,6 @@ def nicer_oops_output(issues):
                     warns.append(attr.replace('hasName: ', ''))
                     break
         else:
-            # print 'in nicer_oops_output: strange node: '+node
             dolog('in nicer_oops_output: strange node: ' + node)
     if len(pitfs) > 0:
         s += "The Pitfalls are the following:\n"
@@ -1259,22 +1116,17 @@ def generate_owl2jsonld_file(changed_files):
 
 
 def build_owl2jsonld_file(ont_file):
-    # print 'in owl2jsonld function'
     dolog('in owl2jsonld function')
     ont_file_abs = get_abs_path(ont_file)
-    # get_file_from_path(ont_file)[:-4]
     ctabs = build_file_structure('context.jsonld',
                                  [get_target_home(), ont_file,
                                   tools_conf['owl2jsonld']['folder_name']])
-    # print 'ont_abs: %s and config_file_abs %s'%(ontf_file_abs,ctabs)
     dolog('ont_abs: %s and ctabs %s' % (ont_file_abs, ctabs))
-
     comm = "cd " + get_parent_path(ctabs) + "; "  # Not neccesary
     comm += "java -jar "
     comm += owl2jsonld_dir + "owl2jsonld-0.2.1-standalone.jar "  # ToolLocation
     comm += "-o " + ctabs  # Output File
     comm += "file://" + ont_file_abs  # Ontology Location
-
     dolog(comm)
     call(comm, shell=True)
 
@@ -1367,24 +1219,19 @@ def change_status(target_repo, state):
 
 # Before calling this function, the g must belong to the user not OnToologyUser
 def get_proper_loggedin_scope(ouser, target_repo):
-    # ouser = OUser.objects.get(username=username)
     if ouser.private:
         return True
-        # return 'repo'
     try:
         repo = g.get_repo(target_repo)
         if repo.private:
             ouser.private = True
             ouser.save()
             return True
-            # return 'repo'
         return False
-        # return 'public_repo'
     except:  # Since we do not have access, it should be private or invalid
         ouser.private = True
         ouser.save()
         return True
-        # return 'repo'
 
 
 ##########################################################################
