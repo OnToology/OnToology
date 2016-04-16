@@ -45,24 +45,12 @@ def generate_previsual(repo_dir,ontologies_dir):
     from_branch_name = 'master'
     comm = "cd "+repo_dir
     comm += ";git branch -D "+branch_name
-    #comm+=";git push origin :"+branch_name
     comm += ";git checkout --orphan "+branch_name
-    #print("will call: "+comm)
-    #call(comm,shell=True)
-    #Clear the website's branch 
-    #comm+= ";cd "+repo_dir+
     comm += " ;git rm -rf ."
-    #print("will call: "+comm)
-    #call(comm,shell=True)
-    #Copy documentation files
-    #print('will go to loop')
     links = []
     for ontology_dir in ontologies_dir:
-        #print('first loop')
         doc_dir = os.path.join(ontology_dir,'documentation')
-        #print('documentation join')
         links.append(os.path.join(doc_dir,'index.html'))
-        #comm = "cd "+repo_dir+";git checkout "+from_branch_name+" "+os.path.join(doc_dir,'index.html')
         comm += ";git checkout "+from_branch_name+" "+os.path.join(doc_dir,'index.html')
         comm += ";git checkout "+from_branch_name+" "+os.path.join(doc_dir,'provenance')
         comm += ";git checkout "+from_branch_name+" "+os.path.join(doc_dir,'resources')
