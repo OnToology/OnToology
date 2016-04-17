@@ -98,22 +98,12 @@ def home(request):
         else:  # private access in case not logged in
             webhook_access_url, state = webhook_access(client_id, host+'/get_access_token', True)
         request.session['target_repo'] = target_repo
-        request.session['state'] = state 
-        # try:
-        #     repo = Repo.objects.get(url=target_repo)
-        # except Exception as e:
-        #     print str(e)
-        #     repo = Repo()
-        #     repo.url = target_repo
-        #     repo.save()
-        # if request.user.is_authenticated():
-        #     ouser = OUser.objects.get(email=request.user.email)
-        #     if repo not in ouser.repos:
-        #         ouser.repos.append(repo)
-        #         ouser.save()
+        request.session['state'] = state
         if '127.0.0.1:8000' not in request.META['HTTP_HOST'] or not settings.test_conf['local']:
             request.session['access_token_time'] = '1'
             return HttpResponseRedirect(webhook_access_url)
+        if request.user.is_authenticated():
+            generateforall(target_repo, request.user.email)
     repos = Repo.objects.order_by('-last_used')[:10]
     return render(request, 'home.html', {'repos': repos, 'user': request.user})
 
@@ -125,7 +115,6 @@ def grant_update(request):
 def get_access_token(request):
     if 'state' not in request.session or request.GET['state'] != request.session['state']:
         return HttpResponseRedirect('/')
-        #return render_to_response('msg.html',{'msg':'Error, ; not an ethical attempt' },context_instance=RequestContext(request))
     data = {
         'client_id': client_id,
         'client_secret': client_secret,
@@ -188,7 +177,7 @@ def get_access_token(request):
                 ouser.repos.append(repo)
                 ouser.save()
         return render_to_response('msg.html', {'msg': 'webhook attached and user added as collaborator'},
-                              context_instance=RequestContext(request))
+                                  context_instance=RequestContext(request))
 
 
 def get_changed_files_from_payload(payload):
@@ -212,9 +201,6 @@ def add_hook(request):
         cloning_repo = j['repository']['git_url']
         target_repo = j['repository']['full_name']
         user = j['repository']['owner']['email']
-        # changed_files = j['head_commit']['modified']
-        # changed_files+= j['head_commit']['removed']
-        # changed_files += j['head_commit']['added']
         changed_files = get_changed_files_from_payload(j)
         if 'Merge pull request' in j['head_commit']['message'] or 'OnToology Configuration' == j['head_commit']['message']:
             print 'This is a merge request or Configuration push'
@@ -264,12 +250,12 @@ def add_hook(request):
 
 
 @login_required 
-def generateforall(request):
+def generateforall_view(request):
     if 'repo' not in request.GET:
         return HttpResponseRedirect('/')
     target_repo = request.GET['repo'].strip()
     found = False
-    #The below couple of lines are to check that the user currently have permission over the repository
+    # The below couple of lines are to check that the user currently have permission over the repository
     try:
         ouser = OUser.objects.get(email=request.user.email)
         for r in ouser.repos:
@@ -277,27 +263,31 @@ def generateforall(request):
                 found = True
                 break
     except:
-        return render(request,'msg.html',{'msg': 'Please contact ontoology@delicias.dia.fi.upm.es'})
+        return render(request, 'msg.html', {'msg': 'Please contact ontoology@delicias.dia.fi.upm.es'})
     if not found:
-        return render(request,'msg.html',{'msg': 'You need to register/watch this repository while you are logged in'})
+        return render(request, 'msg.html', {'msg': 'You need to register/watch this repository while you are logged in'})
+    generateforall(target_repo, request.user.email)
+    return render_to_response('msg.html', {'msg': 'Soon you will find generated files included in a pull request in your repository'}, context_instance=RequestContext(request))
+
+
+def generateforall(target_repo, user_email):
     cloning_repo = 'git@github.com:'+target_repo
     tar = cloning_repo.split('/')[-2].split(':')[1]
-    cloning_repo = cloning_repo.replace(tar,ToolUser)
-    user = request.user.email
+    cloning_repo = cloning_repo.replace(tar, ToolUser)
+    user = user_email
     ontologies = get_ontologies_in_online_repo(target_repo)
     changed_files = ontologies
     comm = "python /home/ubuntu/OnToology/OnToology/autoncore.py "
-    comm+=' "'+target_repo+'" "'+user+'" "'+cloning_repo+'" '
+    comm += ' "'+target_repo+'" "'+user+'" "'+cloning_repo+'" '
     for c in changed_files:
-        comm+='"'+c.strip()+'" '
+        comm += '"'+c.strip()+'" '
     if settings.TEST:
-        print 'will call git_magic with target=%s, user=%s, cloning_repo=%s, changed_files=%s'%(target_repo, user, cloning_repo, str(changed_files))
+        print 'will call git_magic with target=%s, user=%s, cloning_repo=%s, changed_files=%s' % \
+              (target_repo, user, cloning_repo, str(changed_files))
         git_magic(target_repo, user, cloning_repo, changed_files)
-        return
     else:
         print 'running autoncore code as: '+comm
-        subprocess.Popen(comm,shell=True)
-        return render_to_response('msg.html',{'msg': 'Soon you will find generated files included in a pull request in your repository'},context_instance=RequestContext(request))
+        subprocess.Popen(comm, shell=True)
 
 
 def login(request):
@@ -319,17 +309,14 @@ def logout(request):
     print '*** logout ***'
     django_logout(request)
     return HttpResponseRedirect('/')
-    #return render_to_response('msg.html',{'msg':'logged out' },context_instance=RequestContext(request))
 
 
 def login_get_access(request):
     print '*********** login_get_access ************'
     if 'state' not in request.session:
         request.session['state'] = 'blah123'#'state'
-        #return render_to_response('msg.html',{'msg':'Error, ; Session expired, please try to login again' },context_instance=RequestContext(request))
     if request.GET['state'] != request.session['state']:
         return HttpResponseRedirect('/')
-        #return render_to_response('msg.html',{'msg':'Error, ; unauthorised attempt' },context_instance=RequestContext(request))
     data = {
         'client_id': client_id,
         'client_secret': client_secret,
@@ -371,7 +358,6 @@ def login_get_access(request):
             user = OUser.create_user(username=username, password=request.session['state'], email=email)
             user.backend = 'mongoengine.django.auth.MongoEngineBackend'
             user.save()
-    #user.backend = 'mongoengine.django.auth.MongoEngineBackend'
     django_login(request, user)
     print 'access_token: '+access_token
     sys.stdout.flush()
@@ -384,18 +370,15 @@ def login_get_access(request):
 def profilebeta(request):
     try:
         pass
-        #prepare_log(request.user.email)
     except Exception as e:
         print 'profile preparing log error [normal]: '+str(e)
     print '************* profile ************'
-    #f=prepare_log('webinterface-'+request.user.email) # I am disabling this for now
     print str(datetime.today())
     ouser = OUser.objects.get(email=request.user.email)
     if 'repo' in request.GET:
         repo = request.GET['repo']
         print 'repo :<%s>'%(repo)
         print 'got the repo'
-        #if True:
         try:
             print 'trying to validate repo'
             hackatt = True
@@ -406,10 +389,6 @@ def profilebeta(request):
             if hackatt: # trying to access a repo that does not belong to the use currently logged in
                 return render(request,'msg.html',{'msg': 'This repo is not added, please do so in the main page'})
             print 'try to get abs folder'
-            #ontologies_abs_folder = clone_repo('git@github.com:'+repo, request.user.email, dosleep=False)
-            #ontologies_abs_folder ='/Users/blakxu/test123/OnToologyTestEnv/temp/ahmad88me@gmail.com'
-            #print 'abs folder: '+ontologies_abs_folder
-            #ontologies = parse_folder_for_ontologies(ontologies_abs_folder)
             if type(autoncore.g) == type(None):
                 print 'access token is: '+request.session['access_token']
                 update_g(request.session['access_token'])
@@ -418,22 +397,13 @@ def profilebeta(request):
             for o in ontologies:
                 for d in o:
                     print d+': '+str(o[d])
-            #return_default_log()
             print 'testing redirect'
-            #f.close()
             print 'will return the Json'
-            #return JsonResponse({'foo': 'bar'})
             html = render(request,'profile_sliders.html',{'ontologies':ontologies}).content
             return JsonResponse({'ontologies':ontologies, 'sliderhtml': html})
-            #return render(request,'profile.html',{'repos': get_repos_formatted(ouser.repos), 'ontologies': ontologies})
-        #else:
         except Exception as e:
             print 'exception: '+str(e)
-#     sys.stdout= sys.__stdout__
-#     sys.stderr = sys.__stderr__
     print 'testing redirect'
-    #f.close()
-    #repos = get_repos_formatted(ouser.repos)
     repos = ouser.repos
     for r in repos:
         try:
@@ -454,18 +424,15 @@ def profilebeta(request):
 def profile(request):
     try:
         pass
-        #prepare_log(request.user.email)
     except Exception as e:
         print 'profile preparing log error [normal]: '+str(e)
     print '************* profile ************'
-    #f=prepare_log('webinterface-'+request.user.email) # I am disabling this for now
     print str(datetime.today())
     ouser = OUser.objects.get(email=request.user.email)
     if 'repo' in request.GET:
         repo = request.GET['repo']
         print 'repo :<%s>'%(repo)
         print 'got the repo'
-        #if True:
         try:
             print 'trying to validate repo' 
             hackatt = True
@@ -476,10 +443,6 @@ def profile(request):
             if hackatt: # trying to access a repo that does not belong to the use currently logged in
                 return render(request,'msg.html',{'msg': 'This repo is not added, please do so in the main page'})
             print 'try to get abs folder'
-            #ontologies_abs_folder = clone_repo('git@github.com:'+repo, request.user.email, dosleep=False)
-            #ontologies_abs_folder ='/Users/blakxu/test123/OnToologyTestEnv/temp/ahmad88me@gmail.com'
-            #print 'abs folder: '+ontologies_abs_folder
-            #ontologies = parse_folder_for_ontologies(ontologies_abs_folder)
             if type(autoncore.g) == type(None):
                 print 'access token is: '+request.session['access_token']
                 update_g(request.session['access_token'])
@@ -488,22 +451,13 @@ def profile(request):
             for o in ontologies:
                 for d in o:
                     print d+': '+str(o[d])
-            #return_default_log()
             print 'testing redirect'
-            #f.close()
             print 'will return the Json'
-            #return JsonResponse({'foo': 'bar'})
             html = render(request,'profile_sliders.html',{'ontologies':ontologies}).content
             return JsonResponse({'ontologies':ontologies, 'sliderhtml': html})
-            #return render(request,'profile.html',{'repos': get_repos_formatted(ouser.repos), 'ontologies': ontologies})
-        #else:
         except Exception as e:
             print 'exception: '+str(e)
-#     sys.stdout= sys.__stdout__
-#     sys.stderr = sys.__stderr__
     print 'testing redirect'
-    #f.close()
-    #repos = get_repos_formatted(ouser.repos)
     repos = ouser.repos
     for r in repos:
         try:
@@ -522,7 +476,6 @@ def profile(request):
 
 def update_conf(request):
     print 'inside update_conf'
-    #print request.META['csrfmiddlewaretoken']
     if request.method =="GET":
         return render(request,"msg.html",{"msg":"This method expects POST only"})
     indic = '-ar2dtool'
@@ -551,7 +504,6 @@ def update_conf(request):
             print 'returned from update_file'
     print 'will return msg html'
     return JsonResponse({'status': True,'msg': 'successfully'})
-    #return render(request,'msg.html',{'msg': 'updated repos'})
 
 
 def get_conf(ar2dtool,widoco,oops):
@@ -635,9 +587,7 @@ def about(request):
 def superadmin(request):
     if request.user.email not in ['ahmad88me@gmail.com']:
         return HttpResponseRedirect('/')
-    #if request.method == 'GET':
     if 'newstatus' in request.POST:
-        
         new_status = request.POST['newstatus'] 
         for r in Repo.objects.all():
             r.state = new_status
@@ -648,17 +598,12 @@ def superadmin(request):
 
 
 def get_proper_scope_to_login(username):
-    #print "target username: <%s>"%(username)
-    try:#The user is registered
+    try:  # The user is registered
         ouser = OUser.objects.get(username=username)
-        #print "ouser is found"
         if ouser.private:
-            #print "user it private"
             return 'repo'
-        #print "user is public"
-        return 'public_repo' #the user is not private and neither the repo
-    except:#new user
-        #print "user is new"
+        return 'public_repo'  # the user is not private and neither the repo
+    except:  # new user
         return 'public_repo'
         
 
