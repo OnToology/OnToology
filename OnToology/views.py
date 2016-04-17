@@ -178,6 +178,7 @@ def get_access_token(request):
         if repo not in ouser.repos:
             ouser.repos.append(repo)
             ouser.save()
+            generateforall(repo.url, ouser.email)
     return render_to_response('msg.html', {'msg': msg},
                               context_instance=RequestContext(request))
 
@@ -301,8 +302,8 @@ def login(request):
     sec = ''.join([random.choice(string.ascii_letters+string.digits) for _ in range(9)])
     request.session['state'] = sec
     scope = get_proper_scope_to_login(username)
-    #scope = 'admin:org_hook'
-    #scope+=',admin:org,admin:public_key,admin:repo_hook,gist,notifications,delete_repo,repo_deployment,repo,public_repo,user,admin:public_key'
+    # scope = 'admin:org_hook'
+    # scope+=',admin:org,admin:public_key,admin:repo_hook,gist,notifications,delete_repo,repo_deployment,repo,public_repo,user,admin:public_key'
     redirect_url = "https://github.com/login/oauth/authorize?client_id="+client_id+"&redirect_uri="+redirect_url+"&scope="+scope+"&state="+sec
     return HttpResponseRedirect(redirect_url)
 
@@ -323,7 +324,7 @@ def login_get_access(request):
         'client_id': client_id,
         'client_secret': client_secret,
         'code': request.GET['code'],
-        'redirect_uri': host#host+'/add_hook'
+        'redirect_uri': host  # host+'/add_hook'
     }
     res = requests.post('https://github.com/login/oauth/access_token', data=data)
     atts = res.text.split('&')
