@@ -52,8 +52,8 @@ from settings import client_id,client_secret, host
 
 import Integrator.previsual as previsual
 
-# sys.stdout = sys.stderr
 settings.SECRET_KEY = os.environ['SECRET_KEY']
+
 
 def get_repos_formatted(the_repos):
     return the_repos
@@ -99,7 +99,7 @@ def home(request):
             webhook_access_url, state = webhook_access(client_id, host+'/get_access_token', True)
         request.session['target_repo'] = target_repo
         request.session['state'] = state
-        if '127.0.0.1:8000' not in request.META['HTTP_HOST'] or not settings.test_conf['local']:
+        if '127.0.0.1:8000' not in request.META['HTTP_HOST']:  # Not testing   # or not settings.test_conf['local']:
             request.session['access_token_time'] = '1'
             return HttpResponseRedirect(webhook_access_url)
         if request.user.is_authenticated():
@@ -161,23 +161,25 @@ def get_access_token(request):
         elif '404' in error_msg:  # so no enough access according to Github troubleshooting guide
             error_msg = """You don\'t have permission to add collaborators and create webhooks to this repo or this
             repo does not exist. Note that if you can fork this repo, you can add it here"""
-        return render_to_response('msg.html', {'msg': error_msg}, context_instance=RequestContext(request))
+            return render_to_response('msg.html', {'msg': error_msg}, context_instance=RequestContext(request))
+        msg = error_msg
     else:
-        target_repo = request.session['target_repo']
-        try:
-            repo = Repo.objects.get(url=target_repo)
-        except Exception as e:
-            print str(e)
-            repo = Repo()
-            repo.url = target_repo
-            repo.save()
-        if request.user.is_authenticated():
-            ouser = OUser.objects.get(email=request.user.email)
-            if repo not in ouser.repos:
-                ouser.repos.append(repo)
-                ouser.save()
-        return render_to_response('msg.html', {'msg': 'webhook attached and user added as collaborator'},
-                                  context_instance=RequestContext(request))
+        msg = 'webhook attached and user added as collaborator'
+    target_repo = request.session['target_repo']
+    try:
+        repo = Repo.objects.get(url=target_repo)
+    except Exception as e:
+        print str(e)
+        repo = Repo()
+        repo.url = target_repo
+        repo.save()
+    if request.user.is_authenticated():
+        ouser = OUser.objects.get(email=request.user.email)
+        if repo not in ouser.repos:
+            ouser.repos.append(repo)
+            ouser.save()
+    return render_to_response('msg.html', {'msg': msg},
+                              context_instance=RequestContext(request))
 
 
 def get_changed_files_from_payload(payload):
