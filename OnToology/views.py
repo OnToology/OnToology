@@ -123,7 +123,7 @@ def get_access_token(request):
     }
     res = requests.post('https://github.com/login/oauth/access_token', data=data)
     atts = res.text.split('&')
-    d={}
+    d = {}
     for att in atts:
         keyv = att.split('=')
         d[keyv[0]] = keyv[1]
@@ -136,8 +136,8 @@ def get_access_token(request):
     print 'access_token: '+access_token
 
     if request.user.is_authenticated() and request.session['access_token_time'] == '1':
-        request.session['access_token_time'] ='2'  # so we do not loop
-        isprivate=get_proper_loggedin_scope(OUser.objects.get(username=request.user.username),
+        request.session['access_token_time'] = '2'  # so we do not loop
+        isprivate = get_proper_loggedin_scope(OUser.objects.get(username=request.user.username),
                                             request.session['target_repo'])
         print 'isprivate is: '+str(isprivate)
         webhook_access_url, state = webhook_access(client_id, host+'/get_access_token', isprivate)
