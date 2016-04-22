@@ -535,7 +535,7 @@ def delete_repo(request):
                 remove_webhook(repo, host+"/add_hook")
                 return JsonResponse({'status': True})
             except Exception as e:
-                return JsonResponse({'status': False,'error': str(e)})
+                return JsonResponse({'status': False, 'error': str(e)})
     return JsonResponse({'status': False, 'error': 'You should add this repo first'})
 
 
