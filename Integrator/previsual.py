@@ -20,11 +20,15 @@ from subprocess import call
 import os
 # import OnToology
 
+import sys
+from ontoology.autoncore import git_magic
+from mongoengine import connect
+
 ToolUser = 'OnToologyUser'
 ToolEmail = 'ahmad88csc@gmail.com'
 
 
-def start_previsual(repo_dir,target_repo):
+def start_previsual(repo_dir, target_repo):
     """
         repo_dir: is absolute repository dir e.g. '/home/.../targetrepo'
         target_repo: as text
@@ -177,9 +181,9 @@ def full_path_split(dir):
 
 if __name__ == "__main__":
     print "autoncore command: "+str(sys.argv)
-    if use_database:
-        connect('OnToology')
-    git_magic(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4:])
+    # if use_database:
+    #     connect('OnToology')
+    git_magic(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4:])
 
 
 

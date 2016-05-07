@@ -29,6 +29,12 @@ import time
 import StringIO
 import settings
 
+from __init__ import *
+
+from Integrator.ar2dtool import ar2dtool_config_types
+
+
+
 import shutil
 import logging
 
@@ -40,10 +46,8 @@ ToolUser = 'OnToologyUser'
 
 
 parent_folder = None
-ar2dtool_config_types = ['ar2dtool-taxonomy.conf',  'ar2dtool-class.conf']
-ar2dtool_config = os.environ['ar2dtool_config']
-# e.g. ar2dtool_dir = 'blahblah/ar2dtool/bin/'
-ar2dtool_dir = os.environ['ar2dtool_dir']
+
+
 # e.g. home = 'blahblah/temp/'
 home = os.environ['github_repos_dir']
 verification_log_fname = 'verification.log'
@@ -60,13 +64,11 @@ tools_conf = {
 
 
 def prepare_logger(user):
-    l = os.path.join(home, 'log', user + '.log_new')
+    sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
+    l = os.path.join(home, 'log', user + sec + '.log_new')
     f = open(l, 'w')
     f.close()
-    # logging.basicConfig(filename=l, format='%(asctime)s %(levelname)s:
-    # %(message)s', level=logging.CRITICAL)
-    logging.basicConfig(
-        filename=l, format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
+    logging.basicConfig(filename=l, format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
 
 
 def dolog(msg):
@@ -396,13 +398,6 @@ def prepare_log(user):
     return f
 
 
-def return_default_log():
-    sys.stdout.flush()
-    sys.stderr.flush()
-    sys.stdout = default_stdout
-    sys.stderr = default_stderr
-
-
 def is_organization(target_repo):
     return g.get_repo(target_repo).organization is not None
 
@@ -589,48 +584,7 @@ def update_g(token):
 ##########################~~~~~~~~~~~~~#################################
 
 
-def draw_diagrams(rdf_files):
-    dolog(str(len(rdf_files)) + ' changed files')
-    for r in rdf_files:
-        if r[-4:] in ontology_formats:
-            for t in ar2dtool_config_types:
-                draw_file(r, t)
 
-
-def get_ar2dtool_config(config_type):
-    f = open(ar2dtool_config + '/' + config_type, "r")
-    return f.read()
-
-
-def draw_file(rdf_file, config_type):
-    outtype = "png"
-    rdf_file_abs = build_file_structure(get_file_from_path(
-        rdf_file), [get_target_home(), rdf_file, 'diagrams', config_type[:-5]])
-    # now will delete the drawing type folder
-    delete_dir(get_parent_path(rdf_file_abs))
-    rdf_file_abs = build_file_structure(get_file_from_path(
-        rdf_file), [get_target_home(), rdf_file, 'diagrams', config_type[:-5]])
-    config_file_abs = build_file_structure(
-        config_type, [get_target_home(), rdf_file, 'diagrams', 'config'])
-    try:
-        open(config_file_abs, "r")
-    except IOError:
-        f = open(config_file_abs, "w")
-        f.write(get_ar2dtool_config(config_type))
-        f.close()
-    except Exception as e:
-        dolog('in draw_file: exception opening the file: ' + str(e))
-    comm = 'java -jar '
-    comm += ar2dtool_dir + 'ar2dtool.jar -i '
-    comm += get_abs_path(rdf_file) + ' -o '
-    comm += rdf_file_abs + '.' + outtype + ' -t ' + \
-        outtype + ' -c ' + config_file_abs + ' -GV -gml '
-    if not settings.TEST:
-        comm += ' >> "' + log_file_dir + '"'
-    comm += " ; echo 'ar2dtool' >> " + os.path.join(get_parent_path(get_parent_path(
-        get_parent_path(rdf_file_abs + '.' + outtype))), verification_log_fname)
-    dolog(comm)
-    call(comm, shell=True)
 
 
 ########################################################################
@@ -640,58 +594,7 @@ def draw_file(rdf_file, config_type):
 ########################################################################
 
 
-# e.g. widoco_dir = 'blahblah/Widoco/JAR/'
-widoco_dir = os.environ['widoco_dir']
-widoco_config = ar2dtool_config + '/' + 'widoco.conf'
 
-
-def get_widoco_config():
-    f = open(widoco_config, "r")
-    return f.read()
-
-
-def generate_widoco_docs(changed_files):
-    for r in changed_files:
-        if r[-4:] in ontology_formats:
-            print 'will widoco ' + r
-            create_widoco_doc(r)
-        else:
-            pass
-
-
-def create_widoco_doc(rdf_file):
-    dolog('in Widoco function')
-    rdf_file_abs = get_abs_path(rdf_file)
-    config_file_abs = build_file_structure(get_file_from_path(
-        rdf_file) + '.widoco.conf', [get_target_home(), rdf_file, 'documentation'])
-    dolog('rdf_abs: %s and config_file_abs %s' %
-          (rdf_file_abs, config_file_abs))
-    use_conf_file = True
-    try:
-        open(config_file_abs, "r")
-    except IOError:
-        use_conf_file = False
-    except Exception as e:
-        dolog('in create_widoco_doc: exception opening the file: ' + str(e))
-    out_abs_dir = get_parent_path(config_file_abs)
-    comm = "cd " + get_abs_path('') + "; "
-    comm += "java -jar "
-    comm += ' -Dfile.encoding=utf-8 '
-    comm += widoco_dir + "widoco-0.0.1-jar-with-dependencies.jar  -rewriteAll "
-    comm += " -ontFile " + rdf_file_abs
-    comm += " -outFolder " + out_abs_dir
-    if use_conf_file:
-        comm += " -confFile " + config_file_abs
-    else:
-        comm += " -getOntologyMetadata "
-        comm += " -saveConfig " + config_file_abs
-
-    if not settings.TEST:
-        comm += ' >> "' + log_file_dir + '" '
-    comm += " ; echo 'widoco' >> " + \
-        os.path.join(get_parent_path(out_abs_dir), verification_log_fname)
-    dolog(comm)
-    call(comm, shell=True)
 
 
 ########################################################################
@@ -819,224 +722,7 @@ def get_auton_config(conf_file_abs, from_string=True):
 ############################\_______/###################################
 
 
-import requests
-import rdfxml
 
-
-def oops_ont_files(target_repo, changed_files):
-    for r in changed_files:
-        if valid_ont_file(r):
-            dolog('will oops: ' + r)
-            get_pitfalls(target_repo, r)
-
-
-def get_pitfalls(target_repo, ont_file):
-    generate_oops_pitfalls(ont_file)
-    if settings.TEST and settings.test_conf['local']:
-        return
-    ont_file_full_path = get_abs_path(ont_file)
-    f = open(ont_file_full_path, 'r')
-    ont_file_content = f.read()
-    url = 'http://oops-ws.oeg-upm.net/rest'
-    xml_content = """
-    <?xml version="1.0" encoding="UTF-8"?>
-    <OOPSRequest>
-          <OntologyUrl></OntologyUrl>
-          <OntologyContent>%s</OntologyContent>
-          <Pitfalls></Pitfalls>
-          <OutputFormat></OutputFormat>
-    </OOPSRequest>
-    """ % (ont_file_content)
-    headers = {'Content-Type': 'application/xml',
-               'Connection': 'Keep-Alive',
-               'Content-Length': len(xml_content),
-
-               'Accept-Charset': 'utf-8'
-               }
-    dolog("will call oops webservice")
-    oops_reply = requests.post(url, data=xml_content, headers=headers)
-    dolog("will get oops text reply")
-    oops_reply = oops_reply.text
-    dolog('oops reply is: <<' + oops_reply + '>>')
-    dolog('<<<end of oops reply>>>')
-    if oops_reply[:50] == '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">':
-        if '<title>502 Proxy Error</title>' in oops_reply:
-            raise Exception('Ontology is too big for OOPS')
-        else:
-            raise Exception('Generic error from OOPS')
-    issues_s = output_parsed_pitfalls(ont_file, oops_reply)
-    dolog('got oops issues parsed')
-    close_old_oops_issues_in_github(target_repo, ont_file)
-    dolog('closed old oops issues in github')
-    nicer_issues = nicer_oops_output(issues_s)
-    dolog('get nicer issues')
-    if nicer_issues != "":
-        # evaluation report in this link\n Otherwise the URL won't work\n"
-        nicer_issues += "\n Please accept the merge request to see the evaluation report in this link. Otherwise the URL won't work.\n"
-        repo = target_repo.split('/')[1]
-        user = target_repo.split('/')[0]
-        nicer_issues += "https://rawgit.com/" + user + '/' + repo + \
-            '/master/OnToology/' + ont_file + '/evaluation/oopsEval.html'
-        create_oops_issue_in_github(target_repo, ont_file, nicer_issues)
-
-
-def output_parsed_pitfalls(ont_file, oops_reply):
-    issues, interesting_features = parse_oops_issues(oops_reply)
-    s = ""
-    for i in issues:
-        for intfea in interesting_features:
-            if intfea in issues[i]:
-                val = issues[i][intfea].split('^^')[0]
-                key = intfea.split("#")[-1].replace('>', '')
-                s += key + ": " + val + "\n"
-        s + "\n"
-        s += 20 * "="
-        s += "\n"
-    dolog('oops issues gotten')
-    return s
-
-
-# generate oops issues using widoco
-def generate_oops_pitfalls(ont_file):
-    ont_file_abs_path = get_abs_path(ont_file)
-    r = build_file_structure(get_file_from_path(ont_file) + '.' + tools_conf['oops'][
-                             'folder_name'], [get_target_home(), ont_file, tools_conf['oops']['folder_name']])
-    out_abs_dir = get_parent_path(r)
-    comm = "cd " + get_abs_path('') + "; "
-    comm += "java -jar "
-    comm += ' -Dfile.encoding=utf-8 '
-    comm += widoco_dir + "widoco-0.0.1-jar-with-dependencies.jar -oops "
-    comm += " -ontFile " + ont_file_abs_path
-    comm += " -outFolder " + out_abs_dir
-    if not settings.TEST:
-        comm += ' >> "' + log_file_dir + '"'
-    comm += " ; echo 'oops' >> " + \
-        os.path.join(get_parent_path(out_abs_dir), verification_log_fname)
-    dolog(comm)
-    call(comm, shell=True)
-    shutil.move(os.path.join(out_abs_dir, 'OOPSevaluation'),
-                get_parent_path(out_abs_dir))
-    shutil.rmtree(out_abs_dir)
-    shutil.move(os.path.join(get_parent_path(
-        out_abs_dir), 'OOPSevaluation'), out_abs_dir)
-
-
-def parse_oops_issues(oops_rdf):
-    p = rdfxml.parseRDF(oops_rdf)
-    raw_oops_list = p.result
-    oops_issues = {}
-
-    # Filter #1
-    # Construct combine all data of a single elements into one json like format
-    for r in raw_oops_list:
-        if r['domain'] not in oops_issues:
-            oops_issues[r['domain']] = {}
-        oops_issues[r['domain']][r['relation']] = r['range']
-
-    # Filter #2
-    # get rid of elements without issue id
-    oops_issues_filter2 = {}
-    for i in oops_issues:
-        if '#' not in i:
-            oops_issues_filter2[i] = oops_issues[i]
-
-    # Filter #3
-    # Only include actual issues (some data are useless to us)
-    detailed_desc = []
-    oops_issues_filter3 = {}
-    for i in oops_issues_filter2:
-        if '<http://www.oeg-upm.net/oops#hasNumberAffectedElements>' in oops_issues_filter2[i]:
-            oops_issues_filter3[i] = oops_issues_filter2[i]
-
-    # Filter #4
-    # Only include data of interest about the issue
-    oops_issues_filter4 = {}
-    issue_interesting_data = [
-        '<http://www.oeg-upm.net/oops#hasName>',
-        '<http://www.oeg-upm.net/oops#hasCode>',
-        '<http://www.oeg-upm.net/oops#hasDescription>',
-        '<http://www.oeg-upm.net/oops#hasNumberAffectedElements>',
-        '<http://www.oeg-upm.net/oops#hasImportanceLevel>',
-        #'<http://www.oeg-upm.net/oops#hasAffectedElement>',
-        '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>',
-    ]
-    for i in oops_issues_filter3:
-        oops_issues_filter4[i] = {}
-        for intda in issue_interesting_data:
-            if intda in oops_issues_filter3[i]:
-                oops_issues_filter4[i][intda] = oops_issues_filter3[i][intda]
-    return oops_issues_filter4, issue_interesting_data
-
-
-def create_oops_issue_in_github(target_repo, ont_file, oops_issues):
-    dolog('will create an oops issue')
-    try:
-        g.get_repo(target_repo).create_issue(
-            'OOPS! Evaluation for ' + ont_file, oops_issues)
-    except Exception as e:
-        dolog('exception when creating issue: ' + str(e))
-
-
-def close_old_oops_issues_in_github(target_repo, ont_file):
-    dolog('will close old issues')
-    for i in g.get_repo(target_repo).get_issues(state='open'):
-        if i.title == ('OOPS! Evaluation for ' + ont_file):
-            i.edit(state='closed')
-
-
-def nicer_oops_output(issues):
-    sugg_flag = '<http://www.oeg-upm.net/oops#suggestion>'
-    pitf_flag = '<http://www.oeg-upm.net/oops#pitfall>'
-    warn_flag = '<http://www.oeg-upm.net/oops#warning>'
-    num_of_suggestions = issues.count(sugg_flag)
-    num_of_pitfalls = issues.count(pitf_flag)
-    num_of_warnings = issues.count(warn_flag)
-    # s=" OOPS has encountered %d pitfalls and %d
-    # warnings"%(num_of_pitfalls,num_of_warnings)
-    s = " OOPS! has encountered %d pitfalls" % (num_of_pitfalls)
-    if num_of_warnings > 0:
-        s += ' and %d warnings' % (num_of_warnings)
-    if num_of_pitfalls == num_of_suggestions == num_of_warnings == 0:
-        return ""
-    if num_of_suggestions > 0:
-        s += "  and have %d suggestions" % (num_of_suggestions)
-    s += "."
-    nodes = issues.split("====================")
-    suggs = []
-    pitfs = []
-    warns = []
-    for node in nodes[:-1]:
-        attrs = node.split("\n")
-        if sugg_flag in node:
-            for attr in attrs:
-                if 'hasDescription' in attr:
-                    suggs.append(attr.replace('hasDescription: ', ''))
-                    break
-        elif pitf_flag in node:
-            for attr in attrs:
-                if 'hasName' in attr:
-                    pitfs.append(attr.replace('hasName: ', ''))
-                    break
-        elif warn_flag in node:
-            for attr in attrs:
-                if 'hasName' in attr:
-                    warns.append(attr.replace('hasName: ', ''))
-                    break
-        else:
-            dolog('in nicer_oops_output: strange node: ' + node)
-    if len(pitfs) > 0:
-        s += "The Pitfalls are the following:\n"
-        for i in range(len(pitfs)):
-            s += '%d. ' % (i + 1) + pitfs[i] + "\n"
-    if len(warns) > 0:
-        s += "The Warning are the following:\n"
-        for i in range(len(warns)):
-            s += "%d. " % (i + 1) + warns[i] + "\n"
-    if len(suggs) > 0:
-        s += "The Suggestions are the following:\n"
-        for i in range(len(suggs)):
-            s += "%d. " % (i + 1) + suggs[i] + "\n"
-    return s
 
 
 ##########################################################################
@@ -1045,31 +731,7 @@ def nicer_oops_output(issues):
 ##########################################################################
 ##########################################################################
 
-# Must end with a '/':
-owl2jsonld_dir = os.environ['owl2jsonld_dir']
 
-
-def generate_owl2jsonld_file(changed_files):
-    for r in changed_files:
-        if valid_ont_file(r):
-            dolog('will owl2jsonld: ' + r)
-            build_owl2jsonld_file(r)
-
-
-def build_owl2jsonld_file(ont_file):
-    dolog('in owl2jsonld function')
-    ont_file_abs = get_abs_path(ont_file)
-    ctabs = build_file_structure('context.jsonld',
-                                 [get_target_home(), ont_file,
-                                  tools_conf['owl2jsonld']['folder_name']])
-    dolog('ont_abs: %s and ctabs %s' % (ont_file_abs, ctabs))
-    comm = "cd " + get_parent_path(ctabs) + "; "  # Not neccesary
-    comm += "java -jar "
-    comm += owl2jsonld_dir + "owl2jsonld-0.2.1-standalone.jar "  # ToolLocation
-    comm += "-o " + ctabs  # Output File
-    comm += "file://" + ont_file_abs  # Ontology Location
-    dolog(comm)
-    call(comm, shell=True)
 
 
 ##########################################################################
@@ -1096,7 +758,7 @@ def get_target_home():
 
 
 def get_abs_path(relative_path):
-    return home + parent_folder + '/' + relative_path
+    return os.path.join(home, parent_folder, relative_path)
 
 
 def get_level_up(relative_path):
@@ -1190,13 +852,12 @@ def generate_user_log(log_file_name):
     sys.stdout.flush()
     if sys.stdout == default_stdout:
         print 'Warning: trying to close sys.stdout in generate_user_log function, I am disabling the closing for now'
-    return_default_log()
     call(comm, shell=True)
 
 
-##########################################################################
-####################################   main  #############################
-##########################################################################
+# #########################################################################
+# ###################################   main  #############################
+# #########################################################################
 
 
 if __name__ == "__main__":
