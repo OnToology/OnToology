@@ -31,9 +31,6 @@ import settings
 
 from __init__ import *
 
-from Integrator.ar2dtool import ar2dtool_config_types
-
-
 
 import shutil
 import logging
@@ -125,7 +122,7 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
                 dolog('ont file is: ' + fi)
                 changed_files = [fi]
                 auton_conf = get_auton_configuration(fi)
-            elif get_file_from_path(chf) in ar2dtool_config_types:
+            elif get_file_from_path(chf) in ar2dtool.ar2dtool_config_types:
                 auton_conf['ar2dtool_enable'] = True
                 fi = get_level_up(chf)
                 fi = get_level_up(fi)
@@ -155,7 +152,7 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
             change_status(
                 target_repo, 'drawing diagrams for ' + changed_files[0])
             try:
-                draw_diagrams(changed_files)
+                ar2dtool.draw_diagrams(changed_files)
                 dolog('diagrams drawn successfully')
             except Exception as e:
                 exception_if_exists += chf + ": " + str(e) + "\n"
@@ -192,7 +189,7 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
                           'generating context document for ' +
                           changed_files[0])
             try:
-                generate_owl2jsonld_file(changed_files)  # TODO <==============
+                generate_owl2jsonld_file(changed_files)
                 dolog('generated context')
             except Exception as e:
                 exception_if_exists += str(e)
@@ -214,8 +211,6 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
     else:
         change_status(target_repo, exception_if_exists)
         # in case there is an error, create the pull request as well
-
-
     # Now to enabled
     for f in files_to_verify:
         repo = None
@@ -301,7 +296,7 @@ def verify_tools_generation(ver_file_comp, repo=None):
         target_file = os.path.join(get_abs_path(get_target_home()),
                                    ver_file_comp['file'],
                                    tools_conf['ar2dtool']['folder_name'],
-                                   ar2dtool_config_types[0][:-5],
+                                   ar2dtool.ar2dtool_config_types[0][:-5],
                                    get_file_from_path(ver_file_comp['file']) +
                                    "." + tools_conf['ar2dtool']['type'] +
                                    '.graphml')
@@ -577,29 +572,9 @@ def update_g(token):
     g = Github(token)
 
 
-##########################~~~~~~~~~~~~##################################
-##########################~~~~~~~~~~~~##################################
-##########################  ar2dtool   #################################
-##########################~~~~~~~~~~~~~#################################
-##########################~~~~~~~~~~~~~#################################
-
-
-
-
-
 ########################################################################
 ########################################################################
-############################# Widoco ###################################
-########################################################################
-########################################################################
-
-
-
-
-
-########################################################################
-########################################################################
-######################  Auton configuration file  ######################
+# #####################  Auton configuration file  #####################
 ########################################################################
 ########################################################################
 
@@ -641,9 +616,9 @@ def parse_online_repo_for_ontologies(target_repo):
 
 
 def get_auton_configuration(f=None, abs_folder=None):
-    if abs_folder != None:
+    if abs_folder is not None:
         conf_file_abs = os.path.join(abs_folder, 'OnToology.cfg')
-    elif f != None:
+    elif f is not None:
         conf_file_abs = build_file_structure(
             'OnToology.cfg', [get_target_home(), f])
     else:

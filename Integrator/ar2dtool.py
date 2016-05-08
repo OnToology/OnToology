@@ -1,22 +1,22 @@
 import os
 from subprocess import call
-
+from Integrator import dolog, ontology_formats
 
 ar2dtool_config_types = ['ar2dtool-taxonomy.conf',  'ar2dtool-class.conf']
 
-from OnToology.autoncore import dolog, ontology_formats, build_file_structure
+
+
+from OnToology.autoncore import build_file_structure
 from OnToology.autoncore import get_file_from_path, get_target_home, delete_dir, get_parent_path
 from OnToology.autoncore import get_abs_path, log_file_dir, verification_log_fname
 import OnToology.settings as settings
 
 
 ar2dtool_config_types = ['ar2dtool-taxonomy.conf',  'ar2dtool-class.conf']
-
 ar2dtool_config = os.environ['tools_config_dir']
 
 # e.g. ar2dtool_dir = 'blahblah/ar2dtool/bin/'
 ar2dtool_dir = os.environ['ar2dtool_dir']
-
 
 
 def draw_diagrams(rdf_files):
