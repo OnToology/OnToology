@@ -44,7 +44,7 @@ from autoncore import get_proper_loggedin_scope, get_ontologies_in_online_repo
 from models import *
 import autoncore
 from settings import client_id, client_secret, host
-import Integrator.previsual as previsual
+# import Integrator.previsual as previsual
 
 settings.SECRET_KEY = os.environ['SECRET_KEY']
 
@@ -95,7 +95,8 @@ def home(request):
             webhook_access_url, state = webhook_access(client_id, host + '/get_access_token', True)
         request.session['target_repo'] = target_repo
         request.session['state'] = state
-        if '127.0.0.1:8000' not in request.META['HTTP_HOST']:  # Not testing   # or not settings.test_conf['local']:
+        #if '127.0.0.1:8000' not in request.META['HTTP_HOST']:  # Not testing   # or not settings.test_conf['local']:
+        if True:
             request.session['access_token_time'] = '1'
             return HttpResponseRedirect(webhook_access_url)
         if request.user.is_authenticated():

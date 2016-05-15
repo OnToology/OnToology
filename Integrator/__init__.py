@@ -1,47 +1,57 @@
 import ConfigParser
-
 import os
+from subprocess import call
+
 
 ontology_formats = ['.rdf', '.owl', '.ttl']
-
 config_folder_name = 'OnToology'
 config_file_name = 'OnToology.cfg'
-repo_abs_dir = ''
+repo_abs_dir = ''  # need to be set from OnToology package (autoncore)
+log_file_dir = ''  # need to be set some how
+verification_log_fname = 'verification.log'
 
 
-def dolog(msg):
-    pass
+# def dolog(msg):
+#     print(msg)
+#     # dolog_function(msg)
 
 
-def get_file_from_path(f):
-    return f.split('/')[-1]
+def p(msg):
+    print(msg)
+
+dolog = p
 
 
-def get_target_home():
-    return 'OnToology'
-
-
-def config_for_file(file):
+def tools_execution(changed_files, new_dolog=None):
     """
-    :param f: relative directory of the file e.g. dir1/dir2/my.owl
+    :param changed_files:  changed files include relative path
     :return:
     """
-    # return the file configuration from
-    pass
+    global dolog
+    if new_dolog is not None:
+        dolog = new_dolog
+    for f in changed_files:
+        print "tools_execution: "+f
+        handle_single_ofile(f)
 
 
 def handle_single_ofile(changed_file):
     """
+    assuming the change_file is an ontology file
     :param changed_file: relative directory of the file e.g. dir1/dir2/my.owl
     :return:
     """
-    if changed_file[:-4] in ontology_formats:
-        pass
+    import ar2dtool
+    print "will call create or get conf"
+    conf = create_of_get_conf(changed_file)
+    print "conf: "+str(conf)
+    if conf['ar2dtool_enable']:
+        print "will call draw diagrams"
+        ar2dtool.draw_diagrams([changed_file])
     # check configuration
     # if ar2dtool then perform
     # if widoco then perform
     # if oops then perform
-    pass
 
 
 def create_of_get_conf(ofile):
@@ -52,7 +62,7 @@ def create_of_get_conf(ofile):
     ofile_config_file = os.path.join(config_folder_name, ofile, config_file_name)
     build_path(ofile_config_file)
     f_abs = os.path.join(repo_abs_dir, ofile_config_file)
-    dolog('config is called: ')
+    dolog('config is called')
     ar2dtool_sec_name = 'ar2dtool'
     widoco_sec_name = 'widoco'
     oops_sec_name = 'oops'
@@ -114,16 +124,40 @@ def create_of_get_conf(ofile):
             'owl2jsonld_enable': owl2jsonld_enable}
 
 
+#######################
+# helper functions  ###
+#######################
+
 def build_path(file_with_rel_dir):
     """
     :param file_with_rel_dir:
     :return: abs_dir as string
     """
-    abs_dir = os.path.join(repo_abs_dir, file_with_rel_dir)
+    file_with_abs_dir = os.path.join(repo_abs_dir, file_with_rel_dir)
+    abs_dir = get_parent_path(file_with_abs_dir)
     if not os.path.exists(abs_dir):
         os.makedirs(abs_dir)
-    return abs_dir
+    print "build_path abs_dir: "+file_with_abs_dir
+    return file_with_abs_dir
 
+
+def delete_dir(target_directory):
+    comm = "rm -Rf " + target_directory
+    comm += '  >> "' + log_file_dir + '" '
+    print comm
+    call(comm, shell=True)
+
+
+def get_parent_path(f):
+    return '/'.join(f.split('/')[0:-1])
+
+
+def get_file_from_path(f):
+    return f.split('/')[-1]
+
+
+def get_target_home():
+    return 'OnToology'
 
 
 
