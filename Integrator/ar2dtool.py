@@ -1,7 +1,7 @@
 import os
 from subprocess import call
 from Integrator import dolog, get_file_from_path, build_path, delete_dir, verification_log_fname
-from Integrator import get_parent_path, repo_abs_dir, log_file_dir, config_folder_name
+from Integrator import get_parent_path, log_file_dir, config_folder_name
 
 ar2dtool_config_types = ['ar2dtool-taxonomy.conf',  'ar2dtool-class.conf']
 
@@ -16,11 +16,11 @@ ar2dtool_config = os.environ['tools_config_dir']
 ar2dtool_dir = os.environ['ar2dtool_dir']
 
 
-def draw_diagrams(rdf_files):
+def draw_diagrams(rdf_files, base_dir):
     dolog(str(len(rdf_files)) + ' changed files')
     for r in rdf_files:
         for t in ar2dtool_config_types:
-            draw_file(r, t)
+            draw_file(r, t, base_dir)
 
 
 def get_ar2dtool_config(config_type):
@@ -28,15 +28,15 @@ def get_ar2dtool_config(config_type):
     return f.read()
 
 
-def draw_file(rdf_file, config_type):
+def draw_file(rdf_file, config_type, base_dir):
     outtype = "png"
-    rdf_file_abs = build_path(os.path.join(config_folder_name, rdf_file, 'diagrams', config_type[:-5],
+    rdf_file_abs = build_path(os.path.join(base_dir, config_folder_name, rdf_file, 'diagrams', config_type[:-5],
                                            get_file_from_path(rdf_file)))
     # now will delete the drawing type folder
     delete_dir(get_parent_path(rdf_file_abs))
-    rdf_file_abs = build_path(os.path.join(config_folder_name, rdf_file, 'diagrams', config_type[:-5],
-                                           get_file_from_path(rdf_file))) # I don't remember why I have this line here
-    config_file_abs = build_path(os.path.join(config_folder_name, rdf_file, 'diagrams', 'config', config_type))
+    rdf_file_abs = build_path(os.path.join(base_dir, config_folder_name, rdf_file, 'diagrams', config_type[:-5],
+                                           get_file_from_path(rdf_file)))
+    config_file_abs = build_path(os.path.join(base_dir, config_folder_name, rdf_file, 'diagrams', 'config', config_type))
     try:
         open(config_file_abs, "r")
     except IOError:
@@ -47,7 +47,7 @@ def draw_file(rdf_file, config_type):
         dolog('in draw_file: exception opening the file: ' + str(e))
     comm = 'java -jar '
     comm += ar2dtool_dir + 'ar2dtool.jar -i '
-    comm += os.path.join(repo_abs_dir, rdf_file) + ' -o '
+    comm += os.path.join(base_dir, rdf_file) + ' -o '
     comm += rdf_file_abs + '.' + outtype + ' -t ' + \
         outtype + ' -c ' + config_file_abs + ' -GV -gml '
     if not settings.TEST:
