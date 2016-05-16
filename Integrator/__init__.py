@@ -44,12 +44,16 @@ def handle_single_ofile(changed_file, base_dir):
     :return:
     """
     import ar2dtool
+    import widoco
     print "will call create or get conf"
     conf = create_of_get_conf(changed_file, base_dir)
     print "conf: "+str(conf)
     if conf['ar2dtool_enable']:
         print "will call draw diagrams"
         ar2dtool.draw_diagrams([changed_file], base_dir)
+    if conf['widoco_enable']:
+        print 'will call widoco'
+        widoco.generate_widoco_docs([changed_file], base_dir)
     # check configuration
     # if ar2dtool then perform
     # if widoco then perform
