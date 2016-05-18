@@ -111,7 +111,8 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
         dolog('repo cloned')
     files_to_verify = []
     print "will loop through changed files"
-    Integrator.tools_execution(changed_files=changed_filesss, base_dir= os.path.join(home, user), logfile=log_file_dir)
+    Integrator.tools_execution(changed_files=changed_filesss, base_dir=os.path.join(home, user), logfile=log_file_dir,
+                               target_repo=target_repo, g_local=g)
     for chf in changed_filesss:
         print "chf: "+chf
         # Integrator.handle_single_ofile(chf)

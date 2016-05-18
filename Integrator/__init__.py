@@ -9,11 +9,18 @@ config_file_name = 'OnToology.cfg'
 log_file_dir = ''  # need to be set some how
 verification_log_fname = 'verification.log'
 
+g = None
 
 # def dolog(msg):
 #     print(msg)
 #     # dolog_function(msg)
 
+tools_conf = {
+    'ar2dtool': {'folder_name': 'diagrams', 'type': 'png'},
+    'widoco': {'folder_name': 'documentation'},
+    'oops': {'folder_name': 'evaluation'},
+    'owl2jsonld': {'folder_name': 'context'}
+}
 
 def p(msg):
     print(msg)
@@ -21,23 +28,25 @@ def p(msg):
 dolog = p
 
 
-def tools_execution(changed_files, base_dir, logfile, new_dolog=None):
+def tools_execution(changed_files, base_dir, logfile, new_dolog=None, target_repo=None, g_local=None):
     """
     :param changed_files:  changed files include relative path
             base_dir: abs dir to the repo file name, e.g. /home/user/myrepo/
     :return:
     """
+    global g
     global dolog
     global log_file_dir
+    g = g_local
     log_file_dir = logfile
     if new_dolog is not None:
         dolog = new_dolog
     for f in changed_files:
         print "tools_execution: "+f
-        handle_single_ofile(f, base_dir)
+        handle_single_ofile(f, base_dir, target_repo=target_repo)
 
 
-def handle_single_ofile(changed_file, base_dir):
+def handle_single_ofile(changed_file, base_dir, target_repo):
     """
     assuming the change_file is an ontology file
     :param changed_file: relative directory of the file e.g. dir1/dir2/my.owl
@@ -45,19 +54,19 @@ def handle_single_ofile(changed_file, base_dir):
     """
     import ar2dtool
     import widoco
+    import oops
     print "will call create or get conf"
     conf = create_of_get_conf(changed_file, base_dir)
     print "conf: "+str(conf)
-    if conf['ar2dtool_enable']:
-        print "will call draw diagrams"
-        ar2dtool.draw_diagrams([changed_file], base_dir)
-    if conf['widoco_enable']:
-        print 'will call widoco'
-        widoco.generate_widoco_docs([changed_file], base_dir)
-    # check configuration
-    # if ar2dtool then perform
-    # if widoco then perform
-    # if oops then perform
+    # if conf['ar2dtool_enable']:
+    #     print "will call draw diagrams"
+    #     ar2dtool.draw_diagrams([changed_file], base_dir)
+    # if conf['widoco_enable']:
+    #     print 'will call widoco'
+    #     widoco.generate_widoco_docs([changed_file], base_dir)
+    if conf['oops_enable']:
+        print 'will call oops'
+        oops.oops_ont_files(target_repo=target_repo, changed_files=[changed_file], base_dir=base_dir)
 
 
 def create_of_get_conf(ofile, base_dir):

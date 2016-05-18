@@ -2,28 +2,34 @@ import os
 
 import requests
 
-from ontoology.autoncore import valid_ont_file, dolog, get_abs_path, build_file_structure, log_file_dir
-from ontoology.autoncore import get_file_from_path, get_target_home, get_parent_path, verification_log_fname, tools_conf
-import ontoology.settings as settings
-import ontoology.rdfxml as rdfxml
+
+# from ontoology.autoncore import valid_ont_file, dolog, get_abs_path, build_file_structure, log_file_dir
+# from ontoology.autoncore import get_file_from_path, get_target_home, get_parent_path, verification_log_fname, tools_conf
+# import ontoology.settings as settings
+from . import dolog, get_file_from_path, tools_conf, build_path, get_target_home, get_parent_path, log_file_dir, g
+from . import verification_log_fname
+import rdfxml
 
 
 from subprocess import call
 import shutil
 
 
-def oops_ont_files(target_repo, changed_files):
+widoco_dir = os.environ['widoco_dir']
+
+
+def oops_ont_files(target_repo, changed_files, base_dir):
     for r in changed_files:
-        if valid_ont_file(r):
-            dolog('will oops: ' + r)
-            get_pitfalls(target_repo, r)
+        # if valid_ont_file(r): # this is moved to the caller function, we assume here the changed_files are all ont
+        dolog('will oops: ' + r)
+        get_pitfalls(target_repo, r, base_dir)
 
 
-def get_pitfalls(target_repo, ont_file):
-    generate_oops_pitfalls(ont_file)
-    if settings.TEST and settings.test_conf['local']:
-        return
-    ont_file_full_path = get_abs_path(ont_file)
+def get_pitfalls(target_repo, ont_file, base_dir):
+    generate_oops_pitfalls(ont_file, base_dir)
+    # if settings.TEST and settings.test_conf['local']:
+    #    return
+    ont_file_full_path = os.path.join(base_dir, ont_file)
     f = open(ont_file_full_path, 'r')
     ont_file_content = f.read()
     url = 'http://oops-ws.oeg-upm.net/rest'
@@ -86,18 +92,28 @@ def output_parsed_pitfalls(ont_file, oops_reply):
 
 
 # generate oops issues using widoco
-def generate_oops_pitfalls(ont_file):
-    ont_file_abs_path = get_abs_path(ont_file)
-    r = build_file_structure(get_file_from_path(ont_file) + '.' + tools_conf['oops'][
-                             'folder_name'], [get_target_home(), ont_file, tools_conf['oops']['folder_name']])
+def generate_oops_pitfalls(ont_file, base_dir):
+    ont_file_abs_path = os.path.join(base_dir, ont_file)
+    #  r = build_file_structure(get_file_from_path(ont_file) + '.' + tools_conf['oops'][
+    #                         'folder_name'], [get_target_home(), ont_file, tools_conf['oops']['folder_name']])
+    r = build_path(os.path.join(base_dir, get_target_home(), ont_file, tools_conf['oops']['folder_name'],
+                                get_file_from_path(ont_file) + '.' + tools_conf['oops']['folder_name']))
+    #r = build_file_structure(
+    #    get_file_from_path(ont_file) + '.' + tools_conf['oops']['folder_name'],
+    #        [get_target_home(), ont_file, tools_conf['oops']['folder_name']]
+    #)
+    print 'r: '+r
+    print 'ont file abs path: '+ont_file_abs_path
+    print 'out '
     out_abs_dir = get_parent_path(r)
-    comm = "cd " + get_abs_path('') + "; "
+    comm = "cd " + base_dir + "; "
     comm += "java -jar "
     comm += ' -Dfile.encoding=utf-8 '
     comm += widoco_dir + "widoco-0.0.1-jar-with-dependencies.jar -oops "
     comm += " -ontFile " + ont_file_abs_path
     comm += " -outFolder " + out_abs_dir
-    if not settings.TEST:
+    # if not settings.TEST:
+    if True:
         comm += ' >> "' + log_file_dir + '"'
     comm += " ; echo 'oops' >> " + \
         os.path.join(get_parent_path(out_abs_dir), verification_log_fname)
