@@ -2,6 +2,8 @@ import ConfigParser
 import os
 from subprocess import call
 
+import logging
+
 
 ontology_formats = ['.rdf', '.owl', '.ttl']
 config_folder_name = 'OnToology'
@@ -22,13 +24,22 @@ tools_conf = {
     'owl2jsonld': {'folder_name': 'context'}
 }
 
+
+def dolog_logg(msg):
+    logging.critical(msg)
+
+
 def p(msg):
     print(msg)
 
 dolog = p
 
 
-def tools_execution(changed_files, base_dir, logfile, new_dolog=None, target_repo=None, g_local=None):
+def prepare_logger(log_fname):
+    logging.basicConfig(filename=log_fname, format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
+
+
+def tools_execution(changed_files, base_dir, logfile, dolog_fname=None, target_repo=None, g_local=None):
     """
     :param changed_files:  changed files include relative path
             base_dir: abs dir to the repo file name, e.g. /home/user/myrepo/
@@ -39,10 +50,11 @@ def tools_execution(changed_files, base_dir, logfile, new_dolog=None, target_rep
     global log_file_dir
     g = g_local
     log_file_dir = logfile
-    if new_dolog is not None:
-        dolog = new_dolog
+    if dolog_fname is not None:
+        prepare_logger(dolog_fname)
+        dolog = dolog_logg
     for f in changed_files:
-        print "tools_execution: "+f
+        dolog("tools_execution: "+f)
         handle_single_ofile(f, base_dir, target_repo=target_repo)
 
 
@@ -55,17 +67,17 @@ def handle_single_ofile(changed_file, base_dir, target_repo):
     import ar2dtool
     import widoco
     import oops
-    print "will call create or get conf"
+    dolog("will call create or get conf")
     conf = create_of_get_conf(changed_file, base_dir)
-    print "conf: "+str(conf)
-    # if conf['ar2dtool_enable']:
-    #     print "will call draw diagrams"
-    #     ar2dtool.draw_diagrams([changed_file], base_dir)
-    # if conf['widoco_enable']:
-    #     print 'will call widoco'
-    #     widoco.generate_widoco_docs([changed_file], base_dir)
+    dolog("conf: "+str(conf))
+    if conf['ar2dtool_enable']:
+        dolog("will call draw diagrams")
+        ar2dtool.draw_diagrams([changed_file], base_dir)
+    if conf['widoco_enable']:
+        dolog('will call widoco')
+        widoco.generate_widoco_docs([changed_file], base_dir)
     if conf['oops_enable']:
-        print 'will call oops'
+        dolog('will call oops')
         oops.oops_ont_files(target_repo=target_repo, changed_files=[changed_file], base_dir=base_dir)
 
 
@@ -152,14 +164,14 @@ def build_path(file_with_abs_dir):
     abs_dir = get_parent_path(file_with_abs_dir)
     if not os.path.exists(abs_dir):
         os.makedirs(abs_dir)
-    print "build_path abs_dir: "+abs_dir  # file_with_abs_dir
+    dolog("build_path abs_dir: "+abs_dir)  # file_with_abs_dir
     return file_with_abs_dir
 
 
 def delete_dir(target_directory):
     comm = "rm -Rf " + target_directory
     comm += '  >> "' + log_file_dir + '" '
-    print comm
+    dolog(comm)
     call(comm, shell=True)
 
 

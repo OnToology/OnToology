@@ -102,9 +102,8 @@ def generate_oops_pitfalls(ont_file, base_dir):
     #    get_file_from_path(ont_file) + '.' + tools_conf['oops']['folder_name'],
     #        [get_target_home(), ont_file, tools_conf['oops']['folder_name']]
     #)
-    print 'r: '+r
-    print 'ont file abs path: '+ont_file_abs_path
-    print 'out '
+    dolog('r: '+r)
+    dolog('ont file abs path: '+ont_file_abs_path)
     out_abs_dir = get_parent_path(r)
     comm = "cd " + base_dir + "; "
     comm += "java -jar "

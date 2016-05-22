@@ -55,5 +55,5 @@ def draw_file(rdf_file, config_type, base_dir):
     comm += " ; echo 'ar2dtool' >> " + os.path.join(get_parent_path(get_parent_path(
         get_parent_path(rdf_file_abs + '.' + outtype))), verification_log_fname)
     dolog(comm)
-    print "drawing is: "+comm
+    dolog("drawing is: "+comm)
     call(comm, shell=True)

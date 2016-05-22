@@ -26,7 +26,7 @@ def get_widoco_config():
 def generate_widoco_docs(changed_files, base_dir):
     for r in changed_files:
         if r[-4:] in ontology_formats:
-            print 'will widoco ' + r
+            dolog('will widoco '+r)
             create_widoco_doc(r, base_dir)
         else:
             pass
