@@ -28,9 +28,6 @@ def draw_diagrams(rdf_files, base_dir):
 
 
 def get_ar2dtool_config(config_type):
-    print >> sys.stderr, "os.environ:"
-    print >> sys.stderr,  str(os.environ)
-    print >> sys.stderr, "ar2dtool_config: <%s>" % (ar2dtool_config)
     f = open(ar2dtool_config + '/' + config_type, "r")
     return f.read()
 
