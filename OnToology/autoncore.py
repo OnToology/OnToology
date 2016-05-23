@@ -29,6 +29,11 @@ import time
 import StringIO
 import settings
 
+from __init__ import *
+
+import Integrator
+
+
 import shutil
 import logging
 
@@ -40,10 +45,8 @@ ToolUser = 'OnToologyUser'
 
 
 parent_folder = None
-ar2dtool_config_types = ['ar2dtool-taxonomy.conf',  'ar2dtool-class.conf']
-ar2dtool_config = os.environ['ar2dtool_config']
-# e.g. ar2dtool_dir = 'blahblah/ar2dtool/bin/'
-ar2dtool_dir = os.environ['ar2dtool_dir']
+
+
 # e.g. home = 'blahblah/temp/'
 home = os.environ['github_repos_dir']
 verification_log_fname = 'verification.log'
@@ -60,13 +63,12 @@ tools_conf = {
 
 
 def prepare_logger(user):
-    l = os.path.join(home, 'log', user + '.log_new')
+    sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
+    l = os.path.join(home, 'log', user + sec + '.log_new')
     f = open(l, 'w')
     f.close()
-    # logging.basicConfig(filename=l, format='%(asctime)s %(levelname)s:
-    # %(message)s', level=logging.CRITICAL)
-    logging.basicConfig(
-        filename=l, format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
+    logging.basicConfig(filename=l, format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
+    return l
 
 
 def dolog(msg):
@@ -81,6 +83,179 @@ def init_g():
 
 
 def git_magic(target_repo, user, cloning_repo, changed_filesss):
+    logger_fname = prepare_logger(user)
+    global g
+    global parent_folder
+    global log_file_dir
+    parent_folder = user
+    if not settings.TEST:
+        prepare_log(user)
+    dolog('############################### magic #############################')
+    dolog('target_repo: ' + target_repo)
+    change_status(target_repo, 'Preparing')
+    # so the tool user can takeover and do stuff
+    username = os.environ['github_username']
+    password = os.environ['github_password']
+    g = Github(username, password)
+    local_repo = target_repo.replace(target_repo.split('/')[-2], ToolUser)
+    if not settings.TEST or not settings.test_conf['local']:
+        delete_repo(local_repo)
+    dolog('repo deleted')
+    if not settings.TEST or not settings.test_conf['local']:
+        dolog('will fork the repo')
+        change_status(target_repo, 'forking repo')
+        fork_repo(target_repo, username, password)
+        dolog('repo forked')
+    if not settings.TEST or not settings.test_conf['local']:
+        change_status(target_repo, 'cloning repo')
+        clone_repo(cloning_repo, user)
+        dolog('repo cloned')
+    files_to_verify = []
+    print "will loop through changed files"
+    Integrator.tools_execution(changed_files=changed_filesss, base_dir=os.path.join(home, user), logfile=log_file_dir,
+                               target_repo=target_repo, g_local=g, dolog_fname=logger_fname)
+    # for chf in changed_filesss:
+    #     print "chf: "+chf
+    #     auton_conf = {'ar2dtool_enable': False, 'widoco_enable': False,
+    #                   'oops_enable': False, 'owl2jsonld_enable': False}
+    #     if chf[-4:] not in ontology_formats:  # validate ontology formats
+    #         # for now, do not detect the configuration
+    #         continue
+    #         # print 'check conf file changed is: %s'%(chf)
+    #         dolog('check conf file changed is: %s' % chf)
+    #         if get_file_from_path(chf) == 'OnToology.cfg':
+    #             dolog('OnToology.cfg is changed')
+    #             fi = get_level_up(chf)
+    #             fi = fi[6:]
+    #             dolog('ont file is: ' + fi)
+    #             changed_files = [fi]
+    #             auton_conf = get_auton_configuration(fi)
+    #         elif get_file_from_path(chf) in ar2dtool.ar2dtool_config_types:
+    #             auton_conf['ar2dtool_enable'] = True
+    #             fi = get_level_up(chf)
+    #             fi = get_level_up(fi)
+    #             fi = get_level_up(fi)
+    #             fi = fi[6:]
+    #             changed_files = [fi]
+    #             dolog('change in AR2DTool file %s' % fi)
+    #         elif 'widoco.conf' in get_file_from_path(chf):
+    #             fi = get_level_up(chf)
+    #             fi = get_level_up(fi)
+    #             fi = fi[6:]
+    #             changed_files = [fi]
+    #             dolog('change in Widoco file %s' % fi)
+    #     else:  # chf is ontology file
+    #         dolog('working with: ' + chf)
+    #         changed_files = [chf]
+    #         auton_conf = get_auton_configuration(chf)
+    #         # The below three lines is to add files to verify their output
+    #         # later on
+    #         ftvcomp = auton_conf
+    #         ftvcomp['file'] = chf
+    #         files_to_verify.append(ftvcomp)
+    #     dolog(str(auton_conf))
+    #     exception_if_exists = ""
+
+        # if auton_conf['ar2dtool_enable']:
+        #     dolog('ar2dtool_enable is true')
+        #     change_status(target_repo, 'drawing diagrams for ' + changed_files[0])
+        #     try:
+        #         ar2dtool.draw_diagrams(changed_files)
+        #         dolog('diagrams drawn successfully')
+        #     except Exception as e:
+        #         exception_if_exists += chf + ": " + str(e) + "\n"
+        #         dolog('diagrams not drawn: ' + str(e))
+        # else:
+        #     dolog('ar2dtool_enable is false')
+        # if auton_conf['widoco_enable']:
+        #     dolog('ar2dtool_enable is false')
+        #     change_status(target_repo, 'generating documents for ' + changed_files[0])
+        #     try:
+        #         generate_widoco_docs(changed_files)
+        #         dolog('generated docs')
+        #     except Exception as e:
+        #         exception_if_exists += str(e)
+        #         dolog('exception in generating documentation: ' + str(e))
+        # else:
+        #     dolog('widoco_enable is false')
+        # if auton_conf['oops_enable']:
+        #     dolog('oops_enable is true')
+        #     change_status(
+        #         target_repo, 'OOPS is checking for errors for ' + changed_files[0])
+        #     try:
+        #         oops_ont_files(target_repo, changed_files)
+        #         dolog('oops checked ontology for pitfalls')
+        #     except Exception as e:
+        #         exception_if_exists += str(e)
+        #         dolog('exception in generating oops validation document: ' + str(e))
+        # else:
+        #     dolog('oops_enable is false')
+        # if auton_conf['owl2jsonld_enable']:
+        #     dolog('owl2jsonld_enable is true')
+        #     change_status(target_repo, 'generating context document for ' + changed_files[0])
+        #     try:
+        #         generate_owl2jsonld_file(changed_files)
+        #         dolog('generated context')
+        #     except Exception as e:
+        #         exception_if_exists += str(e)
+        #         dolog('exception in generating context documentation: ' + str(e))
+        # else:
+        #     dolog('owl2jsonld_enable is false')
+
+    exception_if_exists = ""
+    files_to_verify = [c for c in changed_filesss if c[-4:] in ontology_formats]
+    for c in changed_filesss:
+        if c[:-4] in ontology_formats:
+            print "file to verify: "+c
+        else:
+            print "c: %s c-4: %s"%(c, c[-4:])
+
+    # After the loop
+    dolog("number of files to verify %d" % (len(files_to_verify)))
+    if len(files_to_verify) == 0:
+        change_status(target_repo, 'Ready')
+        return
+    # if not settings.TEST or not settings.test_conf['local']:
+    commit_changes()
+    dolog('changes committed')
+    remove_old_pull_requests(target_repo)
+    if exception_if_exists == "":  # no errors
+        change_status(target_repo, 'validating')
+    else:
+        change_status(target_repo, exception_if_exists)
+        # in case there is an error, create the pull request as well
+    # Now to enabled
+    for f in files_to_verify:
+        repo = None
+        if use_database:
+            from models import Repo
+            repo = Repo.objects.get(url=target_repo)
+        try:
+            verify_tools_generation_when_ready(f, repo)
+            dolog('verification is done successfully')
+        except Exception as e:
+            dolog('verification have an exception: ' + str(e))
+
+    if use_database:
+        if Repo.objects.get(url=target_repo).state != 'validating':
+            r = Repo.objects.get(url=target_repo)
+            s = r.state
+            s = s.replace('validating', '')
+            r.state = s
+            r.save()
+            # The below "return" is commented so pull request are created even if there are files that are not generated
+    # if not settings.TEST or not settings.test_conf['local']:
+    if True:
+        change_status(target_repo, 'creating a pull request')
+        try:
+            r = send_pull_request(target_repo, ToolUser)
+        except Exception as e:
+            exception_if_exists += str(e)
+        dolog('pull request is sent')
+    change_status(target_repo, 'Ready')
+
+
+def git_magic1(target_repo, user, cloning_repo, changed_filesss):
     prepare_logger(user)
     global g
     global parent_folder
@@ -123,7 +298,7 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
                 dolog('ont file is: ' + fi)
                 changed_files = [fi]
                 auton_conf = get_auton_configuration(fi)
-            elif get_file_from_path(chf) in ar2dtool_config_types:
+            elif get_file_from_path(chf) in ar2dtool.ar2dtool_config_types:
                 auton_conf['ar2dtool_enable'] = True
                 fi = get_level_up(chf)
                 fi = get_level_up(fi)
@@ -153,7 +328,7 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
             change_status(
                 target_repo, 'drawing diagrams for ' + changed_files[0])
             try:
-                draw_diagrams(changed_files)
+                ar2dtool.draw_diagrams(changed_files)
                 dolog('diagrams drawn successfully')
             except Exception as e:
                 exception_if_exists += chf + ": " + str(e) + "\n"
@@ -190,7 +365,7 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
                           'generating context document for ' +
                           changed_files[0])
             try:
-                generate_owl2jsonld_file(changed_files)  # TODO <==============
+                generate_owl2jsonld_file(changed_files)
                 dolog('generated context')
             except Exception as e:
                 exception_if_exists += str(e)
@@ -212,8 +387,6 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
     else:
         change_status(target_repo, exception_if_exists)
         # in case there is an error, create the pull request as well
-
-
     # Now to enabled
     for f in files_to_verify:
         repo = None
@@ -299,7 +472,7 @@ def verify_tools_generation(ver_file_comp, repo=None):
         target_file = os.path.join(get_abs_path(get_target_home()),
                                    ver_file_comp['file'],
                                    tools_conf['ar2dtool']['folder_name'],
-                                   ar2dtool_config_types[0][:-5],
+                                   ar2dtool.ar2dtool_config_types[0][:-5],
                                    get_file_from_path(ver_file_comp['file']) +
                                    "." + tools_conf['ar2dtool']['type'] +
                                    '.graphml')
@@ -394,13 +567,6 @@ def prepare_log(user):
     f = open(file_dir, 'w')
     log_file_dir = file_dir
     return f
-
-
-def return_default_log():
-    sys.stdout.flush()
-    sys.stderr.flush()
-    sys.stdout = default_stdout
-    sys.stderr = default_stderr
 
 
 def is_organization(target_repo):
@@ -582,121 +748,9 @@ def update_g(token):
     g = Github(token)
 
 
-##########################~~~~~~~~~~~~##################################
-##########################~~~~~~~~~~~~##################################
-##########################  ar2dtool   #################################
-##########################~~~~~~~~~~~~~#################################
-##########################~~~~~~~~~~~~~#################################
-
-
-def draw_diagrams(rdf_files):
-    dolog(str(len(rdf_files)) + ' changed files')
-    for r in rdf_files:
-        if r[-4:] in ontology_formats:
-            for t in ar2dtool_config_types:
-                draw_file(r, t)
-
-
-def get_ar2dtool_config(config_type):
-    f = open(ar2dtool_config + '/' + config_type, "r")
-    return f.read()
-
-
-def draw_file(rdf_file, config_type):
-    outtype = "png"
-    rdf_file_abs = build_file_structure(get_file_from_path(
-        rdf_file), [get_target_home(), rdf_file, 'diagrams', config_type[:-5]])
-    # now will delete the drawing type folder
-    delete_dir(get_parent_path(rdf_file_abs))
-    rdf_file_abs = build_file_structure(get_file_from_path(
-        rdf_file), [get_target_home(), rdf_file, 'diagrams', config_type[:-5]])
-    config_file_abs = build_file_structure(
-        config_type, [get_target_home(), rdf_file, 'diagrams', 'config'])
-    try:
-        open(config_file_abs, "r")
-    except IOError:
-        f = open(config_file_abs, "w")
-        f.write(get_ar2dtool_config(config_type))
-        f.close()
-    except Exception as e:
-        dolog('in draw_file: exception opening the file: ' + str(e))
-    comm = 'java -jar '
-    comm += ar2dtool_dir + 'ar2dtool.jar -i '
-    comm += get_abs_path(rdf_file) + ' -o '
-    comm += rdf_file_abs + '.' + outtype + ' -t ' + \
-        outtype + ' -c ' + config_file_abs + ' -GV -gml '
-    if not settings.TEST:
-        comm += ' >> "' + log_file_dir + '"'
-    comm += " ; echo 'ar2dtool' >> " + os.path.join(get_parent_path(get_parent_path(
-        get_parent_path(rdf_file_abs + '.' + outtype))), verification_log_fname)
-    dolog(comm)
-    call(comm, shell=True)
-
-
 ########################################################################
 ########################################################################
-############################# Widoco ###################################
-########################################################################
-########################################################################
-
-
-# e.g. widoco_dir = 'blahblah/Widoco/JAR/'
-widoco_dir = os.environ['widoco_dir']
-widoco_config = ar2dtool_config + '/' + 'widoco.conf'
-
-
-def get_widoco_config():
-    f = open(widoco_config, "r")
-    return f.read()
-
-
-def generate_widoco_docs(changed_files):
-    for r in changed_files:
-        if r[-4:] in ontology_formats:
-            print 'will widoco ' + r
-            create_widoco_doc(r)
-        else:
-            pass
-
-
-def create_widoco_doc(rdf_file):
-    dolog('in Widoco function')
-    rdf_file_abs = get_abs_path(rdf_file)
-    config_file_abs = build_file_structure(get_file_from_path(
-        rdf_file) + '.widoco.conf', [get_target_home(), rdf_file, 'documentation'])
-    dolog('rdf_abs: %s and config_file_abs %s' %
-          (rdf_file_abs, config_file_abs))
-    use_conf_file = True
-    try:
-        open(config_file_abs, "r")
-    except IOError:
-        use_conf_file = False
-    except Exception as e:
-        dolog('in create_widoco_doc: exception opening the file: ' + str(e))
-    out_abs_dir = get_parent_path(config_file_abs)
-    comm = "cd " + get_abs_path('') + "; "
-    comm += "java -jar "
-    comm += ' -Dfile.encoding=utf-8 '
-    comm += widoco_dir + "widoco-0.0.1-jar-with-dependencies.jar  -rewriteAll "
-    comm += " -ontFile " + rdf_file_abs
-    comm += " -outFolder " + out_abs_dir
-    if use_conf_file:
-        comm += " -confFile " + config_file_abs
-    else:
-        comm += " -getOntologyMetadata "
-        comm += " -saveConfig " + config_file_abs
-
-    if not settings.TEST:
-        comm += ' >> "' + log_file_dir + '" '
-    comm += " ; echo 'widoco' >> " + \
-        os.path.join(get_parent_path(out_abs_dir), verification_log_fname)
-    dolog(comm)
-    call(comm, shell=True)
-
-
-########################################################################
-########################################################################
-######################  Auton configuration file  ######################
+# #####################  Auton configuration file  #####################
 ########################################################################
 ########################################################################
 
@@ -738,9 +792,9 @@ def parse_online_repo_for_ontologies(target_repo):
 
 
 def get_auton_configuration(f=None, abs_folder=None):
-    if abs_folder != None:
+    if abs_folder is not None:
         conf_file_abs = os.path.join(abs_folder, 'OnToology.cfg')
-    elif f != None:
+    elif f is not None:
         conf_file_abs = build_file_structure(
             'OnToology.cfg', [get_target_home(), f])
     else:
@@ -819,224 +873,7 @@ def get_auton_config(conf_file_abs, from_string=True):
 ############################\_______/###################################
 
 
-import requests
-import rdfxml
 
-
-def oops_ont_files(target_repo, changed_files):
-    for r in changed_files:
-        if valid_ont_file(r):
-            dolog('will oops: ' + r)
-            get_pitfalls(target_repo, r)
-
-
-def get_pitfalls(target_repo, ont_file):
-    generate_oops_pitfalls(ont_file)
-    if settings.TEST and settings.test_conf['local']:
-        return
-    ont_file_full_path = get_abs_path(ont_file)
-    f = open(ont_file_full_path, 'r')
-    ont_file_content = f.read()
-    url = 'http://oops-ws.oeg-upm.net/rest'
-    xml_content = """
-    <?xml version="1.0" encoding="UTF-8"?>
-    <OOPSRequest>
-          <OntologyUrl></OntologyUrl>
-          <OntologyContent>%s</OntologyContent>
-          <Pitfalls></Pitfalls>
-          <OutputFormat></OutputFormat>
-    </OOPSRequest>
-    """ % (ont_file_content)
-    headers = {'Content-Type': 'application/xml',
-               'Connection': 'Keep-Alive',
-               'Content-Length': len(xml_content),
-
-               'Accept-Charset': 'utf-8'
-               }
-    dolog("will call oops webservice")
-    oops_reply = requests.post(url, data=xml_content, headers=headers)
-    dolog("will get oops text reply")
-    oops_reply = oops_reply.text
-    dolog('oops reply is: <<' + oops_reply + '>>')
-    dolog('<<<end of oops reply>>>')
-    if oops_reply[:50] == '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">':
-        if '<title>502 Proxy Error</title>' in oops_reply:
-            raise Exception('Ontology is too big for OOPS')
-        else:
-            raise Exception('Generic error from OOPS')
-    issues_s = output_parsed_pitfalls(ont_file, oops_reply)
-    dolog('got oops issues parsed')
-    close_old_oops_issues_in_github(target_repo, ont_file)
-    dolog('closed old oops issues in github')
-    nicer_issues = nicer_oops_output(issues_s)
-    dolog('get nicer issues')
-    if nicer_issues != "":
-        # evaluation report in this link\n Otherwise the URL won't work\n"
-        nicer_issues += "\n Please accept the merge request to see the evaluation report in this link. Otherwise the URL won't work.\n"
-        repo = target_repo.split('/')[1]
-        user = target_repo.split('/')[0]
-        nicer_issues += "https://rawgit.com/" + user + '/' + repo + \
-            '/master/OnToology/' + ont_file + '/evaluation/oopsEval.html'
-        create_oops_issue_in_github(target_repo, ont_file, nicer_issues)
-
-
-def output_parsed_pitfalls(ont_file, oops_reply):
-    issues, interesting_features = parse_oops_issues(oops_reply)
-    s = ""
-    for i in issues:
-        for intfea in interesting_features:
-            if intfea in issues[i]:
-                val = issues[i][intfea].split('^^')[0]
-                key = intfea.split("#")[-1].replace('>', '')
-                s += key + ": " + val + "\n"
-        s + "\n"
-        s += 20 * "="
-        s += "\n"
-    dolog('oops issues gotten')
-    return s
-
-
-# generate oops issues using widoco
-def generate_oops_pitfalls(ont_file):
-    ont_file_abs_path = get_abs_path(ont_file)
-    r = build_file_structure(get_file_from_path(ont_file) + '.' + tools_conf['oops'][
-                             'folder_name'], [get_target_home(), ont_file, tools_conf['oops']['folder_name']])
-    out_abs_dir = get_parent_path(r)
-    comm = "cd " + get_abs_path('') + "; "
-    comm += "java -jar "
-    comm += ' -Dfile.encoding=utf-8 '
-    comm += widoco_dir + "widoco-0.0.1-jar-with-dependencies.jar -oops "
-    comm += " -ontFile " + ont_file_abs_path
-    comm += " -outFolder " + out_abs_dir
-    if not settings.TEST:
-        comm += ' >> "' + log_file_dir + '"'
-    comm += " ; echo 'oops' >> " + \
-        os.path.join(get_parent_path(out_abs_dir), verification_log_fname)
-    dolog(comm)
-    call(comm, shell=True)
-    shutil.move(os.path.join(out_abs_dir, 'OOPSevaluation'),
-                get_parent_path(out_abs_dir))
-    shutil.rmtree(out_abs_dir)
-    shutil.move(os.path.join(get_parent_path(
-        out_abs_dir), 'OOPSevaluation'), out_abs_dir)
-
-
-def parse_oops_issues(oops_rdf):
-    p = rdfxml.parseRDF(oops_rdf)
-    raw_oops_list = p.result
-    oops_issues = {}
-
-    # Filter #1
-    # Construct combine all data of a single elements into one json like format
-    for r in raw_oops_list:
-        if r['domain'] not in oops_issues:
-            oops_issues[r['domain']] = {}
-        oops_issues[r['domain']][r['relation']] = r['range']
-
-    # Filter #2
-    # get rid of elements without issue id
-    oops_issues_filter2 = {}
-    for i in oops_issues:
-        if '#' not in i:
-            oops_issues_filter2[i] = oops_issues[i]
-
-    # Filter #3
-    # Only include actual issues (some data are useless to us)
-    detailed_desc = []
-    oops_issues_filter3 = {}
-    for i in oops_issues_filter2:
-        if '<http://www.oeg-upm.net/oops#hasNumberAffectedElements>' in oops_issues_filter2[i]:
-            oops_issues_filter3[i] = oops_issues_filter2[i]
-
-    # Filter #4
-    # Only include data of interest about the issue
-    oops_issues_filter4 = {}
-    issue_interesting_data = [
-        '<http://www.oeg-upm.net/oops#hasName>',
-        '<http://www.oeg-upm.net/oops#hasCode>',
-        '<http://www.oeg-upm.net/oops#hasDescription>',
-        '<http://www.oeg-upm.net/oops#hasNumberAffectedElements>',
-        '<http://www.oeg-upm.net/oops#hasImportanceLevel>',
-        #'<http://www.oeg-upm.net/oops#hasAffectedElement>',
-        '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>',
-    ]
-    for i in oops_issues_filter3:
-        oops_issues_filter4[i] = {}
-        for intda in issue_interesting_data:
-            if intda in oops_issues_filter3[i]:
-                oops_issues_filter4[i][intda] = oops_issues_filter3[i][intda]
-    return oops_issues_filter4, issue_interesting_data
-
-
-def create_oops_issue_in_github(target_repo, ont_file, oops_issues):
-    dolog('will create an oops issue')
-    try:
-        g.get_repo(target_repo).create_issue(
-            'OOPS! Evaluation for ' + ont_file, oops_issues)
-    except Exception as e:
-        dolog('exception when creating issue: ' + str(e))
-
-
-def close_old_oops_issues_in_github(target_repo, ont_file):
-    dolog('will close old issues')
-    for i in g.get_repo(target_repo).get_issues(state='open'):
-        if i.title == ('OOPS! Evaluation for ' + ont_file):
-            i.edit(state='closed')
-
-
-def nicer_oops_output(issues):
-    sugg_flag = '<http://www.oeg-upm.net/oops#suggestion>'
-    pitf_flag = '<http://www.oeg-upm.net/oops#pitfall>'
-    warn_flag = '<http://www.oeg-upm.net/oops#warning>'
-    num_of_suggestions = issues.count(sugg_flag)
-    num_of_pitfalls = issues.count(pitf_flag)
-    num_of_warnings = issues.count(warn_flag)
-    # s=" OOPS has encountered %d pitfalls and %d
-    # warnings"%(num_of_pitfalls,num_of_warnings)
-    s = " OOPS! has encountered %d pitfalls" % (num_of_pitfalls)
-    if num_of_warnings > 0:
-        s += ' and %d warnings' % (num_of_warnings)
-    if num_of_pitfalls == num_of_suggestions == num_of_warnings == 0:
-        return ""
-    if num_of_suggestions > 0:
-        s += "  and have %d suggestions" % (num_of_suggestions)
-    s += "."
-    nodes = issues.split("====================")
-    suggs = []
-    pitfs = []
-    warns = []
-    for node in nodes[:-1]:
-        attrs = node.split("\n")
-        if sugg_flag in node:
-            for attr in attrs:
-                if 'hasDescription' in attr:
-                    suggs.append(attr.replace('hasDescription: ', ''))
-                    break
-        elif pitf_flag in node:
-            for attr in attrs:
-                if 'hasName' in attr:
-                    pitfs.append(attr.replace('hasName: ', ''))
-                    break
-        elif warn_flag in node:
-            for attr in attrs:
-                if 'hasName' in attr:
-                    warns.append(attr.replace('hasName: ', ''))
-                    break
-        else:
-            dolog('in nicer_oops_output: strange node: ' + node)
-    if len(pitfs) > 0:
-        s += "The Pitfalls are the following:\n"
-        for i in range(len(pitfs)):
-            s += '%d. ' % (i + 1) + pitfs[i] + "\n"
-    if len(warns) > 0:
-        s += "The Warning are the following:\n"
-        for i in range(len(warns)):
-            s += "%d. " % (i + 1) + warns[i] + "\n"
-    if len(suggs) > 0:
-        s += "The Suggestions are the following:\n"
-        for i in range(len(suggs)):
-            s += "%d. " % (i + 1) + suggs[i] + "\n"
-    return s
 
 
 ##########################################################################
@@ -1045,31 +882,7 @@ def nicer_oops_output(issues):
 ##########################################################################
 ##########################################################################
 
-# Must end with a '/':
-owl2jsonld_dir = os.environ['owl2jsonld_dir']
 
-
-def generate_owl2jsonld_file(changed_files):
-    for r in changed_files:
-        if valid_ont_file(r):
-            dolog('will owl2jsonld: ' + r)
-            build_owl2jsonld_file(r)
-
-
-def build_owl2jsonld_file(ont_file):
-    dolog('in owl2jsonld function')
-    ont_file_abs = get_abs_path(ont_file)
-    ctabs = build_file_structure('context.jsonld',
-                                 [get_target_home(), ont_file,
-                                  tools_conf['owl2jsonld']['folder_name']])
-    dolog('ont_abs: %s and ctabs %s' % (ont_file_abs, ctabs))
-    comm = "cd " + get_parent_path(ctabs) + "; "  # Not neccesary
-    comm += "java -jar "
-    comm += owl2jsonld_dir + "owl2jsonld-0.2.1-standalone.jar "  # ToolLocation
-    comm += "-o " + ctabs  # Output File
-    comm += "file://" + ont_file_abs  # Ontology Location
-    dolog(comm)
-    call(comm, shell=True)
 
 
 ##########################################################################
@@ -1096,7 +909,7 @@ def get_target_home():
 
 
 def get_abs_path(relative_path):
-    return home + parent_folder + '/' + relative_path
+    return os.path.join(home, parent_folder, relative_path)
 
 
 def get_level_up(relative_path):
@@ -1190,13 +1003,12 @@ def generate_user_log(log_file_name):
     sys.stdout.flush()
     if sys.stdout == default_stdout:
         print 'Warning: trying to close sys.stdout in generate_user_log function, I am disabling the closing for now'
-    return_default_log()
     call(comm, shell=True)
 
 
-##########################################################################
-####################################   main  #############################
-##########################################################################
+# #########################################################################
+# ###################################   main  #############################
+# #########################################################################
 
 
 if __name__ == "__main__":
