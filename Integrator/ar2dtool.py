@@ -12,6 +12,8 @@ import OnToology.settings as settings
 ar2dtool_config_types = ['ar2dtool-taxonomy.conf',  'ar2dtool-class.conf']
 ar2dtool_config = os.environ['tools_config_dir']
 
+print str(os.environ)
+
 # e.g. ar2dtool_dir = 'blahblah/ar2dtool/bin/'
 ar2dtool_dir = os.environ['ar2dtool_dir']
 
