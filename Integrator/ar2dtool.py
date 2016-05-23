@@ -3,6 +3,9 @@ from subprocess import call
 from Integrator import dolog, get_file_from_path, build_path, delete_dir, verification_log_fname
 from Integrator import get_parent_path, log_file_dir, config_folder_name
 
+import sys
+
+
 ar2dtool_config_types = ['ar2dtool-taxonomy.conf',  'ar2dtool-class.conf']
 
 from OnToology.autoncore import get_target_home
@@ -25,9 +28,9 @@ def draw_diagrams(rdf_files, base_dir):
 
 
 def get_ar2dtool_config(config_type):
-    print "os.environ:"
-    print str(os.environ)
-    print "ar2dtool_config: <%s>"%(ar2dtool_config)
+    print >> sys.stderr, "os.environ:"
+    print >> sys.stderr,  str(os.environ)
+    print >> sys.stderr, "ar2dtool_config: <%s>" % (ar2dtool_config)
     f = open(ar2dtool_config + '/' + config_type, "r")
     return f.read()
 
