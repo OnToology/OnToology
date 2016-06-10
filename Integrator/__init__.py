@@ -67,6 +67,8 @@ def handle_single_ofile(changed_file, base_dir, target_repo):
     import ar2dtool
     import widoco
     import oops
+    import owl2jsonld
+
     dolog("will call create or get conf")
     conf = create_of_get_conf(changed_file, base_dir)
     dolog("conf: "+str(conf))
@@ -79,6 +81,9 @@ def handle_single_ofile(changed_file, base_dir, target_repo):
     if conf['oops_enable']:
         dolog('will call oops')
         oops.oops_ont_files(target_repo=target_repo, changed_files=[changed_file], base_dir=base_dir)
+    if conf['owl2jsonld_enable']:
+        dolog('will call owl2jsonld')
+        owl2jsonld.generate_owl2jsonld_file([changed_file], base_dir=base_dir)
 
 
 def create_of_get_conf(ofile, base_dir):
