@@ -39,7 +39,8 @@ def prepare_logger(log_fname):
     logging.basicConfig(filename=log_fname, format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
 
 
-def tools_execution(changed_files, base_dir, logfile, dolog_fname=None, target_repo=None, g_local=None):
+def tools_execution(changed_files, base_dir, logfile, dolog_fname=None, target_repo=None, g_local=None,
+                    change_status=None):
     """
     :param changed_files:  changed files include relative path
             base_dir: abs dir to the repo file name, e.g. /home/user/myrepo/
@@ -54,11 +55,12 @@ def tools_execution(changed_files, base_dir, logfile, dolog_fname=None, target_r
         prepare_logger(dolog_fname)
         dolog = dolog_logg
     for f in changed_files:
-        dolog("tools_execution: "+f)
-        handle_single_ofile(f, base_dir, target_repo=target_repo)
+        if f[-4:] in ontology_formats:
+            dolog("tools_execution: "+f)
+            handle_single_ofile(f, base_dir, target_repo=target_repo, change_status=change_status)
 
 
-def handle_single_ofile(changed_file, base_dir, target_repo):
+def handle_single_ofile(changed_file, base_dir, target_repo, change_status):
     """
     assuming the change_file is an ontology file
     :param changed_file: relative directory of the file e.g. dir1/dir2/my.owl
@@ -74,15 +76,19 @@ def handle_single_ofile(changed_file, base_dir, target_repo):
     dolog("conf: "+str(conf))
     if conf['ar2dtool_enable']:
         dolog("will call draw diagrams")
+        change_status(target_repo, 'drawing diagrams')
         ar2dtool.draw_diagrams([changed_file], base_dir)
     if conf['widoco_enable']:
         dolog('will call widoco')
+        change_status(target_repo, 'generating docs')
         widoco.generate_widoco_docs([changed_file], base_dir)
     if conf['oops_enable']:
         dolog('will call oops')
+        change_status(target_repo, 'evaluating')
         oops.oops_ont_files(target_repo=target_repo, changed_files=[changed_file], base_dir=base_dir)
     if conf['owl2jsonld_enable']:
         dolog('will call owl2jsonld')
+        change_status(target_repo, 'generating context')
         owl2jsonld.generate_owl2jsonld_file([changed_file], base_dir=base_dir)
 
 
