@@ -3,9 +3,6 @@ import os
 import requests
 
 
-# from ontoology.autoncore import valid_ont_file, dolog, get_abs_path, build_file_structure, log_file_dir
-# from ontoology.autoncore import get_file_from_path, get_target_home, get_parent_path, verification_log_fname, tools_conf
-# import ontoology.settings as settings
 from . import dolog, get_file_from_path, tools_conf, build_path, get_target_home, get_parent_path, log_file_dir, g
 from . import verification_log_fname
 import rdfxml

@@ -113,7 +113,8 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
     files_to_verify = []
     print "will loop through changed files"
     Integrator.tools_execution(changed_files=changed_filesss, base_dir=os.path.join(home, user), logfile=log_file_dir,
-                               target_repo=target_repo, g_local=g, dolog_fname=logger_fname)
+                               target_repo=target_repo, g_local=g, dolog_fname=logger_fname,
+                               change_status=change_status)
     # for chf in changed_filesss:
     #     print "chf: "+chf
     #     auton_conf = {'ar2dtool_enable': False, 'widoco_enable': False,
