@@ -91,7 +91,7 @@ On Ubuntu server:
 3. Install mod_wsgi and enable the site. [here](https://www.digitalocean.com/community/tutorials/installing-mod_wsgi-on-ubuntu-12-04)
 4. Install mod-wsgi for apache ```sudo apt-get install libapache2-mod-wsgi```
 5. Install pip ```sudo apt-get install python-pip```
-6. Install mongodb ``sudo apt-get install mongodb```
+6. Install mongodb ```sudo apt-get install mongodb```
 7. Install app requirements ```pip install -r requirements.txt```
 8. Add Widoco and Ar2dTool folders and fix the default configuration files
 ####Environment variables that need to be set
