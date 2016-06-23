@@ -8,11 +8,9 @@ Contributors: Daniel Garijo, Oscar Corcho, Maria Poveda
 
 ###Project Plan
 * Provide a better solution for handling private and public repos.
-* Docker setup
-* Use front-end framework (e.g. AngularJS)
-* Add new features (e.g. integrate with GitLab)
+* Add new features (e.g. integrate with GitLab and Bitbucket)
 * Deploy on the live server (now on a testing server)
-* Prepare automated testing
+* Prepare automated testing (in progress)
 
 
 
@@ -26,13 +24,10 @@ Contributors: Daniel Garijo, Oscar Corcho, Maria Poveda
 
 ###How to use it 
 1. From the website, you only have to put the repo as user/repo i.e. myuser/myrepo (now it doesnot work with organization, for more technical info please refere to the issues section).
-2. Update/create auton.cfg (will use default configurations otherwise)
+2. Update/create OnToology.cfg (will use default configurations otherwise)
 3. Update your repo and push.
 4. Go to your repo setting -> webhooks and service and you will see the webhook. you can also click on the webhook link to see the request sent and the server replies.
 5. If pull requests are created successfully you can find them in the pull requests pool.
-
-**Please only use this with testing repos**
-
 
 
 ### used python libraries:
@@ -89,7 +84,16 @@ Sign | Meaning
 
 
 ##How to deploy the on your server
-(To be written later)
+On Ubuntu server: 
+
+1. Install Git 2.*. [here](http://askubuntu.com/questions/571549/git-1-7-9-5-upgrade-to-current-release-of-git-2-x-on-ubuntu-12-04)
+2. Install Apache2.
+3. Install mod_wsgi and enable the site. [here](https://www.digitalocean.com/community/tutorials/installing-mod_wsgi-on-ubuntu-12-04)
+4. Install mod-wsgi for apache ```sudo apt-get install libapache2-mod-wsgi```
+5. Install pip ```sudo apt-get install python-pip```
+6. Install mongodb ``sudo apt-get install mongodb```
+7. Install app requirements ```pip install -r requirements.txt```
+8. Add Widoco and Ar2dTool folders and fix the default configuration files
 ####Environment variables that need to be set
 ```
 export github_username=xxxxxx
@@ -110,5 +114,6 @@ export tests_ssh_key=/xxx/.xxx/id_rsa_xxx
 export test_github_username=xxx@xxx.xxx
 export test_github_password=xxx
 ```
+Or you can set them in apache e.g. ``` SetEnv github_username OnToologyUser```
 
 
