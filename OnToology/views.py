@@ -573,8 +573,8 @@ def renew_previsual(request):
         repo.previsual_page_available = True
         repo.save()
         autoncore.prepare_log(user.email)
-        cloning_repo = 'git@github.com:%s.git' % (
-            target_repo)  # cloning_repo should look like 'git@github.com:AutonUser/target.git'
+        # cloning_repo should look like 'git@github.com:AutonUser/target.git'
+        cloning_repo = 'git@github.com:%s.git' % target_repo
         clone_repo(cloning_repo, user.email, dosleep=True)
         repo_dir = os.path.join(autoncore.home, user.email)
         previsual.start_previsual(repo_dir, target_repo)
