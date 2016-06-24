@@ -44,7 +44,7 @@ from autoncore import get_proper_loggedin_scope, get_ontologies_in_online_repo
 from models import *
 import autoncore
 from settings import client_id, client_secret, host
-# import Integrator.previsual as previsual
+import Integrator.previsual as previsual
 
 settings.SECRET_KEY = os.environ['SECRET_KEY']
 
@@ -575,8 +575,10 @@ def renew_previsual(request):
         autoncore.prepare_log(user.email)
         # cloning_repo should look like 'git@github.com:AutonUser/target.git'
         cloning_repo = 'git@github.com:%s.git' % target_repo
-        clone_repo(cloning_repo, user.email, dosleep=True)
-        repo_dir = os.path.join(autoncore.home, user.email)
+        sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
+        folder_name = 'prevclone-'+sec
+        clone_repo(cloning_repo, folder_name, dosleep=True)
+        repo_dir = os.path.join(autoncore.home, folder_name)
         previsual.start_previsual(repo_dir, target_repo)
         return HttpResponseRedirect('/profile')
     return render(request, 'msg.html',
