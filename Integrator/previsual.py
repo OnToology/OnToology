@@ -65,8 +65,12 @@ def generate_previsual(repo_dir, target_repo):
     #     comm += ";git checkout "+from_branch_name+" "+os.path.join(doc_dir, 'resources')
     #     comm += ";git checkout "+from_branch_name+" "+os.path.join(doc_dir, 'sections')
     # print("previsual call: "+comm)
-    #call(comm, shell=True)
-    #comm = 'cp -Rf %s %s;' % (temp_previsual_folder_dir, repo_dir)
+    call(comm, shell=True)
+
+    #comm = 'git checkout -b gh-pages'
+    comm = 'cp -Rf %s/* %s ;' % (temp_previsual_folder_dir, repo_dir)
+    print 'comm: '+comm
+    call(comm, shell=True)
     # main_index_file = os.path.join(repo_dir, 'index.html')
     # f = open(main_index_file, 'w')
     # print("opened file: "+f.name)
@@ -75,14 +79,14 @@ def generate_previsual(repo_dir, target_repo):
     # print(get_main_index(links))
     # f.close()
     # The below need to be uncommented after the test
-    # comm = "cd "+repo_dir
-    # comm += ';git config user.email "%s"' % ToolEmail
-    # comm += ';git config user.name "%s"' % ToolUser
-    # comm += ';git add .'
-    # comm += ';git commit -m "ontoology generated"'
-    # comm += ";git push -f origin "+branch_name
-    # print('will call: '+comm)
-    # call(comm, shell=True)
+    comm = "cd "+repo_dir
+    comm += ';git config user.email "%s"' % ToolEmail
+    comm += ';git config user.name "%s"' % ToolUser
+    comm += ';git add .'
+    comm += ';git commit -m "ontoology generated"'
+    comm += ";git push -f origin "+branch_name
+    print('will call: '+comm)
+    call(comm, shell=True)
 
 
 # def target_repo_to_clone_repo(target_repo):
