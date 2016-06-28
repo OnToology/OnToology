@@ -76,7 +76,13 @@ def generate_previsual_page(repo_dir_folder, repo_name):
     """
     # delete OnToology folder before generating the previsualization
     # because it contains ontologies that will show in the previsualization page
-    comm = "rm -Rf %s" % os.path.join(repo_dir_folder, 'OnToology')
+    sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
+    sec = 'doc-prev-'+sec
+    repo_parent_folder, t = os.path.split(repo_dir_folder)
+    if t=='':
+        repo_parent_folder = os.path.split(repo_dir_folder[:-1])
+    comm = "mv %s %s" % (os.path.join(repo_dir_folder, 'OnToology'), repo_parent_folder) # should be moved back after vocablite generates the page
+    # comm = "rm -Rf %s" % os.path.join(repo_dir_folder, 'OnToology')
     dolog('comm: '+comm)
     call(comm, shell=True)
     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
