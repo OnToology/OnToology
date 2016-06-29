@@ -19,10 +19,13 @@
 from subprocess import call
 import os
 # import OnToology
-from . import dolog
+# from . import dolog
 import random
 import string
 
+
+def dolog(msg):
+    print(msg)
 
 ToolUser = 'OnToologyUser'
 ToolEmail = 'ontoology@delicias.dia.fi.upm.es'
@@ -74,24 +77,31 @@ def generate_previsual_page(repo_dir_folder, repo_name):
     :param repo_name: just the repo name
     :return: the abs dir of the temp folder where the previsualization is located in
     """
-    # delete OnToology folder before generating the previsualization
+    # move OnToology folder to a temp location before generating the previsualization
     # because it contains ontologies that will show in the previsualization page
     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
-    sec = 'doc-prev-'+sec
+    sec_doc_prev = 'doc-prev-'+sec
     repo_parent_folder, t = os.path.split(repo_dir_folder)
     if t=='':
         repo_parent_folder = os.path.split(repo_dir_folder[:-1])
-    comm = "mv %s %s" % (os.path.join(repo_dir_folder, 'OnToology'), repo_parent_folder) # should be moved back after vocablite generates the page
+
+    comm = "cd %s; mkdir %s" % (repo_parent_folder, sec_doc_prev)
+    dolog("comm: "+comm)
+    call(comm, shell=True)
+    temp_folder_ontoology = os.path.join(repo_parent_folder, sec_doc_prev)  # I stopped here
+    comm = "mv %s %s" % (os.path.join(repo_dir_folder, 'OnToology'), repo_parent_folder)
     # comm = "rm -Rf %s" % os.path.join(repo_dir_folder, 'OnToology')
     dolog('comm: '+comm)
     call(comm, shell=True)
-    sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
-    sec = 'prev-'+sec
-    temp_folder = os.path.join(temp_dir, sec)
+    sec_prev = 'prev-'+sec
+    temp_folder = os.path.join(temp_dir, sec_prev)
     comm = "java -jar %s -i %s -o %s -n %s" % \
            (os.path.join(previsual_dir, "vocabLite-1.0-jar-with-dependencies.jar"), repo_dir_folder, temp_folder,
             repo_name)
     dolog('comm: '+comm)
+    call(comm, shell=True)
+    comm = "mv %s %s" % (repo_parent_folder, os.path.join(repo_dir_folder, 'OnToology'))
+    dolog("comm (move back): "+comm)
     call(comm, shell=True)
     return temp_folder
 
