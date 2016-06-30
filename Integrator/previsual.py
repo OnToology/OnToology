@@ -19,10 +19,13 @@
 from subprocess import call
 import os
 # import OnToology
-from . import dolog
+# from . import dolog
 import random
 import string
 
+
+def dolog(msg):
+    print(msg)
 
 ToolUser = 'OnToologyUser'
 ToolEmail = 'ontoology@delicias.dia.fi.upm.es'
@@ -46,7 +49,7 @@ def generate_previsual(repo_dir, target_repo):
 
     """
     repo_name = target_repo.split('/')[-1]
-    temp_previsual_folder_dir = generate_previsual_page(repo_dir, repo_name)
+    temp_previsual_folder_dir, temp_folder_ontoology = generate_previsual_page(repo_dir, repo_name)
     # Create branch for Github pages
     branch_name = 'gh-pages'
     from_branch_name = 'master'
@@ -54,9 +57,13 @@ def generate_previsual(repo_dir, target_repo):
     comm += ";git branch -D "+branch_name
     comm += ";git checkout --orphan "+branch_name
     comm += ";git rm -rf ."
+    dolog("comm: "+comm)
     call(comm, shell=True)
     comm = 'cp -Rf %s/* %s ;' % (temp_previsual_folder_dir, repo_dir)
     dolog('comm: '+comm)
+    call(comm, shell=True)
+    comm = "mv %s %s" % (os.path.join(temp_folder_ontoology, 'OnToology'), repo_dir)
+    dolog("comm (move back): "+comm)
     call(comm, shell=True)
     comm = "cd "+repo_dir
     comm += ';git config user.email "%s"' % ToolEmail
@@ -74,20 +81,33 @@ def generate_previsual_page(repo_dir_folder, repo_name):
     :param repo_name: just the repo name
     :return: the abs dir of the temp folder where the previsualization is located in
     """
-    # delete OnToology folder before generating the previsualization
+    # move OnToology folder to a temp location before generating the previsualization
     # because it contains ontologies that will show in the previsualization page
-    comm = "rm -Rf %s" % os.path.join(repo_dir_folder, 'OnToology')
+    sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
+    sec_doc_prev = 'doc-prev-'+sec
+    repo_parent_folder, t = os.path.split(repo_dir_folder)
+    if t=='':
+        repo_parent_folder = os.path.split(repo_dir_folder[:-1])
+
+    comm = "cd %s; mkdir %s" % (repo_parent_folder, sec_doc_prev)
+    dolog("comm: "+comm)
+    call(comm, shell=True)
+    temp_folder_ontoology = os.path.join(repo_parent_folder, sec_doc_prev)
+    comm = "mv %s %s" % (os.path.join(repo_dir_folder, 'OnToology'), temp_folder_ontoology)
+    # comm = "rm -Rf %s" % os.path.join(repo_dir_folder, 'OnToology')
     dolog('comm: '+comm)
     call(comm, shell=True)
-    sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
-    sec = 'prev-'+sec
-    temp_folder = os.path.join(temp_dir, sec)
+    sec_prev = 'prev-'+sec
+    temp_folder_prev = os.path.join(temp_dir, sec_prev)
     comm = "java -jar %s -i %s -o %s -n %s" % \
-           (os.path.join(previsual_dir, "vocabLite-1.0-jar-with-dependencies.jar"), repo_dir_folder, temp_folder,
+           (os.path.join(previsual_dir, "vocabLite-1.0-jar-with-dependencies.jar"), repo_dir_folder, temp_folder_prev,
             repo_name)
     dolog('comm: '+comm)
     call(comm, shell=True)
-    return temp_folder
+    # comm = "mv %s %s" % (os.path.join(temp_folder_ontoology, 'OnToology'), repo_dir_folder)
+    # dolog("comm (move back): "+comm)
+    # call(comm, shell=True)
+    return temp_folder_prev, temp_folder_ontoology
 
 
 def get_confs_from_local(repo_abs_dir):
