@@ -49,7 +49,7 @@ def generate_previsual(repo_dir, target_repo):
 
     """
     repo_name = target_repo.split('/')[-1]
-    temp_previsual_folder_dir = generate_previsual_page(repo_dir, repo_name)
+    temp_previsual_folder_dir, temp_folder_ontoology = generate_previsual_page(repo_dir, repo_name)
     # Create branch for Github pages
     branch_name = 'gh-pages'
     from_branch_name = 'master'
@@ -57,9 +57,13 @@ def generate_previsual(repo_dir, target_repo):
     comm += ";git branch -D "+branch_name
     comm += ";git checkout --orphan "+branch_name
     comm += ";git rm -rf ."
+    dolog("comm: "+comm)
     call(comm, shell=True)
     comm = 'cp -Rf %s/* %s ;' % (temp_previsual_folder_dir, repo_dir)
     dolog('comm: '+comm)
+    call(comm, shell=True)
+    comm = "mv %s %s" % (os.path.join(temp_folder_ontoology, 'OnToology'), repo_dir)
+    dolog("comm (move back): "+comm)
     call(comm, shell=True)
     comm = "cd "+repo_dir
     comm += ';git config user.email "%s"' % ToolEmail
@@ -88,22 +92,22 @@ def generate_previsual_page(repo_dir_folder, repo_name):
     comm = "cd %s; mkdir %s" % (repo_parent_folder, sec_doc_prev)
     dolog("comm: "+comm)
     call(comm, shell=True)
-    temp_folder_ontoology = os.path.join(repo_parent_folder, sec_doc_prev)  # I stopped here
-    comm = "mv %s %s" % (os.path.join(repo_dir_folder, 'OnToology'), repo_parent_folder)
+    temp_folder_ontoology = os.path.join(repo_parent_folder, sec_doc_prev)
+    comm = "mv %s %s" % (os.path.join(repo_dir_folder, 'OnToology'), temp_folder_ontoology)
     # comm = "rm -Rf %s" % os.path.join(repo_dir_folder, 'OnToology')
     dolog('comm: '+comm)
     call(comm, shell=True)
     sec_prev = 'prev-'+sec
-    temp_folder = os.path.join(temp_dir, sec_prev)
+    temp_folder_prev = os.path.join(temp_dir, sec_prev)
     comm = "java -jar %s -i %s -o %s -n %s" % \
-           (os.path.join(previsual_dir, "vocabLite-1.0-jar-with-dependencies.jar"), repo_dir_folder, temp_folder,
+           (os.path.join(previsual_dir, "vocabLite-1.0-jar-with-dependencies.jar"), repo_dir_folder, temp_folder_prev,
             repo_name)
     dolog('comm: '+comm)
     call(comm, shell=True)
-    comm = "mv %s %s" % (repo_parent_folder, os.path.join(repo_dir_folder, 'OnToology'))
-    dolog("comm (move back): "+comm)
-    call(comm, shell=True)
-    return temp_folder
+    # comm = "mv %s %s" % (os.path.join(temp_folder_ontoology, 'OnToology'), repo_dir_folder)
+    # dolog("comm (move back): "+comm)
+    # call(comm, shell=True)
+    return temp_folder_prev, temp_folder_ontoology
 
 
 def get_confs_from_local(repo_abs_dir):
