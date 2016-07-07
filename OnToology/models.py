@@ -42,7 +42,13 @@ try:
     class OUser(User):
         repos = ListField(ReferenceField(Repo))
         private = BooleanField(default=False) # The permission access level to OnToology
+
+    class PublishName(Document):
+        name = StringField()
+        user = ReferenceField(OUser)
+
 except:
     pass
+
 
 
