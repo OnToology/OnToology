@@ -24,6 +24,7 @@ import json
 import os
 import subprocess
 
+from django.core.urlresolvers import reverse
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponseRedirect
 from django.contrib.auth import login as django_login, logout as django_logout
@@ -434,6 +435,7 @@ def profile(request):
     print '************* profile ************'
     print str(datetime.today())
     ouser = OUser.objects.get(email=request.user.email)
+    error_msg = ''
     if 'repo' in request.GET:
         repo = request.GET['repo']
         print 'repo :<%s>' % (repo)
@@ -462,6 +464,24 @@ def profile(request):
             return JsonResponse({'ontologies': ontologies, 'sliderhtml': html})
         except Exception as e:
             print 'exception: ' + str(e)
+    elif 'name' in request.GET:
+        name = request.GET['name']
+        if len(PublishName.objects.filter(name=name)) == 0 :
+            p = PublishName(name=name, user=ouser)
+            p.save()
+        else:
+            error_msg += ' Name already taken'
+    elif 'delete-name' in request.GET:
+        name = request.GET['delete-name']
+        p = PublishName.objects.filter(name=name)
+        if len(p) == 0:
+            error_msg += 'This name is not reserved'
+        elif p[0].user.id == ouser.id:
+            pp = p[0]
+            pp.delete()
+            pp.save()
+        else:
+            error_msg += 'You are trying to delete a name that does not belong to you'
     print 'testing redirect'
     repos = ouser.repos
     for r in repos:
@@ -476,7 +496,10 @@ def profile(request):
         except:
             ouser.update(pull__repos=r)
             ouser.save()
-    return render(request, 'profile.html', {'repos': repos})
+    if error_msg != '':
+        return HttpResponseRedirect(reverse('profile'))
+    return render(request, 'profile.html', {'repos': repos, 'pnames': PublishName.objects.filter(user=ouser),
+                                            'error': error_msg})
 
 
 def update_conf(request):

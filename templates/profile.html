@@ -356,7 +356,32 @@ $( document ).ready(function() {
 		    */
 </script>
 
+<br>
 
+<table class="table">
+	<tr>
+		<th>Name</th>
+	</tr>
+	{%for p in pnames%}
+		<tr>
+			<td>{{p.name}} <a href="/profile?delete-name={{p.name}}"><span class="glyphicon glyphicon-remove pull-right"></span></a></td>
+		</tr>
+	{%endfor%}
+</table>
+
+<form action="" method="GET" style="color: #999">
+<div class="form-group" >
+	<div class="container-fluid">
+	<span class=" col-md-9 col-xs-9">
+		<input type="text" name="name" class="form-control" placeholder="Enter the name you would like to researve" ></br>
+	</span>
+	<span class="col-md-3 col-xs-3">
+		<input type="submit" class="form-control btn" value="Reserve"/>
+	</span>
+	</div>
+</div>
+</form>
+<p class="red">{{error}}</p>
 
 
 <br><br><br><br>
