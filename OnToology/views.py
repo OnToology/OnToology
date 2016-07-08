@@ -489,11 +489,22 @@ def profile(request):
             doc_dir = os.path.join(repo_dir, 'OnToology', ontology_rel_path[1:], 'documentation')
             print 'repo_dir: %s' % repo_dir
             print 'doc_dir: %s' % doc_dir
-            if not os.path.exists(os.path.join(doc_dir, '.htaccess')):
+            htaccess_f = os.path.exists(os.path.join(doc_dir, '.htaccess'))
+            if not htaccess_f:
                 print 'htaccess is not found'
                 error_msg += 'please refresh the documentation of your ontology'
             else:
                 print 'found htaccesss'
+                f = open(htaccess_f, 'r')
+                file_content = f.readall()
+                f.close()
+                f = open(htaccess_f, 'w')
+                for line in file_content.split('\n'):
+                    if line[:11] == 'RewriteBase':
+                        f.write('RewriteBase /publish/%s \n' % name)
+                    else:
+                        f.write(line+'\n')
+                f.close()
                 comm = 'mv %s /home/ubuntu/publish/%s' % (doc_dir, name)
                 print comm
                 subprocess.call(comm, shell=True)
