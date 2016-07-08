@@ -412,7 +412,7 @@ $( document ).ready(function() {
 				// get the native XmlHttpRequest object
 				var xhr = $.ajaxSettings.xhr() ;
 				// set the onprogress event handler
-				xhr.onprogress = function(evt){ console.log(evt.loaded) } ;
+				xhr.onprogress = function(evt){ console.log(evt.loaded/evt.total * 100) } ;
 				// set the onload event handler
 				xhr.onload = function(){ console.log('DONE!') } ;
 				// return the customized object
