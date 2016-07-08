@@ -89,7 +89,8 @@ function GetURLParameter(sParam)
 										<li><a href="http://{{r.user}}.github.io/{{r.rrepo}}">go to previsual</a></li>
 										{%endif%} 
 										<li> 
-											<form id="generateall{{r.url}}" action="generateforall"><input type="hidden" name="repo" value={{r.url}} ></input>
+											<form id="generateall{{r.url}}" action="generateforall">
+												<input type="hidden" name="repo" value={{r.url}} ></input>
 											</form>
 											<a  class="" onclick="document.getElementById('generateall{{r.url}}').submit()">Generate documentation, diagrams and evaluation</a>
 										</li>
@@ -101,8 +102,8 @@ function GetURLParameter(sParam)
 										{%endif%}
 										 -->
 									</ul>
-							</div> <!-- 
-								
+							</div>
+							<!--
 									<div class="col-md-1 col-xs-1 glyphicon glyphicon-remove-circle close" url="{{r.url}}"></div>
 								--> </br>
 						</a>
@@ -369,19 +370,71 @@ $( document ).ready(function() {
 	{%endfor%}
 </table>
 
+
 <form action="" method="GET" style="color: #999">
 <div class="form-group" >
 	<div class="container-fluid">
 	<span class=" col-md-9 col-xs-9">
-		<input type="text" name="name" class="form-control" placeholder="Enter the name you would like to researve" ></br>
+		<select id="repo-select" class="form-control">
+			{%for r in repos%}
+				<option>{{r.url}}</option>
+			{%endfor%}
+		</select>
+		<select id="ontology-select" class="form-control">
+		</select>
+		<input type="text" name="name" class="form-control" placeholder="Enter the name you would like to researve" >
+		</br>
 	</span>
 	<span class="col-md-3 col-xs-3">
+		<a class="btn form-control" id="get-ontologies-btn" >Get Ontologies</a><br>
 		<input type="submit" class="form-control btn" value="Reserve"/>
 	</span>
 	</div>
 </div>
 </form>
 <p class="red">{{error}}</p>
+
+<div class="progress">
+  <div id="loading" class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+    <span class="sr-only">60% Complete</span>
+  </div>
+</div>
+
+<script>
+	$('#get-ontologies-btn').click(function(){
+		var selected_repo = $('#repo-select').val();
+		alert(selected_repo);
+		console.log('before');
+		$.ajax({
+		  method: "GET",
+		  url: window.location.href+"?repo="+selected_repo,
+			xhr: function(){
+				// get the native XmlHttpRequest object
+				var xhr = $.ajaxSettings.xhr() ;
+				// set the onprogress event handler
+				xhr.onprogress = function(evt){ console.log(evt.loaded) } ;
+				// set the onload event handler
+				xhr.onload = function(){ console.log('DONE!') } ;
+				// return the customized object
+				return xhr ;
+			}
+		}).done(function( resp ) {
+		    ontologies = resp.ontologies;
+		    if (ontologies.length==0){
+		    	alert("Make sure you merge the pull request. If there is no pull request, made a change to the ontology and push it to your repository");
+			}
+			else{
+				var i;
+				var options_html="";
+				for(i=0;i<ontologies.length;i++){
+					options_html += "<option>"+ontologies[i].ontology+"</option>"
+				}
+				$('#ontology-select').html(options_html);
+			}
+		  });
+
+	});
+</script>
 
 
 <br><br><br><br>
