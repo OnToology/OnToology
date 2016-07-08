@@ -394,25 +394,48 @@ $( document ).ready(function() {
 </form>
 <p class="red">{{error}}</p>
 
-<div class="progress">
-  <div id="loading" class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
-    <span class="sr-only">60% Complete</span>
-  </div>
+<div id="progressbox" style="opacity:0.8;
+    position:fixed;
+    width:100%;
+    height:100%;
+    top:0px;
+    left:0px;
+    z-index:1000;
+ background-color: #333333;" >
+	Hello this is the box
+	<div  style="    width: 90%;
+    height: 100px;
+    //background-color: red;
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;">
+		<div class="progress progress-striped active" >
+	  <div id="loading" class="progress-bar progress-bar-custom" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+	  </div>
+	</div>
+		</div>
 </div>
 
+
 <script>
+	$("#progressbox").hide();
 	$('#get-ontologies-btn').click(function(){
 		var selected_repo = $('#repo-select').val();
-		alert(selected_repo);
-		console.log('before');
+		//alert(selected_repo);
 		$.ajax({
 		  method: "GET",
 		  url: window.location.href+"?repo="+selected_repo,
+		  beforeSend: function(){view_progress(); $('#loading').attr('style', "width: 10%")} ,
 			xhr: function(){
+				/*source: http://stackoverflow.com/questions/15668339/can-onprogress-functionality-be-added-to-jquery-ajax-by-using-xhrfields*/
+
 				// get the native XmlHttpRequest object
 				var xhr = $.ajaxSettings.xhr() ;
 				// set the onprogress event handler
-				xhr.onprogress = function(evt){ console.log(Math.round(evt.loaded/evt.total * 100)) } ;
+				xhr.onprogress = function(evt){ console.log(Math.round(evt.loaded/evt.total * 100)); $('#loading').attr('style', "width: "+Math.round(evt.loaded/evt.total * 100)+"%") } ;
 				// set the onload event handler
 				xhr.onload = function(){ console.log('DONE!') } ;
 				// return the customized object
@@ -431,9 +454,20 @@ $( document ).ready(function() {
 				}
 				$('#ontology-select').html(options_html);
 			}
+			hide_progress()
 		  });
 
 	});
+
+	function hide_progress(){
+		$("#progressbox").hide();
+		//$("#progressbox").css('z-index: -3;');
+	}
+
+	function view_progress(){
+		//$("#progressbox").css('z-index: 3;');
+		$("#progressbox").show();
+	}
 </script>
 
 
