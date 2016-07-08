@@ -365,7 +365,7 @@ $( document ).ready(function() {
 	</tr>
 	{%for p in pnames%}
 		<tr>
-			<td>{{p.name}} <a href="/profile?delete-name={{p.name}}"><span class="glyphicon glyphicon-remove pull-right"></span></a></td>
+			<td><a href="/publish/{{p.name}}">{{p.name}}</a> <a href="/profile?delete-name={{p.name}}"><span class="glyphicon glyphicon-remove pull-right"></span></a></td>
 		</tr>
 	{%endfor%}
 </table>
