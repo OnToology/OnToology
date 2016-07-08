@@ -496,7 +496,7 @@ def profile(request):
             else:
                 print 'found htaccesss'
                 f = open(htaccess_f, 'r')
-                file_content = f.readall()
+                file_content = f.read()
                 f.close()
                 f = open(htaccess_f, 'w')
                 for line in file_content.split('\n'):
