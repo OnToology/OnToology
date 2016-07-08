@@ -492,7 +492,7 @@ def profile(request):
             htaccess_f = os.path.join(doc_dir, '.htaccess')
             if not os.path.exists(htaccess_f):
                 print 'htaccess is not found'
-                error_msg += 'please refresh the documentation of your ontology'
+                error_msg += 'make sure your ontology has documentation and htaccess'
             else:
                 print 'found htaccesss'
                 f = open(htaccess_f, 'r')
@@ -537,7 +537,7 @@ def profile(request):
         except:
             ouser.update(pull__repos=r)
             ouser.save()
-    if error_msg != '':
+    if error_msg == '':
         return HttpResponseRedirect(reverse('profile'))
     return render(request, 'profile.html', {'repos': repos, 'pnames': PublishName.objects.filter(user=ouser),
                                             'error': error_msg})
