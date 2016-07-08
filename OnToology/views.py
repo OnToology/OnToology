@@ -436,7 +436,7 @@ def profile(request):
     print str(datetime.today())
     ouser = OUser.objects.get(email=request.user.email)
     error_msg = ''
-    if 'repo' in request.GET:
+    if 'repo' in request.GET and 'name' not in request.GET:
         repo = request.GET['repo']
         print 'repo :<%s>' % (repo)
         print 'got the repo'
@@ -467,10 +467,38 @@ def profile(request):
         except Exception as e:
             print 'exception: ' + str(e)
     elif 'name' in request.GET:
+        print request.GET
         name = request.GET['name']
+        target_repo = request.GET['repo']
+        ontology_rel_path = request.GET['ontology']
+        user = request.user
         if len(PublishName.objects.filter(name=name)) == 0 :
-            p = PublishName(name=name, user=ouser)
-            p.save()
+            for r in user.repos:
+                if target_repo == r.url:
+                    found = True
+                    repo = r
+                    break
+        if found:
+            autoncore.prepare_log(user.email)
+            # cloning_repo should look like 'git@github.com:user/reponame.git'
+            cloning_repo = 'git@github.com:%s.git' % target_repo
+            sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
+            folder_name = 'pub-'+sec
+            clone_repo(cloning_repo, folder_name, dosleep=True)
+            repo_dir = os.path.join(autoncore.home, folder_name)
+            doc_dir = os.path.join(repo_dir, 'OnToology', ontology_rel_path[1:], 'documentation')
+            print 'repo_dir: %s' % repo_dir
+            print 'doc_dir: %s' % doc_dir
+            if not os.path.exists(os.path.join(doc_dir, '.htaccess')):
+                print 'htaccess is not found'
+                error_msg += 'please refresh the documentation of your ontology'
+            else:
+                print 'found htaccesss'
+                comm = 'mv %s /home/ubuntu/publish/%s' % (doc_dir, name)
+                print comm
+                subprocess.call(comm, shell=True)
+                p = PublishName(name=name, user=ouser)
+                p.save()
         else:
             error_msg += ' Name already taken'
     elif 'delete-name' in request.GET:
