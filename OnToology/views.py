@@ -489,8 +489,8 @@ def profile(request):
             doc_dir = os.path.join(repo_dir, 'OnToology', ontology_rel_path[1:], 'documentation')
             print 'repo_dir: %s' % repo_dir
             print 'doc_dir: %s' % doc_dir
-            htaccess_f = os.path.exists(os.path.join(doc_dir, '.htaccess'))
-            if not htaccess_f:
+            htaccess_f = os.path.join(doc_dir, '.htaccess')
+            if not os.path.exists(htaccess_f):
                 print 'htaccess is not found'
                 error_msg += 'please refresh the documentation of your ontology'
             else:
