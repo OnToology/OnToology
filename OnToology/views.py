@@ -537,8 +537,9 @@ def profile(request):
         except:
             ouser.update(pull__repos=r)
             ouser.save()
-    if error_msg == '':
-        return HttpResponseRedirect(reverse('profile'))
+    request.GET = []
+    # if error_msg == '':
+    #     return HttpResponseRedirect(reverse('profile'))
     return render(request, 'profile.html', {'repos': repos, 'pnames': PublishName.objects.filter(user=ouser),
                                             'error': error_msg})
 
