@@ -386,7 +386,7 @@ $( document ).ready(function() {
 
 <table class="table">
 	<tr>
-		<th>Name</th>
+		<th>Reserved Names</th>
 	</tr>
 	{%for p in pnames%}
 		<tr>
@@ -396,27 +396,27 @@ $( document ).ready(function() {
 </table>
 
 
-<form action="" method="GET" style="color: #999">
-<div class="form-group" >
-	<div class="container-fluid">
-	<span class=" col-md-9 col-xs-9">
-		<select id="repo-select" class="form-control" name="repo">
-			{%for r in repos%}
-				<option>{{r.url}}</option>
-			{%endfor%}
-		</select>
-		<select id="ontology-select" class="form-control" name="ontology">
-		</select>
-		<input type="text" name="name" class="form-control" placeholder="Enter the name you would like to reserve" >
-		</br>
-	</span>
-	<span class="col-md-3 col-xs-3">
-		<a class="btn form-control" id="get-ontologies-btn" >Get Ontologies</a><br>
-		<input type="submit" class="form-control btn" value="Reserve"/>
-	</span>
-	</div>
-</div>
-</form>
+<!--<form action="" method="GET" style="color: #999">-->
+<!--<div class="form-group" >-->
+	<!--<div class="container-fluid">-->
+	<!--<span class=" col-md-9 col-xs-9">-->
+		<!--<select id="repo-select" class="form-control" name="repo">-->
+			<!--{%for r in repos%}-->
+				<!--<option>{{r.url}}</option>-->
+			<!--{%endfor%}-->
+		<!--</select>-->
+		<!--<select id="ontology-select" class="form-control" name="ontology">-->
+		<!--</select>-->
+		<!--<input type="text" name="name" class="form-control" placeholder="Enter the name you would like to reserve" >-->
+		<!--</br>-->
+	<!--</span>-->
+	<!--<span class="col-md-3 col-xs-3">-->
+		<!--<a class="btn form-control" id="get-ontologies-btn" >Get Ontologies</a><br>-->
+		<!--<input type="submit" class="form-control btn" value="Reserve"/>-->
+	<!--</span>-->
+	<!--</div>-->
+<!--</div>-->
+<!--</form>-->
 <p class="red">{{error}}</p>
 
 <div id="progressbox" style="opacity:0.8;
