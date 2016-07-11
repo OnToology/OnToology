@@ -286,12 +286,26 @@ $( document ).ready(function() {
 		var targetpanel = $(this);
 		var bodypanel = $(this).parent().find(".ontologiesspace");
 		current_url = $(this).attr('url');
-		greyout(); 
+		//greyout();
 		$.ajax({
 		  method: "GET",
 		  url: window.location.href+"?repo="+$(this).attr('url'),
+		  beforeSend: function(){view_progress(); $('#loading').attr('style', "width: 10%")} ,
+			xhr: function(){
+				/*source: http://stackoverflow.com/questions/15668339/can-onprogress-functionality-be-added-to-jquery-ajax-by-using-xhrfields*/
+
+				// get the native XmlHttpRequest object
+				var xhr = $.ajaxSettings.xhr() ;
+				// set the onprogress event handler
+				xhr.onprogress = function(evt){ console.log(Math.round(evt.loaded/evt.total * 100)); $('#loading').attr('style', "width: "+Math.round(evt.loaded/evt.total * 100)+"%") } ;
+				// set the onload event handler
+				xhr.onload = function(){ console.log('DONE!') } ;
+				// return the customized object
+				return xhr ;
+			}
 		}).done(function( resp ) {
-		    ontologies = resp.ontologies;		    
+		    hide_progress()
+		    ontologies = resp.ontologies;
 		    if (ontologies.length==0){
 		    	alert("Make sure you merge the pull request. If there is no pull request, made a change to the ontology and push it to your repository");
 			}
@@ -402,7 +416,6 @@ $( document ).ready(function() {
     left:0px;
     z-index:1000;
  background-color: #333333;" >
-	Hello this is the box
 	<div  style="    width: 90%;
     height: 100px;
     //background-color: red;
@@ -459,9 +472,16 @@ $( document ).ready(function() {
 
 	});
 
+
 	function hide_progress(){
+		$('#loading').attr('style', "width: "+"80"+"%")
+		$('#loading').attr('style', "width: "+"90"+"%")
+		$('#loading').attr('style', "width: "+"100"+"%")
+		setTimeout(hide_progress_actual, 1000);
+	}
+
+	function hide_progress_actual(){
 		$("#progressbox").hide();
-		//$("#progressbox").css('z-index: -3;');
 	}
 
 	function view_progress(){
