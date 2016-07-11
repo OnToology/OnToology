@@ -49,6 +49,7 @@ function GetURLParameter(sParam)
     return '';
 }
 
+
 </script>
 
 
@@ -66,7 +67,7 @@ function GetURLParameter(sParam)
 		<div class="container-fluid">
 			{%for r in repos%}
 			<div class="panel panel-default">
-				<div class="panel-heading repo" url="{{r.url}}">
+				<div class="panel-heading repo" url="{{r.url}}" >
 					<h4 class="panel-title">
 						<a data-toggle="collapse" data-parent="#accordion"
 							href="#coll{{forloop.counter}}">
@@ -311,17 +312,27 @@ $( document ).ready(function() {
 			}
 		    var o;
 		    var temp;
-		    bodypanel.html('<div class="col-md-6 col-xs-6" >Ontology</div><div class="col-md-2 col-xs-2" >Diagrams</div><div class="col-md-2 col-xs-2" >Evaluation</div><div class="col-md-2 col-xs-2" >Documentation</div></br><hr>');
+		    bodypanel.html('<div class="col-md-4 col-xs-4" >Ontology</div><div class="col-md-2 col-xs-2" >Diagrams</div><div class="col-md-2 col-xs-2" >Evaluation</div><div class="col-md-2 col-xs-2" >Documentation</div><div class="col-md-2 col-xs-2" >Publish</div></br><hr>');
 		    for(o=0;o<ontologies.length;o++){
 		    	temp=bodypanel.html();
-		    	bodypanel.html(temp+"<span class='ontology col-md-6 col-xs-6'>"+ontologies[o].ontology+"</span>"+
-		    			'<input type="checkbox" class="col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-ar2dtool" checked>'+
-		    			'<input type="checkbox" class="col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-oops" checked>'+
-		    			'<input type="checkbox" class="col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-widoco" checked>'+	    	
-		    			"</br>");	
+		    	//newly added
+		    	bodypanel.html(temp+"<div class='ontology col-md-4 col-xs-4'>"+ontologies[o].ontology+"</div>"+
+                        //'<input type="checkbox" class=" col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-ar2dtool" checked>'+
+		    			//'<input type="checkbox" class=" col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-oops" checked>'+
+		    			//'<input type="checkbox" class=" col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-widoco" checked>'+
+                        '<div class="col-md-2 col-xs-2">'+
+		    			    '<input type="checkbox" class=" " name="'+ontologies[o].ontology+'-ar2dtool" checked>'+
+		    			'</div>'+
+		    			'<div class="col-md-2 col-xs-2">'+
+    		    			'<input type="checkbox" class=" col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-oops" checked>'+
+                        '</div>'+
+                        '<div class="col-md-2 col-xs-2">'+
+    		    			'<input type="checkbox" class=" col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-widoco" checked>'+
+    		    		'</div>'+
+		    			'<div class="col-md-2 col-xs-2 "><span class="publish-class highl btn col-md-12 col-xs-12" ontology="'+ontologies[o].ontology+'" repo="'+current_url+'" >publish</span></div>'
+		    			+"<br><br>"
+		    			);
 		    }
-		    
-	
 		    $("#slidertag").html(resp.sliderhtml);
 		    initsliders();		    
 		    $('#box').click();
@@ -488,8 +499,56 @@ $( document ).ready(function() {
 		//$("#progressbox").css('z-index: 3;');
 		$("#progressbox").show();
 	}
+
+    $(document).on('click', '.publish-class', function(){
+        //alert($(this).attr('repo'));
+        $("#publish-add-repo-input").val($(this).attr('repo'));
+        $("#publish-add-ontology-input").val($(this).attr('ontology'));
+        $("#publish-modal-add").modal();
+    });
+
+
 </script>
 
+
+<div class="modal fade " id="publish-modal-add" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content ">
+      <div class="modal-header darkl">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <!--<h4 class="modal-title">Reserve a name</h4>-->
+        <!--<h4 align="left">Reserve a name</h4>-->
+          <!--<p align="left " alt="left">Reserve a name</p>-->
+          Reserve a name
+      </div>
+      <div class="modal-body highl">
+          <br>
+
+          <form action="" method="GET" style="color: #999">
+              <div class="form-group">
+                  <div class="container-fluid">
+	                <span class=" col-md-9 col-xs-9">
+                        <input type="hidden" id="publish-add-repo-input" name="repo"/>
+                        <input type="hidden" id="publish-add-ontology-input" name="ontology"/>
+                		<input type="text" name="name" class="form-control" placeholder="Enter the name you would like to reserve">
+                        <br>
+	                </span>
+                    <span class="col-md-3 col-xs-3">
+                        <input type="submit" class="form-control btn" style="background-color: #333333;color: #FBFBFB;" value="Reserve"/>
+                    </span>
+                  </div>
+              </div>
+          </form>
+
+
+      </div>
+      <!--<div class="modal-footer">-->
+        <!--<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>-->
+        <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+      <!--</div>-->
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 <br><br><br><br>
 <br><br><br><br>
