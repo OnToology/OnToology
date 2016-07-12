@@ -1,9 +1,13 @@
 # ![alt text](https://raw.githubusercontent.com/OnToology/OnToology/master/ontoology.png "OnToology")
 A system to automate part of the collaborative ontology development process. Given a repository with an owl file, **OnToology** will survey it and produce diagrams, a complete documentation and validation based on common pitfalls.
 
+You can find a live version of OnToology online: http://ontoology.linkeddata.es.
+
 Creator: Ahmad Alobaid
 
 Contributors: Daniel Garijo, Oscar Corcho, Maria Poveda
+
+License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 
 
 ###Project Plan
