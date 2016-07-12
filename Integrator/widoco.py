@@ -60,6 +60,7 @@ def create_widoco_doc(rdf_file, base_dir):
     else:
         comm += " -getOntologyMetadata "
         comm += " -saveConfig " + config_file_abs
+    comm += " -htaccess "
     # if not settings.TEST:
     if True:
         comm += ' >> "' + log_file_dir + '" '

@@ -49,6 +49,7 @@ function GetURLParameter(sParam)
     return '';
 }
 
+
 </script>
 
 
@@ -66,7 +67,7 @@ function GetURLParameter(sParam)
 		<div class="container-fluid">
 			{%for r in repos%}
 			<div class="panel panel-default">
-				<div class="panel-heading repo" url="{{r.url}}">
+				<div class="panel-heading repo" url="{{r.url}}" >
 					<h4 class="panel-title">
 						<a data-toggle="collapse" data-parent="#accordion"
 							href="#coll{{forloop.counter}}">
@@ -89,7 +90,8 @@ function GetURLParameter(sParam)
 										<li><a href="http://{{r.user}}.github.io/{{r.rrepo}}">go to previsual</a></li>
 										{%endif%} 
 										<li> 
-											<form id="generateall{{r.url}}" action="generateforall"><input type="hidden" name="repo" value={{r.url}} ></input>
+											<form id="generateall{{r.url}}" action="generateforall">
+												<input type="hidden" name="repo" value={{r.url}} ></input>
 											</form>
 											<a  class="" onclick="document.getElementById('generateall{{r.url}}').submit()">Generate documentation, diagrams and evaluation</a>
 										</li>
@@ -101,8 +103,8 @@ function GetURLParameter(sParam)
 										{%endif%}
 										 -->
 									</ul>
-							</div> <!-- 
-								
+							</div>
+							<!--
 									<div class="col-md-1 col-xs-1 glyphicon glyphicon-remove-circle close" url="{{r.url}}"></div>
 								--> </br>
 						</a>
@@ -285,28 +287,52 @@ $( document ).ready(function() {
 		var targetpanel = $(this);
 		var bodypanel = $(this).parent().find(".ontologiesspace");
 		current_url = $(this).attr('url');
-		greyout(); 
+		//greyout();
 		$.ajax({
 		  method: "GET",
 		  url: window.location.href+"?repo="+$(this).attr('url'),
+		  beforeSend: function(){view_progress(); $('#loading').attr('style', "width: 10%")} ,
+			xhr: function(){
+				/*source: http://stackoverflow.com/questions/15668339/can-onprogress-functionality-be-added-to-jquery-ajax-by-using-xhrfields*/
+
+				// get the native XmlHttpRequest object
+				var xhr = $.ajaxSettings.xhr() ;
+				// set the onprogress event handler
+				xhr.onprogress = function(evt){ console.log(Math.round(evt.loaded/evt.total * 100)); $('#loading').attr('style', "width: "+Math.round(evt.loaded/evt.total * 100)+"%") } ;
+				// set the onload event handler
+				xhr.onload = function(){ console.log('DONE!') } ;
+				// return the customized object
+				return xhr ;
+			}
 		}).done(function( resp ) {
-		    ontologies = resp.ontologies;		    
+		    hide_progress()
+		    ontologies = resp.ontologies;
 		    if (ontologies.length==0){
 		    	alert("Make sure you merge the pull request. If there is no pull request, made a change to the ontology and push it to your repository");
 			}
 		    var o;
 		    var temp;
-		    bodypanel.html('<div class="col-md-6 col-xs-6" >Ontology</div><div class="col-md-2 col-xs-2" >Diagrams</div><div class="col-md-2 col-xs-2" >Evaluation</div><div class="col-md-2 col-xs-2" >Documentation</div></br><hr>');
+		    bodypanel.html('<div class="col-md-4 col-xs-4" >Ontology</div><div class="col-md-2 col-xs-2" >Diagrams</div><div class="col-md-2 col-xs-2" >Evaluation</div><div class="col-md-2 col-xs-2" >Documentation</div><div class="col-md-2 col-xs-2" >Publish</div></br><hr>');
 		    for(o=0;o<ontologies.length;o++){
 		    	temp=bodypanel.html();
-		    	bodypanel.html(temp+"<span class='ontology col-md-6 col-xs-6'>"+ontologies[o].ontology+"</span>"+
-		    			'<input type="checkbox" class="col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-ar2dtool" checked>'+
-		    			'<input type="checkbox" class="col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-oops" checked>'+
-		    			'<input type="checkbox" class="col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-widoco" checked>'+	    	
-		    			"</br>");	
+		    	//newly added
+		    	bodypanel.html(temp+"<div class='ontology col-md-4 col-xs-4'>"+ontologies[o].ontology+"</div>"+
+                        //'<input type="checkbox" class=" col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-ar2dtool" checked>'+
+		    			//'<input type="checkbox" class=" col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-oops" checked>'+
+		    			//'<input type="checkbox" class=" col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-widoco" checked>'+
+                        '<div class="col-md-2 col-xs-2">'+
+		    			    '<input type="checkbox" class=" " name="'+ontologies[o].ontology+'-ar2dtool" checked>'+
+		    			'</div>'+
+		    			'<div class="col-md-2 col-xs-2">'+
+    		    			'<input type="checkbox" class=" col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-oops" checked>'+
+                        '</div>'+
+                        '<div class="col-md-2 col-xs-2">'+
+    		    			'<input type="checkbox" class=" col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-widoco" checked>'+
+    		    		'</div>'+
+		    			'<div class="col-md-2 col-xs-2 "><span class="publish-class highl btn col-md-12 col-xs-12" ontology="'+ontologies[o].ontology+'" repo="'+current_url+'" >publish</span></div>'
+		    			+"<br><br>"
+		    			);
 		    }
-		    
-	
 		    $("#slidertag").html(resp.sliderhtml);
 		    initsliders();		    
 		    $('#box').click();
@@ -356,8 +382,173 @@ $( document ).ready(function() {
 		    */
 </script>
 
+<br>
+
+<table class="table">
+	<tr>
+		<th>Reserved Names</th>
+	</tr>
+	{%for p in pnames%}
+		<tr>
+			<td><a href="/publish/{{p.name}}">{{p.name}}</a> <a href="/profile?delete-name={{p.name}}"><span class="glyphicon glyphicon-remove pull-right"></span></a></td>
+		</tr>
+	{%endfor%}
+</table>
 
 
+<!--<form action="" method="GET" style="color: #999">-->
+<!--<div class="form-group" >-->
+	<!--<div class="container-fluid">-->
+	<!--<span class=" col-md-9 col-xs-9">-->
+		<!--<select id="repo-select" class="form-control" name="repo">-->
+			<!--{%for r in repos%}-->
+				<!--<option>{{r.url}}</option>-->
+			<!--{%endfor%}-->
+		<!--</select>-->
+		<!--<select id="ontology-select" class="form-control" name="ontology">-->
+		<!--</select>-->
+		<!--<input type="text" name="name" class="form-control" placeholder="Enter the name you would like to reserve" >-->
+		<!--</br>-->
+	<!--</span>-->
+	<!--<span class="col-md-3 col-xs-3">-->
+		<!--<a class="btn form-control" id="get-ontologies-btn" >Get Ontologies</a><br>-->
+		<!--<input type="submit" class="form-control btn" value="Reserve"/>-->
+	<!--</span>-->
+	<!--</div>-->
+<!--</div>-->
+<!--</form>-->
+<p class="red">{{error}}</p>
+
+<div id="progressbox" style="opacity:0.8;
+    position:fixed;
+    width:100%;
+    height:100%;
+    top:0px;
+    left:0px;
+    z-index:1000;
+ background-color: #333333;" >
+	<div  style="    width: 90%;
+    height: 100px;
+    //background-color: red;
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;">
+		<div class="progress progress-striped active" >
+	  <div id="loading" class="progress-bar progress-bar-custom" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+	  </div>
+	</div>
+		</div>
+</div>
+
+
+<script>
+	$("#progressbox").hide();
+	$('#get-ontologies-btn').click(function(){
+		var selected_repo = $('#repo-select').val();
+		//alert(selected_repo);
+		$.ajax({
+		  method: "GET",
+		  url: window.location.href+"?repo="+selected_repo,
+		  beforeSend: function(){view_progress(); $('#loading').attr('style', "width: 10%")} ,
+			xhr: function(){
+				/*source: http://stackoverflow.com/questions/15668339/can-onprogress-functionality-be-added-to-jquery-ajax-by-using-xhrfields*/
+
+				// get the native XmlHttpRequest object
+				var xhr = $.ajaxSettings.xhr() ;
+				// set the onprogress event handler
+				xhr.onprogress = function(evt){ console.log(Math.round(evt.loaded/evt.total * 100)); $('#loading').attr('style', "width: "+Math.round(evt.loaded/evt.total * 100)+"%") } ;
+				// set the onload event handler
+				xhr.onload = function(){ console.log('DONE!') } ;
+				// return the customized object
+				return xhr ;
+			}
+		}).done(function( resp ) {
+		    ontologies = resp.ontologies;
+		    if (ontologies.length==0){
+		    	alert("Make sure you merge the pull request. If there is no pull request, made a change to the ontology and push it to your repository");
+			}
+			else{
+				var i;
+				var options_html="";
+				for(i=0;i<ontologies.length;i++){
+					options_html += "<option>"+ontologies[i].ontology+"</option>"
+				}
+				$('#ontology-select').html(options_html);
+			}
+			hide_progress()
+		  });
+
+	});
+
+
+	function hide_progress(){
+		$('#loading').attr('style', "width: "+"80"+"%")
+		$('#loading').attr('style', "width: "+"90"+"%")
+		$('#loading').attr('style', "width: "+"100"+"%")
+		setTimeout(hide_progress_actual, 1000);
+	}
+
+	function hide_progress_actual(){
+		$("#progressbox").hide();
+	}
+
+	function view_progress(){
+		//$("#progressbox").css('z-index: 3;');
+		$("#progressbox").show();
+	}
+
+    $(document).on('click', '.publish-class', function(){
+        //alert($(this).attr('repo'));
+        $("#publish-add-repo-input").val($(this).attr('repo'));
+        $("#publish-add-ontology-input").val($(this).attr('ontology'));
+        $("#publish-modal-add").modal();
+    });
+
+
+</script>
+
+
+<div class="modal fade " id="publish-modal-add" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content ">
+      <div class="modal-header darkl">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <!--<h4 class="modal-title">Reserve a name</h4>-->
+        <!--<h4 align="left">Reserve a name</h4>-->
+          <!--<p align="left " alt="left">Reserve a name</p>-->
+          Reserve a name
+      </div>
+      <div class="modal-body highl">
+          <br>
+
+          <form action="" method="GET" style="color: #999">
+              <div class="form-group">
+                  <div class="container-fluid">
+	                <span class=" col-md-9 col-xs-9">
+                        <input type="hidden" id="publish-add-repo-input" name="repo"/>
+                        <input type="hidden" id="publish-add-ontology-input" name="ontology"/>
+                		<input type="text" name="name" class="form-control" placeholder="Enter the name you would like to reserve">
+                        <br>
+	                </span>
+                    <span class="col-md-3 col-xs-3">
+                        <input type="submit" class="form-control btn" style="background-color: #333333;color: #FBFBFB;" value="Reserve"/>
+                    </span>
+                  </div>
+              </div>
+          </form>
+
+
+      </div>
+      <!--<div class="modal-footer">-->
+        <!--<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>-->
+        <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+      <!--</div>-->
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 <br><br><br><br>
 <br><br><br><br>

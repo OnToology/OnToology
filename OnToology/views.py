@@ -24,6 +24,7 @@ import json
 import os
 import subprocess
 
+from django.core.urlresolvers import reverse
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponseRedirect
 from django.contrib.auth import login as django_login, logout as django_logout
@@ -434,7 +435,8 @@ def profile(request):
     print '************* profile ************'
     print str(datetime.today())
     ouser = OUser.objects.get(email=request.user.email)
-    if 'repo' in request.GET:
+    error_msg = ''
+    if 'repo' in request.GET and 'name' not in request.GET:
         repo = request.GET['repo']
         print 'repo :<%s>' % (repo)
         print 'got the repo'
@@ -459,9 +461,68 @@ def profile(request):
             print 'testing redirect'
             print 'will return the Json'
             html = render(request, 'profile_sliders.html', {'ontologies': ontologies}).content
-            return JsonResponse({'ontologies': ontologies, 'sliderhtml': html})
+            jresponse = JsonResponse({'ontologies': ontologies, 'sliderhtml': html})
+            jresponse.__setitem__('Content-Length', len(jresponse.content))
+            return jresponse
         except Exception as e:
             print 'exception: ' + str(e)
+    elif 'name' in request.GET:
+        print request.GET
+        name = request.GET['name']
+        target_repo = request.GET['repo']
+        ontology_rel_path = request.GET['ontology']
+        user = request.user
+        if len(PublishName.objects.filter(name=name)) == 0 :
+            for r in user.repos:
+                if target_repo == r.url:
+                    found = True
+                    repo = r
+                    break
+        if found:
+            autoncore.prepare_log(user.email)
+            # cloning_repo should look like 'git@github.com:user/reponame.git'
+            cloning_repo = 'git@github.com:%s.git' % target_repo
+            sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
+            folder_name = 'pub-'+sec
+            clone_repo(cloning_repo, folder_name, dosleep=True)
+            repo_dir = os.path.join(autoncore.home, folder_name)
+            doc_dir = os.path.join(repo_dir, 'OnToology', ontology_rel_path[1:], 'documentation')
+            print 'repo_dir: %s' % repo_dir
+            print 'doc_dir: %s' % doc_dir
+            htaccess_f = os.path.join(doc_dir, '.htaccess')
+            if not os.path.exists(htaccess_f):
+                print 'htaccess is not found'
+                error_msg += 'make sure your ontology has documentation and htaccess'
+            else:
+                print 'found htaccesss'
+                f = open(htaccess_f, 'r')
+                file_content = f.read()
+                f.close()
+                f = open(htaccess_f, 'w')
+                for line in file_content.split('\n'):
+                    if line[:11] == 'RewriteBase':
+                        f.write('RewriteBase /publish/%s \n' % name)
+                    else:
+                        f.write(line+'\n')
+                f.close()
+                comm = 'mv %s /home/ubuntu/publish/%s' % (doc_dir, name)
+                print comm
+                subprocess.call(comm, shell=True)
+                p = PublishName(name=name, user=ouser)
+                p.save()
+        else:
+            error_msg += ' Name already taken'
+    elif 'delete-name' in request.GET:
+        name = request.GET['delete-name']
+        p = PublishName.objects.filter(name=name)
+        if len(p) == 0:
+            error_msg += 'This name is not reserved'
+        elif p[0].user.id == ouser.id:
+            pp = p[0]
+            pp.delete()
+            pp.save()
+        else:
+            error_msg += 'You are trying to delete a name that does not belong to you'
     print 'testing redirect'
     repos = ouser.repos
     for r in repos:
@@ -476,7 +537,11 @@ def profile(request):
         except:
             ouser.update(pull__repos=r)
             ouser.save()
-    return render(request, 'profile.html', {'repos': repos})
+    request.GET = []
+    # if error_msg == '':
+    #     return HttpResponseRedirect(reverse('profile'))
+    return render(request, 'profile.html', {'repos': repos, 'pnames': PublishName.objects.filter(user=ouser),
+                                            'error': error_msg})
 
 
 def update_conf(request):
