@@ -22,8 +22,8 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 * Draw two kinds of diagrams from rdf files using ar2dtool (https://github.com/idafensp/ar2dtool).
 * Create a documentation of the ontology using Widoco tool (https://github.com/dgarijo/Widoco).
 * Validate the ontology using OOPS tool and generate a summary of the issues found by OOPS (http://oops-ws.oeg-upm.net/).
-* Create a pull request.
-
+* Generate a landing page using vocabLite (https://github.com/dgarijo/vocabLite).
+* Publish the ontology (content negotiation)
 
 
 ###How to use it 
