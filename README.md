@@ -63,8 +63,6 @@ how to do them
  http://techamad.blogspot.com.es/2015/05/github-with-multiple-keys.html or
  https://gist.github.com/jexchan/2351996
 
-##Take a peek on the system
-* The system is currently host on the development server http://ontoology.linkeddata.es/ 
 
 ##Tests
 ID | Test Case | Expected Result  | Status
