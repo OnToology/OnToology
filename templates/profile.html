@@ -312,14 +312,11 @@ $( document ).ready(function() {
 			}
 		    var o;
 		    var temp;
-		    bodypanel.html('<div class="col-md-4 col-xs-4" >Ontology</div><div class="col-md-2 col-xs-2" >Diagrams</div><div class="col-md-2 col-xs-2" >Evaluation</div><div class="col-md-2 col-xs-2" >Documentation</div><div class="col-md-2 col-xs-2" >Publish</div></br><hr>');
+		    bodypanel.html('<div class="col-md-3 col-xs-3" >Ontology</div><div class="col-md-2 col-xs-2" >Diagrams</div><div class="col-md-2 col-xs-2" >Evaluation</div><div class="col-md-2 col-xs-2" >Documentation</div><div class="col-md-2 col-xs-2" >Publish</div><div class="col-md-1 col-xs-1">Bundle</div></br><hr>');
 		    for(o=0;o<ontologies.length;o++){
 		    	temp=bodypanel.html();
 		    	//newly added
-		    	bodypanel.html(temp+"<div class='ontology col-md-4 col-xs-4'>"+ontologies[o].ontology+"</div>"+
-                        //'<input type="checkbox" class=" col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-ar2dtool" checked>'+
-		    			//'<input type="checkbox" class=" col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-oops" checked>'+
-		    			//'<input type="checkbox" class=" col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-widoco" checked>'+
+		    	bodypanel.html(temp+"<div class='ontology col-md-3 col-xs-3'>"+ontologies[o].ontology+"</div>"+
                         '<div class="col-md-2 col-xs-2">'+
 		    			    '<input type="checkbox" class=" " name="'+ontologies[o].ontology+'-ar2dtool" checked>'+
 		    			'</div>'+
@@ -329,7 +326,12 @@ $( document ).ready(function() {
                         '<div class="col-md-2 col-xs-2">'+
     		    			'<input type="checkbox" class=" col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-widoco" checked>'+
     		    		'</div>'+
-		    			'<div class="col-md-2 col-xs-2 "><span class="publish-class highl btn col-md-12 col-xs-12" ontology="'+ontologies[o].ontology+'" repo="'+current_url+'" >publish</span></div>'
+		    			'<div class="col-md-2 col-xs-2 "><span class="publish-class highl btn col-md-12 col-xs-12" ontology="'+ontologies[o].ontology+'" repo="'+current_url+'" >publish</span></div>'+
+		    			'<div class="col-md-1 col-xs-1"> <form action="/get_bundle" method="POST">'+
+		    				'<input type="hidden" name="repo" value="'+current_url+'"/>'+
+		    				'<input type="hidden" name="ontology" value="'+ontologies[o].ontology+'"/>'+
+		    				'<button type="submit" class="highl btn glyphicon glyphicon-save-file" value="Download" name="Download"/>'+
+		    				'</form> </div>'
 		    			+"<br><br>"
 		    			);
 		    }

@@ -749,6 +749,67 @@ def update_g(token):
     g = Github(token)
 
 
+def generate_bundle(base_dir, target_repo, ontology_bundle):
+    """
+    :param base_dir: e.g. /home/user/temp/random-folder-xyz
+    :param target_repo:  user/reponame
+    :param ontology_bundle: OnToology/abc/alo.owl
+    :return: the bundle zip file dir if successful, or None otherwise
+    """
+    global g
+    if g is None:
+        init_g()
+    try:
+        print 'ontology bundle: '+ontology_bundle
+        repo = g.get_repo(target_repo)
+        sha = repo.get_commits()[0].sha
+        files = repo.get_git_tree(sha=sha, recursive=True).tree
+        print 'num of files: '+str(len(files))
+        for f in files:
+            try:
+                for i in range(3):
+                    try:
+                        print 'f: '+str(f)
+                        print 'next: '+str(f.path)
+                        p = f.path
+                        break
+                    except:
+                        time.sleep(2)
+                p = f.path
+                if p[0] == '/':
+                    p = p[1:]
+                abs_path = os.path.join(base_dir, p)
+                if p[:len(ontology_bundle)] == ontology_bundle:
+                    print 'true: '+str(p)
+                    if f.type == 'tree':
+                        os.makedirs(abs_path)
+                    elif f.type == 'blob':
+                        parent_folder = os.path.join(*abs_path.split('/')[:-1])
+                        if parent_folder != base_dir: # not in the top level of the repo
+                            try:
+                                os.makedirs(parent_folder)
+                            except:
+                                pass
+                        with open(abs_path, 'w') as f:
+                            file_content = repo.get_file_contents(f.path).decoded_content
+                            f.write(file_content)
+                    else:
+                        print 'unknown type in generate bundle'
+                else:
+                    print 'not: '+p
+            except Exception as e:
+                print 'exception: '+str(e)
+        zip_file = os.path.join(base_dir, '%s.zip' % ontology_bundle.split('/')[-1])
+        comm = "cd %s; zip -r '%s' OnToology" % (base_dir, zip_file)
+        print 'comm: %s' % comm
+        call(comm, shell=True)
+        return os.path.join(base_dir, zip_file)
+        #return None
+    except Exception as e:
+        print 'error in generate_bundle: '+str(e)
+        return None
+
+
 ########################################################################
 ########################################################################
 # #####################  Auton configuration file  #####################

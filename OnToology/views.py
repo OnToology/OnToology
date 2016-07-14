@@ -23,7 +23,9 @@ import random
 import json
 import os
 import subprocess
+import shutil
 
+from django.http import HttpResponse
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponseRedirect
@@ -41,7 +43,7 @@ from autoncore import git_magic, add_webhook, ToolUser, webhook_access, update_g
     clone_repo
 from autoncore import parse_online_repo_for_ontologies, update_file, remove_webhook, \
     init_g
-from autoncore import get_proper_loggedin_scope, get_ontologies_in_online_repo
+from autoncore import get_proper_loggedin_scope, get_ontologies_in_online_repo, generate_bundle
 from models import *
 import autoncore
 from settings import client_id, client_secret, host
@@ -436,7 +438,7 @@ def profile(request):
     print str(datetime.today())
     ouser = OUser.objects.get(email=request.user.email)
     error_msg = ''
-    if 'repo' in request.GET and 'name' not in request.GET:
+    if 'repo' in request.GET and 'name' not in request.GET:  # asking for ontologies in a repo
         repo = request.GET['repo']
         print 'repo :<%s>' % (repo)
         print 'got the repo'
@@ -466,7 +468,7 @@ def profile(request):
             return jresponse
         except Exception as e:
             print 'exception: ' + str(e)
-    elif 'name' in request.GET:
+    elif 'name' in request.GET:  # publish with a new name
         print request.GET
         name = request.GET['name']
         target_repo = request.GET['repo']
@@ -680,3 +682,32 @@ def get_proper_scope_to_login(username):
         return 'public_repo'  # the user is not private and neither the repo
     except:  # new user
         return 'public_repo'
+
+
+@login_required
+def get_bundle(request):
+    ontology = request.POST['ontology']
+    repo = request.POST['repo']
+    r = Repo.objects.filter(url=repo)
+    if len(r) == 0:
+        return render(request, 'msg.html', {'msg': 'Invalid repo'})
+    elif r[0] not in request.user.repos:
+        return render(request, 'msg.html', {'msg': 'Please add this repo first'})
+    sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(3)])
+    folder_name = 'bundle-'+sec
+    repo_dir = os.path.join(autoncore.home, folder_name)
+    if os.path.exists(repo_dir):
+       shutil.rmtree(repo_dir)
+    os.makedirs(repo_dir)
+    if ontology[0] == '/':
+        ontology = ontology[1:]
+    oo = os.path.join('OnToology', ontology)
+    print 'oo: %s' % oo
+    zip_dir = generate_bundle(base_dir=repo_dir, target_repo=repo, ontology_bundle=oo)
+    if zip_dir is None:
+       return render(request, 'msg.html', {'msg': 'error generating the bundle'})
+    else:
+       with open(zip_dir, 'r') as f:
+           response = HttpResponse(f.read(), content_type='application/zip')
+           response['Content-Disposition'] = 'attachment; filename="%s"' % zip_dir.split('/')[-1]
+       return response
