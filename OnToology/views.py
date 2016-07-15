@@ -105,7 +105,12 @@ def home(request):
         if request.user.is_authenticated():
             generateforall(target_repo, request.user.email)
     repos = Repo.objects.order_by('-last_used')[:10]
-    return render(request, 'home.html', {'repos': repos, 'user': request.user})
+    num_of_users = len(User.objects.all())
+    num_of_repos = len(Repo.objects.all())
+    last_used = Repo.objects.all().order_by('-last_used')[0].last_used
+    last_used = '%d, %d' % (last_used.month, last_used.year)
+    return render(request, 'home.html', {'repos': repos, 'user': request.user, 'num_of_users': num_of_users,
+                                         'num_of_repos': num_of_repos, 'last_used': last_used})
 
 
 def grant_update(request):
