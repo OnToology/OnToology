@@ -40,7 +40,7 @@ def prepare_logger(log_fname):
 
 
 def tools_execution(changed_files, base_dir, logfile, dolog_fname=None, target_repo=None, g_local=None,
-                    change_status=None):
+                    change_status=None, repo=None):
     """
     :param changed_files:  changed files include relative path
             base_dir: abs dir to the repo file name, e.g. /home/user/myrepo/
@@ -57,10 +57,10 @@ def tools_execution(changed_files, base_dir, logfile, dolog_fname=None, target_r
     for f in changed_files:
         if f[-4:] in ontology_formats:
             dolog("tools_execution: "+f)
-            handle_single_ofile(f, base_dir, target_repo=target_repo, change_status=change_status)
+            handle_single_ofile(f, base_dir, target_repo=target_repo, change_status=change_status, repo=repo)
 
 
-def handle_single_ofile(changed_file, base_dir, target_repo, change_status):
+def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo=None):
     """
     assuming the change_file is an ontology file
     :param changed_file: relative directory of the file e.g. dir1/dir2/my.owl
@@ -77,7 +77,13 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status):
     if conf['ar2dtool_enable']:
         dolog("will call draw diagrams")
         change_status(target_repo, 'drawing diagrams')
-        ar2dtool.draw_diagrams([changed_file], base_dir)
+        r = ar2dtool.draw_diagrams([changed_file], base_dir)
+        if r != 0:
+            print 'in init draw detected an error'
+            repo.notes += 'Error generating diagrams for ontology %s. ' % changed_file
+            repo.save()
+        else:
+            print 'in init no draw error'
     if conf['widoco_enable']:
         dolog('will call widoco')
         change_status(target_repo, 'generating docs')

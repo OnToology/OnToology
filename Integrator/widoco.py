@@ -66,4 +66,5 @@ def create_widoco_doc(rdf_file, base_dir):
         comm += ' >> "' + log_file_dir + '" '
     comm += " ; echo 'widoco' >> " + os.path.join(get_parent_path(out_abs_dir), verification_log_fname)
     dolog(comm)
-    call(comm, shell=True)
+    return_code = call(comm, shell=True)
+    dolog('return code: %s' % str(return_code))

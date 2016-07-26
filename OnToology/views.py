@@ -291,7 +291,10 @@ def generateforall(target_repo, user_email):
     user = user_email
     ontologies = get_ontologies_in_online_repo(target_repo)
     changed_files = ontologies
-    comm = "python /home/ubuntu/OnToology/OnToology/autoncore.py "
+    print 'current file dir: %s' % str(os.path.dirname(os.path.realpath(__file__)))
+    # comm = "python /home/ubuntu/OnToology/OnToology/autoncore.py "
+    comm = "python %s " % \
+           str((os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py')))
     comm += ' "' + target_repo + '" "' + user + '" "' + cloning_repo + '" '
     for c in changed_files:
         comm += '"' + c.strip() + '" '

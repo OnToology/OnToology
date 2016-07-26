@@ -6,13 +6,13 @@ from Integrator import get_parent_path, log_file_dir, config_folder_name
 import sys
 
 
-ar2dtool_config_types = ['ar2dtool-taxonomy.conf',  'ar2dtool-class.conf']
+ar2dtool_config_types = ['ar2dtool-taxonomy.conf', 'ar2dtool-class.conf']
 
 from OnToology.autoncore import get_target_home
 import OnToology.settings as settings
 
 
-ar2dtool_config_types = ['ar2dtool-taxonomy.conf',  'ar2dtool-class.conf']
+ar2dtool_config_types = ['ar2dtool-taxonomy.conf', 'ar2dtool-class.conf']
 ar2dtool_config = os.environ['tools_config_dir']
 
 
@@ -22,9 +22,13 @@ ar2dtool_dir = os.environ['ar2dtool_dir']
 
 def draw_diagrams(rdf_files, base_dir):
     dolog(str(len(rdf_files)) + ' changed files')
+    return_values = 0
     for r in rdf_files:
         for t in ar2dtool_config_types:
-            draw_file(r, t, base_dir)
+            rr = draw_file(r, t, base_dir)
+            return_values += rr
+    print 'draw_diagram return values: %d' % return_values
+    return return_values
 
 
 def get_ar2dtool_config(config_type):
@@ -40,7 +44,8 @@ def draw_file(rdf_file, config_type, base_dir):
     delete_dir(get_parent_path(rdf_file_abs))
     rdf_file_abs = build_path(os.path.join(base_dir, config_folder_name, rdf_file, 'diagrams', config_type[:-5],
                                            get_file_from_path(rdf_file)))
-    config_file_abs = build_path(os.path.join(base_dir, config_folder_name, rdf_file, 'diagrams', 'config', config_type))
+    config_file_abs = build_path(os.path.join(base_dir, config_folder_name, rdf_file, 'diagrams', 'config',
+                                              config_type))
     try:
         open(config_file_abs, "r")
     except IOError:
@@ -56,8 +61,9 @@ def draw_file(rdf_file, config_type, base_dir):
         outtype + ' -c ' + config_file_abs + ' -GV -gml '
     if not settings.TEST:
         comm += ' >> "' + log_file_dir + '"'
-    comm += " ; echo 'ar2dtool' >> " + os.path.join(get_parent_path(get_parent_path(
-        get_parent_path(rdf_file_abs + '.' + outtype))), verification_log_fname)
-    dolog(comm)
+    # comm += " ; echo 'ar2dtool' >> " + os.path.join(get_parent_path(get_parent_path(
+    #    get_parent_path(rdf_file_abs + '.' + outtype))), verification_log_fname)
     dolog("drawing is: "+comm)
-    call(comm, shell=True)
+    return_code = call(comm, shell=True)
+    dolog('return code: %s' % str(return_code))
+    return return_code
