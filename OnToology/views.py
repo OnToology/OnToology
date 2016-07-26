@@ -24,6 +24,7 @@ import json
 import os
 import subprocess
 import shutil
+from subprocess import call
 
 from django.http import HttpResponse
 from django.core.urlresolvers import reverse
@@ -46,15 +47,18 @@ from autoncore import parse_online_repo_for_ontologies, update_file, remove_webh
 from autoncore import get_proper_loggedin_scope, get_ontologies_in_online_repo, generate_bundle
 from models import *
 import autoncore
-from settings import client_id, client_secret, host
+from settings import host
+from settings import client_id_login, client_id_public, client_id_private, client_secret_login, client_secret_public, client_secret_private
 import Integrator.previsual as previsual
 
 settings.SECRET_KEY = os.environ['SECRET_KEY']
+client_id = None
+client_secret = None
+is_private = None
 
 
 def get_repos_formatted(the_repos):
     return the_repos
-
 
 #     repos = []
 #     for orir in the_repos:
@@ -80,6 +84,7 @@ def get_repos_formatted(the_repos):
 
 
 def home(request):
+    global client_id, client_secret, is_private
     print '****** Welcome to home page ********'
     print >> sys.stderr, '****** Welcome to the error output ******'
     if 'target_repo' in request.GET:
@@ -90,12 +95,16 @@ def home(request):
         init_g()
         # if not has_access_to_repo(target_repo):# this for the organization
         # return render(request,'msg.html',{'msg': 'repos under organizations are not supported at the moment'})
-        if request.user.is_authenticated():
-            ouser = OUser.objects.get(username=request.user.username)
-            # this is initially to get the access key for the user
-            webhook_access_url, state = webhook_access(client_id, host + '/get_access_token', ouser.private)
-        else:  # private access in case not logged in
-            webhook_access_url, state = webhook_access(client_id, host + '/get_access_token', True)
+        wgets_dir = os.environ['wget_dir']
+        if call('cd %s; wget %s;' % (wgets_dir, 'http://github.com/'+target_repo.strip()), shell=True) == 0:
+            is_private = False
+            client_id = client_id_public
+            client_secret = client_secret_public
+        else:
+            is_private = True
+            client_id = client_id_private
+            client_secret = client_secret_private
+        webhook_access_url, state = webhook_access(client_id, host + '/get_access_token', isprivate=is_private)
         request.session['target_repo'] = target_repo
         request.session['state'] = state
         # if '127.0.0.1:8000' not in request.META['HTTP_HOST']:  # Not testing   # or not settings.test_conf['local']:
@@ -108,7 +117,7 @@ def home(request):
     num_of_users = len(User.objects.all())
     num_of_repos = len(Repo.objects.all())
     last_used = Repo.objects.all().order_by('-last_used')[0].last_used
-    last_used = '%d, %d' % (last_used.month, last_used.year)
+    #last_used = '%d, %d' % (last_used.month, last_used.year)
     return render(request, 'home.html', {'repos': repos, 'user': request.user, 'num_of_users': num_of_users,
                                          'num_of_repos': num_of_repos, 'last_used': last_used})
 
@@ -118,6 +127,7 @@ def grant_update(request):
 
 
 def get_access_token(request):
+    global is_private, client_id, client_secret
     if 'state' not in request.session or request.GET['state'] != request.session['state']:
         return HttpResponseRedirect('/')
     data = {
@@ -142,10 +152,10 @@ def get_access_token(request):
 
     if request.user.is_authenticated() and request.session['access_token_time'] == '1':
         request.session['access_token_time'] = '2'  # so we do not loop
-        isprivate = get_proper_loggedin_scope(OUser.objects.get(username=request.user.username),
-                                              request.session['target_repo'])
-        print 'isprivate is: ' + str(isprivate)
-        webhook_access_url, state = webhook_access(client_id, host + '/get_access_token', isprivate)
+        #isprivate = get_proper_loggedin_scope(OUser.objects.get(username=request.user.username),
+        #                                      request.session['target_repo'])
+        #print 'isprivate is: ' + str(isprivate)
+        webhook_access_url, state = webhook_access(client_id, host + '/get_access_token', is_private)
         request.session['state'] = state
         return HttpResponseRedirect(webhook_access_url)
 
@@ -291,7 +301,10 @@ def generateforall(target_repo, user_email):
     user = user_email
     ontologies = get_ontologies_in_online_repo(target_repo)
     changed_files = ontologies
-    comm = "python /home/ubuntu/OnToology/OnToology/autoncore.py "
+    print 'current file dir: %s' % str(os.path.dirname(os.path.realpath(__file__)))
+    # comm = "python /home/ubuntu/OnToology/OnToology/autoncore.py "
+    comm = "python %s " % \
+           str((os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py')))
     comm += ' "' + target_repo + '" "' + user + '" "' + cloning_repo + '" '
     for c in changed_files:
         comm += '"' + c.strip() + '" '
@@ -306,16 +319,16 @@ def generateforall(target_repo, user_email):
 
 def login(request):
     print '******* login *********'
-    if 'username' not in request.GET:
-        return HttpResponseRedirect('/')
-    username = request.GET['username']
+    #if 'username' not in request.GET:
+    #    return HttpResponseRedirect('/')
+    #username = request.GET['username']
     redirect_url = host + '/login_get_access'
     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
     request.session['state'] = sec
-    scope = get_proper_scope_to_login(username)
+    scope = 'user:email' #get_proper_scope_to_login(username)
     # scope = 'admin:org_hook'
     # scope+=',admin:org,admin:public_key,admin:repo_hook,gist,notifications,delete_repo,repo_deployment,repo,public_repo,user,admin:public_key'
-    redirect_url = "https://github.com/login/oauth/authorize?client_id=" + client_id + "&redirect_uri=" + redirect_url + "&scope=" + scope + "&state=" + sec
+    redirect_url = "https://github.com/login/oauth/authorize?client_id=" + client_id_login + "&redirect_uri=" + redirect_url + "&scope=" + scope + "&state=" + sec
     return HttpResponseRedirect(redirect_url)
 
 
@@ -332,8 +345,8 @@ def login_get_access(request):
     if request.GET['state'] != request.session['state']:
         return HttpResponseRedirect('/')
     data = {
-        'client_id': client_id,
-        'client_secret': client_secret,
+        'client_id': client_id_login,
+        'client_secret': client_secret_login,
         'code': request.GET['code'],
         'redirect_uri': host  # host+'/add_hook'
     }
@@ -678,15 +691,16 @@ def superadmin(request):
 
     return render(request, 'superadmin.html')
 
-
-def get_proper_scope_to_login(username):
-    try:  # The user is registered
-        ouser = OUser.objects.get(username=username)
-        if ouser.private:
-            return 'repo'
-        return 'public_repo'  # the user is not private and neither the repo
-    except:  # new user
-        return 'public_repo'
+#
+# def get_proper_scope_to_login(username=None):
+#     # try:  # The user is registered
+#     #     ouser = OUser.objects.get(username=username)
+#     #     if ouser.private:
+#     #         return 'repo'
+#     #     return 'public_repo'  # the user is not private and neither the repo
+#     # except:  # new user
+#     #     return 'public_repo'
+#     return 'user:email'
 
 
 @login_required

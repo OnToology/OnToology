@@ -15,7 +15,7 @@
 	<link rel="stylesheet" href="{{MEDIA_URL}}css/cover.css">
 	<script src="{{MEDIA_URL}}js/bootstrap.min.js"></script-->
 
-	<style> 
+	<style>
 			.red{color: #FF0000;}
 			.redback{background-color: #FF0000;}
 			.blueback{background-color: #0000FF;}
@@ -182,15 +182,6 @@
 	  <!-- -->
 
 
-
-
-
-
-
-
-
-
-
 <!-- Latest compiled and minified CSS -->
 	
 	
@@ -213,8 +204,6 @@
 	-->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
-
-
 	<!-- This is for bootstrap switch only-->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css">
@@ -229,21 +218,21 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-  
+
+	  <!-- These two are for toasts -->
+	  	<script src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+		<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css"/>
+
 	<style>
 		    .progress {background: #111111; border: 0px solid rgba(255, 255, 255, 1); border-radius: 4px; height: 20px;}
 			.progress-bar-custom {background: #FBFBFB;}
 			//.progress-striped .progress-bar-custom {background-color: rgba(66, 139, 202, 1); background-image: -webkit-gradient(linear,0 100%,100% 0,color-stop(0.25,rgba(255, 0, 0, 0.15),color-stop(0.25,transparent),color-stop(0.5,transparent),color-stop(0.5,rgba(255, 0, 0, 0.15)),color-stop(0.75,rgba(255, 0, 0, 0.15)),color-stop(0.75,transparent),to(transparent))); background-image: -webkit-linear-gradient(45deg,rgba(255, 0, 0, 0.15) 25%,transparent 25%,transparent 50%,rgba(255, 0, 0, 0.15) 50%,rgba(255, 0, 0, 0.15) 75%,transparent 75%,transparent); background-image: linear-gradient(45deg,rgba(255, 0, 0, 0.15) 25%,transparent 25%,transparent 50%,rgba(255, 0, 0, 0.15) 50%,rgba(255, 0, 0, 0.15) 75%,transparent 75%,transparent); background-size: 40px 40px;}
 			.progress-striped .progress-bar-custom {background-color: #333333; background-image: -webkit-gradient(linear,0 100%,100% 0,color-stop(0.25,#FBFBFB,color-stop(0.25,transparent),color-stop(0.5,transparent),color-stop(0.5,#FBFBFB),color-stop(0.75,#FBFBFB),color-stop(0.75,transparent),to(transparent))); background-image: -webkit-linear-gradient(45deg,#FBFBFB 25%,transparent 25%,transparent 50%,#FBFBFB 50%,#FBFBFB 75%,transparent 75%,transparent); background-image: linear-gradient(45deg,#FBFBFB 25%,transparent 25%,transparent 50%,#FBFBFB 50%,#FBFBFB 75%,transparent 75%,transparent); background-size: 40px 40px;} 
 
-
 	</style>
 
-  
-  
   </head>
   <body>
-
 
     <div class="site-wrapper1">
 
@@ -278,7 +267,7 @@
 
 								{% else %}
 									<li>
-									<a type="button" class="darkl" data-toggle="modal" data-target="#myModal">
+									<a type="button" class="darkl" href="/login">
 
 									<img src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png" class="img-circle" height="50px"/>
 								   <span>Login through Github</span>
@@ -297,7 +286,7 @@
 					</div>
             </br></br></br></br></br>
 
-
+			<!--
 			  <div class="modal fade" id="myModal" role="dialog">
 				<div class="modal-dialog">
 
@@ -314,6 +303,7 @@
 				  </div>
 				</div>
 			  </div>
+			  -->
 
             {% block body%}
             {% endblock %}
@@ -338,6 +328,10 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed >
     <script src="js/bootstrap.min.js"></script-->
+
+
+
+
 
 
 	<br><br><br><br><br><br>

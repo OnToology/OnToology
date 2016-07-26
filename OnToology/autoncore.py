@@ -112,9 +112,11 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
         dolog('repo cloned')
     files_to_verify = []
     # print "will loop through changed files"
+    from models import Repo
+    drepo = Repo.objects.get(url=target_repo)
     Integrator.tools_execution(changed_files=changed_filesss, base_dir=os.path.join(home, user), logfile=log_file_dir,
                                target_repo=target_repo, g_local=g, dolog_fname=logger_fname,
-                               change_status=change_status)
+                               change_status=change_status, repo=drepo)
     # for chf in changed_filesss:
     #     print "chf: "+chf
     #     auton_conf = {'ar2dtool_enable': False, 'widoco_enable': False,
@@ -695,10 +697,12 @@ def webhook_access(client_id, redirect_url, isprivate):
     else:
         scope = 'public_repo'
     # scope = 'admin:org_hook'
-    # scope+=',admin:org,admin:public_key,admin:repo_hook,gist,notifications,delete_repo,repo_deployment,repo,public_repo,user,admin:public_key'
+    # scope+=',admin:org,admin:public_key,admin:repo_hook,gist,notifications,delete_repo,repo_deployment,
+    # repo,public_repo,user,admin:public_key'
     sec = ''.join([random.choice(string.ascii_letters + string.digits)
                    for _ in range(9)])
-    return "https://github.com/login/oauth/authorize?client_id=" + client_id + "&redirect_uri=" + redirect_url + "&scope=" + scope + "&state=" + sec, sec
+    return "https://github.com/login/oauth/authorize?client_id=" + client_id + "&redirect_uri=" +\
+           redirect_url + "&scope=" + scope + "&state=" + sec, sec
 
 
 def get_user_github_email(username):
