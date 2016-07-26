@@ -697,10 +697,12 @@ def webhook_access(client_id, redirect_url, isprivate):
     else:
         scope = 'public_repo'
     # scope = 'admin:org_hook'
-    # scope+=',admin:org,admin:public_key,admin:repo_hook,gist,notifications,delete_repo,repo_deployment,repo,public_repo,user,admin:public_key'
+    # scope+=',admin:org,admin:public_key,admin:repo_hook,gist,notifications,delete_repo,repo_deployment,
+    # repo,public_repo,user,admin:public_key'
     sec = ''.join([random.choice(string.ascii_letters + string.digits)
                    for _ in range(9)])
-    return "https://github.com/login/oauth/authorize?client_id=" + client_id + "&redirect_uri=" + redirect_url + "&scope=" + scope + "&state=" + sec, sec
+    return "https://github.com/login/oauth/authorize?client_id=" + client_id + "&redirect_uri=" +\
+           redirect_url + "&scope=" + scope + "&state=" + sec, sec
 
 
 def get_user_github_email(username):
