@@ -501,7 +501,8 @@ def profile(request):
         target_repo = request.GET['repo']
         ontology_rel_path = request.GET['ontology']
         user = request.user
-        if len(PublishName.objects.filter(name=name)) == 0 :
+        found = False
+        if len(PublishName.objects.filter(name=name)) == 0:
             for r in user.repos:
                 if target_repo == r.url:
                     found = True
