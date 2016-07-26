@@ -54,6 +54,8 @@ def tools_execution(changed_files, base_dir, logfile, dolog_fname=None, target_r
     if dolog_fname is not None:
         prepare_logger(dolog_fname)
         dolog = dolog_logg
+    repo.notes = ''
+    repo.save()
     for f in changed_files:
         if f[-4:] in ontology_formats:
             dolog("tools_execution: "+f)
