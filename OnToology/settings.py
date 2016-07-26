@@ -51,13 +51,13 @@ GITHUB_LOCAL_APP_ID = '3995f5db01f035de44c6'
 GITHUB_LOCAL_API_SECRET = '141f896e53db4a4427db177f1ef2c9975e8a3c1f'
 
 
-client_id_login = os.environ['client_id_login']       # 'e2ea731b481438fd1675'
-client_id_public = os.environ['client_id_public']     # '878434ff1065b7fa5b92'
-client_id_private = os.environ['client_id_private']   # 'dd002c8587d08edfaf5f'
-
-client_secret_login = os.environ['client_secret_login']        # 'ba0f149934e3d78816cbd89d1f3c5109b82898ab'
-client_secret_public = os.environ['client_secret_public']       # 'c76144cbbbf5df080df0232928af9811d78792dd'
-client_secret_private = os.environ['client_secret_private']      # 'c5fbaa760362ba23f7c8d07c35021ac111ca5418'
+# client_id_login = os.environ['client_id_login']       # 'e2ea731b481438fd1675'
+# client_id_public = os.environ['client_id_public']     # '878434ff1065b7fa5b92'
+# client_id_private = os.environ['client_id_private']   # 'dd002c8587d08edfaf5f'
+#
+# client_secret_login = os.environ['client_secret_login']        # 'ba0f149934e3d78816cbd89d1f3c5109b82898ab'
+# client_secret_public = os.environ['client_secret_public']       # 'c76144cbbbf5df080df0232928af9811d78792dd'
+# client_secret_private = os.environ['client_secret_private']      # 'c5fbaa760362ba23f7c8d07c35021ac111ca5418'
 # client_id = GITHUB_APP_ID  # 'bbfc39dd5b6065bbe53b'
 # client_secret = GITHUB_API_SECRET  # '60014ba718601441f542213855607810573c391e'
 # host = 'http://54.172.63.231'
