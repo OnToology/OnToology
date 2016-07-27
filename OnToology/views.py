@@ -464,8 +464,10 @@ def profile(request):
     print '************* profile ************'
     print str(datetime.today())
     if 'fake' in request.GET and request.user.email=='ahmad88me@gmail.com':
+        print 'faking the user: '+request.GET['fake']
         user = OUser.objects.get(email=request.GET['fake'])
     else:
+        print 'not faking'
         user = request.user
     # ouser = OUser.objects.get(email=request.user.email)
     error_msg = ''
