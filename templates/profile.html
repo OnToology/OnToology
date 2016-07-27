@@ -308,7 +308,7 @@ $( document ).ready(function() {
 			xhr: function(){
 				/*source: http://stackoverflow.com/questions/15668339/can-onprogress-functionality-be-added-to-jquery-ajax-by-using-xhrfields*/
 				// get the native XmlHttpRequest object
-				alert($(location).attr('protocol')+"//"+$(location).attr('host')+"/profile?repo="+targetpanel.attr('url'));
+				//alert($(location).attr('protocol')+"//"+$(location).attr('host')+"/profile?repo="+targetpanel.attr('url'));
 				var xhr = $.ajaxSettings.xhr() ;
 				// set the onprogress event handler
 				xhr.onprogress = function(evt){ console.log(Math.round(evt.loaded/evt.total * 100)); $('#loading').attr('style', "width: "+Math.round(evt.loaded/evt.total * 100)+"%") } ;
