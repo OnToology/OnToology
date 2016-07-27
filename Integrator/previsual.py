@@ -48,6 +48,7 @@ def generate_previsual(repo_dir, target_repo):
         target_repo : user/reponame
 
     """
+    dolog('*****previsual*****')
     repo_name = target_repo.split('/')[-1]
     temp_previsual_folder_dir, temp_folder_ontoology = generate_previsual_page(repo_dir, repo_name)
     # Create branch for Github pages

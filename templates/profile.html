@@ -401,11 +401,17 @@ $( document ).ready(function() {
 
 <table class="table">
 	<tr>
-		<th>Reserved Names</th>
+		<th align="center" style="text-align: center;">Reserved Names</th>
+		<th align="center" style="text-align: center;">Repository</th>
+		<th align="center" style="text-align: center;">Ontology</th>
+		<th align="center" style="text-align: center;">w3id URL</th>
 	</tr>
 	{%for p in pnames%}
 		<tr>
-			<td><a href="/publish/{{p.name}}">{{p.name}}</a> <a href="/profile?delete-name={{p.name}}"><span class="glyphicon glyphicon-remove pull-right"></span></a></td>
+			<td><a href="/publish/{{p.name}}">{{p.name}}</a></td>
+			<td>{{p.repo.url}}</td>
+			<td>{{p.ontology}}</td>
+			<td>http://w3id.org/def/{{p.name}}<a href="/profile?delete-name={{p.name}}"><span class="glyphicon glyphicon-remove pull-right"></span></a></td>
 		</tr>
 	{%endfor%}
 </table>

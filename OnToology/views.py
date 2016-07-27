@@ -508,7 +508,7 @@ def profile(request):
                     found = True
                     repo = r
                     break
-        if found:
+        if found:  # if the repo belongs to the user
             autoncore.prepare_log(user.email)
             # cloning_repo should look like 'git@github.com:user/reponame.git'
             cloning_repo = 'git@github.com:%s.git' % target_repo
@@ -538,7 +538,7 @@ def profile(request):
                 comm = 'mv %s /home/ubuntu/publish/%s' % (doc_dir, name)
                 print comm
                 subprocess.call(comm, shell=True)
-                p = PublishName(name=name, user=ouser)
+                p = PublishName(name=name, user=ouser, repo=repo, ontology=ontology_rel_path)
                 p.save()
         else:
             error_msg += ' Name already taken'
