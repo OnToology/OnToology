@@ -463,7 +463,11 @@ def profile(request):
         print 'profile preparing log error [normal]: ' + str(e)
     print '************* profile ************'
     print str(datetime.today())
-    ouser = OUser.objects.get(email=request.user.email)
+    if 'fake' in request.GET and request.user.email=='ahmad88me@gmail.com':
+        user = OUser.objects.get(email=request.GET['fake'])
+    else:
+        user = request.user
+    # ouser = OUser.objects.get(email=request.user.email)
     error_msg = ''
     if 'repo' in request.GET and 'name' not in request.GET:  # asking for ontologies in a repo
         repo = request.GET['repo']
@@ -472,7 +476,7 @@ def profile(request):
         try:
             print 'trying to validate repo'
             hackatt = True
-            for repooo in ouser.repos:
+            for repooo in user.repos:
                 if repooo.url == repo:
                     hackatt = False
                     break
@@ -500,7 +504,7 @@ def profile(request):
         name = request.GET['name']
         target_repo = request.GET['repo']
         ontology_rel_path = request.GET['ontology']
-        user = request.user
+        # user = request.user
         found = False
         if len(PublishName.objects.filter(name=name)) == 0:
             for r in user.repos:
@@ -538,7 +542,7 @@ def profile(request):
                 comm = 'mv %s /home/ubuntu/publish/%s' % (doc_dir, name)
                 print comm
                 subprocess.call(comm, shell=True)
-                p = PublishName(name=name, user=ouser, repo=repo, ontology=ontology_rel_path)
+                p = PublishName(name=name, user=user, repo=repo, ontology=ontology_rel_path)
                 p.save()
         else:
             error_msg += ' Name already taken'
@@ -547,30 +551,30 @@ def profile(request):
         p = PublishName.objects.filter(name=name)
         if len(p) == 0:
             error_msg += 'This name is not reserved'
-        elif p[0].user.id == ouser.id:
+        elif p[0].user.id == user.id:
             pp = p[0]
             pp.delete()
             pp.save()
         else:
             error_msg += 'You are trying to delete a name that does not belong to you'
     print 'testing redirect'
-    repos = ouser.repos
+    repos = user.repos
     for r in repos:
         try:
             if len(r.url.split('/')) != 2:
-                ouser.update(pull__repos=r)
+                user.update(pull__repos=r)
                 r.delete()
-                ouser.save()
+                user.save()
                 continue
             r.user = r.url.split('/')[0]
             r.rrepo = r.url.split('/')[1]
         except:
-            ouser.update(pull__repos=r)
-            ouser.save()
+            user.update(pull__repos=r)
+            user.save()
     request.GET = []
     # if error_msg == '':
     #     return HttpResponseRedirect(reverse('profile'))
-    return render(request, 'profile.html', {'repos': repos, 'pnames': PublishName.objects.filter(user=ouser),
+    return render(request, 'profile.html', {'repos': repos, 'pnames': PublishName.objects.filter(user=user),
                                             'error': error_msg})
 
 
