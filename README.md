@@ -133,5 +133,9 @@ Or you can set them in apache e.g. ``` SetEnv github_username OnToologyUser```
 2. [AR2DTool](http://github.com/idafensp/ar2dtool) and rename it to "ar2dtool.jar"
 3. [vocabLite](http://github.com/dgarijo/vocabLite/releases) and rename it to "vocabLite-1.0-jar-with-dependencies.jar"
 
-Also make sure they can be executed (x permission is given).
+Make sure the are located in the same dir as the environment variable e.g. (ar2dtool_dir, widoco_dir) and they can be
+executed (x permission is given).
 
+#### Set default configuration files
+In the folder that specified in the environment variable ```ar2dtool_config```, include default configuration files for
+AR2DTool and Widoco.
