@@ -128,3 +128,10 @@ export client_secret_private=xxxxxxxxxxx
 Or you can set them in apache e.g. ``` SetEnv github_username OnToologyUser```
 
 
+#### External JARs you need to install
+1. [Widoco](http://github.com/dgarijo/Widoco/releases) and rename it to "widoco-0.0.1-jar-with-dependencies.jar"
+2. [AR2DTool](http://github.com/idafensp/ar2dtool) and rename it to "ar2dtool.jar"
+3. [vocabLite](http://github.com/dgarijo/vocabLite/releases) and rename it to "vocabLite-1.0-jar-with-dependencies.jar"
+
+Also make sure they can be executed (x permission is given).
+
