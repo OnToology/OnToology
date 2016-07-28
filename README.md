@@ -88,15 +88,19 @@ Sign | Meaning
 ##How to deploy the on your server
 On Ubuntu server: 
 
-1. Install Git 2.*. [here](http://askubuntu.com/questions/571549/git-1-7-9-5-upgrade-to-current-release-of-git-2-x-on-ubuntu-12-04)
-2. Install Apache2.
-3. Install mod_wsgi and enable the site. [here](https://www.digitalocean.com/community/tutorials/installing-mod_wsgi-on-ubuntu-12-04)
-4. Install mod-wsgi for apache ```sudo apt-get install libapache2-mod-wsgi```
-5. Install pip ```sudo apt-get install python-pip```
-6. Install mongodb ```sudo apt-get install mongodb```
-7. Install app requirements ```pip install -r requirements.txt```
-8. Add Widoco and Ar2dTool folders and fix the default configuration files
+1. Python 2.7
+2. Java
+3. Install Git 2.*. [here](http://askubuntu.com/questions/571549/git-1-7-9-5-upgrade-to-current-release-of-git-2-x-on-ubuntu-12-04)
+4. Install Apache2.
+5. Install mod_wsgi and enable the site. [here](https://www.digitalocean.com/community/tutorials/installing-mod_wsgi-on-ubuntu-12-04)
+6. Install mod-wsgi for apache ```sudo apt-get install libapache2-mod-wsgi```
+7. Install pip ```sudo apt-get install python-pip```
+8. Install mongodb ```sudo apt-get install mongodb```
+9. Install app requirements ```pip install -r requirements.txt```
+10. Add Widoco and Ar2dTool folders and fix the default configuration files
+
 ####Environment variables that need to be set
+
 ```
 export github_username=xxxxxx
 export github_password=xxxxxxx
@@ -104,7 +108,6 @@ export github_repos_dir=/xxx/xxx/xxx/temp/
 export ar2dtool_dir=/xxxx/xxxx/xxxx/xxx/ar2dtool/bin/
 export ar2dtool_config=/xxxx/xxxx/xxxx/config/
 export widoco_dir=/xxxxx/xxxx/xxxx/Widoco/JAR/
-export OnToology_home=True
 export SECRET_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 export user_github_username=xxx@xxxxx.xxx
 export user_github_password=xxxxxx
@@ -115,6 +118,12 @@ export test_ont_nl=xxx/xxx
 export tests_ssh_key=/xxx/.xxx/id_rsa_xxx
 export test_github_username=xxx@xxx.xxx
 export test_github_password=xxx
+export client_id_login=xxxxxxx
+export client_id_public=xxxxxxxxxx
+export client_id_private=xxxxxxxxxx
+export client_secret_login=xxxxxxxxxx
+export client_secret_public=xxxxxxxxxxxx
+export client_secret_private=xxxxxxxxxxx
 ```
 Or you can set them in apache e.g. ``` SetEnv github_username OnToologyUser```
 
