@@ -285,6 +285,9 @@ def generateforall_view(request):
         return HttpResponseRedirect('/')
     target_repo = request.GET['repo'].strip()
     found = False
+    if target_repo[-1] == '/':
+        target_repo = target_repo[:-1]
+    print 'target_repo is <%s>' % target_repo
     # The below couple of lines are to check that the user currently have permission over the repository
     try:
         ouser = OUser.objects.get(email=request.user.email)
