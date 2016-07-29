@@ -21,12 +21,14 @@ ar2dtool_dir = os.environ['ar2dtool_dir']
 
 
 def draw_diagrams(rdf_files, base_dir):
+    print 'in drawing diagrams &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&'
     dolog(str(len(rdf_files)) + ' changed files')
     return_values = 0
     for r in rdf_files:
         for t in ar2dtool_config_types:
             rr = draw_file(r, t, base_dir)
             return_values += rr
+    print '\n\n\n\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n\n\n'
     print 'draw_diagram return values: %d' % return_values
     return return_values
 
