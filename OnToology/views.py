@@ -671,6 +671,7 @@ def renew_previsual(request):
             repo = r
             break
     if found:
+        repo.notes = ''
         repo.previsual_page_available = True
         repo.save()
         autoncore.prepare_log(user.email)
@@ -680,8 +681,12 @@ def renew_previsual(request):
         folder_name = 'prevclone-'+sec
         clone_repo(cloning_repo, folder_name, dosleep=True)
         repo_dir = os.path.join(autoncore.home, folder_name)
-        previsual.start_previsual(repo_dir, target_repo)
-        return HttpResponseRedirect('/profile')
+        msg = previsual.start_previsual(repo_dir, target_repo)
+        if msg == "": # not errors
+            return HttpResponseRedirect('/profile')
+        else:
+            render(request, 'profile.html', {'repos': user.repos, 'pnames': PublishName.objects.filter(user=user),
+                                            'error': msg})
     return render(request, 'msg.html',
                   {'msg': 'You should add the repo while you are logged in before the revisual renewal'})
 
@@ -728,6 +733,8 @@ def get_bundle(request):
         return render(request, 'msg.html', {'msg': 'Invalid repo'})
     elif r[0] not in request.user.repos:
         return render(request, 'msg.html', {'msg': 'Please add this repo first'})
+    r[0].notes = ''
+    r[0].save()
     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(3)])
     folder_name = 'bundle-'+sec
     repo_dir = os.path.join(autoncore.home, folder_name)
@@ -740,9 +747,9 @@ def get_bundle(request):
     print 'oo: %s' % oo
     zip_dir = generate_bundle(base_dir=repo_dir, target_repo=repo, ontology_bundle=oo)
     if zip_dir is None:
-       return render(request, 'msg.html', {'msg': 'error generating the bundle'})
+        return render(request, 'msg.html', {'msg': 'error generating the bundle'})
     else:
-       with open(zip_dir, 'r') as f:
-           response = HttpResponse(f.read(), content_type='application/zip')
-           response['Content-Disposition'] = 'attachment; filename="%s"' % zip_dir.split('/')[-1]
-       return response
+        with open(zip_dir, 'r') as f:
+            response = HttpResponse(f.read(), content_type='application/zip')
+            response['Content-Disposition'] = 'attachment; filename="%s"' % zip_dir.split('/')[-1]
+        return response
