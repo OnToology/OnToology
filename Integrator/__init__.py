@@ -1,5 +1,7 @@
 import ConfigParser
 import os
+import random
+import string
 from subprocess import call
 
 import logging
@@ -206,4 +208,21 @@ def get_target_home():
     return 'OnToology'
 
 
-
+def call_and_get_log(comm):
+    """
+    :param comm: The command to be executed via call
+    :return: return_code (e.g. 0, 1,....), output of the call
+    """
+    temp_dir = os.environ['github_repos_dir']
+    sec = ''.join([random.choice(string.ascii_letters + string.digits)
+                   for _ in range(9)])
+    fname = 'call-output-'+sec
+    fname = os.path.join(temp_dir, fname)
+    f = open(fname, 'w')
+    return_code = call(comm, stdout=f, stderr=f, shell=True)
+    f.close()
+    f = open(fname, 'r')
+    file_content = f.read()
+    f.close()
+    os.remove(fname)
+    return return_code, file_content
