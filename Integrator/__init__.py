@@ -82,20 +82,26 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
         dolog("will call draw diagrams")
         change_status(target_repo, 'drawing diagrams')
         r = ar2dtool.draw_diagrams([changed_file], base_dir)
-        if r != 0:
+        if r != "":
             print 'in init draw detected an error'
             repo.notes += 'Error generating diagrams for ontology %s. ' % changed_file
             repo.save()
-        else:
-            print 'in init no draw error'
     if conf['widoco_enable']:
         dolog('will call widoco')
         change_status(target_repo, 'generating docs')
-        widoco.generate_widoco_docs([changed_file], base_dir)
+        r = widoco.generate_widoco_docs([changed_file], base_dir)
+        if r != "":
+            print 'in init documentation detected an error'
+            repo.notes += 'Error generating documentation for ontology %s. ' % changed_file
+            repo.save()
     if conf['oops_enable']:
         dolog('will call oops')
         change_status(target_repo, 'evaluating')
-        oops.oops_ont_files(target_repo=target_repo, changed_files=[changed_file], base_dir=base_dir)
+        r = oops.oops_ont_files(target_repo=target_repo, changed_files=[changed_file], base_dir=base_dir)
+        if r != "":
+            print 'in init evaluation detected an error'
+            repo.notes += 'Error generating evaluation for ontology %s. ' % changed_file
+            repo.save()
     if conf['owl2jsonld_enable']:
         dolog('will call owl2jsonld')
         change_status(target_repo, 'generating context')
@@ -211,18 +217,26 @@ def get_target_home():
 def call_and_get_log(comm):
     """
     :param comm: The command to be executed via call
-    :return: return_code (e.g. 0, 1,....), output of the call
+    :return: error message, output of the call
     """
     temp_dir = os.environ['github_repos_dir']
     sec = ''.join([random.choice(string.ascii_letters + string.digits)
                    for _ in range(9)])
-    fname = 'call-output-'+sec
-    fname = os.path.join(temp_dir, fname)
-    f = open(fname, 'w')
-    return_code = call(comm, stdout=f, stderr=f, shell=True)
+    fname_output = 'call-output-'+sec
+    fname_output = os.path.join(temp_dir, fname_output)
+    fname_err = 'call-error-'+sec
+    fname_err = os.path.join(temp_dir, fname_err)
+    f = open(fname_output, 'w')
+    ferr = open(fname_err, 'w')
+    call(comm, stdout=f, stderr=ferr, shell=True)
     f.close()
-    f = open(fname, 'r')
+    ferr.close()
+    f = open(fname_output, 'r')
+    ferr = open(fname_err, 'r')
     file_content = f.read()
+    error_content = ferr.read()
     f.close()
-    os.remove(fname)
-    return return_code, file_content
+    ferr.close()
+    os.remove(fname_output)
+    os.remove(fname_err)
+    return error_content, file_content

@@ -63,23 +63,23 @@ def generate_previsual(repo_dir, target_repo):
     comm += ";git rm -rf ."
     dolog("comm: "+comm)
     # call(comm, shell=True)
-    return_code, msg = call_and_get_log(comm)
-    dolog(msg)
-    if return_code != 0:
+    error_msg, msg = call_and_get_log(comm)
+    dolog(msg+error_msg)
+    if error_msg != "":
         return "Error while generating the previsualization"
     comm = 'cp -Rf %s/* %s ;' % (temp_previsual_folder_dir, repo_dir)
     dolog('comm: '+comm)
     # call(comm, shell=True)
-    return_code, msg = call_and_get_log(comm)
-    dolog(msg)
-    if return_code != 0:
+    error_msg, msg = call_and_get_log(comm)
+    dolog(msg+error_msg)
+    if error_msg != "":
         return "Error while generating the previsualization"
     comm = "mv %s %s" % (os.path.join(temp_folder_ontoology, 'OnToology'), repo_dir)
     dolog("comm (move back): "+comm)
     # call(comm, shell=True)
-    return_code, msg = call_and_get_log(comm)
-    dolog(msg)
-    if return_code != 0:
+    error_msg, msg = call_and_get_log(comm)
+    dolog(msg+error_msg)
+    if error_msg != "":
         return "Error while generating the previsualization"
     comm = "cd "+repo_dir
     comm += ';git config user.email "%s"' % ToolEmail
@@ -88,10 +88,10 @@ def generate_previsual(repo_dir, target_repo):
     comm += ';git commit -m "ontoology generated"'
     comm += ";git push -f origin "+branch_name
     dolog('will call: '+comm)
-    return_code, msg = call_and_get_log(comm)
+    error_msg, msg = call_and_get_log(comm)
     # return_code = call(comm, shell=True)
-    dolog(msg)
-    if return_code != 0:
+    dolog(msg+error_msg)
+    if error_msg != "":
         return "error pushing the generated files into"
     return ""
 
@@ -113,18 +113,18 @@ def generate_previsual_page(repo_dir_folder, repo_name):
     comm = "cd %s; mkdir %s" % (repo_parent_folder, sec_doc_prev)
     dolog("comm: "+comm)
     # call(comm, shell=True)
-    return_code, msg = call_and_get_log(comm)
-    dolog(msg)
-    if return_code != 0:
+    error_msg, msg = call_and_get_log(comm)
+    dolog(msg+error_msg)
+    if error_msg != "":
         return None, None, "Error while generating the previsualization"
     temp_folder_ontoology = os.path.join(repo_parent_folder, sec_doc_prev)
     comm = "mv %s %s" % (os.path.join(repo_dir_folder, 'OnToology'), temp_folder_ontoology)
     # comm = "rm -Rf %s" % os.path.join(repo_dir_folder, 'OnToology')
     dolog('comm: '+comm)
     # call(comm, shell=True)
-    return_code, msg = call_and_get_log(comm)
-    dolog(msg)
-    if return_code != 0:
+    error_msg, msg = call_and_get_log(comm)
+    dolog(msg+error_msg)
+    if error_msg != "":
         return None, None, "Error while generating the previsualization"
     sec_prev = 'prev-'+sec
     temp_folder_prev = os.path.join(temp_dir, sec_prev)
@@ -133,9 +133,9 @@ def generate_previsual_page(repo_dir_folder, repo_name):
             repo_name)
     dolog('comm: '+comm)
     # call(comm, shell=True)
-    return_code, msg = call_and_get_log(comm)
-    dolog(msg)
-    if return_code != 0:
+    error_msg, msg = call_and_get_log(comm)
+    dolog(msg+error_msg)
+    if error_msg != "":
         return None, None, "Error while generating the previsualization"
     # comm = "mv %s %s" % (os.path.join(temp_folder_ontoology, 'OnToology'), repo_dir_folder)
     # dolog("comm (move back): "+comm)

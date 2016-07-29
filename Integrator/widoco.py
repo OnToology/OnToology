@@ -8,6 +8,7 @@ from subprocess import call
 from . import dolog, build_path
 from . import ontology_formats, get_parent_path, log_file_dir
 from . import verification_log_fname
+from . import call_and_get_log
 #  import ontoology.settings as settings
 
 
@@ -24,12 +25,14 @@ def get_widoco_config():
 
 
 def generate_widoco_docs(changed_files, base_dir):
+    results = ""
     for r in changed_files:
         if r[-4:] in ontology_formats:
             dolog('will widoco '+r)
-            create_widoco_doc(r, base_dir)
+            results += create_widoco_doc(r, base_dir)
         else:
             pass
+    return results
 
 
 def create_widoco_doc(rdf_file, base_dir):
@@ -66,5 +69,9 @@ def create_widoco_doc(rdf_file, base_dir):
         comm += ' >> "' + log_file_dir + '" '
     comm += " ; echo 'widoco' >> " + os.path.join(get_parent_path(out_abs_dir), verification_log_fname)
     dolog(comm)
-    return_code = call(comm, shell=True)
-    dolog('return code: %s' % str(return_code))
+    #return_code = call(comm, shell=True)
+    error_msg, msg = call_and_get_log(comm)
+    dolog(msg+error_msg)
+    if error_msg != "":
+        return "Error while generating the documentation"
+    return ""
