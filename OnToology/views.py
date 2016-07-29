@@ -527,41 +527,45 @@ def profile(request):
             if len(PublishName.objects.filter(name=name)) == 0 or (PublishName.objects.get(name=name).user==user and
                                                         PublishName.objects.get(name=name).repo==repo and
                                                         PublishName.objects.get(name=name).ontology==ontology_rel_path):
-                autoncore.prepare_log(user.email)
-                # cloning_repo should look like 'git@github.com:user/reponame.git'
-                cloning_repo = 'git@github.com:%s.git' % target_repo
-                sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
-                folder_name = 'pub-'+sec
-                clone_repo(cloning_repo, folder_name, dosleep=True)
-                repo_dir = os.path.join(autoncore.home, folder_name)
-                doc_dir = os.path.join(repo_dir, 'OnToology', ontology_rel_path[1:], 'documentation')
-                print 'repo_dir: %s' % repo_dir
-                print 'doc_dir: %s' % doc_dir
-                htaccess_f = os.path.join(doc_dir, '.htaccess')
-                if not os.path.exists(htaccess_f):
-                    print 'htaccess is not found'
-                    error_msg += 'make sure your ontology has documentation and htaccess'
+                if (len(PublishName.objects.filter(name=name)) == 0 and
+                        len(PublishName.objects.filter(user=user, ontology=ontology_rel_path, repo=repo)) > 0):
+                    error_msg += 'can not reserve multiple names for the same ontology'
                 else:
-                    print 'found htaccesss'
-                    f = open(htaccess_f, 'r')
-                    file_content = f.read()
-                    f.close()
-                    f = open(htaccess_f, 'w')
-                    for line in file_content.split('\n'):
-                        if line[:11] == 'RewriteBase':
-                            f.write('RewriteBase /publish/%s \n' % name)
-                        else:
-                            f.write(line+'\n')
-                    f.close()
-                    comm = 'rm -Rf /home/ubuntu/publish/%s' % name
-                    print(comm)
-                    call(comm, shell=True)
-                    comm = 'mv %s /home/ubuntu/publish/%s' % (doc_dir, name)
-                    print comm
-                    call(comm, shell=True)
-                    if len(PublishName.objects.filter(name=name)) == 0:
-                        p = PublishName(name=name, user=user, repo=repo, ontology=ontology_rel_path)
-                        p.save()
+                    autoncore.prepare_log(user.email)
+                    # cloning_repo should look like 'git@github.com:user/reponame.git'
+                    cloning_repo = 'git@github.com:%s.git' % target_repo
+                    sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
+                    folder_name = 'pub-'+sec
+                    clone_repo(cloning_repo, folder_name, dosleep=True)
+                    repo_dir = os.path.join(autoncore.home, folder_name)
+                    doc_dir = os.path.join(repo_dir, 'OnToology', ontology_rel_path[1:], 'documentation')
+                    print 'repo_dir: %s' % repo_dir
+                    print 'doc_dir: %s' % doc_dir
+                    htaccess_f = os.path.join(doc_dir, '.htaccess')
+                    if not os.path.exists(htaccess_f):
+                        print 'htaccess is not found'
+                        error_msg += 'make sure your ontology has documentation and htaccess'
+                    else:
+                        print 'found htaccesss'
+                        f = open(htaccess_f, 'r')
+                        file_content = f.read()
+                        f.close()
+                        f = open(htaccess_f, 'w')
+                        for line in file_content.split('\n'):
+                            if line[:11] == 'RewriteBase':
+                                f.write('RewriteBase /publish/%s \n' % name)
+                            else:
+                                f.write(line+'\n')
+                        f.close()
+                        comm = 'rm -Rf /home/ubuntu/publish/%s' % name
+                        print(comm)
+                        call(comm, shell=True)
+                        comm = 'mv %s /home/ubuntu/publish/%s' % (doc_dir, name)
+                        print comm
+                        call(comm, shell=True)
+                        if len(PublishName.objects.filter(name=name)) == 0:
+                            p = PublishName(name=name, user=user, repo=repo, ontology=ontology_rel_path)
+                            p.save()
             else:
                 if PublishName.objects.get(name=name).user==user:
                     print 'same user'
