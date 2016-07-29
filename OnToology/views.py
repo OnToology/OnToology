@@ -557,6 +557,8 @@ def profile(request):
             pp = p[0]
             pp.delete()
             pp.save()
+            comm = 'rm -Rf /home/ubuntu/publish/%s' % (name)
+            call(comm, shell=True)
         else:
             error_msg += 'You are trying to delete a name that does not belong to you'
     print 'testing redirect'
