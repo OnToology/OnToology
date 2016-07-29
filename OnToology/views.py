@@ -682,11 +682,14 @@ def renew_previsual(request):
         clone_repo(cloning_repo, folder_name, dosleep=True)
         repo_dir = os.path.join(autoncore.home, folder_name)
         msg = previsual.start_previsual(repo_dir, target_repo)
-        if msg == "": # not errors
+        if msg == "":  # not errors
             return HttpResponseRedirect('/profile')
         else:
-            render(request, 'profile.html', {'repos': user.repos, 'pnames': PublishName.objects.filter(user=user),
-                                            'error': msg})
+            repo.notes = msg
+            repo.save()
+            return render(request, 'msg.html', {'msg': msg})
+            #return render(request, 'profile.html', {'repos': user.repos, 'pnames': PublishName.objects.filter(user=user),
+            #                                'error': msg})
     return render(request, 'msg.html',
                   {'msg': 'You should add the repo while you are logged in before the revisual renewal'})
 
