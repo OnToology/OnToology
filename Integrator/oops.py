@@ -6,7 +6,7 @@ import requests
 from . import dolog, get_file_from_path, tools_conf, build_path, get_target_home, get_parent_path, log_file_dir, g
 from . import verification_log_fname
 import rdfxml
-
+from . import call_and_get_log
 
 from subprocess import call
 import shutil
@@ -16,14 +16,18 @@ widoco_dir = os.environ['widoco_dir']
 
 
 def oops_ont_files(target_repo, changed_files, base_dir):
+    results = ""
     for r in changed_files:
         # if valid_ont_file(r): # this is moved to the caller function, we assume here the changed_files are all ont
         dolog('will oops: ' + r)
-        get_pitfalls(target_repo, r, base_dir)
+        results += get_pitfalls(target_repo, r, base_dir)
+    return results
 
 
 def get_pitfalls(target_repo, ont_file, base_dir):
-    generate_oops_pitfalls(ont_file, base_dir)
+    r = generate_oops_pitfalls(ont_file, base_dir)
+    if r != "":  #  in case of an error
+        return r
     # if settings.TEST and settings.test_conf['local']:
     #    return
     ont_file_full_path = os.path.join(base_dir, ont_file)
@@ -114,12 +118,17 @@ def generate_oops_pitfalls(ont_file, base_dir):
     comm += " ; echo 'oops' >> " + \
         os.path.join(get_parent_path(out_abs_dir), verification_log_fname)
     dolog(comm)
-    call(comm, shell=True)
+    # call(comm, shell=True)
+    error_msg, msg = call_and_get_log(comm)
+    dolog(msg+error_msg)
+    if error_msg != "":
+        return "Error while generating the Evaluation"
     shutil.move(os.path.join(out_abs_dir, 'OOPSevaluation'),
                 get_parent_path(out_abs_dir))
     shutil.rmtree(out_abs_dir)
     shutil.move(os.path.join(get_parent_path(
         out_abs_dir), 'OOPSevaluation'), out_abs_dir)
+    return ""
 
 
 def parse_oops_issues(oops_rdf):

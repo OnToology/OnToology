@@ -3,6 +3,8 @@ from subprocess import call
 from Integrator import dolog, get_file_from_path, build_path, delete_dir, verification_log_fname
 from Integrator import get_parent_path, log_file_dir, config_folder_name
 
+from . import call_and_get_log
+
 import sys
 
 
@@ -21,15 +23,12 @@ ar2dtool_dir = os.environ['ar2dtool_dir']
 
 
 def draw_diagrams(rdf_files, base_dir):
-    print 'in drawing diagrams &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&'
     dolog(str(len(rdf_files)) + ' changed files')
-    return_values = 0
+    return_values = ""
     for r in rdf_files:
         for t in ar2dtool_config_types:
             rr = draw_file(r, t, base_dir)
             return_values += rr
-    print '\n\n\n\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n\n\n'
-    print 'draw_diagram return values: %d' % return_values
     return return_values
 
 
@@ -61,11 +60,11 @@ def draw_file(rdf_file, config_type, base_dir):
     comm += os.path.join(base_dir, rdf_file) + ' -o '
     comm += rdf_file_abs + '.' + outtype + ' -t ' + \
         outtype + ' -c ' + config_file_abs + ' -GV -gml '
-    #if not settings.TEST:
-    #    comm += ' >> "' + log_file_dir + '"'
+    if not settings.TEST:
+       comm += ' >> "' + log_file_dir + '"'
     # comm += " ; echo 'ar2dtool' >> " + os.path.join(get_parent_path(get_parent_path(
     #    get_parent_path(rdf_file_abs + '.' + outtype))), verification_log_fname)
     dolog("drawing is: "+comm)
-    return_code = call(comm, shell=True)
-    dolog('return code: %s' % str(return_code))
-    return return_code
+    error_msg, msg = call_and_get_log(comm)
+    dolog(msg+error_msg)
+    return error_msg
