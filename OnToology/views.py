@@ -490,9 +490,19 @@ def profile(request):
                 update_g(request.session['access_token'])
             ontologies = parse_online_repo_for_ontologies(repo)
             print 'ontologies: ' + str(len(ontologies))
+            arepo = Repo.objects.get(url=repo)
+            pnames = PublishName.objects.filter(user=user, repo=arepo)
             for o in ontologies:
+                print '--------\n%s\n' % o
+                o['published'] = False
+                o['pname'] = ''
+                for pn in pnames:
+                    if pn.ontology==o['ontology']:
+                        o['published'] = True
+                        o['pname'] = pn.name
+                        break
                 for d in o:
-                    print d + ': ' + str(o[d])
+                    print '   '+d + ': ' + str(o[d])
             print 'testing redirect'
             print 'will return the Json'
             html = render(request, 'profile_sliders.html', {'ontologies': ontologies}).content
@@ -508,46 +518,61 @@ def profile(request):
         ontology_rel_path = request.GET['ontology']
         # user = request.user
         found = False
-        if len(PublishName.objects.filter(name=name)) == 0:
-            for r in user.repos:
-                if target_repo == r.url:
-                    found = True
-                    repo = r
-                    break
+        for r in user.repos:
+            if target_repo == r.url:
+                found = True
+                repo = r
+                break
         if found:  # if the repo belongs to the user
-            autoncore.prepare_log(user.email)
-            # cloning_repo should look like 'git@github.com:user/reponame.git'
-            cloning_repo = 'git@github.com:%s.git' % target_repo
-            sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
-            folder_name = 'pub-'+sec
-            clone_repo(cloning_repo, folder_name, dosleep=True)
-            repo_dir = os.path.join(autoncore.home, folder_name)
-            doc_dir = os.path.join(repo_dir, 'OnToology', ontology_rel_path[1:], 'documentation')
-            print 'repo_dir: %s' % repo_dir
-            print 'doc_dir: %s' % doc_dir
-            htaccess_f = os.path.join(doc_dir, '.htaccess')
-            if not os.path.exists(htaccess_f):
-                print 'htaccess is not found'
-                error_msg += 'make sure your ontology has documentation and htaccess'
+            if len(PublishName.objects.filter(name=name)) == 0 or (PublishName.objects.get(name=name).user==user and
+                                                        PublishName.objects.get(name=name).repo==repo and
+                                                        PublishName.objects.get(name=name).ontology==ontology_rel_path):
+                autoncore.prepare_log(user.email)
+                # cloning_repo should look like 'git@github.com:user/reponame.git'
+                cloning_repo = 'git@github.com:%s.git' % target_repo
+                sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
+                folder_name = 'pub-'+sec
+                clone_repo(cloning_repo, folder_name, dosleep=True)
+                repo_dir = os.path.join(autoncore.home, folder_name)
+                doc_dir = os.path.join(repo_dir, 'OnToology', ontology_rel_path[1:], 'documentation')
+                print 'repo_dir: %s' % repo_dir
+                print 'doc_dir: %s' % doc_dir
+                htaccess_f = os.path.join(doc_dir, '.htaccess')
+                if not os.path.exists(htaccess_f):
+                    print 'htaccess is not found'
+                    error_msg += 'make sure your ontology has documentation and htaccess'
+                else:
+                    print 'found htaccesss'
+                    f = open(htaccess_f, 'r')
+                    file_content = f.read()
+                    f.close()
+                    f = open(htaccess_f, 'w')
+                    for line in file_content.split('\n'):
+                        if line[:11] == 'RewriteBase':
+                            f.write('RewriteBase /publish/%s \n' % name)
+                        else:
+                            f.write(line+'\n')
+                    f.close()
+                    comm = 'rm -Rf /home/ubuntu/publish/%s' % name
+                    print(comm)
+                    call(comm, shell=True)
+                    comm = 'mv %s /home/ubuntu/publish/%s' % (doc_dir, name)
+                    print comm
+                    call(comm, shell=True)
+                    if len(PublishName.objects.filter(name=name)) == 0:
+                        p = PublishName(name=name, user=user, repo=repo, ontology=ontology_rel_path)
+                        p.save()
             else:
-                print 'found htaccesss'
-                f = open(htaccess_f, 'r')
-                file_content = f.read()
-                f.close()
-                f = open(htaccess_f, 'w')
-                for line in file_content.split('\n'):
-                    if line[:11] == 'RewriteBase':
-                        f.write('RewriteBase /publish/%s \n' % name)
-                    else:
-                        f.write(line+'\n')
-                f.close()
-                comm = 'mv %s /home/ubuntu/publish/%s' % (doc_dir, name)
-                print comm
-                subprocess.call(comm, shell=True)
-                p = PublishName(name=name, user=user, repo=repo, ontology=ontology_rel_path)
-                p.save()
-        else:
-            error_msg += ' Name already taken'
+                if PublishName.objects.get(name=name).user==user:
+                    print 'same user'
+                if PublishName.objects.get(name=name).repo==repo:
+                    print 'same repo'
+                if PublishName.objects.get(name=name).ontology==ontology_rel_path:
+                    print 'same ontology'
+                error_msg += ' Name already taken'
+        else:  # not found
+            error_msg += 'You should add this repo to OnToology first'
+
     elif 'delete-name' in request.GET:
         name = request.GET['delete-name']
         p = PublishName.objects.filter(name=name)
@@ -557,7 +582,7 @@ def profile(request):
             pp = p[0]
             pp.delete()
             pp.save()
-            comm = 'rm -Rf /home/ubuntu/publish/%s' % (name)
+            comm = 'rm -Rf /home/ubuntu/publish/%s' % name
             call(comm, shell=True)
         else:
             error_msg += 'You are trying to delete a name that does not belong to you'
