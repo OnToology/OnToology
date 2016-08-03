@@ -91,7 +91,9 @@ function GetURLParameter(sParam)
                                            aria-expanded="false"> more<span class="caret"></span></a>
                                         <ul class="dropdown-menu">
                                             {%if r.notes != ''%}
+											<!-- >
                                             <li><a onclick="show_error('{{r.notes}}')">show error</a></li>
+											-->
                                             {%endif%}
                                             <li><a url="{{r.url}}" class="closee">Unwatch</a></li>
                                             <li><a href="/renew_previsual?target_repo={{r.url}}">renew previsual</a>
