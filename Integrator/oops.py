@@ -110,13 +110,12 @@ def generate_oops_pitfalls(ont_file, base_dir):
     comm += "java -jar "
     comm += ' -Dfile.encoding=utf-8 '
     comm += widoco_dir + "widoco-0.0.1-jar-with-dependencies.jar -oops "
-    comm += " -ontFile " + ont_file_abs_path
-    comm += " -outFolder " + out_abs_dir
+    comm += " -ontFile '" + ont_file_abs_path
+    comm += "' -outFolder '" + out_abs_dir + "'"
     # if not settings.TEST:
     if True:
         comm += ' >> "' + log_file_dir + '"'
-    comm += " ; echo 'oops' >> " + \
-        os.path.join(get_parent_path(out_abs_dir), verification_log_fname)
+    comm += " ; echo 'oops' >> '" + os.path.join(get_parent_path(out_abs_dir), verification_log_fname) + "'"
     dolog(comm)
     # call(comm, shell=True)
     error_msg, msg = call_and_get_log(comm)

@@ -56,8 +56,8 @@ def create_widoco_doc(rdf_file, base_dir):
     comm += "java -jar "
     comm += ' -Dfile.encoding=utf-8 '
     comm += widoco_dir + "widoco-0.0.1-jar-with-dependencies.jar  -rewriteAll "
-    comm += " -ontFile " + rdf_file_abs
-    comm += " -outFolder " + out_abs_dir
+    comm += " -ontFile '" + rdf_file_abs
+    comm += "' -outFolder '" + out_abs_dir + "'"
     if use_conf_file:
         comm += " -confFile " + config_file_abs
     else:

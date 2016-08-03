@@ -78,34 +78,34 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
     dolog("will call create or get conf")
     conf = create_of_get_conf(changed_file, base_dir)
     dolog("conf: "+str(conf))
-    if conf['ar2dtool_enable']:
-        dolog("will call draw diagrams")
-        change_status(target_repo, 'drawing diagrams')
-        r = ar2dtool.draw_diagrams([changed_file], base_dir)
-        if r != "":
-            print 'in init draw detected an error'
-            repo.notes += 'Error generating diagrams for ontology %s. ' % changed_file
-            repo.save()
-    if conf['widoco_enable']:
-        dolog('will call widoco')
-        change_status(target_repo, 'generating docs')
-        r = widoco.generate_widoco_docs([changed_file], base_dir)
-        if r != "":
-            print 'in init documentation detected an error'
-            repo.notes += 'Error generating documentation for ontology %s. ' % changed_file
-            repo.save()
+    # if conf['ar2dtool_enable']:
+    #     dolog("will call draw diagrams")
+    #     change_status(target_repo, 'drawing diagrams')
+    #     r = ar2dtool.draw_diagrams([changed_file], base_dir)
+    #     if r != "":
+    #         print 'in init draw detected an error'
+    #         repo.notes += 'Error generating diagrams for %s. ' % changed_file
+    #         repo.save()
+    # if conf['widoco_enable']:
+    #     dolog('will call widoco')
+    #     change_status(target_repo, 'generating docs')
+    #     r = widoco.generate_widoco_docs([changed_file], base_dir)
+    #     if r != "":
+    #         print 'in init documentation detected an error'
+    #         repo.notes += 'Error generating documentation for %s. ' % changed_file
+    #         repo.save()
     if conf['oops_enable']:
         dolog('will call oops')
         change_status(target_repo, 'evaluating')
         r = oops.oops_ont_files(target_repo=target_repo, changed_files=[changed_file], base_dir=base_dir)
         if r != "":
             print 'in init evaluation detected an error'
-            repo.notes += 'Error generating evaluation for ontology %s. ' % changed_file
+            repo.notes += 'Error generating evaluation for %s. ' % changed_file
             repo.save()
-    if conf['owl2jsonld_enable']:
-        dolog('will call owl2jsonld')
-        change_status(target_repo, 'generating context')
-        owl2jsonld.generate_owl2jsonld_file([changed_file], base_dir=base_dir)
+    # if conf['owl2jsonld_enable']:
+    #     dolog('will call owl2jsonld')
+    #     change_status(target_repo, 'generating context')
+    #     owl2jsonld.generate_owl2jsonld_file([changed_file], base_dir=base_dir)
 
 
 def create_of_get_conf(ofile, base_dir):
