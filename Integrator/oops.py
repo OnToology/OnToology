@@ -110,24 +110,24 @@ def generate_oops_pitfalls(ont_file, base_dir):
     comm += "java -jar "
     comm += ' -Dfile.encoding=utf-8 '
     comm += widoco_dir + "widoco-0.0.1-jar-with-dependencies.jar -oops "
-    comm += " -ontFile " + ont_file_abs_path
-    comm += " -outFolder " + out_abs_dir
+    comm += " -ontFile '" + ont_file_abs_path
+    comm += "' -outFolder '" + out_abs_dir + "'"
     # if not settings.TEST:
     if True:
         comm += ' >> "' + log_file_dir + '"'
-    comm += " ; echo 'oops' >> " + \
-        os.path.join(get_parent_path(out_abs_dir), verification_log_fname)
+    comm += " ; echo 'oops' >> '" + os.path.join(get_parent_path(out_abs_dir), verification_log_fname) + "'"
     dolog(comm)
     # call(comm, shell=True)
     error_msg, msg = call_and_get_log(comm)
     dolog(msg+error_msg)
     if error_msg != "":
         return "Error while generating the Evaluation"
-    shutil.move(os.path.join(out_abs_dir, 'OOPSevaluation'),
-                get_parent_path(out_abs_dir))
+    dolog("moving1: <%s> to <%s>" % (os.path.join(out_abs_dir, 'OOPSevaluation'), get_parent_path(out_abs_dir)))
+    shutil.move(os.path.join(out_abs_dir, 'OOPSevaluation'), get_parent_path(out_abs_dir))
+    dolog("removing <%s>" % out_abs_dir)
     shutil.rmtree(out_abs_dir)
-    shutil.move(os.path.join(get_parent_path(
-        out_abs_dir), 'OOPSevaluation'), out_abs_dir)
+    dolog("moving2: <%s> to <%s>" % (os.path.join(get_parent_path(out_abs_dir), 'OOPSevaluation'), out_abs_dir))
+    shutil.move(os.path.join(get_parent_path(out_abs_dir), 'OOPSevaluation'), out_abs_dir)
     return ""
 
 
@@ -167,7 +167,7 @@ def parse_oops_issues(oops_rdf):
         '<http://www.oeg-upm.net/oops#hasDescription>',
         '<http://www.oeg-upm.net/oops#hasNumberAffectedElements>',
         '<http://www.oeg-upm.net/oops#hasImportanceLevel>',
-        #'<http://www.oeg-upm.net/oops#hasAffectedElement>',
+        # '<http://www.oeg-upm.net/oops#hasAffectedElement>',
         '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>',
     ]
     for i in oops_issues_filter3:
@@ -181,8 +181,7 @@ def parse_oops_issues(oops_rdf):
 def create_oops_issue_in_github(target_repo, ont_file, oops_issues):
     dolog('will create an oops issue')
     try:
-        g.get_repo(target_repo).create_issue(
-            'OOPS! Evaluation for ' + ont_file, oops_issues)
+        g.get_repo(target_repo).create_issue('OOPS! Evaluation for ' + ont_file, oops_issues)
     except Exception as e:
         dolog('exception when creating issue: ' + str(e))
 
