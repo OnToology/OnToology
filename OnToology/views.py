@@ -221,16 +221,23 @@ def add_hook(request):
         print 'We are in test mode'
     try:
         s = str(request.POST['payload'])
+        print "payload: "+s
         j = json.loads(s, strict=False)
+        print "json is loaded"
         if j["ref"] == "refs/heads/gh-pages":
+            print "it is just gh-pages"
             return render(request, 'msg.html', {'msg': 'it is gh-pages, so nothing'})
         s = j['repository']['url'] + 'updated files: ' + str(j['head_commit']['modified'])
+        print "just s: "+str(s)
         cloning_repo = j['repository']['git_url']
         target_repo = j['repository']['full_name']
         user = j['repository']['owner']['email']
+        print "cloning_repo: "+str(cloning_repo)
+        print "target_repo: "+str(target_repo)
+        print "user email: "+str(user)
         changed_files = get_changed_files_from_payload(j)
-        if 'Merge pull request' in j['head_commit']['message'] or 'OnToology Configuration' == j['head_commit'][
-            'message']:
+        print "early changed files: "+str(changed_files)
+        if 'Merge pull request' in j['head_commit']['message'] or 'OnToology Configuration' == j['head_commit']['message']:
             print 'This is a merge request or Configuration push'
             try:
                 repo = Repo.objects.get(url=target_repo)
@@ -245,6 +252,7 @@ def add_hook(request):
             except Exception as e:
                 print 'database_exception: ' + str(e)
             msg = 'This indicate that this merge request will be ignored'
+            print msg
             if settings.TEST:
                 print msg
                 return
