@@ -66,6 +66,11 @@ client_secret = None
 is_private = None
 
 
+import sys
+reload(sys)
+sys.setdefaultencoding("UTF-8")
+
+
 def get_repos_formatted(the_repos):
     return the_repos
 
@@ -217,20 +222,29 @@ def get_changed_files_from_payload(payload):
 
 @csrf_exempt
 def add_hook(request):
+    print "in add hook function"
     if settings.TEST:
         print 'We are in test mode'
     try:
+        print "\n\nPOST DATA\n\n: "+str(request.POST)
         s = str(request.POST['payload'])
+        print "payload: "+s
         j = json.loads(s, strict=False)
+        print "json is loaded"
         if j["ref"] == "refs/heads/gh-pages":
+            print "it is just gh-pages"
             return render(request, 'msg.html', {'msg': 'it is gh-pages, so nothing'})
         s = j['repository']['url'] + 'updated files: ' + str(j['head_commit']['modified'])
+        print "just s: "+str(s)
         cloning_repo = j['repository']['git_url']
         target_repo = j['repository']['full_name']
         user = j['repository']['owner']['email']
+        print "cloning_repo: "+str(cloning_repo)
+        print "target_repo: "+str(target_repo)
+        print "user email: "+str(user)
         changed_files = get_changed_files_from_payload(j)
-        if 'Merge pull request' in j['head_commit']['message'] or 'OnToology Configuration' == j['head_commit'][
-            'message']:
+        print "early changed files: "+str(changed_files)
+        if 'Merge pull request' in j['head_commit']['message'] or 'OnToology Configuration' == j['head_commit']['message']:
             print 'This is a merge request or Configuration push'
             try:
                 repo = Repo.objects.get(url=target_repo)
@@ -245,12 +259,14 @@ def add_hook(request):
             except Exception as e:
                 print 'database_exception: ' + str(e)
             msg = 'This indicate that this merge request will be ignored'
+            print msg
             if settings.TEST:
                 print msg
                 return
             else:
                 return render_to_response('msg.html', {'msg': msg}, context_instance=RequestContext(request))
-    except:
+    except Exception as e:
+        print "add hook exception: "+str(e)
         msg = 'This request should be a webhook ping'
         if settings.TEST:
             print msg
