@@ -66,6 +66,11 @@ client_secret = None
 is_private = None
 
 
+import sys
+reload(sys)
+sys.setdefaultencoding("UTF-8")
+
+
 def get_repos_formatted(the_repos):
     return the_repos
 
