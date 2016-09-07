@@ -217,9 +217,11 @@ def get_changed_files_from_payload(payload):
 
 @csrf_exempt
 def add_hook(request):
+    print "in add hook function"
     if settings.TEST:
         print 'We are in test mode'
     try:
+        print "\n\nPOST DATA\n\n: "+str(request.POST)
         s = str(request.POST['payload'])
         print "payload: "+s
         j = json.loads(s, strict=False)
@@ -258,7 +260,8 @@ def add_hook(request):
                 return
             else:
                 return render_to_response('msg.html', {'msg': msg}, context_instance=RequestContext(request))
-    except:
+    except Exception as e:
+        print "add hook exception: "+str(e)
         msg = 'This request should be a webhook ping'
         if settings.TEST:
             print msg
