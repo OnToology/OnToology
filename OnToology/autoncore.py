@@ -216,6 +216,7 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
     # After the loop
     dolog("number of files to verify %d" % (len(files_to_verify)))
     if len(files_to_verify) == 0:
+        print "files: "+str(files_to_verify)
         change_status(target_repo, 'Ready')
         return
     # if not settings.TEST or not settings.test_conf['local']:
@@ -228,16 +229,17 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
         change_status(target_repo, exception_if_exists)
         # in case there is an error, create the pull request as well
     # Now to enabled
-    for f in files_to_verify:
-        repo = None
-        if use_database:
-            from models import Repo
-            repo = Repo.objects.get(url=target_repo)
-        try:
-            verify_tools_generation_when_ready(f, repo)
-            dolog('verification is done successfully')
-        except Exception as e:
-            dolog('verification have an exception: ' + str(e))
+    # This kind of verification is too naive and need to be eliminated
+    # for f in files_to_verify:
+    #     repo = None
+    #     if use_database:
+    #         from models import Repo
+    #         repo = Repo.objects.get(url=target_repo)
+    #     try:
+    #         verify_tools_generation_when_ready(f, repo)
+    #         dolog('verification is done successfully')
+    #     except Exception as e:
+    #         dolog('verification have an exception: ' + str(e))
 
     if use_database:
         if Repo.objects.get(url=target_repo).state != 'validating':
@@ -633,11 +635,11 @@ def clone_repo(cloning_repo, parent_folder, dosleep=True):
         comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
     call(comm, shell=True)
-    comm = "chmod -R 777 " + home + parent_folder
-    if not settings.TEST:
-        comm += ' >> "' + log_file_dir + '"'
-    dolog(comm)
-    call(comm, shell=True)
+    # comm = "chmod -R 777 " + home + parent_folder
+    # if not settings.TEST:
+    #     comm += ' >> "' + log_file_dir + '"'
+    # dolog(comm)
+    # call(comm, shell=True)
     return home + parent_folder
 
 
