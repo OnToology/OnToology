@@ -70,6 +70,9 @@ import sys
 reload(sys)
 sys.setdefaultencoding("UTF-8")
 
+# So the prints shows in apache error log
+sys.stdout = sys.stderr
+
 
 def get_repos_formatted(the_repos):
     return the_repos
@@ -101,8 +104,8 @@ def home(request):
     global client_id, client_secret, is_private
     print '****** Welcome to home page ********'
     print >> sys.stderr, '****** Welcome to the error output ******'
-    sys.stdout = sys.stderr
-    print "******* output to stderror ********"
+    # sys.stdout = sys.stderr
+    # print "******* output to stderror ********"
     sys.stdout.flush()
     sys.stderr.flush()
     if 'target_repo' in request.GET:
