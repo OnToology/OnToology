@@ -101,6 +101,8 @@ def home(request):
     global client_id, client_secret, is_private
     print '****** Welcome to home page ********'
     print >> sys.stderr, '****** Welcome to the error output ******'
+    sys.stdout = sys.stderr
+    print "******* output to stderror ********"
     if 'target_repo' in request.GET:
         print "we are inside"
         target_repo = request.GET['target_repo']
