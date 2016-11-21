@@ -632,6 +632,7 @@ def get_user_github_email(username):
 
 def remove_webhook(target_repo, notification_url):
     global g
+    # for some reason adding the below two prints solves the problem for removing the webhook, strange but true
     print "target_repo: "+str(target_repo)
     print "notification url: "+str(notification_url)
     for hook in g.get_repo(target_repo).get_hooks():
