@@ -252,9 +252,10 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
         change_status(target_repo, 'creating a pull request')
         try:
             r = send_pull_request(target_repo, ToolUser)
+            dolog('pull request is sent')
         except Exception as e:
             exception_if_exists += str(e)
-        dolog('pull request is sent')
+            dolog('failed to create pull request: '+exception_if_exists)
     change_status(target_repo, 'Ready')
 
 
@@ -421,8 +422,7 @@ def git_magic1(target_repo, user, cloning_repo, changed_filesss):
 
 
 def verify_tools_generation_when_ready(ver_file_comp, repo=None):
-    ver_file = os.path.join(get_target_home(), ver_file_comp[
-                            'file'], verification_log_fname)
+    ver_file = os.path.join(get_target_home(), ver_file_comp['file'], verification_log_fname)
     ver_file = get_abs_path(ver_file)
     dolog('ver file: ' + ver_file)
     if ver_file_comp['ar2dtool_enable'] == ver_file_comp['widoco_enable'] == ver_file_comp['oops_enable'] == ver_file_comp['owl2jsonld_enable'] == False:
