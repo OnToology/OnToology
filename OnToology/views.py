@@ -218,8 +218,7 @@ def get_access_token(request):
         if repo not in ouser.repos:
             ouser.repos.append(repo)
             ouser.save()
-            # commented generateforall for the sake of testing 21-Nov-2016
-            # generateforall(repo.url, ouser.email)
+            generateforall(repo.url, ouser.email)
     return render_to_response('msg.html', {'msg': msg},
                               context_instance=RequestContext(request))
 
