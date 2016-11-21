@@ -198,6 +198,10 @@ def get_access_token(request):
             error_msg = """You don\'t have permission to add collaborators and create webhooks to this repo or this
             repo does not exist. Note that if you can fork this repo, you can add it here"""
             return render_to_response('msg.html', {'msg': error_msg}, context_instance=RequestContext(request))
+        else:
+            print "error message not hook and not 404: " + error_msg
+            print "target repo: " + request.session['target_repo']
+            print "ToolUser: " + ToolUser
         msg = error_msg
     else:
         msg = 'webhook attached and user added as collaborator'
@@ -214,7 +218,8 @@ def get_access_token(request):
         if repo not in ouser.repos:
             ouser.repos.append(repo)
             ouser.save()
-            generateforall(repo.url, ouser.email)
+            # commented generateforall for the sake of testing 21-Nov-2016
+            # generateforall(repo.url, ouser.email)
     return render_to_response('msg.html', {'msg': msg},
                               context_instance=RequestContext(request))
 
