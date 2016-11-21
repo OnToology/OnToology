@@ -117,93 +117,6 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
     Integrator.tools_execution(changed_files=changed_filesss, base_dir=os.path.join(home, user), logfile=log_file_dir,
                                target_repo=target_repo, g_local=g, dolog_fname=logger_fname,
                                change_status=change_status, repo=drepo)
-    # for chf in changed_filesss:
-    #     print "chf: "+chf
-    #     auton_conf = {'ar2dtool_enable': False, 'widoco_enable': False,
-    #                   'oops_enable': False, 'owl2jsonld_enable': False}
-    #     if chf[-4:] not in ontology_formats:  # validate ontology formats
-    #         # for now, do not detect the configuration
-    #         continue
-    #         # print 'check conf file changed is: %s'%(chf)
-    #         dolog('check conf file changed is: %s' % chf)
-    #         if get_file_from_path(chf) == 'OnToology.cfg':
-    #             dolog('OnToology.cfg is changed')
-    #             fi = get_level_up(chf)
-    #             fi = fi[6:]
-    #             dolog('ont file is: ' + fi)
-    #             changed_files = [fi]
-    #             auton_conf = get_auton_configuration(fi)
-    #         elif get_file_from_path(chf) in ar2dtool.ar2dtool_config_types:
-    #             auton_conf['ar2dtool_enable'] = True
-    #             fi = get_level_up(chf)
-    #             fi = get_level_up(fi)
-    #             fi = get_level_up(fi)
-    #             fi = fi[6:]
-    #             changed_files = [fi]
-    #             dolog('change in AR2DTool file %s' % fi)
-    #         elif 'widoco.conf' in get_file_from_path(chf):
-    #             fi = get_level_up(chf)
-    #             fi = get_level_up(fi)
-    #             fi = fi[6:]
-    #             changed_files = [fi]
-    #             dolog('change in Widoco file %s' % fi)
-    #     else:  # chf is ontology file
-    #         dolog('working with: ' + chf)
-    #         changed_files = [chf]
-    #         auton_conf = get_auton_configuration(chf)
-    #         # The below three lines is to add files to verify their output
-    #         # later on
-    #         ftvcomp = auton_conf
-    #         ftvcomp['file'] = chf
-    #         files_to_verify.append(ftvcomp)
-    #     dolog(str(auton_conf))
-    #     exception_if_exists = ""
-
-        # if auton_conf['ar2dtool_enable']:
-        #     dolog('ar2dtool_enable is true')
-        #     change_status(target_repo, 'drawing diagrams for ' + changed_files[0])
-        #     try:
-        #         ar2dtool.draw_diagrams(changed_files)
-        #         dolog('diagrams drawn successfully')
-        #     except Exception as e:
-        #         exception_if_exists += chf + ": " + str(e) + "\n"
-        #         dolog('diagrams not drawn: ' + str(e))
-        # else:
-        #     dolog('ar2dtool_enable is false')
-        # if auton_conf['widoco_enable']:
-        #     dolog('ar2dtool_enable is false')
-        #     change_status(target_repo, 'generating documents for ' + changed_files[0])
-        #     try:
-        #         generate_widoco_docs(changed_files)
-        #         dolog('generated docs')
-        #     except Exception as e:
-        #         exception_if_exists += str(e)
-        #         dolog('exception in generating documentation: ' + str(e))
-        # else:
-        #     dolog('widoco_enable is false')
-        # if auton_conf['oops_enable']:
-        #     dolog('oops_enable is true')
-        #     change_status(
-        #         target_repo, 'OOPS is checking for errors for ' + changed_files[0])
-        #     try:
-        #         oops_ont_files(target_repo, changed_files)
-        #         dolog('oops checked ontology for pitfalls')
-        #     except Exception as e:
-        #         exception_if_exists += str(e)
-        #         dolog('exception in generating oops validation document: ' + str(e))
-        # else:
-        #     dolog('oops_enable is false')
-        # if auton_conf['owl2jsonld_enable']:
-        #     dolog('owl2jsonld_enable is true')
-        #     change_status(target_repo, 'generating context document for ' + changed_files[0])
-        #     try:
-        #         generate_owl2jsonld_file(changed_files)
-        #         dolog('generated context')
-        #     except Exception as e:
-        #         exception_if_exists += str(e)
-        #         dolog('exception in generating context documentation: ' + str(e))
-        # else:
-        #     dolog('owl2jsonld_enable is false')
 
     exception_if_exists = ""
     files_to_verify = [c for c in changed_filesss if c[-4:] in ontology_formats]
@@ -255,10 +168,13 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
         try:
             r = send_pull_request(target_repo, ToolUser)
             dolog('pull request is sent')
+            change_status(target_repo, 'pull request is sent')
+            change_status(target_repo, 'Ready')
         except Exception as e:
             exception_if_exists += str(e)
             dolog('failed to create pull request: '+exception_if_exists)
-    change_status(target_repo, 'Ready')
+            change_status(target_repo, 'failed to create a pull request')
+    # change_status(target_repo, 'Ready')
 
 
 def git_magic1(target_repo, user, cloning_repo, changed_filesss):
