@@ -632,6 +632,8 @@ def get_user_github_email(username):
 
 def remove_webhook(target_repo, notification_url):
     global g
+    print "target_repo: "+str(target_repo)
+    print "notification url: "+str(notification_url)
     for hook in g.get_repo(target_repo).get_hooks():
         if hook.config["url"] == notification_url:
             hook.delete()

@@ -173,9 +173,9 @@ def get_access_token(request):
 
     if request.user.is_authenticated() and request.session['access_token_time'] == '1':
         request.session['access_token_time'] = '2'  # so we do not loop
-        #isprivate = get_proper_loggedin_scope(OUser.objects.get(username=request.user.username),
+        # isprivate = get_proper_loggedin_scope(OUser.objects.get(username=request.user.username),
         #                                      request.session['target_repo'])
-        #print 'isprivate is: ' + str(isprivate)
+        # print 'isprivate is: ' + str(isprivate)
         webhook_access_url, state = webhook_access(client_id, host + '/get_access_token', is_private)
         request.session['state'] = state
         return HttpResponseRedirect(webhook_access_url)
@@ -700,6 +700,7 @@ def delete_repo(request):
                 remove_webhook(repo, host + "/add_hook")
                 return JsonResponse({'status': True})
             except Exception as e:
+                print "error deleting the webhook: "+str(e)
                 return JsonResponse({'status': False, 'error': str(e)})
     return JsonResponse({'status': False, 'error': 'You should add this repo first'})
 
