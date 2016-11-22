@@ -207,7 +207,7 @@ def get_access_token(request):
             print "ToolUser: " + ToolUser
         msg = error_msg
     else:
-        msg = 'webhook attached and user added as collaborator'
+        msg = 'webhook attached and user added as collaborator, Note that generating the documentation, diagrams and evaluation report takes sometime to be generated. In "My repositories" page, you can see the status of each repo.'
     target_repo = request.session['target_repo']
     try:
         repo = Repo.objects.get(url=target_repo)
