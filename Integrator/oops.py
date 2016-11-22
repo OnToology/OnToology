@@ -77,7 +77,7 @@ def get_pitfalls(target_repo, ont_file, base_dir):
         nicer_issues += "https://rawgit.com/" + user + '/' + repo + \
             '/master/OnToology/' + ont_file + '/evaluation/oopsEval.html'
         if create_oops_issue_in_github(target_repo, ont_file, nicer_issues):
-            return "created oops issue in github successfully"
+            return ""
         else:
             return "error creating oops issue in github"
     else:
