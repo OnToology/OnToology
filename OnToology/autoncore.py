@@ -697,6 +697,8 @@ def remove_webhook(target_repo, notification_url):
             except Exception as e:
                 print "error removing the webhook for the %dth time: %s" %(i, str(e))
                 time.sleep(2)
+    sys.stdout.flush()
+    sys.stderr.flush()
 
 
 def add_webhook(target_repo, notification_url, newg=None):
