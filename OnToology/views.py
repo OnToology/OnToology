@@ -667,9 +667,13 @@ def update_conf(request):
             print 'will call update_file'
             onto = 'OnToology' + onto + '/OnToology.cfg'
             try:
+                print "will call update file"
+                print "will call update file with repo %s, ontology: %s" % (data['repo'], onto)
                 update_file(data['repo'], onto, 'OnToology Configuration', new_conf)
             except Exception as e:
                 print 'Error in updating the configuration: ' + str(e)
+                sys.stdout.flush()
+                sys.stderr.flush()
                 return JsonResponse(
                     {'status': False, 'error': str(e)})  # return render(request,'msg.html',{'msg': str(e)})
             print 'returned from update_file'
