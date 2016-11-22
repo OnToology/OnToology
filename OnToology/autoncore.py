@@ -368,23 +368,57 @@ def verify_tools_generation_when_ready(ver_file_comp, repo=None):
     else:  # I want to see the file in case of testing
         os.remove(ver_file)  # the verification file is no longer needed
 
-
+# copied from new-look
 def update_file(target_repo, path, message, content):
     global g
     username = os.environ['github_username']
     password = os.environ['github_password']
-    if g is None:
+    if True:
+        # if g is None:
+        print 'new g'
         g = Github(username, password)
-    gg = Github(username, password)
+    else:
+        print 'user is: ' + str(g.get_user().name)
+    # gg = github.Github(username, password)
     repo = g.get_repo(target_repo)
-    dolog('will update the file <%s> on repo<%s> with the content <%s>' %
-          (path, target_repo, content))
-    try:
-        repo.update_content(path, message, content)
-    except:
-        dolog('second change of file update')
-        repo.update_content(path, message, content)
-    dolog('file updated')
+    # sha = repo.get_commits()[0].sha
+    sha = repo.get_file_contents(path).sha
+    apath = path
+    if apath[0] != "/":
+        apath = "/" + apath.strip()
+    print "username: " + username
+    dolog('will update the file <%s> on repo<%s> with the content <%s>,  sha <%s> and message <%s>' %
+          (apath, target_repo, content, sha, message))
+    print "repo.update_file('%s', '%s', \"\"\"%s\"\"\" , '%s' )" % (apath, message, content, sha)
+    for i in range(1):
+        try:
+            repo.update_file(apath, message, content, sha)
+            dolog('file updated')
+            return
+        except:
+            dolog('chance #%d file update' % i)
+            time.sleep(1)
+            # repo.update_content(path, message, content)
+    dolog('after 10 changes, still could not update ')
+    # so if there is a problem it will raise an exception which will be captured by the calling function
+    repo.update_file(apath, message, content, sha)
+
+# def update_file(target_repo, path, message, content):
+#     global g
+#     username = os.environ['github_username']
+#     password = os.environ['github_password']
+#     if g is None:
+#         g = Github(username, password)
+#     gg = Github(username, password)
+#     repo = g.get_repo(target_repo)
+#     dolog('will update the file <%s> on repo<%s> with the content <%s>' %
+#           (path, target_repo, content))
+#     try:
+#         repo.update_content(path, message, content)
+#     except:
+#         dolog('second change of file update')
+#         repo.update_content(path, message, content)
+#     dolog('file updated')
 
 
 def verify_tools_generation(ver_file_comp, repo=None):
