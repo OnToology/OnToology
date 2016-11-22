@@ -124,8 +124,9 @@ def generate_oops_pitfalls(ont_file, base_dir):
     # call(comm, shell=True)
     error_msg, msg = call_and_get_log(comm)
     dolog(msg+error_msg)
-    if error_msg != "":
-        return "Error while generating the Evaluation"
+    # The below condition is commented because it always prints warnings in stderr and the condition will always be true
+    # if error_msg != "":
+    #     return "Error while generating the Evaluation"
     dolog("moving1: <%s> to <%s>" % (os.path.join(out_abs_dir, 'OOPSevaluation'), get_parent_path(out_abs_dir)))
     shutil.move(os.path.join(out_abs_dir, 'OOPSevaluation'), get_parent_path(out_abs_dir))
     dolog("removing <%s>" % out_abs_dir)
