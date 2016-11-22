@@ -546,6 +546,9 @@ def has_access_to_repo(target_repo):
 
 
 def delete_repo(local_repo):
+    global g
+    if g is None:
+        init_g()
     try:
         g.get_repo(local_repo).delete()
         dolog('repo deleted ')
@@ -568,6 +571,9 @@ def fork_repo(target_repo, username, password):
 
 
 def clone_repo(cloning_repo, parent_folder, dosleep=True):
+    global g
+    if g is None:
+        init_g()
     dolog('home: %s' % (home))
     dolog('parent_folder: %s' % (parent_folder))
     dolog('logfile: %s' % (log_file_dir))
@@ -596,6 +602,9 @@ def clone_repo(cloning_repo, parent_folder, dosleep=True):
 
 
 def commit_changes():
+    global g
+    if g is None:
+        init_g()
     gu = "git config  user.email \"ahmad88csc@gmail.com\";"
     gu += 'git config  user.name "%s" ;' % (ToolUser)
     comm = "cd " + home + parent_folder + ";" + gu + " git add . "
@@ -618,12 +627,18 @@ def commit_changes():
 
 
 def refresh_repo(target_repo):
+    global g
+    if g is None:
+        init_g()
     local_repo = target_repo.split('/')[-1]
     g.get_user().get_repo(local_repo).delete()
     g.get_user().create_fork(target_repo)
 
 
 def remove_old_pull_requests(target_repo):
+    global g
+    if g is None:
+        init_g()
     title = 'OnToology update'
     for p in g.get_repo(target_repo).get_pulls():
         if p.title == title:
@@ -668,6 +683,8 @@ def get_user_github_email(username):
 
 def remove_webhook(target_repo, notification_url):
     global g
+    if g is None:
+        init_g()
     # for some reason adding the below two prints solves the problem for removing the webhook, strange but true
     print "target_repo: "+str(target_repo)
     print "notification url: "+str(notification_url)
@@ -679,6 +696,8 @@ def remove_webhook(target_repo, notification_url):
 def add_webhook(target_repo, notification_url, newg=None):
     global g
     if newg is None:
+        if g is None:
+            init_g()
         newg = g
     name = "web"
     active = True
@@ -697,6 +716,8 @@ def add_webhook(target_repo, notification_url, newg=None):
 def add_collaborator(target_repo, user, newg=None):
     global g
     if newg is None:
+        if g is None:
+            init_g()
         newg = g
     try:
         print "adding collaborator from user: "+newg.get_user().name

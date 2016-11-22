@@ -42,8 +42,8 @@ def get_pitfalls(target_repo, ont_file, base_dir):
     <OOPSRequest>
           <OntologyUrl></OntologyUrl>
           <OntologyContent>%s</OntologyContent>
-          <Pitfalls></Pitfalls>
-          <OutputFormat></OutputFormat>
+          <Pitfalls>10</Pitfalls>
+          <OutputFormat>RDF/XML</OutputFormat>
     </OOPSRequest>
     """ % (ont_file_content)
     headers = {'Content-Type': 'application/xml',
