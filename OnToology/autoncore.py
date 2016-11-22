@@ -392,7 +392,7 @@ def update_file(target_repo, path, message, content):
     dolog('will update the file <%s> on repo<%s> with the content <%s>,  sha <%s> and message <%s>' %
           (apath, target_repo, content, sha, message))
     print "repo.update_file('%s', '%s', \"\"\"%s\"\"\" , '%s' )" % (apath, message, content, sha)
-    for i in range(10):
+    for i in range(3):
         try:
             repo.update_file(apath, message, content, sha)
             dolog('file updated')

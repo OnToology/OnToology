@@ -27,6 +27,7 @@ def oops_ont_files(target_repo, changed_files, base_dir):
 def get_pitfalls(target_repo, ont_file, base_dir):
     r = generate_oops_pitfalls(ont_file, base_dir)
     if r != "":  #  in case of an error
+        print "error generateing oops pitfalls: "+str(r)
         return r
     # if settings.TEST and settings.test_conf['local']:
     #    return
@@ -115,7 +116,8 @@ def generate_oops_pitfalls(ont_file, base_dir):
     # if not settings.TEST:
     if True:
         comm += ' >> "' + log_file_dir + '"'
-    comm += " ; echo 'oops' >> '" + os.path.join(get_parent_path(out_abs_dir), verification_log_fname) + "'"
+    # commenting the use of verification log
+    # comm += " ; echo 'oops' >> '" + os.path.join(get_parent_path(out_abs_dir), verification_log_fname) + "'"
     dolog(comm)
     # call(comm, shell=True)
     error_msg, msg = call_and_get_log(comm)
