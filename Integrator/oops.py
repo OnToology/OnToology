@@ -27,8 +27,10 @@ def oops_ont_files(target_repo, changed_files, base_dir):
 def get_pitfalls(target_repo, ont_file, base_dir):
     r = generate_oops_pitfalls(ont_file, base_dir)
     if r != "":  #  in case of an error
-        print "error generateing oops pitfalls: "+str(r)
+        dolog("error generating oops pitfalls: "+str(r))
         return r
+    else:
+        dolog("generate oops pitfalls successfully")
     # if settings.TEST and settings.test_conf['local']:
     #    return
     ont_file_full_path = os.path.join(base_dir, ont_file)
