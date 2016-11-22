@@ -368,18 +368,20 @@ def verify_tools_generation_when_ready(ver_file_comp, repo=None):
     else:  # I want to see the file in case of testing
         os.remove(ver_file)  # the verification file is no longer needed
 
+
 # copied from new-look
 def update_file(target_repo, path, message, content):
     global g
     username = os.environ['github_username']
     password = os.environ['github_password']
-    if True:
-        # if g is None:
-        print 'new g'
-        g = Github(username, password)
-    else:
-        print 'user is: ' + str(g.get_user().name)
+    # if True:
+    #     # if g is None:
+    #     print 'new g'
+    #     g = Github(username, password)
+    # else:
+    #     print 'user is: ' + str(g.get_user().name)
     # gg = github.Github(username, password)
+    g = Github(username, password)
     repo = g.get_repo(target_repo)
     # sha = repo.get_commits()[0].sha
     sha = repo.get_file_contents(path).sha
