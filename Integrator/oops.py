@@ -56,7 +56,7 @@ def get_pitfalls(target_repo, ont_file, base_dir):
     oops_reply = requests.post(url, data=xml_content, headers=headers)
     dolog("will get oops text reply")
     oops_reply = oops_reply.text
-    # dolog('oops reply is: <<' + oops_reply + '>>')
+    dolog('oops reply is: <<' + oops_reply + '>>')
     dolog('<<<end of oops reply>>>')
     if oops_reply[:50] == '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">':
         if '<title>502 Proxy Error</title>' in oops_reply:
