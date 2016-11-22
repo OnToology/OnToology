@@ -404,7 +404,7 @@ $( document ).ready(function() {
 		            },
 				  url: "/update_conf",
 				  data: result
-				}).always(function( resp ) {
+				}).done(function( resp ) {
 				    console.log("response of the ajax: "+resp)
 					console.log("status is: "+resp.status)
 				    if (resp.status == true){
