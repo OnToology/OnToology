@@ -76,7 +76,13 @@ def get_pitfalls(target_repo, ont_file, base_dir):
         user = target_repo.split('/')[0]
         nicer_issues += "https://rawgit.com/" + user + '/' + repo + \
             '/master/OnToology/' + ont_file + '/evaluation/oopsEval.html'
-        create_oops_issue_in_github(target_repo, ont_file, nicer_issues)
+        if create_oops_issue_in_github(target_repo, ont_file, nicer_issues):
+            return "created oops issue in github successfully"
+        else:
+            return "error creating oops issue in github"
+    else:
+        return "No pitfalls found for this ontology"
+
 
 
 def output_parsed_pitfalls(ont_file, oops_reply):
@@ -187,8 +193,10 @@ def create_oops_issue_in_github(target_repo, ont_file, oops_issues):
     dolog('will create an oops issue')
     try:
         g.get_repo(target_repo).create_issue('OOPS! Evaluation for ' + ont_file, oops_issues)
+        return True
     except Exception as e:
         dolog('exception when creating issue: ' + str(e))
+        return False
 
 
 def close_old_oops_issues_in_github(target_repo, ont_file):
