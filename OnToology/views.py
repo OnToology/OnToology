@@ -132,8 +132,9 @@ def home(request):
         if True:
             request.session['access_token_time'] = '1'
             return HttpResponseRedirect(webhook_access_url)
-        if request.user.is_authenticated():
-            generateforall(target_repo, request.user.email)
+        # will not be called either way
+        # if request.user.is_authenticated():
+        #     generateforall(target_repo, request.user.email)
     repos = Repo.objects.order_by('-last_used')[:10]
     num_of_users = len(User.objects.all())
     num_of_repos = len(Repo.objects.all())
@@ -704,7 +705,8 @@ def delete_repo(request):
             try:
                 user.update(pull__repos=r)
                 user.save()
-                remove_webhook(repo, host + "/add_hook")
+                # for now we do not remove teh webhook for the sake of students
+                # remove_webhook(repo, host + "/add_hook")
                 return JsonResponse({'status': True})
             except Exception as e:
                 print "error deleting the webhook: "+str(e)

@@ -689,14 +689,13 @@ def remove_webhook(target_repo, notification_url):
     print "target_repo: "+str(target_repo)
     print "notification url: "+str(notification_url)
     for hook in g.get_repo(target_repo).get_hooks():
-        for i in range(3):
-            try:
-                if hook.config["url"] == notification_url:
-                    hook.delete()
-                    break
-            except Exception as e:
-                print "error removing the webhook for the %dth time: %s" %(i, str(e))
-                time.sleep(2)
+        try:
+            if hook.config["url"] == notification_url:
+                hook.delete()
+                break
+        except Exception as e:
+            print "error removing the webhook: %s" %(str(e))
+            time.sleep(2)
     sys.stdout.flush()
     sys.stderr.flush()
 
