@@ -416,9 +416,11 @@ $( document ).ready(function() {
 				    	//alert(resp.error);
 				    }
 				}).fail(function(jqxhr, text_status, error_thrown ){
-				    console.log("text_status: "+text_status)
-				    console.log("error_thrown: "+error_thrown)
+				    console.log("ajax fail");
+				    console.log("text_status: "+text_status);
+				    console.log("error_thrown: "+error_thrown);
 				});
+				return false;/*http://stackoverflow.com/questions/7577275/jquery-ajax-requests-are-getting-cancelled-without-being-sent*/
 	});
 	
 }); 
