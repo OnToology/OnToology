@@ -53,7 +53,7 @@ def get_pitfalls(target_repo, ont_file, base_dir):
                'Accept-Charset': 'utf-8'
                }
     dolog("will call oops webservice")
-    dolog("\n\n\n\n %s \n\n\n\n" % xml_content)
+    # dolog("\n\n\n\n %s \n\n\n\n" % xml_content)
     oops_reply = requests.post(url, data=xml_content, headers=headers)
     dolog("will get oops text reply")
     oops_reply = oops_reply.text
