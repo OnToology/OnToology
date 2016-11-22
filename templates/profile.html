@@ -415,6 +415,9 @@ $( document ).ready(function() {
 				    	console.log("resp error"+resp.error);
 				    	//alert(resp.error);
 				    }
+				}).fail(function(jqxhr, text_status, error_thrown ){
+				    console.log("text_status: "+text_status)
+				    console.log("error_thrown: "+error_thrown)
 				});
 	});
 	
