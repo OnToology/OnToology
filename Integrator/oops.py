@@ -70,6 +70,7 @@ def get_pitfalls(target_repo, ont_file, base_dir):
     nicer_issues = nicer_oops_output(issues_s)
     dolog('get nicer issues')
     if nicer_issues != "":
+        dolog("nicer_issues: "+str(nicer_issues))
         # evaluation report in this link\n Otherwise the URL won't work\n"
         nicer_issues += "\n Please accept the merge request to see the evaluation report in this link. Otherwise the URL won't work.\n"
         repo = target_repo.split('/')[1]
@@ -81,6 +82,7 @@ def get_pitfalls(target_repo, ont_file, base_dir):
         else:
             return "error creating oops issue in github"
     else:
+        dolog("nicer_issues is empty")
         return "No pitfalls found for this ontology"
 
 
