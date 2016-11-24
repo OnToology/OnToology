@@ -306,7 +306,19 @@ def add_hook(request):
         return
     else:
         print 'running autoncore code as: ' + comm
-        subprocess.Popen(comm, shell=True)
+        try:
+            subprocess.Popen(comm, shell=True)
+        except Exception as e:
+            error_msg = str(e)
+            print 'error running generall all subprocess: '+error_msg
+            sys.stdout.flush()
+            sys.stderr.flush()
+            if 'execv() arg 2 must contain only strings' in error_msg:
+                error_msg = 'make sure that your repository filenames does not have accents or special characters'
+            else:
+                error_msg = 'generic error, please report the problem to us ontoology@delicias.dia.fi.upm.es'
+            s = error_msg
+        # subprocess.Popen(comm, shell=True)
         return render_to_response('msg.html', {'msg': '' + s}, context_instance=RequestContext(request))
 
 
@@ -370,7 +382,7 @@ def generateforall(target_repo, user_email):
             print 'error running generall all subprocess: '+error_msg
             if 'execv() arg 2 must contain only strings' in error_msg:
                 return {'status': False,
-                        'error': 'make sure that your ontology filenames does not have accents or special characters'}
+                        'error': 'make sure that your repository filenames does not have accents or special characters'}
             else:
                 return {'status': False,
                         'error': 'generic error, please report the problem to us ontoology@delicias.dia.fi.upm.es'}
