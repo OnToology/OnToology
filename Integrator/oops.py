@@ -31,6 +31,8 @@ def get_pitfalls(target_repo, ont_file, base_dir):
         return r
     else:
         dolog("generate oops pitfalls successfully")
+    # Here we are disabling the calling of OOPS webservices to create GitHub issue
+    return ""
     # if settings.TEST and settings.test_conf['local']:
     #    return
     ont_file_full_path = os.path.join(base_dir, ont_file)
