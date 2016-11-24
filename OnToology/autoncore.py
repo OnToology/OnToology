@@ -727,12 +727,15 @@ def add_collaborator(target_repo, user, newg=None):
             init_g()
         newg = g
     try:
-        print "adding collaborator from user: "+newg.get_user().name
+        print "adding collaborator from user: %s " % str(newg.get_user().name)
+        if newg.get_user().name is None or newg.get_user().email is None:
+            return {'status': False, 'error': 'Make sure you have your name and email public and not empty on GitHub'}
         if newg.get_repo(target_repo).has_in_collaborators(user):
             return {'status': True, 'msg': 'this user is already a collaborator'}
         else:
             msg = newg.get_repo(target_repo).add_to_collaborators(user)
-            return {'status': True, 'msg': str(msg)}
+            #return {'status': True, 'msg': str(msg)}
+            return {'status': True, 'msg': 'added as a new collaborator'}
     except Exception as e:
         return {'status': False, 'error': str(e)}  # e.data}
 
