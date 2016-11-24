@@ -331,10 +331,13 @@ def generateforall_view(request):
     if not found:
         return render(request, 'msg.html',
                       {'msg': 'You need to register/watch this repository while you are logged in'})
-    generateforall(target_repo, request.user.email)
-    return render_to_response('msg.html', {
-        'msg': 'Soon you will find generated files included in a pull request in your repository'},
-                              context_instance=RequestContext(request))
+    res = generateforall(target_repo, request.user.email)
+    if res['status'] is True:
+        return render_to_response('msg.html', {
+            'msg': 'Soon you will find generated files included in a pull request in your repository'},
+                                  context_instance=RequestContext(request))
+    else:
+        return render(request, 'msg.html', {'msg': res['error']})
 
 
 def generateforall(target_repo, user_email):
@@ -357,9 +360,17 @@ def generateforall(target_repo, user_email):
         git_magic(target_repo, user, cloning_repo, changed_files)
     else:
         print 'running autoncore code as: ' + comm
-        sys.stdout.flush()
-        sys.stderr.flush()
-        subprocess.Popen(comm, shell=True)
+
+        try:
+            subprocess.Popen(comm, shell=True)
+        except Exception as e:
+            sys.stdout.flush()
+            sys.stderr.flush()
+            print 'error running generall all subprocess: '+str(e)
+            return {'status': False, 'error': str(e)}
+    sys.stdout.flush()
+    sys.stderr.flush()
+    return {'status': True}
 
 
 def login(request):
