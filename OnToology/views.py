@@ -362,7 +362,7 @@ def generateforall(target_repo, user_email):
         print 'running autoncore code as: ' + comm
 
         try:
-            subprocess.Popen(str(comm), shell=True)
+            subprocess.Popen(comm, shell=True)
         except Exception as e:
             sys.stdout.flush()
             sys.stderr.flush()
