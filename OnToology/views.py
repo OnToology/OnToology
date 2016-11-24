@@ -366,8 +366,14 @@ def generateforall(target_repo, user_email):
         except Exception as e:
             sys.stdout.flush()
             sys.stderr.flush()
-            print 'error running generall all subprocess: '+str(e)
-            return {'status': False, 'error': str(e)}
+            error_msg = str(e)
+            print 'error running generall all subprocess: '+error_msg
+            if 'execv() arg 2 must contain only strings' in error_msg:
+                return {'status': False,
+                        'error': 'make sure that your ontology filenames does not have accents or special characters'}
+            else:
+                return {'status': False,
+                        'error': 'generic error, please report the problem to us ontoology@delicias.dia.fi.upm.es'}
     sys.stdout.flush()
     sys.stderr.flush()
     return {'status': True}
