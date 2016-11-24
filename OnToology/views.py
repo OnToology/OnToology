@@ -357,6 +357,8 @@ def generateforall(target_repo, user_email):
         git_magic(target_repo, user, cloning_repo, changed_files)
     else:
         print 'running autoncore code as: ' + comm
+        sys.stdout.flush()
+        sys.stderr.flush()
         subprocess.Popen(comm, shell=True)
 
 
