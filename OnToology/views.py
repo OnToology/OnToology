@@ -578,7 +578,11 @@ def profile(request):
                     htaccess_f = os.path.join(doc_dir, '.htaccess')
                     if not os.path.exists(htaccess_f):
                         print 'htaccess is not found'
-                        error_msg += 'make sure your ontology has documentation and htaccess'
+                        #error_msg += 'make sure your ontology has documentation and htaccess'
+                        error_msg += 'We couldn\'t reserve your w3id. Please make sure that your ontology has ' \
+                                     'documentation and htacess. For that, click on "Generate documentation, diagrams' \
+                                     ' and evaluation" on the menu, and once the process is completed, accept the ' \
+                                     'pull request on you GitHub repository'
                     else:
                         print 'found htaccesss'
                         f = open(htaccess_f, 'r')
