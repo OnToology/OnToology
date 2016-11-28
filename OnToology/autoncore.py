@@ -833,11 +833,14 @@ def parse_online_repo_for_ontologies(target_repo):
     """ This is parse repositories for ontologies configuration files OnToology.cfg
     """
     global g
-    if type(g) == type(None):
+    if g is None:
         init_g()
+    print "in parse online repo for ontologies"
     repo, conf_paths = get_confs_from_repo(target_repo)
+    print "repo: %s, conf_paths: %s" % (str(repo), str(conf_paths))
     ontologies = []
     for cpath in conf_paths:
+        print "get file content: %s" % (str(cpath.path))
         file_content = repo.get_file_contents(cpath.path).decoded_content
         buffile = StringIO.StringIO(file_content)
         confs = get_auton_config(buffile)
