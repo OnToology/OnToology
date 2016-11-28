@@ -39,6 +39,9 @@ import logging
 
 from mongoengine import *
 
+
+from urllib import quote
+
 use_database = True
 
 ToolUser = 'OnToologyUser'
@@ -839,17 +842,22 @@ def parse_online_repo_for_ontologies(target_repo):
     repo, conf_paths = get_confs_from_repo(target_repo)
     print "repo: %s, conf_paths: %s" % (str(repo), str(conf_paths))
     ontologies = []
+
     for cpath in conf_paths:
+        p = quote(cpath.path)
         print "get file content: %s" % (str(cpath.path))
+        print "after quote: %s" % p
         print "now get the decoded content"
-        file_content = repo.get_file_contents(cpath.path).decoded_content
+        # file_content = repo.get_file_contents(cpath.path).decoded_content
+        file_content = repo.get_file_contents(p).decoded_content
         print "file_content: "+str(file_content)
         buffile = StringIO.StringIO(file_content)
         print "will get the config"
         confs = get_auton_config(buffile)
         print "gotten confs: "+str(confs)
         o = {}
-        o['ontology'] = get_parent_path(cpath.path)[len(get_target_home()):]
+        # o['ontology'] = get_parent_path(cpath.path)[len(get_target_home()):]
+        o['ontology'] = get_parent_path(p)[len(get_target_home()):]
         for c in confs:
             tool = c.replace('_enable', '')
             o[tool] = confs[c]
