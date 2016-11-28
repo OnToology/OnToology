@@ -841,9 +841,13 @@ def parse_online_repo_for_ontologies(target_repo):
     ontologies = []
     for cpath in conf_paths:
         print "get file content: %s" % (str(cpath.path))
+        print "now get the decoded content"
         file_content = repo.get_file_contents(cpath.path).decoded_content
+        print "file_content: "+str(file_content)
         buffile = StringIO.StringIO(file_content)
+        print "will get the config"
         confs = get_auton_config(buffile)
+        print "gotten confs: "+str(confs)
         o = {}
         o['ontology'] = get_parent_path(cpath.path)[len(get_target_home()):]
         for c in confs:
