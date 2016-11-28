@@ -573,6 +573,8 @@ def profile(request):
             html = render(request, 'profile_sliders.html', {'ontologies': ontologies}).content
             jresponse = JsonResponse({'ontologies': ontologies, 'sliderhtml': html})
             jresponse.__setitem__('Content-Length', len(jresponse.content))
+            sys.stdout.flush()
+            sys.stderr.flush()
             return jresponse
         except Exception as e:
             print 'exception: ' + str(e)
@@ -676,6 +678,8 @@ def profile(request):
     request.GET = []
     # if error_msg == '':
     #     return HttpResponseRedirect(reverse('profile'))
+    sys.stdout.flush()
+    sys.stderr.flush()
     return render(request, 'profile.html', {'repos': repos, 'pnames': PublishName.objects.filter(user=user),
                                             'error': error_msg})
 
