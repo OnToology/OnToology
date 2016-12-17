@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EKAW 2016 RO</title>
+
+    <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+ <!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="col-md-8 col-lg-4">
+    <canvas id="graph_all" width="400" height="400"></canvas>
+    </div>
+</div>
+<script>
+var ctx_all = document.getElementById("graph_all");
+new Chart(ctx_all, {
+    type: 'radar',
+    data: {
+        labels: ["Usefulness", "Ease of Use", "Ease of learning", "Satisfaction"],
+        datasets: [
+        {
+            label: "General Median",
+            backgroundColor: "rgba(74,111,227,0.2)",
+            borderColor: "rgba(74,111,227,1)",
+            pointBackgroundColor: "rgba(74,111,227,1)",
+            pointBorderColor: "#fff",
+            pointHoverBackgroundColor: "#fff",
+            pointHoverBorderColor: "rgba(74,111,227,1)",
+            data: [6, 5, 5.5, 6]
+        },
+        {
+            label: "General Mean",
+            backgroundColor: "rgba(17,198,56,0.2)",
+            borderColor: "rgba(17,198,56,1)",
+            pointBackgroundColor: "rgba(17,198,56,1)",
+            pointBorderColor: "#fff",
+            pointHoverBackgroundColor: "#fff",
+            pointHoverBorderColor: "rgba(17,198,56,1)",
+            data: [5.71, 4.45, 5.25, 5.44]
+        },
+        {
+            label: "Students Median",
+            backgroundColor: "rgba(211,63,106,0.2)",
+            borderColor: "rgba(211,63,106,1)",
+            pointBackgroundColor: "rgba(211,63,106,1)",
+            pointBorderColor: "#fff",
+            pointHoverBackgroundColor: "#fff",
+            pointHoverBorderColor: "rgba(211,63,106,1)",
+            data: [4.5, 4, 4.75, 5]
+        },
+        {
+            label: "Students Mean",
+            backgroundColor: "rgba(239,151,8,0.2)",
+            borderColor: "rgba(239,151,8,1)",
+            pointBackgroundColor: "rgba(239,151,8,1)",
+            pointBorderColor: "#fff",
+            pointHoverBackgroundColor: "#fff",
+            pointHoverBorderColor: "rgba(239,151,8,1)",
+            data: [4.31, 4.14, 4.67, 4.71]
+        }
+    ]
+
+    },
+    options: {
+            scale: {
+                reverse: false,
+                ticks: {
+                    beginAtZero: true
+                }
+            }
+    }
+});
+
+
+</script>
+</body>
+</html>
+
