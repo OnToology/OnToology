@@ -33,6 +33,7 @@
         <li role="presentation" class=""><a href="#abstract">Abstract</a></li>
         <li role="presentation"><a href="#questionnaire">Questionnaire</a></li>
         <li role="presentation"><a href="#actions">Actions</a></li>
+        <li role="presentation" class=""><a href="#rawdata">Raw data</a></li>
         <li role="presentation" class=""><a href="#results">Results</a></li>
     </ul>
     <div class=" col-md-10 col-md-offset-2 col-sm-8 col-sm-offset-4 col-lg-8 col-lg-offset-2">
@@ -123,18 +124,34 @@
 
         <hr>
 
+        <div id="rawdata">
+                <h3>Raw Data</h3>
+                <ul>
+                    <li><a href="rawdata/general/general.html">Go to raw results for the general form</a></li>
+                    <li><a href="rawdata/students/students.html">Go to raw results for the students form</a></li>
+                </ul>
+            </div>
+
+        <hr>
+
         <div id="results">
             <h3>Results</h3>
-            <div class=" col-md-6">
-                <canvas id="chart_all" width="400" height="400"></canvas>
-                <canvas id="chart_usefulness" width="400" height="400"></canvas>
-                <canvas id="chart_easeofuse" width="400" height="400"></canvas>
-            </div>
-            <div class=" col-md-6">
-                <canvas id="chart_easeoflearning" width="400" height="400"></canvas>
-                <canvas id="chart_easeofsatisfaction" width="400" height="400"></canvas>
+            <div class="col-md-12">
+                <div class=" col-md-6">
+                    <canvas id="chart_all" width="400" height="400"></canvas>
+                    <canvas id="chart_usefulness" width="400" height="400"></canvas>
+                    <canvas id="chart_easeofuse" width="400" height="400"></canvas>
+                </div>
+                <div class="col-md-6">
+                    <canvas id="chart_easeoflearning" width="400" height="400"></canvas>
+                    <canvas id="chart_easeofsatisfaction" width="400" height="400"></canvas>
+                </div>
             </div>
         </div>
+
+
+
+
     </div>
 </div>
 <script>
