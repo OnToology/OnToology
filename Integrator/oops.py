@@ -27,7 +27,12 @@ def oops_ont_files(target_repo, changed_files, base_dir):
 def get_pitfalls(target_repo, ont_file, base_dir):
     r = generate_oops_pitfalls(ont_file, base_dir)
     if r != "":  #  in case of an error
+        dolog("error generating oops pitfalls: "+str(r))
         return r
+    else:
+        dolog("generate oops pitfalls successfully")
+    # Here we are disabling the calling of OOPS webservices to create GitHub issue
+    return ""
     # if settings.TEST and settings.test_conf['local']:
     #    return
     ont_file_full_path = os.path.join(base_dir, ont_file)
@@ -39,8 +44,8 @@ def get_pitfalls(target_repo, ont_file, base_dir):
     <OOPSRequest>
           <OntologyUrl></OntologyUrl>
           <OntologyContent>%s</OntologyContent>
-          <Pitfalls></Pitfalls>
-          <OutputFormat></OutputFormat>
+          <Pitfalls>10</Pitfalls>
+          <OutputFormat>RDF/XML</OutputFormat>
     </OOPSRequest>
     """ % (ont_file_content)
     headers = {'Content-Type': 'application/xml',
@@ -50,10 +55,11 @@ def get_pitfalls(target_repo, ont_file, base_dir):
                'Accept-Charset': 'utf-8'
                }
     dolog("will call oops webservice")
+    # dolog("\n\n\n\n %s \n\n\n\n" % xml_content)
     oops_reply = requests.post(url, data=xml_content, headers=headers)
     dolog("will get oops text reply")
     oops_reply = oops_reply.text
-    # dolog('oops reply is: <<' + oops_reply + '>>')
+    dolog('oops reply is: <<' + oops_reply + '>>')
     dolog('<<<end of oops reply>>>')
     if oops_reply[:50] == '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">':
         if '<title>502 Proxy Error</title>' in oops_reply:
@@ -67,13 +73,21 @@ def get_pitfalls(target_repo, ont_file, base_dir):
     nicer_issues = nicer_oops_output(issues_s)
     dolog('get nicer issues')
     if nicer_issues != "":
+        dolog("nicer_issues: "+str(nicer_issues))
         # evaluation report in this link\n Otherwise the URL won't work\n"
         nicer_issues += "\n Please accept the merge request to see the evaluation report in this link. Otherwise the URL won't work.\n"
         repo = target_repo.split('/')[1]
         user = target_repo.split('/')[0]
         nicer_issues += "https://rawgit.com/" + user + '/' + repo + \
             '/master/OnToology/' + ont_file + '/evaluation/oopsEval.html'
-        create_oops_issue_in_github(target_repo, ont_file, nicer_issues)
+        if create_oops_issue_in_github(target_repo, ont_file, nicer_issues):
+            return ""
+        else:
+            return "error creating oops issue in github"
+    else:
+        dolog("nicer_issues is empty")
+        return "No pitfalls found for this ontology"
+
 
 
 def output_parsed_pitfalls(ont_file, oops_reply):
@@ -115,13 +129,15 @@ def generate_oops_pitfalls(ont_file, base_dir):
     # if not settings.TEST:
     if True:
         comm += ' >> "' + log_file_dir + '"'
-    comm += " ; echo 'oops' >> '" + os.path.join(get_parent_path(out_abs_dir), verification_log_fname) + "'"
+    # commenting the use of verification log
+    # comm += " ; echo 'oops' >> '" + os.path.join(get_parent_path(out_abs_dir), verification_log_fname) + "'"
     dolog(comm)
     # call(comm, shell=True)
     error_msg, msg = call_and_get_log(comm)
     dolog(msg+error_msg)
-    if error_msg != "":
-        return "Error while generating the Evaluation"
+    # The below condition is commented because it always prints warnings in stderr and the condition will always be true
+    # if error_msg != "":
+    #     return "Error while generating the Evaluation"
     dolog("moving1: <%s> to <%s>" % (os.path.join(out_abs_dir, 'OOPSevaluation'), get_parent_path(out_abs_dir)))
     shutil.move(os.path.join(out_abs_dir, 'OOPSevaluation'), get_parent_path(out_abs_dir))
     dolog("removing <%s>" % out_abs_dir)
@@ -182,8 +198,10 @@ def create_oops_issue_in_github(target_repo, ont_file, oops_issues):
     dolog('will create an oops issue')
     try:
         g.get_repo(target_repo).create_issue('OOPS! Evaluation for ' + ont_file, oops_issues)
+        return True
     except Exception as e:
         dolog('exception when creating issue: ' + str(e))
+        return False
 
 
 def close_old_oops_issues_in_github(target_repo, ont_file):

@@ -132,12 +132,16 @@ def home(request):
         if True:
             request.session['access_token_time'] = '1'
             return HttpResponseRedirect(webhook_access_url)
-        if request.user.is_authenticated():
-            generateforall(target_repo, request.user.email)
+        # will not be called either way
+        # if request.user.is_authenticated():
+        #     generateforall(target_repo, request.user.email)
     repos = Repo.objects.order_by('-last_used')[:10]
     num_of_users = len(User.objects.all())
     num_of_repos = len(Repo.objects.all())
-    last_used = Repo.objects.all().order_by('-last_used')[0].last_used
+    try:
+        last_used = Repo.objects.all().order_by('-last_used')[0].last_used
+    except:
+        last_used = datetime.now()
     #last_used = '%d, %d' % (last_used.month, last_used.year)
     return render(request, 'home.html', {'repos': repos, 'user': request.user, 'num_of_users': num_of_users,
                                          'num_of_repos': num_of_repos, 'last_used': last_used})
@@ -173,9 +177,9 @@ def get_access_token(request):
 
     if request.user.is_authenticated() and request.session['access_token_time'] == '1':
         request.session['access_token_time'] = '2'  # so we do not loop
-        #isprivate = get_proper_loggedin_scope(OUser.objects.get(username=request.user.username),
+        # isprivate = get_proper_loggedin_scope(OUser.objects.get(username=request.user.username),
         #                                      request.session['target_repo'])
-        #print 'isprivate is: ' + str(isprivate)
+        # print 'isprivate is: ' + str(isprivate)
         webhook_access_url, state = webhook_access(client_id, host + '/get_access_token', is_private)
         request.session['state'] = state
         return HttpResponseRedirect(webhook_access_url)
@@ -204,7 +208,7 @@ def get_access_token(request):
             print "ToolUser: " + ToolUser
         msg = error_msg
     else:
-        msg = 'webhook attached and user added as collaborator'
+        msg = 'webhook attached and user added as collaborator, Note that generating the documentation, diagrams and evaluation report takes sometime to be generated. In "My repositories" page, you can see the status of each repo.'
     target_repo = request.session['target_repo']
     try:
         repo = Repo.objects.get(url=target_repo)
@@ -218,8 +222,7 @@ def get_access_token(request):
         if repo not in ouser.repos:
             ouser.repos.append(repo)
             ouser.save()
-            # commented generateforall for the sake of testing 21-Nov-2016
-            # generateforall(repo.url, ouser.email)
+            generateforall(repo.url, ouser.email)
     return render_to_response('msg.html', {'msg': msg},
                               context_instance=RequestContext(request))
 
@@ -303,7 +306,19 @@ def add_hook(request):
         return
     else:
         print 'running autoncore code as: ' + comm
-        subprocess.Popen(comm, shell=True)
+        try:
+            subprocess.Popen(comm, shell=True)
+        except Exception as e:
+            error_msg = str(e)
+            print 'error running generall all subprocess: '+error_msg
+            sys.stdout.flush()
+            sys.stderr.flush()
+            if 'execv() arg 2 must contain only strings' in error_msg:
+                error_msg = 'make sure that your repository filenames does not have accents or special characters'
+            else:
+                error_msg = 'generic error, please report the problem to us ontoology@delicias.dia.fi.upm.es'
+            s = error_msg
+        # subprocess.Popen(comm, shell=True)
         return render_to_response('msg.html', {'msg': '' + s}, context_instance=RequestContext(request))
 
 
@@ -328,10 +343,13 @@ def generateforall_view(request):
     if not found:
         return render(request, 'msg.html',
                       {'msg': 'You need to register/watch this repository while you are logged in'})
-    generateforall(target_repo, request.user.email)
-    return render_to_response('msg.html', {
-        'msg': 'Soon you will find generated files included in a pull request in your repository'},
-                              context_instance=RequestContext(request))
+    res = generateforall(target_repo, request.user.email)
+    if res['status'] is True:
+        return render_to_response('msg.html', {
+            'msg': 'Soon you will find generated files included in a pull request in your repository'},
+                                  context_instance=RequestContext(request))
+    else:
+        return render(request, 'msg.html', {'msg': res['error']})
 
 
 def generateforall(target_repo, user_email):
@@ -354,7 +372,23 @@ def generateforall(target_repo, user_email):
         git_magic(target_repo, user, cloning_repo, changed_files)
     else:
         print 'running autoncore code as: ' + comm
-        subprocess.Popen(comm, shell=True)
+
+        try:
+            subprocess.Popen(comm, shell=True)
+        except Exception as e:
+            sys.stdout.flush()
+            sys.stderr.flush()
+            error_msg = str(e)
+            print 'error running generall all subprocess: '+error_msg
+            if 'execv() arg 2 must contain only strings' in error_msg:
+                return {'status': False,
+                        'error': 'make sure that your repository filenames does not have accents or special characters'}
+            else:
+                return {'status': False,
+                        'error': 'generic error, please report the problem to us ontoology@delicias.dia.fi.upm.es'}
+    sys.stdout.flush()
+    sys.stderr.flush()
+    return {'status': True}
 
 
 def login(request):
@@ -539,6 +573,8 @@ def profile(request):
             html = render(request, 'profile_sliders.html', {'ontologies': ontologies}).content
             jresponse = JsonResponse({'ontologies': ontologies, 'sliderhtml': html})
             jresponse.__setitem__('Content-Length', len(jresponse.content))
+            sys.stdout.flush()
+            sys.stderr.flush()
             return jresponse
         except Exception as e:
             print 'exception: ' + str(e)
@@ -575,7 +611,11 @@ def profile(request):
                     htaccess_f = os.path.join(doc_dir, '.htaccess')
                     if not os.path.exists(htaccess_f):
                         print 'htaccess is not found'
-                        error_msg += 'make sure your ontology has documentation and htaccess'
+                        #error_msg += 'make sure your ontology has documentation and htaccess'
+                        error_msg += 'We couldn\'t reserve your w3id. Please make sure that your ontology has ' \
+                                     'documentation and htacess. For that, click on "Generate documentation, diagrams' \
+                                     ' and evaluation" on the menu, and once the process is completed, accept the ' \
+                                     'pull request on you GitHub repository'
                     else:
                         print 'found htaccesss'
                         f = open(htaccess_f, 'r')
@@ -638,6 +678,8 @@ def profile(request):
     request.GET = []
     # if error_msg == '':
     #     return HttpResponseRedirect(reverse('profile'))
+    sys.stdout.flush()
+    sys.stderr.flush()
     return render(request, 'profile.html', {'repos': repos, 'pnames': PublishName.objects.filter(user=user),
                                             'error': error_msg})
 
@@ -665,9 +707,13 @@ def update_conf(request):
             print 'will call update_file'
             onto = 'OnToology' + onto + '/OnToology.cfg'
             try:
+                print "will call update file"
+                print "will call update file with repo %s, ontology: %s" % (data['repo'], onto)
                 update_file(data['repo'], onto, 'OnToology Configuration', new_conf)
             except Exception as e:
                 print 'Error in updating the configuration: ' + str(e)
+                sys.stdout.flush()
+                sys.stderr.flush()
                 return JsonResponse(
                     {'status': False, 'error': str(e)})  # return render(request,'msg.html',{'msg': str(e)})
             print 'returned from update_file'
@@ -698,9 +744,11 @@ def delete_repo(request):
             try:
                 user.update(pull__repos=r)
                 user.save()
-                remove_webhook(repo, host + "/add_hook")
+                # for now we do not remove teh webhook for the sake of students
+                # remove_webhook(repo, host + "/add_hook")
                 return JsonResponse({'status': True})
             except Exception as e:
+                print "error deleting the webhook: "+str(e)
                 return JsonResponse({'status': False, 'error': str(e)})
     return JsonResponse({'status': False, 'error': 'You should add this repo first'})
 

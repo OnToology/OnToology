@@ -39,6 +39,9 @@ import logging
 
 from mongoengine import *
 
+
+from urllib import quote
+
 use_database = True
 
 ToolUser = 'OnToologyUser'
@@ -117,93 +120,6 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
     Integrator.tools_execution(changed_files=changed_filesss, base_dir=os.path.join(home, user), logfile=log_file_dir,
                                target_repo=target_repo, g_local=g, dolog_fname=logger_fname,
                                change_status=change_status, repo=drepo)
-    # for chf in changed_filesss:
-    #     print "chf: "+chf
-    #     auton_conf = {'ar2dtool_enable': False, 'widoco_enable': False,
-    #                   'oops_enable': False, 'owl2jsonld_enable': False}
-    #     if chf[-4:] not in ontology_formats:  # validate ontology formats
-    #         # for now, do not detect the configuration
-    #         continue
-    #         # print 'check conf file changed is: %s'%(chf)
-    #         dolog('check conf file changed is: %s' % chf)
-    #         if get_file_from_path(chf) == 'OnToology.cfg':
-    #             dolog('OnToology.cfg is changed')
-    #             fi = get_level_up(chf)
-    #             fi = fi[6:]
-    #             dolog('ont file is: ' + fi)
-    #             changed_files = [fi]
-    #             auton_conf = get_auton_configuration(fi)
-    #         elif get_file_from_path(chf) in ar2dtool.ar2dtool_config_types:
-    #             auton_conf['ar2dtool_enable'] = True
-    #             fi = get_level_up(chf)
-    #             fi = get_level_up(fi)
-    #             fi = get_level_up(fi)
-    #             fi = fi[6:]
-    #             changed_files = [fi]
-    #             dolog('change in AR2DTool file %s' % fi)
-    #         elif 'widoco.conf' in get_file_from_path(chf):
-    #             fi = get_level_up(chf)
-    #             fi = get_level_up(fi)
-    #             fi = fi[6:]
-    #             changed_files = [fi]
-    #             dolog('change in Widoco file %s' % fi)
-    #     else:  # chf is ontology file
-    #         dolog('working with: ' + chf)
-    #         changed_files = [chf]
-    #         auton_conf = get_auton_configuration(chf)
-    #         # The below three lines is to add files to verify their output
-    #         # later on
-    #         ftvcomp = auton_conf
-    #         ftvcomp['file'] = chf
-    #         files_to_verify.append(ftvcomp)
-    #     dolog(str(auton_conf))
-    #     exception_if_exists = ""
-
-        # if auton_conf['ar2dtool_enable']:
-        #     dolog('ar2dtool_enable is true')
-        #     change_status(target_repo, 'drawing diagrams for ' + changed_files[0])
-        #     try:
-        #         ar2dtool.draw_diagrams(changed_files)
-        #         dolog('diagrams drawn successfully')
-        #     except Exception as e:
-        #         exception_if_exists += chf + ": " + str(e) + "\n"
-        #         dolog('diagrams not drawn: ' + str(e))
-        # else:
-        #     dolog('ar2dtool_enable is false')
-        # if auton_conf['widoco_enable']:
-        #     dolog('ar2dtool_enable is false')
-        #     change_status(target_repo, 'generating documents for ' + changed_files[0])
-        #     try:
-        #         generate_widoco_docs(changed_files)
-        #         dolog('generated docs')
-        #     except Exception as e:
-        #         exception_if_exists += str(e)
-        #         dolog('exception in generating documentation: ' + str(e))
-        # else:
-        #     dolog('widoco_enable is false')
-        # if auton_conf['oops_enable']:
-        #     dolog('oops_enable is true')
-        #     change_status(
-        #         target_repo, 'OOPS is checking for errors for ' + changed_files[0])
-        #     try:
-        #         oops_ont_files(target_repo, changed_files)
-        #         dolog('oops checked ontology for pitfalls')
-        #     except Exception as e:
-        #         exception_if_exists += str(e)
-        #         dolog('exception in generating oops validation document: ' + str(e))
-        # else:
-        #     dolog('oops_enable is false')
-        # if auton_conf['owl2jsonld_enable']:
-        #     dolog('owl2jsonld_enable is true')
-        #     change_status(target_repo, 'generating context document for ' + changed_files[0])
-        #     try:
-        #         generate_owl2jsonld_file(changed_files)
-        #         dolog('generated context')
-        #     except Exception as e:
-        #         exception_if_exists += str(e)
-        #         dolog('exception in generating context documentation: ' + str(e))
-        # else:
-        #     dolog('owl2jsonld_enable is false')
 
     exception_if_exists = ""
     files_to_verify = [c for c in changed_filesss if c[-4:] in ontology_formats]
@@ -216,6 +132,7 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
     # After the loop
     dolog("number of files to verify %d" % (len(files_to_verify)))
     if len(files_to_verify) == 0:
+        print "files: "+str(files_to_verify)
         change_status(target_repo, 'Ready')
         return
     # if not settings.TEST or not settings.test_conf['local']:
@@ -228,16 +145,17 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
         change_status(target_repo, exception_if_exists)
         # in case there is an error, create the pull request as well
     # Now to enabled
-    for f in files_to_verify:
-        repo = None
-        if use_database:
-            from models import Repo
-            repo = Repo.objects.get(url=target_repo)
-        try:
-            verify_tools_generation_when_ready(f, repo)
-            dolog('verification is done successfully')
-        except Exception as e:
-            dolog('verification have an exception: ' + str(e))
+    # This kind of verification is too naive and need to be eliminated
+    # for f in files_to_verify:
+    #     repo = None
+    #     if use_database:
+    #         from models import Repo
+    #         repo = Repo.objects.get(url=target_repo)
+    #     try:
+    #         verify_tools_generation_when_ready(f, repo)
+    #         dolog('verification is done successfully')
+    #     except Exception as e:
+    #         dolog('verification have an exception: ' + str(e))
 
     if use_database:
         if Repo.objects.get(url=target_repo).state != 'validating':
@@ -252,10 +170,14 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
         change_status(target_repo, 'creating a pull request')
         try:
             r = send_pull_request(target_repo, ToolUser)
+            dolog('pull request is sent')
+            change_status(target_repo, 'pull request is sent')
+            change_status(target_repo, 'Ready')
         except Exception as e:
             exception_if_exists += str(e)
-        dolog('pull request is sent')
-    change_status(target_repo, 'Ready')
+            dolog('failed to create pull request: '+exception_if_exists)
+            change_status(target_repo, 'failed to create a pull request')
+    # change_status(target_repo, 'Ready')
 
 
 def git_magic1(target_repo, user, cloning_repo, changed_filesss):
@@ -421,8 +343,7 @@ def git_magic1(target_repo, user, cloning_repo, changed_filesss):
 
 
 def verify_tools_generation_when_ready(ver_file_comp, repo=None):
-    ver_file = os.path.join(get_target_home(), ver_file_comp[
-                            'file'], verification_log_fname)
+    ver_file = os.path.join(get_target_home(), ver_file_comp['file'], verification_log_fname)
     ver_file = get_abs_path(ver_file)
     dolog('ver file: ' + ver_file)
     if ver_file_comp['ar2dtool_enable'] == ver_file_comp['widoco_enable'] == ver_file_comp['oops_enable'] == ver_file_comp['owl2jsonld_enable'] == False:
@@ -451,22 +372,58 @@ def verify_tools_generation_when_ready(ver_file_comp, repo=None):
         os.remove(ver_file)  # the verification file is no longer needed
 
 
+# copied from new-look
 def update_file(target_repo, path, message, content):
     global g
     username = os.environ['github_username']
     password = os.environ['github_password']
-    if g is None:
-        g = Github(username, password)
-    gg = Github(username, password)
+    # if True:
+    #     # if g is None:
+    #     print 'new g'
+    #     g = Github(username, password)
+    # else:
+    #     print 'user is: ' + str(g.get_user().name)
+    # gg = github.Github(username, password)
+    g = Github(username, password)
     repo = g.get_repo(target_repo)
-    dolog('will update the file <%s> on repo<%s> with the content <%s>' %
-          (path, target_repo, content))
-    try:
-        repo.update_content(path, message, content)
-    except:
-        dolog('second change of file update')
-        repo.update_content(path, message, content)
-    dolog('file updated')
+    # sha = repo.get_commits()[0].sha
+    sha = repo.get_file_contents(path).sha
+    apath = path
+    if apath[0] != "/":
+        apath = "/" + apath.strip()
+    print "username: " + username
+    dolog('will update the file <%s> on repo<%s> with the content <%s>,  sha <%s> and message <%s>' %
+          (apath, target_repo, content, sha, message))
+    print "repo.update_file('%s', '%s', \"\"\"%s\"\"\" , '%s' )" % (apath, message, content, sha)
+    for i in range(3):
+        try:
+            repo.update_file(apath, message, content, sha)
+            dolog('file updated')
+            return
+        except:
+            dolog('chance #%d file update' % i)
+            time.sleep(1)
+            # repo.update_content(path, message, content)
+    dolog('after 10 changes, still could not update ')
+    # so if there is a problem it will raise an exception which will be captured by the calling function
+    repo.update_file(apath, message, content, sha)
+
+# def update_file(target_repo, path, message, content):
+#     global g
+#     username = os.environ['github_username']
+#     password = os.environ['github_password']
+#     if g is None:
+#         g = Github(username, password)
+#     gg = Github(username, password)
+#     repo = g.get_repo(target_repo)
+#     dolog('will update the file <%s> on repo<%s> with the content <%s>' %
+#           (path, target_repo, content))
+#     try:
+#         repo.update_content(path, message, content)
+#     except:
+#         dolog('second change of file update')
+#         repo.update_content(path, message, content)
+#     dolog('file updated')
 
 
 def verify_tools_generation(ver_file_comp, repo=None):
@@ -592,6 +549,9 @@ def has_access_to_repo(target_repo):
 
 
 def delete_repo(local_repo):
+    global g
+    if g is None:
+        init_g()
     try:
         g.get_repo(local_repo).delete()
         dolog('repo deleted ')
@@ -614,6 +574,9 @@ def fork_repo(target_repo, username, password):
 
 
 def clone_repo(cloning_repo, parent_folder, dosleep=True):
+    global g
+    if g is None:
+        init_g()
     dolog('home: %s' % (home))
     dolog('parent_folder: %s' % (parent_folder))
     dolog('logfile: %s' % (log_file_dir))
@@ -633,15 +596,18 @@ def clone_repo(cloning_repo, parent_folder, dosleep=True):
         comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
     call(comm, shell=True)
-    comm = "chmod -R 777 " + home + parent_folder
-    if not settings.TEST:
-        comm += ' >> "' + log_file_dir + '"'
-    dolog(comm)
-    call(comm, shell=True)
+    # comm = "chmod -R 777 " + home + parent_folder
+    # if not settings.TEST:
+    #     comm += ' >> "' + log_file_dir + '"'
+    # dolog(comm)
+    # call(comm, shell=True)
     return home + parent_folder
 
 
 def commit_changes():
+    global g
+    if g is None:
+        init_g()
     gu = "git config  user.email \"ahmad88csc@gmail.com\";"
     gu += 'git config  user.name "%s" ;' % (ToolUser)
     comm = "cd " + home + parent_folder + ";" + gu + " git add . "
@@ -664,12 +630,18 @@ def commit_changes():
 
 
 def refresh_repo(target_repo):
+    global g
+    if g is None:
+        init_g()
     local_repo = target_repo.split('/')[-1]
     g.get_user().get_repo(local_repo).delete()
     g.get_user().create_fork(target_repo)
 
 
 def remove_old_pull_requests(target_repo):
+    global g
+    if g is None:
+        init_g()
     title = 'OnToology update'
     for p in g.get_repo(target_repo).get_pulls():
         if p.title == title:
@@ -714,14 +686,28 @@ def get_user_github_email(username):
 
 def remove_webhook(target_repo, notification_url):
     global g
+    if g is None:
+        init_g()
+    # for some reason adding the below two prints solves the problem for removing the webhook, strange but true
+    print "target_repo: "+str(target_repo)
+    print "notification url: "+str(notification_url)
     for hook in g.get_repo(target_repo).get_hooks():
-        if hook.config["url"] == notification_url:
-            hook.delete()
+        try:
+            if hook.config["url"] == notification_url:
+                hook.delete()
+                break
+        except Exception as e:
+            print "error removing the webhook: %s" %(str(e))
+            time.sleep(2)
+    sys.stdout.flush()
+    sys.stderr.flush()
 
 
 def add_webhook(target_repo, notification_url, newg=None):
     global g
     if newg is None:
+        if g is None:
+            init_g()
         newg = g
     name = "web"
     active = True
@@ -740,14 +726,19 @@ def add_webhook(target_repo, notification_url, newg=None):
 def add_collaborator(target_repo, user, newg=None):
     global g
     if newg is None:
+        if g is None:
+            init_g()
         newg = g
     try:
-        print "adding collaborator from user: "+newg.get_user().name
+        print "adding collaborator from user: %s " % str(newg.get_user().name)
+        if newg.get_user().name is None or newg.get_user().email is None:
+            return {'status': False, 'error': 'Make sure you have your name and email public and not empty on GitHub'}
         if newg.get_repo(target_repo).has_in_collaborators(user):
             return {'status': True, 'msg': 'this user is already a collaborator'}
         else:
             msg = newg.get_repo(target_repo).add_to_collaborators(user)
-            return {'status': True, 'msg': str(msg)}
+            #return {'status': True, 'msg': str(msg)}
+            return {'status': True, 'msg': 'added as a new collaborator'}
     except Exception as e:
         return {'status': False, 'error': str(e)}  # e.data}
 
@@ -845,16 +836,28 @@ def parse_online_repo_for_ontologies(target_repo):
     """ This is parse repositories for ontologies configuration files OnToology.cfg
     """
     global g
-    if type(g) == type(None):
+    if g is None:
         init_g()
+    print "in parse online repo for ontologies"
     repo, conf_paths = get_confs_from_repo(target_repo)
+    print "repo: %s, conf_paths: %s" % (str(repo), str(conf_paths))
     ontologies = []
+
     for cpath in conf_paths:
-        file_content = repo.get_file_contents(cpath.path).decoded_content
+        p = quote(cpath.path)
+        print "get file content: %s" % (str(cpath.path))
+        print "after quote: %s" % p
+        print "now get the decoded content"
+        # file_content = repo.get_file_contents(cpath.path).decoded_content
+        file_content = repo.get_file_contents(p).decoded_content
+        print "file_content: "+str(file_content)
         buffile = StringIO.StringIO(file_content)
+        print "will get the config"
         confs = get_auton_config(buffile)
+        print "gotten confs: "+str(confs)
         o = {}
-        o['ontology'] = get_parent_path(cpath.path)[len(get_target_home()):]
+        # o['ontology'] = get_parent_path(cpath.path)[len(get_target_home()):]
+        o['ontology'] = get_parent_path(p)[len(get_target_home()):]
         for c in confs:
             tool = c.replace('_enable', '')
             o[tool] = confs[c]

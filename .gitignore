@@ -1,5 +1,7 @@
 #local
 local*
+bootstrap.sh
+.vagrant
 
 #pycharm
 .idea

@@ -1,7 +1,19 @@
 {% extends "base.html"%} {%block body%}
 
+<!--<meta http-equiv="refresh" content="15" />-->
 
 <script src="http://fgnass.github.io/spin.js/spin.min.js"></script>
+
+
+<!--Add the refresh later as there are cases that refresh need to be avoided for example where generate the previsual-->
+<!--<script>-->
+	<!--var do_refresh=true;-->
+    <!--setInterval(function(){-->
+    	<!--if(do_refresh){-->
+    		<!--alert("hello")-->
+    	<!--}-->
+    <!--}, 5000);-->
+<!--</script>-->
 
 
 <input type="hidden" id="button"/>
@@ -59,6 +71,7 @@ function GetURLParameter(sParam)
 <span id="profiletables">
 
 	<h3>Choose one of the below repo by clicking on it</h3>
+    <p>reload the page to see the updated status of your repository</p>
 
 	<div class="panel-group " id="accordion">
         <div class="container-fluid">
@@ -392,8 +405,9 @@ $( document ).ready(function() {
 		            },
 				  url: "/update_conf",
 				  data: result
-				}).always(function( resp ) {
-					console.debug("status is: "+resp.status)
+				}).done(function( resp ) {
+				    console.log("response of the ajax: "+resp)
+					console.log("status is: "+resp.status)
 				    if (resp.status == true){
 				    	alert('Configuration changed successfully');
 				    }
@@ -402,7 +416,12 @@ $( document ).ready(function() {
 				    	console.log("resp error"+resp.error);
 				    	//alert(resp.error);
 				    }
+				}).fail(function(jqxhr, text_status, error_thrown ){
+				    console.log("ajax fail");
+				    console.log("text_status: "+text_status);
+				    console.log("error_thrown: "+error_thrown);
 				});
+				return false;/*http://stackoverflow.com/questions/7577275/jquery-ajax-requests-are-getting-cancelled-without-being-sent*/
 	});
 	
 }); 

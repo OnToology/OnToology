@@ -1,5 +1,5 @@
 Django==1.7
-PyGithub==1.25.2
+PyGithub==1.29
 coverage==3.7.1
 django-extensions==1.4.9
 django-social-auth==0.7.28
