@@ -22,7 +22,7 @@ import os
 # from . import dolog
 import random
 import string
-from . import call_and_get_log
+from . import call_and_get_log, timeout_comm
 
 
 def dolog(msg):
@@ -129,7 +129,7 @@ def generate_previsual_page(repo_dir_folder, repo_name):
         at least for one ontology "
     sec_prev = 'prev-'+sec
     temp_folder_prev = os.path.join(temp_dir, sec_prev)
-    comm = "java -jar %s -i %s -o %s -n %s" % \
+    comm = timeout_comm + "java -jar %s -i %s -o %s -n %s" % \
            (os.path.join(previsual_dir, "vocabLite-1.0-jar-with-dependencies.jar"), repo_dir_folder, temp_folder_prev,
             repo_name)
     dolog('comm: '+comm)

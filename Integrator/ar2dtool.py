@@ -3,7 +3,7 @@ from subprocess import call
 from Integrator import dolog, get_file_from_path, build_path, delete_dir, verification_log_fname
 from Integrator import get_parent_path, log_file_dir, config_folder_name
 
-from . import call_and_get_log
+from . import call_and_get_log, timeout_comm
 
 import sys
 
@@ -55,7 +55,8 @@ def draw_file(rdf_file, config_type, base_dir):
         f.close()
     except Exception as e:
         dolog('in draw_file: exception opening the file: ' + str(e))
-    comm = 'java -jar '
+        return 'in draw_file: exception opening the file: ' + str(e)
+    comm = timeout_comm + 'java -jar '
     comm += ar2dtool_dir + 'ar2dtool.jar -i '
     comm += '"' + os.path.join(base_dir, rdf_file) + '"' + ' -o '
     comm += '"' + rdf_file_abs + '.' + outtype + '"' + ' -t ' + \

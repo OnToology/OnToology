@@ -8,7 +8,7 @@ from subprocess import call
 from . import dolog, build_path
 from . import ontology_formats, get_parent_path, log_file_dir
 from . import verification_log_fname
-from . import call_and_get_log
+from . import call_and_get_log, timeout_comm
 #  import ontoology.settings as settings
 
 
@@ -53,7 +53,7 @@ def create_widoco_doc(rdf_file, base_dir):
         dolog('in create_widoco_doc: exception opening the file: ' + str(e))
     out_abs_dir = get_parent_path(config_file_abs)
     comm = "cd " + base_dir + "; "
-    comm += "java -jar "
+    comm += timeout_comm + "java -jar "
     comm += ' -Dfile.encoding=utf-8 '
     comm += widoco_dir + "widoco-0.0.1-jar-with-dependencies.jar  -rewriteAll "
     comm += " -ontFile '" + rdf_file_abs
