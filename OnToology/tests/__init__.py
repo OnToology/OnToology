@@ -35,76 +35,76 @@ for loader, module_name, is_pkg in pkgutil.walk_packages(__path__):
 old_keys = []
 ssh_keys_dir = ''
 
-
-def use_test_key():
-    global ssh_keys_dir
-    global old_keys
-    print "in function use_test_key"
-
-    if 'tests_ssh_key' in os.environ:
-        p = Popen(['ssh-add', '-l'], stdout=PIPE, stderr=PIPE)  # Add the key
-        (output, err) = p.communicate()
-        print "output: <%s>"%(output)
-        print "err: <%s>"%(err)
-        if err is None or err == '':  # successful
-            lines = output.split('\n')[:-1]
-            # I have no idea (anymore) what is this if is doing !! but it works :D.
-            # I'll check it later, I should prepare the tests files for now
-            if len(lines) > 0 and len(lines[0].split(' ')[0]) == 4 and lines[0].split(' ')[3].strip() == '(RSA)':
-                for line in lines:
-                    print 'line: '+str(line.split(' '))
-                    k = line.split(' ')[2]
-                    old_keys.append(k)
-                if len(old_keys) > 0:
-                    (ssh_keys_dir, ssh_key_file) = os.path.split(os.environ['tests_ssh_key'])
-                    p = Popen(['ssh-add', '-D'], stdout=PIPE, stderr=PIPE)
-                    (output, err) = p.communicate()
-                    if err is None or err == '' or err.strip()=='All identities removed.':  # deleted successfully
-                        p = Popen(['ssh-add',
-                                os.environ['tests_ssh_key']],
-                                stdout=PIPE, stderr=PIPE)
-                        if err is None or err == '' or 'Identity added' in err:
-                            print 'Added new key %s successfully'%(os.environ['tests_ssh_key'])
-                        else:
-                            print 'error adding my key: '+err
-                    else:
-                        print 'error: '+err
-                else:
-                    print 'No old keys'
-            else:
-                print 'There are no keys loaded'
-                p = Popen(['ssh-add', os.environ['tests_ssh_key']],
-                          stdout=PIPE, stderr=PIPE)
-                if err is None or err == '' or 'Identity added' in err:
-                    print 'Added new key %s successfully'%(os.environ['tests_ssh_key'])
-                else:
-                    print 'error adding my key: '+err
-        else:
-            print 'error: '+err
-    else:
-        print 'tests_ssh_key is not there, so it will not change'
-        
-           
-           
-def use_old_keys():
-    global ssh_keys_dir
-    p = Popen(['ssh-add', '-D'],stdout=PIPE, stderr=PIPE)
-    (output, err) = p.communicate()
-    if err is None or err=='' or err.strip()=='All identities removed.':
-        print 'The key %s is removed successfully'%(os.environ['tests_ssh_key'])
-    else:
-        print 'error: '+err
-    if len(old_keys) >0:
-        for k in old_keys:
-            if k.strip() == os.environ['tests_ssh_key']:
-                continue
-            print 'will add key '+k
-            p = Popen(['ssh-add',os.path.join(ssh_keys_dir,k)], stdout=PIPE, stderr=PIPE)
-            (output, err) = p.communicate()
-            if err is None or err=="" or 'Identity added' in err:
-                print 'Added old key %s successfully'%(k)
-            else:
-                print 'error: '+err
+# With vagrant I do not need to switch the ssh keys for tests
+# def use_test_key():
+#     global ssh_keys_dir
+#     global old_keys
+#     print "in function use_test_key"
+#
+#     if 'tests_ssh_key' in os.environ:
+#         p = Popen(['ssh-add', '-l'], stdout=PIPE, stderr=PIPE)  # Add the key
+#         (output, err) = p.communicate()
+#         print "output: <%s>"%(output)
+#         print "err: <%s>"%(err)
+#         if err is None or err == '':  # successful
+#             lines = output.split('\n')[:-1]
+#             # I have no idea (anymore) what is this if is doing !! but it works :D.
+#             # I'll check it later, I should prepare the tests files for now
+#             if len(lines) > 0 and len(lines[0].split(' ')[0]) == 4 and lines[0].split(' ')[3].strip() == '(RSA)':
+#                 for line in lines:
+#                     print 'line: '+str(line.split(' '))
+#                     k = line.split(' ')[2]
+#                     old_keys.append(k)
+#                 if len(old_keys) > 0:
+#                     (ssh_keys_dir, ssh_key_file) = os.path.split(os.environ['tests_ssh_key'])
+#                     p = Popen(['ssh-add', '-D'], stdout=PIPE, stderr=PIPE)
+#                     (output, err) = p.communicate()
+#                     if err is None or err == '' or err.strip()=='All identities removed.':  # deleted successfully
+#                         p = Popen(['ssh-add',
+#                                 os.environ['tests_ssh_key']],
+#                                 stdout=PIPE, stderr=PIPE)
+#                         if err is None or err == '' or 'Identity added' in err:
+#                             print 'Added new key %s successfully'%(os.environ['tests_ssh_key'])
+#                         else:
+#                             print 'error adding my key: '+err
+#                     else:
+#                         print 'error: '+err
+#                 else:
+#                     print 'No old keys'
+#             else:
+#                 print 'There are no keys loaded'
+#                 p = Popen(['ssh-add', os.environ['tests_ssh_key']],
+#                           stdout=PIPE, stderr=PIPE)
+#                 if err is None or err == '' or 'Identity added' in err:
+#                     print 'Added new key %s successfully'%(os.environ['tests_ssh_key'])
+#                 else:
+#                     print 'error adding my key: '+err
+#         else:
+#             print 'error: '+err
+#     else:
+#         print 'tests_ssh_key is not there, so it will not change'
+#
+#
+#
+# def use_old_keys():
+#     global ssh_keys_dir
+#     p = Popen(['ssh-add', '-D'],stdout=PIPE, stderr=PIPE)
+#     (output, err) = p.communicate()
+#     if err is None or err=='' or err.strip()=='All identities removed.':
+#         print 'The key %s is removed successfully'%(os.environ['tests_ssh_key'])
+#     else:
+#         print 'error: '+err
+#     if len(old_keys) >0:
+#         for k in old_keys:
+#             if k.strip() == os.environ['tests_ssh_key']:
+#                 continue
+#             print 'will add key '+k
+#             p = Popen(['ssh-add',os.path.join(ssh_keys_dir,k)], stdout=PIPE, stderr=PIPE)
+#             (output, err) = p.communicate()
+#             if err is None or err=="" or 'Identity added' in err:
+#                 print 'Added old key %s successfully'%(k)
+#             else:
+#                 print 'error: '+err
 
 
 class NoSQLTestRunner(DjangoTestSuiteRunner):
@@ -112,10 +112,10 @@ class NoSQLTestRunner(DjangoTestSuiteRunner):
         settings.test_conf['local']=True
         settings.TEST = True
         print 'I just set TEST to true'
-        use_test_key()
+        # use_test_key()
         pass
     def teardown_databases(self, *args):
-        use_old_keys()
+        # use_old_keys()
         pass
 
 
