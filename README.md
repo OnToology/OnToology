@@ -66,7 +66,7 @@ how to do them
  https://gist.github.com/jexchan/2351996
 
 
-##Tests
+##Tests (the new tests with Vagrant configuration will be available soon)
 ID | Test Case | Expected Result  | Status
 :--|:---------:|:---------------: | :----:
 1  | Adding non-existing repo | shouldn't add the non-existing repo and should add an error page | :heavy_check_mark:
@@ -87,7 +87,7 @@ Sign | Meaning
 
 
 
-##How to deploy the on your server
+##How to deploy the on your server (Vagrant file and bootstrap.sh will be provided soon)
 On Ubuntu server: 
 
 1. Python 2.7
@@ -104,7 +104,7 @@ On Ubuntu server:
 12. create a folder called temp and inside this folder create a folder "log"
 
 
-####Environment variables that need to be set
+####Environment variables that need to be set (will be updated soon)
 
 ```
 export github_username=xxxxxx
@@ -144,3 +144,13 @@ executed (x permission is given).
 #### Set default configuration files
 In the folder that specified in the environment variable ```ar2dtool_config```, include default configuration files for
 AR2DTool and Widoco.
+
+
+## How to contribute
+There are two workflows:
+Case #1: If you are a contributor:
+1. Create a new branch from the current live one (now it is com-look but will be changed in a week or two). Make sure to give it a presentive name. In case it is for a specific issue, include the issue number in the branch name, e.g. change-spinner-123.
+2. Once you push your changes on the new branch, **create a pull request** and one of the admins will check your code base and will merge if it is ok.
+Case #2: If you are not added as a contributor yet (or you are a contributor who prefers this workflow):
+1. Fork from the current live branch (now it is com-look but will be changed in a week or two).
+2. Create a pull request, we will review it and merge if it is ok.
