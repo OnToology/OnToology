@@ -65,6 +65,7 @@ client_id = None
 client_secret = None
 is_private = None
 
+publish_dir = os.environ['publish_dir']
 
 import sys
 reload(sys)
@@ -76,28 +77,6 @@ sys.stdout = sys.stderr
 
 def get_repos_formatted(the_repos):
     return the_repos
-
-#     repos = []
-#     for orir in the_repos:
-#         r = {}
-#         for ke in orir:
-#             r[ke]  = orir[ke]
-#         tools = r['monitoring'].split(",")
-#         monit=""
-#         for t in tools:   
-#             keyval = t.split("=")
-#             if len(keyval) != 2:
-#                 break
-#             if keyval[1].lower().strip()=='true':
-#                 keyval[1]='Yes'
-#             else:
-#                 keyval[1]='No'
-#             print r['url']+" "+keyval[0]+"="+str(keyval[1])
-#             r[keyval[0].strip()]=keyval[1]
-#             monit+="=".join(keyval) +","
-#         r['monitoring'] = monit
-#         repos.append(r)
-#     return repos
 
 
 def home(request):
@@ -128,13 +107,8 @@ def home(request):
         webhook_access_url, state = webhook_access(client_id, host + '/get_access_token', isprivate=is_private)
         request.session['target_repo'] = target_repo
         request.session['state'] = state
-        # if '127.0.0.1:8000' not in request.META['HTTP_HOST']:  # Not testing   # or not settings.test_conf['local']:
-        if True:
-            request.session['access_token_time'] = '1'
-            return HttpResponseRedirect(webhook_access_url)
-        # will not be called either way
-        # if request.user.is_authenticated():
-        #     generateforall(target_repo, request.user.email)
+        request.session['access_token_time'] = '1'
+        return HttpResponseRedirect(webhook_access_url)
     repos = Repo.objects.order_by('-last_used')[:10]
     num_of_users = len(User.objects.all())
     num_of_repos = len(Repo.objects.all())
@@ -294,7 +268,14 @@ def add_hook(request):
     tar = cloning_repo.split('/')[-2]
     cloning_repo = cloning_repo.replace(tar, ToolUser)
     cloning_repo = cloning_repo.replace('git://github.com/', 'git@github.com:')
-    comm = "python /home/ubuntu/OnToology/OnToology/autoncore.py "
+    # comm = "python /home/ubuntu/OnToology/OnToology/autoncore.py "
+    if 'virtual_env_dir' in os.environ:
+        comm = "%s %s " % \
+               (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
+                (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py')))
+    else:
+        comm = "python %s " % \
+            (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
     comm += ' "' + target_repo + '" "' + user + '" "' + cloning_repo + '" '
     for c in changed_files:
         comm += '"' + c + '" '
@@ -361,8 +342,17 @@ def generateforall(target_repo, user_email):
     changed_files = ontologies
     print 'current file dir: %s' % str(os.path.dirname(os.path.realpath(__file__)))
     # comm = "python /home/ubuntu/OnToology/OnToology/autoncore.py "
-    comm = "python %s " % \
-           str((os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py')))
+    #comm = "python %s " % \
+    #       str((os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py')))
+    if 'virtual_env_dir' in os.environ:
+        print 'virtual_env_dir is in environ'
+        comm = "%s %s " % \
+               (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
+                (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py')))
+    else:
+        print 'virtual_env_dir is NOT in environ'
+        comm = "python %s " % \
+            (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
     comm += ' "' + target_repo + '" "' + user + '" "' + cloning_repo + '" '
     for c in changed_files:
         comm += '"' + c.strip() + '" '
@@ -522,10 +512,6 @@ def profilebeta(request):
 
 @login_required
 def profile(request):
-    try:
-        pass
-    except Exception as e:
-        print 'profile preparing log error [normal]: ' + str(e)
     print '************* profile ************'
     print str(datetime.today())
     if 'fake' in request.GET and request.user.email=='ahmad88me@gmail.com':
@@ -570,8 +556,9 @@ def profile(request):
                     print '   '+d + ': ' + str(o[d])
             print 'testing redirect'
             print 'will return the Json'
-            html = render(request, 'profile_sliders.html', {'ontologies': ontologies}).content
-            jresponse = JsonResponse({'ontologies': ontologies, 'sliderhtml': html})
+            # html = render(request, 'profile_sliders.html', {'ontologies': ontologies}).content
+            # jresponse = JsonResponse({'ontologies': ontologies, 'sliderhtml': html})
+            jresponse = JsonResponse({'ontologies': ontologies})
             jresponse.__setitem__('Content-Length', len(jresponse.content))
             sys.stdout.flush()
             sys.stderr.flush()
@@ -628,10 +615,12 @@ def profile(request):
                             else:
                                 f.write(line+'\n')
                         f.close()
-                        comm = 'rm -Rf /home/ubuntu/publish/%s' % name
+                        # comm = 'rm -Rf /home/ubuntu/publish/%s' % name
+                        comm = 'rm -Rf ' + os.path.join(publish_dir, name)
                         print(comm)
                         call(comm, shell=True)
-                        comm = 'mv %s /home/ubuntu/publish/%s' % (doc_dir, name)
+                        # comm = 'mv %s /home/ubuntu/publish/%s' % (doc_dir, name)
+                        comm = 'mv %s %s' % (doc_dir, os.path.join(publish_dir, name))
                         print comm
                         call(comm, shell=True)
                         if len(PublishName.objects.filter(name=name)) == 0:
@@ -657,7 +646,8 @@ def profile(request):
             pp = p[0]
             pp.delete()
             pp.save()
-            comm = 'rm -Rf /home/ubuntu/publish/%s' % name
+            # comm = 'rm -Rf /home/ubuntu/publish/%s' % name
+            comm = 'rm -Rf ' + os.path.join(publish_dir, name)
             call(comm, shell=True)
         else:
             error_msg += 'You are trying to delete a name that does not belong to you'
@@ -688,37 +678,68 @@ def update_conf(request):
     print 'inside update_conf'
     if request.method == "GET":
         return render(request, "msg.html", {"msg": "This method expects POST only"})
-    indic = '-ar2dtool'
+    ontologies = request.POST.getlist('ontology')
     data = request.POST
-    print 'will go to the loop'
-    for key in data:
+    for onto in ontologies:
         print 'inside the loop'
-        if indic in key:
-            print 'inside the if'
-            onto = key[:-len(indic)]
-            ar2dtool = data[onto + '-ar2dtool']
-            print 'ar2dtool: ' + str(ar2dtool)
-            widoco = data[onto + '-widoco']
-            print 'widoco: ' + str(widoco)
-            oops = data[onto + '-oops']
-            print 'oops: ' + str(oops)
-            print 'will call get_conf'
-            new_conf = get_conf(ar2dtool, widoco, oops)
-            print 'will call update_file'
-            onto = 'OnToology' + onto + '/OnToology.cfg'
-            try:
-                print "will call update file"
-                print "will call update file with repo %s, ontology: %s" % (data['repo'], onto)
-                update_file(data['repo'], onto, 'OnToology Configuration', new_conf)
-            except Exception as e:
-                print 'Error in updating the configuration: ' + str(e)
-                sys.stdout.flush()
-                sys.stderr.flush()
-                return JsonResponse(
-                    {'status': False, 'error': str(e)})  # return render(request,'msg.html',{'msg': str(e)})
-            print 'returned from update_file'
+        ar2dtool = onto + '-ar2dtool' in data
+        print 'ar2dtool: ' + str(ar2dtool)
+        widoco = onto + '-widoco' in data
+        print 'widoco: ' + str(widoco)
+        oops = onto + '-oops' in data
+        print 'oops: ' + str(oops)
+        print 'will call get_conf'
+        new_conf = get_conf(ar2dtool, widoco, oops)
+        print 'will call update_file'
+        o = 'OnToology' + onto + '/OnToology.cfg'
+        try:
+            print "target_repo <%s> ,  path <%s> ,  message <%s> ,   content <%s>" % (data['repo'], o, 'OnToology Configuration', new_conf)
+            update_file(data['repo'], o, 'OnToology Configuration', new_conf)
+        except Exception as e:
+            print 'Error in updating the configuration: ' + str(e)
+            return render(request, 'msg.html', {'msg': str(e)})
+            # return JsonResponse(
+            #     {'status': False, 'error': str(e)})  # return render(request,'msg.html',{'msg': str(e)})
+        print 'returned from update_file'
     print 'will return msg html'
-    return JsonResponse({'status': True, 'msg': 'successfully'})
+    return HttpResponseRedirect('/profile')
+
+
+# def update_conf(request):
+#     print 'inside update_conf'
+#     if request.method == "GET":
+#         return render(request, "msg.html", {"msg": "This method expects POST only"})
+#     indic = '-ar2dtool'
+#     data = request.POST
+#     print 'will go to the loop'
+#     for key in data:
+#         print 'inside the loop'
+#         if indic in key:
+#             print 'inside the if'
+#             onto = key[:-len(indic)]
+#             ar2dtool = data[onto + '-ar2dtool']
+#             print 'ar2dtool: ' + str(ar2dtool)
+#             widoco = data[onto + '-widoco']
+#             print 'widoco: ' + str(widoco)
+#             oops = data[onto + '-oops']
+#             print 'oops: ' + str(oops)
+#             print 'will call get_conf'
+#             new_conf = get_conf(ar2dtool, widoco, oops)
+#             print 'will call update_file'
+#             onto = 'OnToology' + onto + '/OnToology.cfg'
+#             try:
+#                 print "will call update file"
+#                 print "will call update file with repo %s, ontology: %s" % (data['repo'], onto)
+#                 update_file(data['repo'], onto, 'OnToology Configuration', new_conf)
+#             except Exception as e:
+#                 print 'Error in updating the configuration: ' + str(e)
+#                 sys.stdout.flush()
+#                 sys.stderr.flush()
+#                 return JsonResponse(
+#                     {'status': False, 'error': str(e)})  # return render(request,'msg.html',{'msg': str(e)})
+#             print 'returned from update_file'
+#     print 'will return msg html'
+#     return JsonResponse({'status': True, 'msg': 'successfully'})
 
 
 def get_conf(ar2dtool, widoco, oops):
