@@ -618,8 +618,12 @@ def remove_old_pull_requests(target_repo):
         init_g()
     title = 'OnToology update'
     for p in g.get_repo(target_repo).get_pulls():
-        if p.title == title:
-            p.edit(state="closed")
+        try:
+            if p.title == title:
+                p.edit(state="closed")
+        except Exception as e:
+            print "Exception removing an old pull request: "+str(e)
+            dolog("Exception removing an old pull request: "+str(e))
 
 
 def send_pull_request(target_repo, username):
@@ -913,24 +917,6 @@ def get_auton_config(conf_file_abs, from_string=True):
             'widoco_enable': widoco_enable,
             'oops_enable': oops_enable,
             'owl2jsonld_enable': owl2jsonld_enable}
-
-
-########################################################################
-############################---------###################################
-############################  OOPS!  ###################################
-############################\_______/###################################
-
-
-
-
-
-##########################################################################
-##########################################################################
-############################  owl2jsonld  ################################
-##########################################################################
-##########################################################################
-
-
 
 
 ##########################################################################
