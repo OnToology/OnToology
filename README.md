@@ -15,7 +15,9 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 * Add new features (e.g. integrate with GitLab and Bitbucket)
 * Deploy on the live server (now on a testing server)
 * Prepare automated testing (in progress)
-
+* Automated tests for pull requests.
+* Use decorators for input validation.
+* Use profilers.
 
 
 ###What the system does now:
@@ -64,7 +66,7 @@ how to do them
  https://gist.github.com/jexchan/2351996
 
 
-##Tests
+##Tests (the new tests with Vagrant configuration will be available soon)
 ID | Test Case | Expected Result  | Status
 :--|:---------:|:---------------: | :----:
 1  | Adding non-existing repo | shouldn't add the non-existing repo and should add an error page | :heavy_check_mark:
@@ -85,7 +87,7 @@ Sign | Meaning
 
 
 
-##How to deploy the on your server
+##How to deploy the on your server (Vagrant file and bootstrap.sh will be provided soon)
 On Ubuntu server: 
 
 1. Python 2.7
@@ -96,10 +98,13 @@ On Ubuntu server:
 6. Install mod-wsgi for apache ```sudo apt-get install libapache2-mod-wsgi```
 7. Install pip ```sudo apt-get install python-pip```
 8. Install mongodb ```sudo apt-get install mongodb```
-9. Install app requirements ```pip install -r requirements.txt```
-10. Add Widoco and Ar2dTool folders and fix the default configuration files
+9. Add Widoco and Ar2dTool folders and fix the default configuration files
+10. Clone the project using the command ```git clone https://github.com/OnToology/OnToology.git``` or u can clone with ssh
+11. Install app requirements ```pip install -r requirements.txt```
+12. create a folder called temp and inside this folder create a folder "log"
 
-####Environment variables that need to be set
+
+####Environment variables that need to be set (will be updated soon)
 
 ```
 export github_username=xxxxxx
@@ -139,3 +144,13 @@ executed (x permission is given).
 #### Set default configuration files
 In the folder that specified in the environment variable ```ar2dtool_config```, include default configuration files for
 AR2DTool and Widoco.
+
+
+## How to contribute
+There are two workflows:
+Case #1: If you are a contributor:
+1. Create a new branch from the current live one (now it is com-look but will be changed in a week or two). Make sure to give it a presentive name. In case it is for a specific issue, include the issue number in the branch name, e.g. change-spinner-123.
+2. Once you push your changes on the new branch, **create a pull request** and one of the admins will check your code base and will merge if it is ok.
+Case #2: If you are not added as a contributor yet (or you are a contributor who prefers this workflow):
+1. Fork from the current live branch (now it is com-look but will be changed in a week or two).
+2. Create a pull request, we will review it and merge if it is ok.
