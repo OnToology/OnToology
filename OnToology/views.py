@@ -866,8 +866,8 @@ def superadmin(request):
 
 @login_required
 def get_bundle(request):
-    ontology = request.POST['ontology']
-    repo = request.POST['repo']
+    ontology = request.GET['ontology']
+    repo = request.GET['repo']
     r = Repo.objects.filter(url=repo)
     if len(r) == 0:
         return render(request, 'msg.html', {'msg': 'Invalid repo'})
