@@ -91,10 +91,10 @@ def home(request):
         print "we are inside"
         target_repo = request.GET['target_repo']
         if target_repo.strip() == "" or len(target_repo.split('/')) != 2:
-            return render(request, 'msg.html', {'msg': 'please enter a valid repo'})
+            return render(request, 'dark/msg.html', {'msg': 'please enter a valid repo'})
         init_g()
         # if not has_access_to_repo(target_repo):# this for the organization
-        # return render(request,'msg.html',{'msg': 'repos under organizations are not supported at the moment'})
+        # return render(request,'dark/msg.html',{'msg': 'repos under organizations are not supported at the moment'})
         wgets_dir = os.environ['wget_dir']
         if call('cd %s; wget %s;' % (wgets_dir, 'http://github.com/'+target_repo.strip()), shell=True) == 0:
             is_private = False
@@ -122,7 +122,7 @@ def home(request):
 
 
 def grant_update(request):
-    return render_to_response('msg.html', {'msg': 'Magic is done'}, context_instance=RequestContext(request))
+    return render_to_response('dark/msg.html', {'msg': 'Magic is done'}, context_instance=RequestContext(request))
 
 
 def get_access_token(request):
@@ -175,7 +175,7 @@ def get_access_token(request):
         elif '404' in error_msg:  # so no enough access according to Github troubleshooting guide
             error_msg = """You don\'t have permission to add collaborators and create webhooks to this repo or this
             repo does not exist. Note that if you can fork this repo, you can add it here"""
-            return render_to_response('msg.html', {'msg': error_msg}, context_instance=RequestContext(request))
+            return render_to_response('dark/msg.html', {'msg': error_msg}, context_instance=RequestContext(request))
         else:
             print "error message not hook and not 404: " + error_msg
             print "target repo: " + request.session['target_repo']
@@ -197,7 +197,7 @@ def get_access_token(request):
             ouser.repos.append(repo)
             ouser.save()
             generateforall(repo.url, ouser.email)
-    return render_to_response('msg.html', {'msg': msg},
+    return render_to_response('dark/msg.html', {'msg': msg},
                               context_instance=RequestContext(request))
 
 
@@ -222,7 +222,7 @@ def add_hook(request):
         print "json is loaded"
         if j["ref"] == "refs/heads/gh-pages":
             print "it is just gh-pages"
-            return render(request, 'msg.html', {'msg': 'it is gh-pages, so nothing'})
+            return render(request, 'dark/msg.html', {'msg': 'it is gh-pages, so nothing'})
         s = j['repository']['url'] + 'updated files: ' + str(j['head_commit']['modified'])
         print "just s: "+str(s)
         cloning_repo = j['repository']['git_url']
@@ -253,7 +253,7 @@ def add_hook(request):
                 print msg
                 return
             else:
-                return render_to_response('msg.html', {'msg': msg}, context_instance=RequestContext(request))
+                return render_to_response('dark/msg.html', {'msg': msg}, context_instance=RequestContext(request))
     except Exception as e:
         print "add hook exception: "+str(e)
         msg = 'This request should be a webhook ping'
@@ -261,7 +261,7 @@ def add_hook(request):
             print msg
             return
         else:
-            return render_to_response('msg.html', {'msg': msg}, context_instance=RequestContext(request))
+            return render_to_response('dark/msg.html', {'msg': msg}, context_instance=RequestContext(request))
     print '##################################################'
     print 'changed_files: ' + str(changed_files)
     # cloning_repo should look like 'git@github.com:AutonUser/target.git'
@@ -300,7 +300,7 @@ def add_hook(request):
                 error_msg = 'generic error, please report the problem to us ontoology@delicias.dia.fi.upm.es'
             s = error_msg
         # subprocess.Popen(comm, shell=True)
-        return render_to_response('msg.html', {'msg': '' + s}, context_instance=RequestContext(request))
+        return render_to_response('dark/msg.html', {'msg': '' + s}, context_instance=RequestContext(request))
 
 
 @login_required
@@ -320,17 +320,17 @@ def generateforall_view(request):
                 found = True
                 break
     except:
-        return render(request, 'msg.html', {'msg': 'Please contact ontoology@delicias.dia.fi.upm.es'})
+        return render(request, 'dark/msg.html', {'msg': 'Please contact ontoology@delicias.dia.fi.upm.es'})
     if not found:
-        return render(request, 'msg.html',
+        return render(request, 'dark/msg.html',
                       {'msg': 'You need to register/watch this repository while you are logged in'})
     res = generateforall(target_repo, request.user.email)
     if res['status'] is True:
-        return render_to_response('msg.html', {
+        return render_to_response('dark/msg.html', {
             'msg': 'Soon you will find generated files included in a pull request in your repository'},
                                   context_instance=RequestContext(request))
     else:
-        return render(request, 'msg.html', {'msg': res['error']})
+        return render(request, 'dark/msg.html', {'msg': res['error']})
 
 
 def generateforall(target_repo, user_email):
@@ -427,7 +427,7 @@ def login_get_access(request):
     email = g.get_user().email
     username = g.get_user().login
     if email == '' or type(email) == type(None):
-        return render(request, 'msg.html', {'msg': 'You have to make you email public and try again'})
+        return render(request, 'dark/msg.html', {'msg': 'You have to make you email public and try again'})
     request.session['avatar_url'] = g.get_user().avatar_url
     print 'avatar_url: ' + request.session['avatar_url']
     try:
@@ -480,7 +480,7 @@ def profile(request):
                     hackatt = False
                     break
             if hackatt:  # trying to access a repo that does not belong to the use currently logged in
-                return render(request, 'msg.html', {'msg': 'This repo is not added, please do so in the main page'})
+                return render(request, 'dark/msg.html', {'msg': 'This repo is not added, please do so in the main page'})
             print 'try to get abs folder'
             if type(autoncore.g) == type(None):
                 print 'access token is: ' + request.session['access_token']
@@ -616,14 +616,14 @@ def profile(request):
     #     return HttpResponseRedirect(reverse('profile'))
     sys.stdout.flush()
     sys.stderr.flush()
-    return render(request, 'profile.html', {'repos': repos, 'pnames': PublishName.objects.filter(user=user),
+    return render(request, 'dark/profile.html', {'repos': repos, 'pnames': PublishName.objects.filter(user=user),
                                             'error': error_msg})
 
 
 def update_conf(request):
     print 'inside update_conf'
     if request.method == "GET":
-        return render(request, "msg.html", {"msg": "This method expects POST only"})
+        return render(request, "dark/msg.html", {"msg": "This method expects POST only"})
     ontologies = request.POST.getlist('ontology')
     data = request.POST
     for onto in ontologies:
@@ -643,9 +643,9 @@ def update_conf(request):
             update_file(data['repo'], o, 'OnToology Configuration', new_conf)
         except Exception as e:
             print 'Error in updating the configuration: ' + str(e)
-            return render(request, 'msg.html', {'msg': str(e)})
+            return render(request, 'dark/msg.html', {'msg': str(e)})
             # return JsonResponse(
-            #     {'status': False, 'error': str(e)})  # return render(request,'msg.html',{'msg': str(e)})
+            #     {'status': False, 'error': str(e)})  # return render(request,'dark/msg.html',{'msg': str(e)})
         print 'returned from update_file'
     print 'will return msg html'
     return HttpResponseRedirect('/profile')
@@ -654,7 +654,7 @@ def update_conf(request):
 # def update_conf(request):
 #     print 'inside update_conf'
 #     if request.method == "GET":
-#         return render(request, "msg.html", {"msg": "This method expects POST only"})
+#         return render(request, "dark/msg.html", {"msg": "This method expects POST only"})
 #     indic = '-ar2dtool'
 #     data = request.POST
 #     print 'will go to the loop'
@@ -682,7 +682,7 @@ def update_conf(request):
 #                 sys.stdout.flush()
 #                 sys.stderr.flush()
 #                 return JsonResponse(
-#                     {'status': False, 'error': str(e)})  # return render(request,'msg.html',{'msg': str(e)})
+#                     {'status': False, 'error': str(e)})  # return render(request,'dark/msg.html',{'msg': str(e)})
 #             print 'returned from update_file'
 #     print 'will return msg html'
 #     return JsonResponse({'status': True, 'msg': 'successfully'})
@@ -768,21 +768,21 @@ def renew_previsual(request):
             repo.notes = msg
             repo.state = 'Ready'
             repo.save()
-            return render(request, 'msg.html', {'msg': msg})
-            #return render(request, 'profile.html', {'repos': user.repos, 'pnames': PublishName.objects.filter(user=user),
+            return render(request, 'dark/msg.html', {'msg': msg})
+            #return render(request, 'dark/profile.html', {'repos': user.repos, 'pnames': PublishName.objects.filter(user=user),
             #                                'error': msg})
     repo.state = 'Ready'
     repo.save()
-    return render(request, 'msg.html',
+    return render(request, 'dark/msg.html',
                   {'msg': 'You should add the repo while you are logged in before the revisual renewal'})
 
 
 def stepbystep(request):
-    return render(request, 'stepbystep.html')
+    return render(request, 'dark/stepbystep.html')
 
 
 def about(request):
-    return render(request, 'about.html')
+    return render(request, 'dark/about.html')
 
 
 @login_required
@@ -816,9 +816,9 @@ def get_bundle(request):
     repo = request.GET['repo']
     r = Repo.objects.filter(url=repo)
     if len(r) == 0:
-        return render(request, 'msg.html', {'msg': 'Invalid repo'})
+        return render(request, 'dark/msg.html', {'msg': 'Invalid repo'})
     elif r[0] not in request.user.repos:
-        return render(request, 'msg.html', {'msg': 'Please add this repo first'})
+        return render(request, 'dark/msg.html', {'msg': 'Please add this repo first'})
     r[0].notes = ''
     r[0].save()
     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(3)])
@@ -833,7 +833,7 @@ def get_bundle(request):
     print 'oo: %s' % oo
     zip_dir = generate_bundle(base_dir=repo_dir, target_repo=repo, ontology_bundle=oo)
     if zip_dir is None:
-        return render(request, 'msg.html', {'msg': 'error generating the bundle'})
+        return render(request, 'dark/msg.html', {'msg': 'error generating the bundle'})
     else:
         with open(zip_dir, 'r') as f:
             response = HttpResponse(f.read(), content_type='application/zip')
