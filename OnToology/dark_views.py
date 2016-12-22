@@ -624,31 +624,37 @@ def update_conf(request):
     print 'inside update_conf'
     if request.method == "GET":
         return render(request, "dark/msg.html", {"msg": "This method expects POST only"})
-    ontologies = request.POST.getlist('ontology')
+    indic = '-ar2dtool'
     data = request.POST
-    for onto in ontologies:
+    print 'will go to the loop'
+    for key in data:
         print 'inside the loop'
-        ar2dtool = onto + '-ar2dtool' in data
-        print 'ar2dtool: ' + str(ar2dtool)
-        widoco = onto + '-widoco' in data
-        print 'widoco: ' + str(widoco)
-        oops = onto + '-oops' in data
-        print 'oops: ' + str(oops)
-        print 'will call get_conf'
-        new_conf = get_conf(ar2dtool, widoco, oops)
-        print 'will call update_file'
-        o = 'OnToology' + onto + '/OnToology.cfg'
-        try:
-            print "target_repo <%s> ,  path <%s> ,  message <%s> ,   content <%s>" % (data['repo'], o, 'OnToology Configuration', new_conf)
-            update_file(data['repo'], o, 'OnToology Configuration', new_conf)
-        except Exception as e:
-            print 'Error in updating the configuration: ' + str(e)
-            return render(request, 'dark/msg.html', {'msg': str(e)})
-            # return JsonResponse(
-            #     {'status': False, 'error': str(e)})  # return render(request,'dark/msg.html',{'msg': str(e)})
-        print 'returned from update_file'
+        if indic in key:
+            print 'inside the if'
+            onto = key[:-len(indic)]
+            ar2dtool = data[onto + '-ar2dtool']
+            print 'ar2dtool: ' + str(ar2dtool)
+            widoco = data[onto + '-widoco']
+            print 'widoco: ' + str(widoco)
+            oops = data[onto + '-oops']
+            print 'oops: ' + str(oops)
+            print 'will call get_conf'
+            new_conf = get_conf(ar2dtool, widoco, oops)
+            print 'will call update_file'
+            onto = 'OnToology' + onto + '/OnToology.cfg'
+            try:
+                print "will call update file"
+                print "will call update file with repo %s, ontology: %s" % (data['repo'], onto)
+                update_file(data['repo'], onto, 'OnToology Configuration', new_conf)
+            except Exception as e:
+                print 'Error in updating the configuration: ' + str(e)
+                sys.stdout.flush()
+                sys.stderr.flush()
+                return JsonResponse(
+                    {'status': False, 'error': str(e)})  # return render(request,'msg.html',{'msg': str(e)})
+            print 'returned from update_file'
     print 'will return msg html'
-    return HttpResponseRedirect('/dark_profile')
+    return JsonResponse({'status': True, 'msg': 'successfully'})
 
 
 # def update_conf(request):
@@ -812,8 +818,8 @@ def superadmin(request):
 
 @login_required
 def get_bundle(request):
-    ontology = request.GET['ontology']
-    repo = request.GET['repo']
+    ontology = request.POST['ontology']
+    repo = request.POST['repo']
     r = Repo.objects.filter(url=repo)
     if len(r) == 0:
         return render(request, 'dark/msg.html', {'msg': 'Invalid repo'})
