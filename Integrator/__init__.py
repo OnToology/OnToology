@@ -248,3 +248,6 @@ if error_msg.strip() != "":
     error_msg, output_msg = call_and_get_log(timeout_comm+" echo 'testing gtimeout command'")
     if error_msg.strip() != "": # incase timeout and gtimeout are not installed
         timeout_comm = "echo "
+
+# disable the timeout for now
+timeout_comm = ""
