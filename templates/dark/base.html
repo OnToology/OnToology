@@ -245,21 +245,21 @@
 			  <div class="row">
 			  	<div class=" col-md-10 col-md-offset-1">
 					<div class="inner">
-					  <a href="/">
+					  <a href="/dark_home">
 					  <h3 class="masthead-brand"><img height="70px" src="https://raw.githubusercontent.com/OnToology/OnToology/master/ontoology.png"/></h3>
 					  </a>
 					  <nav>
 						<ul class="nav masthead-nav">
-							<li {% block home_head %} class="active" {% endblock %} ><a href="/">Home</a></li>
-							<li {% block step_head %}  {% endblock %} ><a href="/stepbystep">Step by Step</a></li>
-							<li {% block about_head %}  {% endblock %} ><a href="/about">About</a></li>
+							<li {% block home_head %} class="active" {% endblock %} ><a href="/dark_home">Home</a></li>
+							<li {% block step_head %}  {% endblock %} ><a href="/dark_stepbystep">Step by Step</a></li>
+							<li {% block about_head %}  {% endblock %} ><a href="/dark_about">About</a></li>
 
 
 							{%block teapot%}
 								{% if request.user.is_authenticated %}
-									<li><a class="curfont" href="/logout">Logout</a></li>
+									<li><a class="curfont" href="/dark_logout">Logout</a></li>
 									<li>
-									<a href="/profile">
+									<a href="/dark_profile">
 										<img src="{{request.session.avatar_url}}" class="img-rounded" height="30px"/>
 										<span class="curfont">My repositories</span>
 									</a>
@@ -267,7 +267,7 @@
 
 								{% else %}
 									<li>
-									<a type="button" class="darkl" href="/login">
+									<a type="button" class="darkl" href="/dark_login">
 
 									<img src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png" class="img-circle" height="50px"/>
 								   <span>Login through Github</span>

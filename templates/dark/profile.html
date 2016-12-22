@@ -69,6 +69,8 @@ function GetURLParameter(sParam)
 	<a class="emph" href="../profilebeta">Try out beta version of "My repositories" page</a>
 </h5>
 -->
+<a href="/"><h4 class="bluish">Try the new interface</h4></a>
+
 <span id="profiletables">
 
 	<h3>Choose one of the below repo by clicking on it</h3>
@@ -110,14 +112,14 @@ function GetURLParameter(sParam)
 											-->
                                             {%endif%}
                                             <li><a url="{{r.url}}" class="closee">Unwatch</a></li>
-                                            <li><a href="/renew_previsual?target_repo={{r.url}}">renew previsual</a>
+                                            <li><a href="/dark_renew_previsual?target_repo={{r.url}}">renew previsual</a>
                                             </li>
                                             {%if r.previsual_page_available %}
                                             <li><a href="http://{{r.user}}.github.io/{{r.rrepo}}">go to previsual</a>
                                             </li>
                                             {%endif%}
                                             <li>
-                                                <form id="generateall{{r.url}}" action="generateforall">
+                                                <form id="generateall{{r.url}}" action="dark_generateforall">
                                                     <input type="hidden" name="repo" value={{r.url}}/>
                                                 </form>
                                                 <a class=""
@@ -126,9 +128,9 @@ function GetURLParameter(sParam)
                                             </li>
                                             <!-- maybe we will added it later
                                             {%if r.previsual%}
-                                            <li><a href="/previsual_toggle?target_repo={{r.url}}">Disable previsual</a></li>
+                                            <li><a href="/dark_previsual_toggle?target_repo={{r.url}}">Disable previsual</a></li>
                                             {%else%}
-                                            <li><a href="/previsual_toggle?target_repo={{r.url}}">Enable previsual</a></li>
+                                            <li><a href="/dark_previsual_toggle?target_repo={{r.url}}">Enable previsual</a></li>
                                             {%endif%}
                                              -->
                                         </ul>
@@ -291,7 +293,7 @@ $( document ).ready(function() {
 		greyout();
 		$.ajax({
 			  method: "GET",
-			  url: "/delete_repo?repo="+$(this).attr('url'),
+			  url: "/dark_delete_repo?repo="+$(this).attr('url'),
 			}).done(function(resp){
 				//alert("The status: "+resp.status)
 				if(resp.status==false){
@@ -320,12 +322,12 @@ $( document ).ready(function() {
 		//greyout();
 		$.ajax({
 		  method: "GET",
-		  url: $(location).attr('protocol')+"//"+$(location).attr('host')+"/profile?repo="+targetpanel.attr('url'),
+		  url: $(location).attr('protocol')+"//"+$(location).attr('host')+"/dark_profile?repo="+targetpanel.attr('url'),
 		  beforeSend: function(){view_progress(); $('#loading').attr('style', "width: 10%")} ,
 			xhr: function(){
 				/*source: http://stackoverflow.com/questions/15668339/can-onprogress-functionality-be-added-to-jquery-ajax-by-using-xhrfields*/
 				// get the native XmlHttpRequest object
-				//alert($(location).attr('protocol')+"//"+$(location).attr('host')+"/profile?repo="+targetpanel.attr('url'));
+				//alert($(location).attr('protocol')+"//"+$(location).attr('host')+"/dark_profile?repo="+targetpanel.attr('url'));
 				var xhr = $.ajaxSettings.xhr() ;
 				// set the onprogress event handler
 				xhr.onprogress = function(evt){ console.log(Math.round(evt.loaded/evt.total * 100)); $('#loading').attr('style', "width: "+Math.round(evt.loaded/evt.total * 100)+"%") } ;
@@ -376,7 +378,7 @@ $( document ).ready(function() {
 		    				'<span class="'+republish_control_class+'  btn '+republish_class+' col-md-12 col-xs-12" ontology="'+ontologies[o].ontology+
 		    					'" pname="'+ontologies[o].pname+
 		    					'" repo="'+current_url+'" >'+republish_text+'</span></div>'+
-		    			'<div class="col-md-1 col-xs-1"> <form action="/get_bundle" method="POST">'+
+		    			'<div class="col-md-1 col-xs-1"> <form action="/dark_get_bundle" method="POST">'+
 		    				'<input type="hidden" name="repo" value="'+current_url+'"/>'+
 		    				'<input type="hidden" name="ontology" value="'+ontologies[o].ontology+'"/>'+
 		    				'<button type="submit" class="highl btn glyphicon glyphicon-save-file" value="Download" name="Download"/>'+
@@ -404,7 +406,7 @@ $( document ).ready(function() {
 		           {
 		                request.setRequestHeader("X-CSRFToken", '{{csrf_token}}');
 		            },
-				  url: "/update_conf",
+				  url: "/dark_update_conf",
 				  data: result
 				}).done(function( resp ) {
 				    console.log("response of the ajax: "+resp)
@@ -431,7 +433,7 @@ $( document ).ready(function() {
  var v;
  $.ajax({
 		  method: "GET",
-		  url: "http://127.0.0.1:8000/profile?repo=ahmad88me/target",
+		  url: "http://127.0.0.1:8000/dark_profile?repo=ahmad88me/target",
 		}).done(function( resp ) {
 		    v = resp;
 		});
@@ -455,7 +457,7 @@ $( document ).ready(function() {
         <td>{{p.repo.url}}</td>
         <td>{{p.ontology}}</td>
         <td><a href="https://w3id.org/def/{{p.name}}">https://w3id.org/def/{{p.name}}</a><a
-                href="/profile?delete-name={{p.name}}"><span class="glyphicon glyphicon-remove pull-right"></span></a>
+                href="/dark_profile?delete-name={{p.name}}"><span class="glyphicon glyphicon-remove pull-right"></span></a>
         </td>
     </tr>
     {%endfor%}

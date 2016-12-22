@@ -104,7 +104,7 @@ def home(request):
             is_private = True
             client_id = client_id_private
             client_secret = client_secret_private
-        webhook_access_url, state = webhook_access(client_id, host + '/get_access_token', isprivate=is_private)
+        webhook_access_url, state = webhook_access(client_id, host + '/dark_get_access_token', isprivate=is_private)
         request.session['target_repo'] = target_repo
         request.session['state'] = state
         request.session['access_token_time'] = '1'
@@ -117,7 +117,7 @@ def home(request):
     except:
         last_used = datetime.now()
     #last_used = '%d, %d' % (last_used.month, last_used.year)
-    return render(request, 'home.html', {'repos': repos, 'user': request.user, 'num_of_users': num_of_users,
+    return render(request, 'dark/home.html', {'repos': repos, 'user': request.user, 'num_of_users': num_of_users,
                                          'num_of_repos': num_of_repos, 'last_used': last_used})
 
 
@@ -128,7 +128,7 @@ def grant_update(request):
 def get_access_token(request):
     global is_private, client_id, client_secret
     if 'state' not in request.session or request.GET['state'] != request.session['state']:
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect('/dark_home')
     data = {
         'client_id': client_id,
         'client_secret': client_secret,
@@ -143,7 +143,7 @@ def get_access_token(request):
         d[keyv[0]] = keyv[1]
     if 'access_token' not in d:
         print 'access_token is not there'
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect('/dark_home')
     access_token = d['access_token']
     request.session['access_token'] = access_token
     update_g(access_token)
@@ -154,7 +154,7 @@ def get_access_token(request):
         # isprivate = get_proper_loggedin_scope(OUser.objects.get(username=request.user.username),
         #                                      request.session['target_repo'])
         # print 'isprivate is: ' + str(isprivate)
-        webhook_access_url, state = webhook_access(client_id, host + '/get_access_token', is_private)
+        webhook_access_url, state = webhook_access(client_id, host + '/dark_get_access_token', is_private)
         request.session['state'] = state
         return HttpResponseRedirect(webhook_access_url)
 
@@ -306,7 +306,7 @@ def add_hook(request):
 @login_required
 def generateforall_view(request):
     if 'repo' not in request.GET:
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect('/dark_home')
     target_repo = request.GET['repo'].strip()
     found = False
     if target_repo[-1] == '/':
@@ -386,7 +386,7 @@ def login(request):
     #if 'username' not in request.GET:
     #    return HttpResponseRedirect('/')
     #username = request.GET['username']
-    redirect_url = host + '/login_get_access'
+    redirect_url = host + '/dark_login_get_access'
     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
     request.session['state'] = sec
     scope = 'user:email' #get_proper_scope_to_login(username)
@@ -399,7 +399,7 @@ def login(request):
 def logout(request):
     print '*** logout ***'
     django_logout(request)
-    return HttpResponseRedirect('/')
+    return HttpResponseRedirect('/dark_home')
 
 
 def login_get_access(request):
@@ -407,7 +407,7 @@ def login_get_access(request):
     if 'state' not in request.session:
         request.session['state'] = 'blah123'  # 'state'
     if request.GET['state'] != request.session['state']:
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect('/dark_home')
     data = {
         'client_id': client_id_login,
         'client_secret': client_secret_login,
@@ -453,7 +453,7 @@ def login_get_access(request):
     print 'access_token: ' + access_token
     sys.stdout.flush()
     sys.stderr.flush()
-    return HttpResponseRedirect('/')
+    return HttpResponseRedirect('/dark_home')
 
 
 @login_required
@@ -648,7 +648,7 @@ def update_conf(request):
             #     {'status': False, 'error': str(e)})  # return render(request,'dark/msg.html',{'msg': str(e)})
         print 'returned from update_file'
     print 'will return msg html'
-    return HttpResponseRedirect('/profile')
+    return HttpResponseRedirect('/dark_profile')
 
 
 # def update_conf(request):
@@ -733,7 +733,7 @@ def previsual_toggle(request):
     if found:
         target_repo.previsual = not target_repo.previsual
         target_repo.save()
-    return HttpResponseRedirect('/profile')
+    return HttpResponseRedirect('/dark_profile')
 
 
 @login_required
@@ -763,7 +763,7 @@ def renew_previsual(request):
         if msg == "":  # not errors
             repo.state = 'Ready'
             repo.save()
-            return HttpResponseRedirect('/profile')
+            return HttpResponseRedirect('/dark_profile')
         else:
             repo.notes = msg
             repo.state = 'Ready'
@@ -788,7 +788,7 @@ def about(request):
 @login_required
 def superadmin(request):
     if request.user.email not in ['ahmad88me@gmail.com']:
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect('/dark_home')
     if 'newstatus' in request.POST:
         new_status = request.POST['newstatus']
         for r in Repo.objects.all():
