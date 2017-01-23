@@ -116,10 +116,10 @@ def home(request):
         last_used = Repo.objects.all().order_by('-last_used')[0].last_used
     except:
         last_used = datetime.now()
-    #last_used = '%d, %d' % (last_used.month, last_used.year)
+    last_updated = Github().get_repo('OnToology/OnToology').get_issues(state='closed')[0].closed_at
     return render(request, 'dark/home.html', {'repos': repos, 'user': request.user, 'num_of_users': num_of_users,
-                                         'num_of_repos': num_of_repos, 'last_used': last_used})
-
+                                         'num_of_repos': num_of_repos, 'last_used': last_used,
+                                         'last_updated': last_updated})
 
 def grant_update(request):
     return render_to_response('dark/msg.html', {'msg': 'Magic is done'}, context_instance=RequestContext(request))
@@ -616,8 +616,9 @@ def profile(request):
     #     return HttpResponseRedirect(reverse('profile'))
     sys.stdout.flush()
     sys.stderr.flush()
+    last_updated = Github().get_repo('OnToology/OnToology').get_issues(state='closed')[0].closed_at
     return render(request, 'dark/profile.html', {'repos': repos, 'pnames': PublishName.objects.filter(user=user),
-                                            'error': error_msg})
+                                            'error': error_msg, 'last_updated': last_updated})
 
 
 def update_conf(request):
