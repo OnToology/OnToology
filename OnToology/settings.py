@@ -68,6 +68,10 @@ if 'OnToology_home' in os.environ and os.environ['OnToology_home'].lower() == "t
     host = 'http://127.0.0.1:8000'
     client_id = GITHUB_LOCAL_APP_ID
     client_secret = GITHUB_LOCAL_API_SECRET
+    print "Going local"
+else:
+    print "Going remote"
+    print os.environ
 
 
 from mongoengine import connect

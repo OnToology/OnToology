@@ -1,0 +1,144 @@
+{% extends "dark/base.html"%}
+
+{%block body%}
+
+</br>
+
+
+<a href="/"><h4 class="bluish">Try the new interface</h4></a>
+
+<br>
+
+<form action="" method="GET" style="color: #999">
+<div class="form-group" >
+	<div class="container-fluid">
+
+	<span class=" col-md-9 col-xs-9">
+		<input type="text" name="target_repo" id="target_repo_select" class="form-control" placeholder="user/repo" ></br>
+	</span>
+	<span class="col-md-3 col-xs-3">
+		<input type="submit" class="form-control btn" value="Watch this repo"/>
+	</span>
+	</div>
+
+</div>
+</form>
+
+
+
+</br>
+<div class="col-md-6">
+<h3 class="curfont">
+What is OnToology
+</h3>
+<p class="curfont" align="justify">
+A system to automate part of the collaborative ontology development process. Given a repository with an owl file,
+ OnToology will survey it and produce diagrams, a complete documentation and validation based on common pitfalls. 
+</p>
+
+<p align="justify">
+OnToology can handle <span class="underline">OWL</span> and <span class="underline">RDFS</span> vocabularies in <span class="underline">RDF+XML</span> and <span class="underline">Turtle</span> serialization.
+</p>
+
+</div>
+
+<div class="col-md-6">
+
+<h3 class="curfont">How to use it</h3>
+	<ol align="justify">
+	<li align="justify" class="">Enter your repo as user/repo i.e. myuser/myrepo (it does not work with organizations at the moment).</li>
+	<li align="justify" class="">You will be redirected to Github to authorize OnToology to access your repo.</li>
+	<li align="justify" class="">Update your ontology and push.</li>
+	<li align="justify" class="">OnToology will create pull request including generated files (documentation, diagrams and evaluation)</li>
+	<li align="justify" class="">Merge the pull request created by OnToology</li>
+	</ol>
+
+</div>
+
+
+<div class="col-md-6">
+	<h3>What's new</h3>
+	<ul>
+		<li align="justify"><span class="bluish">Faster login</span>: We moved the extra step for private repositories detection to be done automatically.</li>
+		<li align="justify"><span class="bluish">Bundle Download</span>: Now you can download your ontology bundle of documentation, diagrams and evaluation report with a single click.</li>
+		<li align="justify"><span class="bluish">Publish with w3id</span>: You can publish persistent permanent URIs with w3id.org using OnToology.</li>
+		<li align="justify"><span class="bluish">Previsualization with vocabLite</span>: A nice and a clear way to visualize your ontologies in your repositories.</li>
+	</ul>
+</div>
+
+
+<div class="col-md-6">
+	<h3>Stats</h3>
+	<ul>
+		<!--
+		<li align="justify">Total number of users: <span class="bluish">{{num_of_users}}</span> users</li>
+		-->
+		<li align="justify">Total number of repos: <span class="bluish">{{num_of_repos}}</span> repos</li>
+		<li align="justify">Latest system update: December, 2016</li>
+		<li align="justify">Latest system usage: {{last_used| date:"F, Y"}}</li>
+		<li>
+		<a align="justify"  target="_blank"  class="bluish" href="https://docs.google.com/forms/d/e/1FAIpQLSfjSkMRxnp6k5xQSQK5mODUbnlqSz3Fzh7EXgZPrJkemS6B5g/viewform"><h4>Please answer this survey to help us improve OnToology</h4></a>
+		</li>
+	</ul>
+
+
+
+</div>
+
+<!--
+<div class="col-md-6">
+	<br><br>
+	<p><a href="/stepbystep">Click here for a step by step guide</a></p>
+
+<a class="emph" href="/about">For more info about the tool click here</a>
+
+</br></br>
+<a class="curfont" style="text-decoration: underline;" href="https://github.com/OnToology/OnToology">OnToology project is an open source project,<br> click here to check it out</a>
+</div>
+-->
+
+
+
+</br> </br>
+
+
+
+
+<div class="col-md-12">
+
+<h3>Latest Repositories</h3><br>
+<table class="table table-striped">
+<tr class="highl">
+	<td>Repository</td>
+	<td>Status</td>
+	<!--
+	<td>Log file</td>
+	-->
+	<td>Last used</td>
+	<!--
+	<td>ar2dtool</td>
+	<td>OOPS</td>
+	<td >Widoco</td>
+	-->
+</tr>
+{%for r in repos%}
+	<tr>
+		<td><a href="http://github.com/{{r.url}}">{{r.url}}</a></td>
+		<td>{{r.state}}</td>
+		<!-- 
+		<td><a href="media/logs/{{r.owner}}.log">log</a></td>
+		 -->
+		<td>{{r.last_used}}</td>
+		<!-- <td>{{r.ar2dtool_enable}}</td>
+		<td>{{r.oops_enable}}</td>
+		<td>{{r.widoco_enable}}</td>
+		 -->
+	<tr>
+{%endfor%}
+</table>
+
+</div>
+{% endblock %}
+
+
+

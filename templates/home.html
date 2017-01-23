@@ -5,32 +5,33 @@
 </br></br>
 
 
-
+<br>
 <form action="" method="GET" style="color: #999">
 <div class="form-group" >
 	<div class="container-fluid">
 
 	<span class=" col-md-9 col-xs-9">
-		<input type="text" name="target_repo" id="target_repo_select" class="form-control" placeholder="user/repo" ></br>
+		<input type="text" name="target_repo" id="target_repo_select" class="form-control input-lg" placeholder="user/repo" ></br>
 	</span>
 	<span class="col-md-3 col-xs-3">
-		<input type="submit" class="form-control btn" value="Watch this repo"/>
+		<input type="submit" class="form-control color1back color3 input-lg" value="Watch this repo"/>
 	</span>
 	</div>
 
 </div>
 </form>
 
+<a href="/dark_home" style="text-align: center;"><h4>Switch back to the old interface</h4></a>
 
 
 </br>
-<div class="col-md-6">
+<div class="col-md-4 color1back">
 <h3 class="curfont">
 What is OnToology
 </h3>
 <p class="curfont" align="justify">
 A system to automate part of the collaborative ontology development process. Given a repository with an owl file,
- OnToology will survey it and produce diagrams, a complete documentation and validation based on common pitfalls. 
+ OnToology will survey it and produce diagrams, a complete documentation and validation based on common pitfalls.
 </p>
 
 <p align="justify">
@@ -39,48 +40,54 @@ OnToology can handle <span class="underline">OWL</span> and <span class="underli
 
 </div>
 
-<div class="col-md-6">
+<div class="col-md-4 color4back">
 
 <h3 class="curfont">How to use it</h3>
-	<ol align="justify">
-	<li align="justify" class="">Enter your repo as user/repo i.e. myuser/myrepo (it does not work with organizations at the moment).</li>
-	<li align="justify" class="">You will be redirected to Github to authorize OnToology to access your repo.</li>
-	<li align="justify" class="">Update your ontology and push.</li>
-	<li align="justify" class="">OnToology will create pull request including generated files (documentation, diagrams and evaluation)</li>
-	<li align="justify" class="">Merge the pull request created by OnToology</li>
-	</ol>
+	<!--<ol align="justify">-->
+	<!--<li align="justify" class="">Enter your repo as user/repo i.e. myuser/myrepo (it does not work with organizations at the moment).</li>-->
+	<!--<li align="justify" class="">You will be redirected to Github to authorize OnToology to access your repo.</li>-->
+	<!--<li align="justify" class="">Update your ontology and push.</li>-->
+	<!--<li align="justify" class="">OnToology will create pull request including generated files (documentation, diagrams and evaluation)</li>-->
+	<!--<li align="justify" class="">Merge the pull request created by OnToology</li>-->
+	<!--</ol>-->
+	<p align="justify" class="">1. Enter your repo as user/repo i.e. myuser/myrepo (it does not work with organizations at the moment).</p>
+	<p align="justify" class="">2. You will be redirected to Github to authorize OnToology to access your repo.</p>
+	<p align="justify" class="">3. Update your ontology and push.</p>
+	<p align="justify" class="">4. OnToology will create pull request including generated files (documentation, diagrams and evaluation)</p>
+	<p align="justify" class="">5. Merge the pull request created by OnToology</p>
 
 </div>
 
 
-<div class="col-md-6">
+<div class="col-md-4 color5back">
 	<h3>What's new</h3>
-	<ul>
-		<li align="justify"><span class="bluish">Faster login</span>: We moved the extra step for private repositories detection to be done automatically.</li>
-		<li align="justify"><span class="bluish">Bundle Download</span>: Now you can download your ontology bundle of documentation, diagrams and evaluation report with a single click.</li>
-		<li align="justify"><span class="bluish">Publish with w3id</span>: You can publish persistent permanent URIs with w3id.org using OnToology.</li>
-		<li align="justify"><span class="bluish">Previsualization with vocabLite</span>: A nice and a clear way to visualize your ontologies in your repositories.</li>
-	</ul>
+	<!--<ul>-->
+		<!--<li align="justify"><span class="bluish">Faster login</span>: We moved the extra step for private repositories detection to be done automatically.</li>-->
+		<!--<li align="justify"><span class="bluish">Bundle Download</span>: Now you can download your ontology bundle of documentation, diagrams and evaluation report with a single click.</li>-->
+		<!--<li align="justify"><span class="bluish">Publish with w3id</span>: You can publish persistent permanent URIs with w3id.org using OnToology.</li>-->
+		<!--<li align="justify"><span class="bluish">Previsualization with vocabLite</span>: A nice and a clear way to visualize your ontologies in your repositories.</li>-->
+	<!--</ul>-->
+		<p align="justify"><span class="color1">New interface</span>: We changed the interface to a bright theme with a better representation</p>
+		<p align="justify"><span class="color1">Faster login</span>: We moved the extra step for private repositories detection to be done automatically.</p>
+		<p align="justify"><span class="color1">Bundle Download</span>: Now you can download your ontology bundle of documentation, diagrams and evaluation report with a single click.</p>
+		<p align="justify"><span class="color1">Publish with w3id</span>: You can publish persistent permanent URIs with w3id.org using OnToology.</p>
+		<p align="justify"><span class="color1">Previsualization with vocabLite</span>: A nice and a clear way to visualize your ontologies in your repositories.</p>
 </div>
 
 
-<div class="col-md-6">
-	<h3>Stats</h3>
-	<ul>
-		<!--
-		<li align="justify">Total number of users: <span class="bluish">{{num_of_users}}</span> users</li>
-		-->
-		<li align="justify">Total number of repos: <span class="bluish">{{num_of_repos}}</span> repos</li>
-		<li align="justify">Latest system update: November, 2016</li>
-		<li align="justify">Latest system usage: {{last_used| date:"F, Y"}}</li>
-		<li>
-		<a align="justify"  target="_blank"  class="bluish" href="https://docs.google.com/forms/d/e/1FAIpQLSfjSkMRxnp6k5xQSQK5mODUbnlqSz3Fzh7EXgZPrJkemS6B5g/viewform"><h4>Please answer this survey to help us improve OnToology</h4></a>
-		</li>
-	</ul>
 
+<!--<div class="col-md-12">-->
+	<!--<h3>Stats</h3>-->
+	<!--<ul>-->
+		<!--&lt;!&ndash;-->
+		<!--<li align="justify">Total number of users: <span class="bluish">{{num_of_users}}</span> users</li>-->
+		<!--&ndash;&gt;-->
+		<!--<li align="justify">Total number of repos: <span class="bluish">{{num_of_repos}}</span> repos</li>-->
+		<!--<li align="justify">Latest system update: July, 2016</li>-->
+		<!--<li align="justify">Latest system usage: {{last_used| date:"F, Y"}}</li>-->
+	<!--</ul>-->
+<!--</div>-->
 
-
-</div>
 
 <!--
 <div class="col-md-6">
@@ -97,9 +104,6 @@ OnToology can handle <span class="underline">OWL</span> and <span class="underli
 
 
 </br> </br>
-
-
-
 
 <div class="col-md-12">
 
@@ -120,9 +124,9 @@ OnToology can handle <span class="underline">OWL</span> and <span class="underli
 </tr>
 {%for r in repos%}
 	<tr>
-		<td><a href="http://github.com/{{r.url}}">{{r.url}}</a></td>
+		<td><a class="color1" href="http://github.com/{{r.url}}">{{r.url}}</a></td>
 		<td>{{r.state}}</td>
-		<!-- 
+		<!--
 		<td><a href="media/logs/{{r.owner}}.log">log</a></td>
 		 -->
 		<td>{{r.last_used}}</td>
@@ -136,6 +140,5 @@ OnToology can handle <span class="underline">OWL</span> and <span class="underli
 
 </div>
 {% endblock %}
-
 
 

@@ -372,21 +372,13 @@ def verify_tools_generation_when_ready(ver_file_comp, repo=None):
         os.remove(ver_file)  # the verification file is no longer needed
 
 
-# copied from new-look
+# copied from new-look and fixed
 def update_file(target_repo, path, message, content):
     global g
     username = os.environ['github_username']
     password = os.environ['github_password']
-    # if True:
-    #     # if g is None:
-    #     print 'new g'
-    #     g = Github(username, password)
-    # else:
-    #     print 'user is: ' + str(g.get_user().name)
-    # gg = github.Github(username, password)
     g = Github(username, password)
     repo = g.get_repo(target_repo)
-    # sha = repo.get_commits()[0].sha
     sha = repo.get_file_contents(path).sha
     apath = path
     if apath[0] != "/":
@@ -403,27 +395,9 @@ def update_file(target_repo, path, message, content):
         except:
             dolog('chance #%d file update' % i)
             time.sleep(1)
-            # repo.update_content(path, message, content)
     dolog('after 10 changes, still could not update ')
     # so if there is a problem it will raise an exception which will be captured by the calling function
     repo.update_file(apath, message, content, sha)
-
-# def update_file(target_repo, path, message, content):
-#     global g
-#     username = os.environ['github_username']
-#     password = os.environ['github_password']
-#     if g is None:
-#         g = Github(username, password)
-#     gg = Github(username, password)
-#     repo = g.get_repo(target_repo)
-#     dolog('will update the file <%s> on repo<%s> with the content <%s>' %
-#           (path, target_repo, content))
-#     try:
-#         repo.update_content(path, message, content)
-#     except:
-#         dolog('second change of file update')
-#         repo.update_content(path, message, content)
-#     dolog('file updated')
 
 
 def verify_tools_generation(ver_file_comp, repo=None):
@@ -644,8 +618,12 @@ def remove_old_pull_requests(target_repo):
         init_g()
     title = 'OnToology update'
     for p in g.get_repo(target_repo).get_pulls():
-        if p.title == title:
-            p.edit(state="closed")
+        try:
+            if p.title == title:
+                p.edit(state="closed")
+        except Exception as e:
+            print "Exception removing an old pull request: "+str(e)
+            dolog("Exception removing an old pull request: "+str(e))
 
 
 def send_pull_request(target_repo, username):
@@ -939,24 +917,6 @@ def get_auton_config(conf_file_abs, from_string=True):
             'widoco_enable': widoco_enable,
             'oops_enable': oops_enable,
             'owl2jsonld_enable': owl2jsonld_enable}
-
-
-########################################################################
-############################---------###################################
-############################  OOPS!  ###################################
-############################\_______/###################################
-
-
-
-
-
-##########################################################################
-##########################################################################
-############################  owl2jsonld  ################################
-##########################################################################
-##########################################################################
-
-
 
 
 ##########################################################################
