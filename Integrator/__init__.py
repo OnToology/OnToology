@@ -60,6 +60,9 @@ def tools_execution(changed_files, base_dir, logfile, dolog_fname=None, target_r
     repo.save()
     for f in changed_files:
         if f[-4:] in ontology_formats:
+            if f[:len('OnToology/')] == 'OnToology/':  # This is to solve bug #265
+                dolog("nested prevented bug: "+f)
+                continue
             dolog("tools_execution: "+f)
             handle_single_ofile(f, base_dir, target_repo=target_repo, change_status=change_status, repo=repo)
 
