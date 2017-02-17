@@ -841,3 +841,4 @@ def get_bundle(request):
             response = HttpResponse(f.read(), content_type='application/zip')
             response['Content-Disposition'] = 'attachment; filename="%s"' % zip_dir.split('/')[-1]
         return response
+

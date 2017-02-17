@@ -31,14 +31,14 @@ $( function() {
 
 <style>
     #myspinner {
-    z-index: 10;
+        z-index: 10;
     }
 
     #screen {
-    position: absolute;
-    left: 0;
-    top: 0;
-    background: #000;
+        position: absolute;
+        left: 0;
+        top: 0;
+        background: #000;
     }
 
 </style>
@@ -74,27 +74,22 @@ function GetURLParameter(sParam)
 <form action="/" method="GET" style="color: #999">
     <div class="form-group">
         <div class="container-fluid">
-
-	<span class=" col-md-9 col-xs-9">
-		<input type="text" name="target_repo" id="target_repo_select" class="form-control input-lg"
-               placeholder="user/repo"></br>
-	</span>
-	<span class="col-md-3 col-xs-3">
-		<input type="submit" class="form-control input-lg btn color7back color8 " value="Watch this repo"/>
-	</span>
+            <span class=" col-md-9 col-xs-9">
+                <input type="text" name="target_repo" id="target_repo_select" class="form-control input-lg"
+                       placeholder="user/repo"></br>
+            </span>
+            <span class="col-md-3 col-xs-3">
+                <input type="submit" class="form-control input-lg btn color7back color8 " value="Watch this repo"/>
+            </span>
         </div>
-
     </div>
 </form>
 
 <p class="red">{{error}}</p>
 
 <a href="/dark_home" style="text-align: center;"><h4>Switch back to the old interface</h4></a>
-
 <span id="profiletables">
-
 	<h3>Choose one of the below repo by clicking on it</h3>
-
 	<div class="panel-group " id="accordion">
         <div class="container-fluid">
             {%for r in repos%}
@@ -145,14 +140,12 @@ function GetURLParameter(sParam)
                                                                         height="20px"></a>
                                     {%endif%}
                                         </div>
-
                                     <div class="col-md-2 col-xs-2 darktext" align="right">
                                         {{r.last_used| date:"d-M-Y"}}
                                     </div>
                                     </br>
                                 </div>
                                 <!-- end of row-->
-
                             </a>
                         </h4>
                     </div>
@@ -330,8 +323,10 @@ $( document ).ready(function() {
 		    		republish_img = '/media/icons/republish.png';
 		    		republish_control_class = 'republish-class';
 		    		republish_title = "Republish this ontology"
-		    		w3id_text = "[ " + ontologies[o].pname + " :  " + "https://w3id.org/def/"+ontologies[o].pname +
-		    		" ]  "+
+		    		w3id_text = "<a style='color: #C0C0C0 !important;' href='"+
+		    		    "https://w3id.org/def/"+ontologies[o].pname +"'>" +
+		    		"[ " + ontologies[o].pname + " :  " + "https://w3id.org/def/"+ontologies[o].pname +
+		    		" ]  "+ "</a>" +
 		    		 '<a href="/profile?delete-name='+ontologies[o].pname+'"><span class="glyphicon glyphicon-remove"></span></a>'
 		    	}
 		    	else{
@@ -598,7 +593,7 @@ $( document ).ready(function() {
     });
 
     $(document).on('click', '.generateall-btn', function(){
-        alert($(this).attr('repo'));
+        /*alert($(this).attr('repo'));*/
         $.get("generateforall", {"repo": $(this).attr('repo')});
     });
 
