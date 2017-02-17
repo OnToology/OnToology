@@ -598,7 +598,7 @@ $( document ).ready(function() {
     });
 
     $(document).on('click', '.generateall-btn', function(){
-        alert($(this).attr('repo'));
+        /*alert($(this).attr('repo'));*/
         $.get("generateforall", {"repo": $(this).attr('repo')});
     });
 
