@@ -105,12 +105,14 @@ function GetURLParameter(sParam)
                             <a data-toggle="collapse" class="accordion-toggle" data-parent="#accordion"
                                href="#coll{{forloop.counter}}">
                                 <div class="row">
-                                    <div class="col-md-1 col-xs-1 ">
-                                        <i class="indicator glyphicon glyphicon-chevron-right"></i>
+                                    <div class="col-md-5 col-xs-5 " style="text-align: left">
+                                        <i class="col-md-1 col-xs-1 indicator glyphicon glyphicon-chevron-right"></i>
+                                        <span class="col-md-11 col-xs-11 " >
+                                            <span class="col-md-6 col-xs-6 darktext">{{r.url}}</span>
+                                            <p class="col-md-6 col-xs-6" style="word-break: break-all">{{r.state}}</p>
+                                        </span>
                                     </div>
-                                    <div class="col-md-4 col-xs-4" style="text-align: left">
-                                        <span class="darktext" >{{r.url}}</span>
-                                    </div>
+
                                     <div class="col-md-1 col-xs-1">
                                         <a href="http://www.github.com/{{r.url}}" target="_blank"
                                            title="Go to repo in GitHub">
@@ -140,7 +142,7 @@ function GetURLParameter(sParam)
                                                                         height="20px"></a>
                                     {%endif%}
                                         </div>
-                                    <div class="col-md-2 col-xs-2 darktext" align="right">
+                                    <div class="col-md-2 col-xs-2 darktext " align="right">
                                         {{r.last_used| date:"d-M-Y"}}
                                     </div>
                                     </br>
