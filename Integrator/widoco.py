@@ -55,7 +55,7 @@ def create_widoco_doc(rdf_file, base_dir):
     comm = "cd " + base_dir + "; "
     comm += timeout_comm + "java -jar "
     comm += ' -Dfile.encoding=utf-8 '
-     comm += widoco_dir + "widoco-0.0.1-jar-with-dependencies.jar  -rewriteAll "
+    comm += widoco_dir + "widoco-0.0.1-jar-with-dependencies.jar  -rewriteAll "
     #comm += widoco_dir + "widoco-0.0.1-jar-with-dependencies.jar  "
     comm += " -ontFile '" + rdf_file_abs
     comm += "' -outFolder '" + out_abs_dir + "'"
