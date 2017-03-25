@@ -10,6 +10,7 @@ Contributors: Daniel Garijo, Oscar Corcho, Maria Poveda
 License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 
 
+
 ###Project Plan
 * Provide a better solution for handling private and public repos.
 * Add new features (e.g. integrate with GitLab and Bitbucket)
@@ -148,10 +149,11 @@ AR2DTool and Widoco.
 
 ## How to contribute
 There are two workflows:
-####Case 1: If you are a contributor:
+
+#### Case 1: If you are a contributor:
 1. Create a new branch from the current live one (now it is `master`). Make sure to give it a presentive name. In case it is for a specific issue, include the issue number in the branch name, e.g. change-spinner-123.
 2. Once you push your changes on the new branch, **create a pull request** and one of the admins will check your code base and will merge if it is ok.
 
-####Case 2: If you are not added as a contributor yet (or you are a contributor who prefers this workflow):
+#### Case 2: If you are not added as a contributor yet (or you are a contributor who prefers this workflow):
 1. Fork from the current live branch (now it is `master`).
 2. Create a pull request, we will review it and merge if it is ok.
