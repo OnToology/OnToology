@@ -75,10 +75,6 @@ sys.setdefaultencoding("UTF-8")
 sys.stdout = sys.stderr
 
 
-def get_repos_formatted(the_repos):
-    return the_repos
-
-
 def home(request):
     global client_id, client_secret, is_private
     print '****** Welcome to home page ********'

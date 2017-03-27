@@ -5,7 +5,7 @@ You can find a live version of OnToology online: http://ontoology.linkeddata.es.
 
 Creator: Ahmad Alobaid
 
-Contributors: Daniel Garijo, Oscar Corcho, Maria Poveda
+Contributors: Daniel Garijo, Maria Poveda, Oscar Corcho
 
 License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 
