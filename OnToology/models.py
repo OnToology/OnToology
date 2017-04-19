@@ -31,6 +31,17 @@ class Repo(Document):
     previsual_page_available = BooleanField(default=False)
     notes = StringField(default='')
 
+    def json(self):
+        return {
+            "url": self.url,
+            "last_used": self.last_used,
+            "state": self.state,
+            "owner": self.owner,
+            "previsual": self.previsual,
+            "previsual_page_available": self.previsual_page_available,
+            "notes": self.notes
+        }
+
 
 # The below is to avoid the error occue when importing Repo from autoncore because of the User class which cases the
 # error

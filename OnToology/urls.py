@@ -22,6 +22,7 @@ from django.contrib import admin
 from OnToology import views
 from OnToology import dark_views as dark
 from django.conf import settings
+import api_urls
 
 urlpatterns = patterns('',
     url(r'^dark_delete_repo', dark.delete_repo, name="dark_deleterepo"),
@@ -60,8 +61,8 @@ urlpatterns = patterns('',
     url(r'^generateforall', views.generateforall_view, name='generateforall'),
     url(r'^get_bundle', views.get_bundle, name='get_bundle'),
     url(r'^about', views.about, name='about'),
-
-                       #url(r'^admin', views.superadmin, name='superadmin'),
+    # url(r'^admin', views.superadmin, name='superadmin'),
+    url(r'^api/', include(api_urls)),
     url(r'', views.home, name='home'),
 )
 
