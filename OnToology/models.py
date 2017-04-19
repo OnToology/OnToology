@@ -19,7 +19,7 @@
 
 from mongoengine import Document, StringField, DateTimeField, ListField, ReferenceField, BooleanField
 # from mongoengine.django.auth import User
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class Repo(Document):
@@ -51,6 +51,9 @@ try:
     class OUser(User):
         repos = ListField(ReferenceField(Repo))
         private = BooleanField(default=False)  # The permission access level to OnToology
+        token = StringField(default='no token')
+        token_expiry = DateTimeField(default=datetime.now()+timedelta(days=1))
+
 
     class PublishName(Document):
         name = StringField()

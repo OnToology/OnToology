@@ -1,10 +1,9 @@
 
-from django.test import TestCase
-
+from unittest import TestCase
 
 class TestLoginAPIs(TestCase):
     def setUp(self):
-        print "setting up"
+        pass
 
     def test_login(self):
         print 'passing test_login'
