@@ -34,4 +34,14 @@ class TestRepoAPI(TestCase):
         self.assertIn('repos', jresponse, msg='repos is not in the response')
         self.assertEqual(jresponse['repos'][0], Repo.objects.all()[0].json())
 
+    def test_add_repo_missing_parameters(self):
+        c = Client()
+        response = c.post('/api/repos',
+                          HTTP_AUTHORIZATION='Token '+self.user.token)
+        self.assertEqual(response.status_code, 400)
 
+    def test_add_repo_authorization(self):
+        c = Client()
+        response = c.post('/api/repos', {'url': self.url, 'owner': self.user.username},
+                          HTTP_AUTHORIZATION='Token ' + self.user.token+"wrong")
+        self.assertEqual(response.status_code, 401)
