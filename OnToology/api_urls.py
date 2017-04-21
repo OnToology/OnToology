@@ -25,6 +25,9 @@ from django.conf import settings
 urlpatterns = patterns('',
     # url(r'^admin', views.superadmin, name='superadmin'),
     url(r'login', views.login),
-    url(r'repos', views.repos.as_view()),
+    url(r'repos$', views.ReposView.as_view()),  # for add and list
+    url(r'repos/$', views.ReposView.as_view()),  # for add and list
+    url(r'repos/(?P<repoid>\w+)', views.ReposView.as_view()),  # for the delete
+
     #url(r'', views.home, name='home'),
 )

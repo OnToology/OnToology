@@ -59,7 +59,7 @@ def login(request):
     return JsonResponse({'message': 'invalid method'}, status=405)
 
 
-class repos(View):
+class ReposView(View):
     @method_decorator(token_required)
     def get(self, request):
         user = request.user
@@ -84,55 +84,21 @@ class repos(View):
         except Exception as e:
             return JsonResponse({'message': 'exception: '+str(e)}, status=500)
 
-#
-# def home(request):
-#     return JsonResponse({"a": "full of A's", "b": "Bull of bulls"})
-#
-#
-# def list_repos(request):
-#     user_id = 0
-#     if request.method == 'GET':
-#         user = OUser.objects.filter(id=user_id)
-#         if len(user) == 1:
-#             user = user[0]
-#             repos = [r.json() for r in user.repos]
-#             return JsonResponse({'repos': repos})
-#         else:
-#             # user not found
-#             pass
-#     else:
-#         # POST
-#         pass
-#
-#
-# def add_repo(request):
-#     user_id = 0
-#     user = OUser.objects.filter(id=user_id)
-#     if len(user) == 1:
-#         user = user[0]
-#         repo = Repo()
-#         url = request.POST['url']
-#         owner = user.email
-#         repo.save()
-#         user.repos.append(repo)
-#         user.save()
-#         return JsonResponse({'status': True})
-#     # not valid user
-#     pass
-#
-#
-# def remove_repo(request):
-#     user_id = 0
-#     user = OUser.objects.filter(id=user_id)
-#     repo_id = 0
-#     if len(user) == 1:
-#         user = user[0]
-#         repo = Repo.objects.filter(id=repo_id)
-#         if len(repo) == 1:
-#             # remove
-#             repo.delete()
-#             repo.save()
-#             user.save()
+    @method_decorator(token_required)
+    def delete(self, request, repoid):
+        try:
+            user = request.user
+            r = Repo.objects.filter(id=repoid)
+            if len(r) == 0 or r[0] not in user.repos:
+                return JsonResponse({'message': 'Invalid repo'}, status=404)
+
+            r = r[0]
+            user.update(pull__repos=r)
+            r.delete()
+            user.save()
+            return JsonResponse({'message': 'The repo is deleted successfully'}, status=204)
+        except Exception as e:
+            return JsonResponse({'message': 'Internal error: '+str(e)}, status=500)
 
 
 

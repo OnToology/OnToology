@@ -33,6 +33,7 @@ class Repo(Document):
 
     def json(self):
         return {
+            "id": str(self.id),
             "url": self.url,
             "last_used": self.last_used.strftime('%Y-%m-%d %H:%M'),
             "state": self.state,
