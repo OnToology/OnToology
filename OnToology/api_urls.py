@@ -25,5 +25,6 @@ from django.conf import settings
 urlpatterns = patterns('',
     # url(r'^admin', views.superadmin, name='superadmin'),
     url(r'login', views.login),
+    url(r'repos', views.repos.as_view()),
     #url(r'', views.home, name='home'),
 )
