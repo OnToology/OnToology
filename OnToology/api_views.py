@@ -10,6 +10,26 @@ from django.views.decorators.csrf import csrf_exempt
 from models import *
 
 
+def token_required(func):
+    def inner(request, *args, **kwargs):
+        request.META.update(request.environ)
+        auth_header = request.META.get('HTTP_AUTHORIZATION', None)
+        if auth_header is not None:
+            tokens = auth_header.split(' ')
+            if len(tokens) == 2 and tokens[0] == 'Token':
+                token = tokens[1]
+                try:
+                    request.user = OUser.objects.get(token=token)
+                    if request.user.is_active:
+                        return func(request, *args, **kwargs)
+                    else:
+                        return JsonResponse({'error': 'User account is inactive'}, status=403)
+                except OUser.DoesNotExist:
+                    return JsonResponse({'error': 'authentication error'}, status=401)
+        return JsonResponse({'error': 'Invalid Header', 'status': False}, status=401)
+    return inner
+
+
 @csrf_exempt
 def login(request):
     if request.method == 'POST':
@@ -21,14 +41,17 @@ def login(request):
             try:
                 user = OUser.objects.get(username=username)
                 if user.token_expiry <= datetime.now():
-                    user.token = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
+                    sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
+                    while len(OUser.objects.filter(token=sec)) > 0:  # to ensure a unique token
+                        sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
+                    user.token = sec
                     user.token_expiry = datetime.now() + timedelta(days=1)
                     user.save()
                 return JsonResponse({'token': user.token})
             except Exception as e:
-                return JsonResponse({'message': 'authentication error 1'}, status=401)
+                return JsonResponse({'message': 'authentication error'}, status=401)
         except Exception as e:
-            return JsonResponse({'message': 'authentication error 2'}, status=401)
+            return JsonResponse({'message': 'authentication error'}, status=401)
     return JsonResponse({'message': 'invalid method'}, status=405)
 
 #
@@ -80,6 +103,9 @@ def login(request):
 #             repo.delete()
 #             repo.save()
 #             user.save()
+
+
+
 
 
 

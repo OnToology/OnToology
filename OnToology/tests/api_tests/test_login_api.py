@@ -12,6 +12,10 @@ from OnToology.models import OUser, Repo
 
 class TestLoginAPIs(TestCase):
     def setUp(self):
+
+        if len(OUser.objects.all()) > 0:
+            OUser.objects.delete()
+
         sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
         user = OUser()
         user.email = os.environ['test_user_email']
@@ -30,5 +34,3 @@ class TestLoginAPIs(TestCase):
         jresponse = json.loads(response.content)
         self.assertIn('token', jresponse, msg='token is not returned')
         self.assertEqual(jresponse['token'], self.token)
-
-    
