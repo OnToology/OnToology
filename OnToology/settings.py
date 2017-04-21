@@ -73,9 +73,12 @@ else:
     print "Going remote"
     print os.environ
 
+TEST = False
 
 from mongoengine import connect
-connect("OnToology")
+MONGO_DATABASE_NAME = "OnToology"
+db_connection = connect(MONGO_DATABASE_NAME)
+
 
 
 AUTH_USER_MODEL = 'mongo_auth.MongoUser'
@@ -103,7 +106,7 @@ MEDIA_ROOT = BASE_DIR+'/media/'
 
 MEDIA_URL = '/media/'
 
-TEST = False    
+
     
 test_conf = {'local': False #don't interact with github at all, just mimic
              
