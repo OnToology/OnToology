@@ -24,6 +24,6 @@ from django.conf import settings
 
 urlpatterns = patterns('',
     # url(r'^admin', views.superadmin, name='superadmin'),
-    url(r'home', views.home),
-    url(r'', views.home, name='home'),
+    url(r'login', views.login),
+    #url(r'', views.home, name='home'),
 )

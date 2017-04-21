@@ -51,7 +51,8 @@ class NoSQLTestRunner(DjangoTestSuiteRunner):
         connection.get_connection().drop_database(db_name)
         connection.disconnect()
 
-    def clearing_db_connection(self):
+    @classmethod
+    def clearing_db_connection(cls):
         """
         Only used by me
         :return:
