@@ -15,7 +15,6 @@ class TestRepoAPI(TestCase):
         if len(OUser.objects.all()) == 0:
             create_user()
         self.url = 'ahmad88me/demo'
-        self.owner = StringField(max_length=100, default='no')
         self.user = OUser.objects.all()[0]
 
     def test_add_repo(self):

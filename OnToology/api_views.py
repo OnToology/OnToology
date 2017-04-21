@@ -32,6 +32,10 @@ def token_required(func):
     return inner
 
 
+###################################################################
+#                          Model Level                            #
+###################################################################
+
 @csrf_exempt
 def login(request):
     if request.method == 'POST':
@@ -56,7 +60,7 @@ def login(request):
                 return JsonResponse({'message': 'authentication error'}, status=401)
         except Exception as e:
             return JsonResponse({'message': 'authentication error'}, status=401)
-    return JsonResponse({'message': 'invalid method'}, status=405)
+    return JsonResponse({'message': 'Invalid method'}, status=405)
 
 
 class ReposView(View):
@@ -99,6 +103,40 @@ class ReposView(View):
             return JsonResponse({'message': 'The repo is deleted successfully'}, status=204)
         except Exception as e:
             return JsonResponse({'message': 'Internal error: '+str(e)}, status=500)
+
+
+###################################################################
+#                         Action Level                            #
+###################################################################
+
+@token_required
+def generate_all(request):
+    if request.method != 'POST':
+        return JsonResponse({'message': 'Invalid method'}, status=405)
+    try:
+        user = request.user
+        if 'url' not in request.POST:
+            return JsonResponse({'message': 'url is missing'}, status=400)
+        url =request.POST['url'].strip()
+        if url[-1] == '/':
+            url = url[:-1]
+        found = False
+        for r in user.repos:
+            if r.url == url:
+                found = True
+                break
+        if found:
+            # res = generateforall(target_repo, request.user.email)
+            return JsonResponse({'message': 'generation is in process'}, status=202)
+        else:
+            return JsonResponse({'message': 'Invalid repo'}, status=404)
+
+    except Exception as e:
+        return JsonResponse({'message': 'Internal Error: '+str(e)}, status=500)
+
+
+
+
 
 
 
