@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
+from OnToology.views import generateforall
 from models import *
 
 
@@ -126,7 +127,7 @@ def generate_all(request):
                 found = True
                 break
         if found:
-            # res = generateforall(target_repo, request.user.email)
+            res = generateforall(url, user.email)
             return JsonResponse({'message': 'generation is in process'}, status=202)
         else:
             return JsonResponse({'message': 'Invalid repo'}, status=404)
