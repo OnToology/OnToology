@@ -29,6 +29,6 @@ urlpatterns = patterns('',
     url(r'repos/$', views.ReposView.as_view()),  # for add and list
     url(r'repos/(?P<repoid>\w+)', views.ReposView.as_view()),  # for the delete
     url(r'generate_all', views.generate_all),
-
+    url(r'publishnames', views.PublishView.as_view()),
     #url(r'', views.home, name='home'),
 )

@@ -31,3 +31,14 @@ def create_user():
     user.token = sec
     user.save()
 
+
+def delete_all_publishnames():
+    PublishName.objects.delete()
+
+
+def create_publishname(name=None, user=None, repo=None, ontology=None):
+    if name is None or user is None or repo is None or ontology is None:
+        print "Error, cannot create a publishname, missing parameters"
+        raise Exception('in create publishname, missing parameters')
+    pn = PublishName(name=name, user=user, repo=repo, ontology=ontology)
+    pn.save()

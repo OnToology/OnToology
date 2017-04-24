@@ -558,14 +558,16 @@ def clone_repo(cloning_repo, parent_folder, dosleep=True):
         # the wait time to give github sometime so the repo can be cloned
         time.sleep(sleeping_time)
     try:
-        comm = "rm" + " -Rf " + home + parent_folder
+        # comm = "rm" + " -Rf " + home + parent_folder
+        comm = "rm" + " -Rf " + os.path.join(home, parent_folder)
         if not settings.TEST:
             comm += ' >> "' + log_file_dir + '"'
         dolog(comm)
         call(comm, shell=True)
     except Exception as e:
         dolog('rm failed: ' + str(e))
-    comm = "git" + " clone" + " " + cloning_repo + " " + home + parent_folder
+    # comm = "git" + " clone" + " " + cloning_repo + " " + home + parent_folder
+    comm = "git" + " clone" + " " + cloning_repo + " " + os.path.join(home, parent_folder)
     if not settings.TEST:
         comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
@@ -575,7 +577,8 @@ def clone_repo(cloning_repo, parent_folder, dosleep=True):
     #     comm += ' >> "' + log_file_dir + '"'
     # dolog(comm)
     # call(comm, shell=True)
-    return home + parent_folder
+    # return home + parent_folder
+    return os.path.join(home, parent_folder)
 
 
 def commit_changes():
@@ -584,19 +587,23 @@ def commit_changes():
         init_g()
     gu = "git config  user.email \"ahmad88csc@gmail.com\";"
     gu += 'git config  user.name "%s" ;' % (ToolUser)
-    comm = "cd " + home + parent_folder + ";" + gu + " git add . "
+    # comm = "cd " + home + parent_folder + ";" + gu + " git add . "
+    comm = "cd " + os.path.join(home, parent_folder) + ";" + gu + " git add . "
     if not settings.TEST:
         comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
     call(comm, shell=True)
-    comm = "cd " + home + parent_folder + ";" + \
-        gu + " git commit -m 'automated change' "
+
+    # comm = "cd " + home + parent_folder + ";" + \
+    comm = "cd " + os.path.join(home, parent_folder) + ";" + \
+           gu + " git commit -m 'automated change' "
     if not settings.TEST:
         comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
     call(comm, shell=True)
     gup = "git config push.default matching;"
-    comm = "cd " + home + parent_folder + ";" + gu + gup + " git push "
+    # comm = "cd " + home + parent_folder + ";" + gu + gup + " git push "
+    comm = "cd " + os.path.join(home, parent_folder) + ";" + gu + gup + " git push "
     if not settings.TEST:
         comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
@@ -1030,8 +1037,9 @@ def get_proper_loggedin_scope(ouser, target_repo):
 
 
 def generate_user_log(log_file_name):
-    comm = 'cp ' + home + 'log/' + log_file_name + '  ' + \
-        os.path.join(settings.MEDIA_ROOT,
+    # comm = 'cp ' + home + 'log/' + log_file_name + '  ' + \
+    comm = 'cp ' + os.path.join(home,'log',log_file_name) + '  ' + \
+           os.path.join(settings.MEDIA_ROOT,
                      'logs')  # ' /home/ubuntu/auton/media/logs/'
     print comm
     sys.stdout.flush()

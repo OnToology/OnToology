@@ -521,7 +521,11 @@ def profile(request):
                 repo = r
                 break
         if found:  # if the repo belongs to the user
-            if len(PublishName.objects.filter(name=name)) == 0 or (PublishName.objects.get(name=name).user==user and
+
+            if len(PublishName.objects.filter(name=name)) > 1:
+                error_msg = 'a duplicate published names, please contact us ASAP to fix it'
+
+            elif len(PublishName.objects.filter(name=name)) == 0 or (PublishName.objects.get(name=name).user==user and
                                                         PublishName.objects.get(name=name).repo==repo and
                                                         PublishName.objects.get(name=name).ontology==ontology_rel_path):
                 if (len(PublishName.objects.filter(name=name)) == 0 and
