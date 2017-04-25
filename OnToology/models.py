@@ -17,7 +17,7 @@
 #
 
 
-from mongoengine import Document, StringField, DateTimeField, ListField, ReferenceField, BooleanField
+from mongoengine import Document, StringField, DateTimeField, ListField, ReferenceField, BooleanField, FloatField
 # from mongoengine.django.auth import User
 from datetime import datetime
 
@@ -30,6 +30,7 @@ class Repo(Document):
     previsual = BooleanField(default=False)
     previsual_page_available = BooleanField(default=False)
     notes = StringField(default='')
+    progress = FloatField(default=0.0)
 
 
 # The below is to avoid the error occue when importing Repo from autoncore because of the User class which cases the

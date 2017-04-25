@@ -353,10 +353,12 @@ def generateforall(target_repo, user_email):
     comm += ' "' + target_repo + '" "' + user + '" "' + cloning_repo + '" '
     for c in changed_files:
         comm += '"' + c.strip() + '" '
-    if settings.TEST:
-        print 'will call git_magic with target=%s, user=%s, cloning_repo=%s, changed_files=%s' % \
-              (target_repo, user, cloning_repo, str(changed_files))
-        git_magic(target_repo, user, cloning_repo, changed_files)
+    # if settings.TEST:
+    #     print 'will call git_magic with target=%s, user=%s, cloning_repo=%s, changed_files=%s' % \
+    #           (target_repo, user, cloning_repo, str(changed_files))
+    #     git_magic(target_repo, user, cloning_repo, changed_files)
+    if False:
+        pass
     else:
         print 'running autoncore code as: ' + comm
 
@@ -841,3 +843,7 @@ def get_bundle(request):
             response['Content-Disposition'] = 'attachment; filename="%s"' % zip_dir.split('/')[-1]
         return response
 
+
+@login_required
+def progress_page(request):
+    return render(request, 'progress.html', {'repos': request.user.repos})

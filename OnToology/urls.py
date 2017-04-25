@@ -60,7 +60,7 @@ urlpatterns = patterns('',
     url(r'^generateforall', views.generateforall_view, name='generateforall'),
     url(r'^get_bundle', views.get_bundle, name='get_bundle'),
     url(r'^about', views.about, name='about'),
-
+    url(r'^progress', views.progress_page),
                        #url(r'^admin', views.superadmin, name='superadmin'),
     url(r'', views.home, name='home'),
 )

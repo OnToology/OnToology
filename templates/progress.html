@@ -1,0 +1,603 @@
+{% extends "base.html"%} {%block body%}
+
+
+<META HTTP-EQUIV="refresh" CONTENT="10">
+
+<p class="red">{{error}}</p>
+
+<span id="profiletables">
+  <h3>Below are your repos and the progress of each</h3>
+  <div class="container-fluid">
+    {%for r in repos%}
+    {%if r.notes != ''%}
+    <div class="panel panel-info">
+      <!--<div class="panel  panel-danger ">-->
+      {%else%}
+      <!--<div class="panel color5back">-->
+      <div class="panel panel-info">
+        {%endif%}
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" class="accordion-toggle">
+              <div class="row">
+                <span class="col-md-3 col-xs-3 darktext" style="word-break: break-all">{{r.url}}</span>
+                <p class="col-md-3 col-xs-3" style="word-break: break-all">{{r.state}}</p>
+                <div class="col-md-2 col-xs-2">
+                  <div class="progress">
+                      {%if r.progress == 100 %}
+                    <div class="progress-bar progress-bar-info" role="progressbar"
+                      aria-valuenow="{{r.progress}}" aria-valuemin="0" aria-valuemax="100"
+                      style="width: {{r.progress}}%">
+                      {{r.progress}}%
+                    </div>
+                      {%else%}
+                      <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar"
+                      aria-valuenow="{{r.progress}}" aria-valuemin="0" aria-valuemax="100"
+                      style="width: {{r.progress}}%">
+                      {{r.progress}}%
+                    </div>
+
+                      {%endif%}
+                  </div>
+                </div>
+                {%if r.previsual_page_available %}
+                <div class="col-md-1 col-xs-1 ">
+            <a
+              href="/renew_previsual?target_repo={{r.url}}"
+              title="Renew previsualization">
+            <img src="media/icons/renew_previsual.png" height="20px"> </a>
+            </div>
+            {%else%}
+            <div class="col-md-1 col-xs-1 "> <a
+              href="/renew_previsual?target_repo={{r.url}}"
+              title="Generate previsualization">
+            <img src="media/icons/renew_previsual.png" height="20px"> </a>
+            </div>
+            {%endif%}
+            <div class="col-md-3 col-xs-3 darktext " align="right">
+            <!--{{r.last_used| date:"d-M-Y"}}-->
+                {{r.last_used}}
+            </div>
+            </br>
+            </div>
+            <!-- end of row-->
+            </a>
+          </h4>
+        </div>
+        <div id="coll{{forloop.counter}}" class="panel-collapse collapse ">
+          <div class="panel-body ">
+            <div class="ontologiesspace"> </div>
+            </br>
+          </div>
+        </div>
+      </div>
+      {%endfor%}
+    </div>
+  </div>
+</span>
+
+
+
+
+
+
+</br>
+
+<style>
+    .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary,.bootstrap-switch
+    .bootstrap-switch-handle-off.bootstrap-switch-primary
+    {
+    color: #fff !important;
+    background: #333333 !important;
+    }
+</style>
+
+
+</span>
+
+
+<!--<span id="slidertag"> </span>-->
+
+
+<script>
+
+
+var current_url;
+var m;
+$( document ).ready(function() {
+
+	var opts = {
+		  lines: 13, // The number of lines to draw
+		  length: 40, // The length of each line
+		  width: 22, // The line thickness
+		  radius: 60, // The radius of the inner circle
+		  corners: 1, // Corner roundness (0..1)
+		  rotate: 0, // The rotation offset
+		  direction: 1, // 1: clockwise, -1: counterclockwise
+		  color: '#BBB', // #rgb or #rrggbb or array of colors
+		  speed: 1, // Rounds per second
+		  trail: 60, // Afterglow percentage
+		  shadow: false, // Whether to render a shadow
+		  hwaccel: false, // Whether to use hardware acceleration
+		  className: 'spinner', // The CSS class to assign to the spinner
+		  zIndex: 2e9, // The z-index (defaults to 2000000000)
+		  top: '50%', // Top position relative to parent
+		  left: '50%' // Left position relative to parent
+		};
+	var target = document.getElementById('myspinner');
+	var spinner = new Spinner(opts);//.spin(target);
+	//var spinner = new Spinner(opts).spin(target);
+
+
+	//taken from http://hungred.com/how-to/tutorial-simple-screen-grey-effect-jquery/
+	var greyout = function(){
+		//alert("clicked");
+		//$('.panel .panel-heading .repo').click(function(){return false;});
+		spinner.spin(target);
+		//$('#screen').css({"position": "absolute"});
+		$('#screen').css({	"display": "block", opacity: 0.7, "width":$(document).width(),"height":$(document).height()});
+		$('#box').css({"display": "block"}).click(function(){spinner.stop();$(this).css("display", "none");$('#screen').css("display", "none")});
+	}
+
+
+	var cc = false;
+	$(".nonrepo").click(function(){
+		//alert();
+		cc = true;
+	});
+	$(document).on('click', '.closee', function(){
+	//$(".closee").click(function() {
+		//alert("close");
+		//cc = true;
+		if (confirm("Are you sure you want to unwatch this repo?")==false){
+			return
+		}
+		greyout();
+		console.log("this attr url: "+$(this).attr('url'));
+		$.ajax({
+			  method: "GET",
+			  url: "/delete_repo?repo="+$(this).attr('url'),
+			}).done(function(resp){
+				//alert("The status: "+resp.status)
+				if(resp.status==false){
+					alert("error deleting the repo");
+					console.log(resp.error);
+				}
+				else{
+					location.reload(true);
+				}
+				remove_greyout();
+			});
+	});
+
+	function remove_greyout(){
+		$('#box').click();
+	}
+
+	$(".repo").click(function() {
+		if (cc){
+			cc=false;
+			return;
+		}
+		var targetpanel = $(this);
+		//var bodypanel = $(this).parent().find(".ontologiesspace");
+		//var bodypanel = $(this).parent().parent().parent().parent().parent().parent().find(".ontologiesspace");
+		var bodypanel = $(this).parent().parent().parent().parent().parent().find(".ontologiesspace");
+
+		current_url = $(this).attr('url');
+		//greyout();
+		$.ajax({
+		  method: "GET",
+		  url: $(location).attr('protocol')+"//"+$(location).attr('host')+"/profile?repo="+targetpanel.attr('url'),
+		  beforeSend: function(){view_progress(); $('#loading').attr('style', "width: 10%")} ,
+			xhr: function(){
+				/*source: http://stackoverflow.com/questions/15668339/can-onprogress-functionality-be-added-to-jquery-ajax-by-using-xhrfields*/
+				// get the native XmlHttpRequest object
+				//alert($(location).attr('protocol')+"//"+$(location).attr('host')+"/profile?repo="+targetpanel.attr('url'));
+				var xhr = $.ajaxSettings.xhr() ;
+				// set the onprogress event handler
+				xhr.onprogress = function(evt){ console.log(Math.round(evt.loaded/evt.total * 100)); $('#loading').attr('style', "width: "+Math.round(evt.loaded/evt.total * 100)+"%") } ;
+				// set the onload event handler
+				xhr.onload = function(){ console.log('DONE!') } ;
+				// return the customized object
+				return xhr ;
+			}
+		}).done(function( resp ) {
+		    hide_progress()
+		    ontologies = resp.ontologies;
+		    if (ontologies.length==0){
+		    	alert("Make sure you merge the pull request. If there is no pull request, made a change to the ontology and push it to your repository");
+			}
+		    var o;
+		    var temp;
+		    var republish_img;
+            var ar2dtool_checked='';
+            var widoco_checked='';
+            var oops_checked='';
+            var republish_control_class;
+            if(ontologies.length>0){
+		    	//bodypanel.html('<div class="col-md-3 col-xs-3" >Ontology</div><div class="col-md-2 col-xs-2" >Diagrams</div><div class="col-md-2 col-xs-2" >Evaluation</div><div class="col-md-2 col-xs-2" >Documentation</div><div class="col-md-2 col-xs-2" >Publish</div><div class="col-md-1 col-xs-1">Bundle</div></br><hr>');
+		        bodypanel.html('<div class="col-md-10 col-xs-10">'+
+		                '<div class="col-md-6 col-xs-6">Ontology</div>' +
+		                '<div class="col-md-2 col-xs-2" >Diagrams</div>'+
+		                '<div class="col-md-2 col-xs-2" >Evaluation</div>'+
+		                '<div class="col-md-2 col-xs-2" >Documentation</div>'+
+		                '</div>'+
+		                '<div class="col-md-1 col-xs-1" >Publish</div>'+
+		                '<div class="col-md-1 col-xs-1">Bundle</div></br><hr>');
+		    }
+		    temp=bodypanel.html();
+		    temp += '<form action="/update_conf" method="POST">' + "{% csrf_token %}"
+		    //bodypanel.html(temp + '<form action="/update_conf" method="POST">');
+		    for(o=0;o<ontologies.length;o++){
+		    	//temp=bodypanel.html();
+		    	//alert(ontologies[o].published);
+		    	if(ontologies[o].published==true){
+		    		republish_img = '/media/icons/republish.png';
+		    		republish_control_class = 'republish-class';
+		    		republish_title = "Republish this ontology"
+		    		w3id_text = "<a style='color: #C0C0C0 !important;' href='"+
+		    		    "https://w3id.org/def/"+ontologies[o].pname +"'>" +
+		    		"[ " + ontologies[o].pname + " :  " + "https://w3id.org/def/"+ontologies[o].pname +
+		    		" ]  "+ "</a>" +
+		    		 '<a href="/profile?delete-name='+ontologies[o].pname+'"><span class="glyphicon glyphicon-remove"></span></a>'
+		    	}
+		    	else{
+		    	    republish_img = '/media/icons/publish.png';
+		    	    republish_control_class = 'publish-class';
+		    	    republish_title = "Publish this ontology"
+		    	    w3id_text = ""
+		    	}
+		    	if(ontologies[o].ar2dtool==true){
+		    	    ar2dtool_checked = 'checked';
+		    	}
+		    	else{
+		    	    ar2dtool_checked = '';
+		    	}
+		    	if(ontologies[o].widoco==true){
+		    	    widoco_checked = 'checked';
+		    	}
+		    	else{
+		    	    widoco_checked = '';
+		    	}
+		    	if(ontologies[o].oops==true){
+		    	    oops_checked = 'checked';
+		    	}
+		    	else{
+		    	    oops_checked = '';
+		    	}
+				temp += "<input type='hidden' name='ontology' value='"+ontologies[o].ontology+"'/>"
+		    	//temp += '<div class="row">'
+		    	temp = temp +
+		    	    /*"<div class='ontology col-md-3 col-xs-3'><a href='https://github.com/"+current_url+"/blob/master"+ontologies[o].ontology+"'>"+ontologies[o].ontology.substr(1)+"</a>"+"</div>"+
+                        '<div class="col-md-2 col-xs-2">'+
+		    			    '<input type="checkbox" class=" " name="'+ontologies[o].ontology+'-ar2dtool" '+ar2dtool_checked+'>'+
+		    			'</div>'+
+		    			'<div class="col-md-2 col-xs-2">'+
+    		    			'<input type="checkbox" class=" col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-oops" '+oops_checked+'>'+
+                        '</div>'+
+                        '<div class="col-md-2 col-xs-2">'+
+    		    			'<input type="checkbox" class=" col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-widoco" '+widoco_checked+'>'+
+    		    		'</div>'+
+    		    		*/
+
+                        '<div class="col-md-10 col-xs-10">'+
+                                '<div class="col-md-6 col-xs-6">'+
+                                    "<a href='https://github.com/"+current_url+"/blob/master"+ontologies[o].ontology+"'>"+
+                                    ontologies[o].ontology.substr(1)+"</a>"+
+                                '</div>'+
+                                '<div class="col-md-2 col-xs-2 ">'+
+                                    '<input type="checkbox" class=" " name="'+ontologies[o].ontology+'-ar2dtool" '+ar2dtool_checked+'>'+
+                                '</div>'+
+                                '<div class="col-md-2 col-xs-2">'+
+                                        '<input type="checkbox" class=" col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-oops" '+oops_checked+'>'+
+                                '</div>'+
+                                '<div class="col-md-2 col-xs-2">'+
+                                        '<input type="checkbox" class=" col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-widoco" '+widoco_checked+'>'+
+                                '</div>'+
+                                '<div class="col-md-12 col-xs-12 ">'+
+                                    '<div class="col-md-6 col-xs-6" style="color: #C0C0C0 !important;">'+
+                                        w3id_text +
+                                    '</div>'+
+                                '</div>'+
+                        '</div>'+
+
+		    			'<div class="col-md-1 col-xs-1">'+
+		    			    '<span class="btn btn-default '+republish_control_class+'" '+
+		    			    'pname="'+ontologies[o].pname+'" repo="'+current_url+'" '+
+		    			    'ontology="'+ontologies[o].ontology+'"'+
+		    			    ' title="'+republish_title+'">'+
+		    				'<img src="'+republish_img+'" height="20px" ontology="'+ontologies[o].ontology+
+		    					'" pname="'+ontologies[o].pname+
+		    					'" repo="'+current_url+'" > </span></div>'+
+		    				'<div class="col-md-1 col-xs-1"><span title="Download documentation, diagrams, evaluation and .htaccess" class="bundle-btn btn btn-default" repo="'+current_url+'" ontology="'+ontologies[o].ontology+'"><img src="/media/icons/bundle_download.png" height="20px"/></span></div>'+
+		    			"<br><br>"
+		    			//);
+		    }//end for
+		    //temp= bodypanel.html();
+		    if(ontologies.length>0){
+            	temp += '<input type="hidden" name="repo" value="'+current_url+'"/>';
+            	temp += '<input type="hidden" name="csrfmiddlewaretoken" value="'+'{{csrf_token}}'+'"/>';
+
+
+
+                //temp += '<div class="col-md-9 col-xs-9">'
+
+		    	temp += '<input type="submit" class="btn color7back color0 col-md-10 col-xs-10" value="Update Configuration">';
+
+                //temp += '</div>'
+
+                temp += '<div class="col-md-2 col-xs-2 ">'
+
+		    	temp += '<a class="closee btn color0 red1back col-md-12 col-xs-12" url="'+current_url+'" >Stop Watching</a>';
+
+		    	temp += '</div>'
+
+
+		    	console.log(current_url)
+
+
+
+
+
+
+
+		    }
+		    else{
+			    temp += '<a class="closee btn btn-danger col-md-12 col-xs-12 " url="'+current_url+'" >Stop Watching</a>';
+			    console.log(current_url)
+		    }
+		    console.log('now appending to the panel: '+temp)
+		    bodypanel.html(temp + '</form>');
+		    //$("#slidertag").html(resp.sliderhtml);
+		    //initsliders();
+		    $('#box').click();
+		});
+	});//repo selector
+
+
+	$(".savebtn").click(function(){
+
+			result['repo'] = current_url;
+			result['csrfmiddlewaretoken'] = '{{csrf_token}}';
+			 $.ajax({
+				  method: "POST",
+				  beforeSend: function (request)
+		           {
+		                request.setRequestHeader("X-CSRFToken", '{{csrf_token}}');
+		            },
+				  url: "/update_conf",
+				  data: result
+				}).always(function( resp ) {
+					console.debug("status is: "+resp.status)
+				    if (resp.status == true){
+				    	alert('Configuration changed successfully');
+				    }
+				    else{
+				    	alert("Error updating the configuration of one of the ontologies, please try again");
+				    	console.log("resp error"+resp.error);
+				    	//alert(resp.error);
+				    }
+				});
+	});
+
+
+
+});
+
+/*
+ var v;
+ $.ajax({
+		  method: "GET",
+		  url: "http://127.0.0.1:8000/profile?repo=ahmad88me/target",
+		}).done(function( resp ) {
+		    v = resp;
+		});
+
+		    */
+
+
+</script>
+
+<br>
+
+<div id="progressbox" style="opacity:0.8;
+    position:fixed;
+    width:100%;
+    height:100%;
+    top:0px;
+    left:0px;
+    z-index:1000;
+ background-color: #333333;">
+    <div style="    width: 90%;
+    height: 100px;
+    //background-color: red;
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;">
+        <div class="progress progress-striped active">
+            <div id="loading" class="progress-bar progress-bar-custom progress-bar-info" role="progressbar" aria-valuenow="60"
+                 aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+	$("#progressbox").hide();
+	$('#get-ontologies-btn').click(function(){
+		var selected_repo = $('#repo-select').val();
+		//alert(selected_repo);
+		$.ajax({
+		  method: "GET",
+		  url: window.location.href+"?repo="+selected_repo,
+		  beforeSend: function(){view_progress(); $('#loading').attr('style', "width: 10%")} ,
+			xhr: function(){
+				/*source: http://stackoverflow.com/questions/15668339/can-onprogress-functionality-be-added-to-jquery-ajax-by-using-xhrfields*/
+
+				// get the native XmlHttpRequest object
+				var xhr = $.ajaxSettings.xhr() ;
+				// set the onprogress event handler
+				xhr.onprogress = function(evt){ console.log(Math.round(evt.loaded/evt.total * 100)); $('#loading').attr('style', "width: "+Math.round(evt.loaded/evt.total * 100)+"%") } ;
+				// set the onload event handler
+				xhr.onload = function(){ console.log('DONE!') } ;
+				// return the customized object
+				return xhr ;
+			}
+		}).done(function( resp ) {
+		    ontologies = resp.ontologies;
+		    if (ontologies.length==0){
+		    	alert("Make sure you merge the pull request. If there is no pull request, made a change to the ontology and push it to your repository");
+			}
+			else{
+				var i;
+				var options_html="";
+				for(i=0;i<ontologies.length;i++){
+					options_html += "<option>"+ontologies[i].ontology+"</option>"
+				}
+				$('#ontology-select').html(options_html);
+			}
+			hide_progress()
+		  });
+
+	});
+
+
+	function hide_progress(){
+		$('#loading').attr('style', "width: "+"80"+"%")
+		$('#loading').attr('style', "width: "+"90"+"%")
+		$('#loading').attr('style', "width: "+"100"+"%")
+		setTimeout(hide_progress_actual, 1000);
+	}
+
+	function hide_progress_actual(){
+		$("#progressbox").hide();
+	}
+
+	function view_progress(){
+		//$("#progressbox").css('z-index: 3;');
+		$("#progressbox").show();
+	}
+
+    $(document).on('click', '.publish-class', function(){
+        //alert($(this).attr('repo'));
+        $("#publish-add-repo-input").val($(this).attr('repo'));
+        $("#publish-add-ontology-input").val($(this).attr('ontology'));
+        $("#publish-modal-add").modal();
+    });
+
+	$(document).on('click', '.republish-class', function(){
+        //alert($(this).attr('repo'));
+        $("#publish-add-repo-input").val($(this).attr('repo'));
+        $("#publish-add-ontology-input").val($(this).attr('ontology'));
+        $("#newname").val($(this).attr('pname'));
+        $("#publish-name-form").submit();
+        //$("#publish-modal-add").modal();
+    });
+
+    $(document).on('click', '.bundle-btn', function(){
+    	window.location.href = "/get_bundle?repo="+$(this).attr('repo')+"&ontology="+$(this).attr('ontology');
+    	//$.get("get_bundle", {"repo": $(this).attr('repo'), "ontology": $(this).attr('ontology') });
+        //$.post("get_bundle", {"repo": $(this).attr('repo'), "ontology": $(this).attr('ontology'), csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value });
+    });
+
+    $(document).on('click', '.generateall-btn', function(){
+        alert($(this).attr('repo'));
+        $.get("generateforall", {"repo": $(this).attr('repo')});
+    });
+
+
+
+
+
+
+function toggleChevron(e) {
+    //console.log('toggle')
+    //alert('toggle');
+    $(e.target)
+        .prev('.panel-heading')
+        .find("i.indicator")
+        .toggleClass('glyphicon-chevron-down glyphicon-chevron-right');
+}
+
+
+$(document).on('click', ".firsttime", function(){
+		//alert("This is the first time");
+		$(this).removeClass("firsttime");
+		$(this).find(".repo").click();
+		$(this).find(".glyphicon-chevron-right").click();
+	});
+
+//$('#accordion').on('hidden.bs.collapse', toggleChevron);
+//$('#accordion').on('shown.bs.collapse', toggleChevron);
+$('#accordion').on('hide.bs.collapse', toggleChevron);
+$('#accordion').on('show.bs.collapse', toggleChevron);
+
+
+</script>
+
+<script>
+	toastr.options["positionClass"] = "toast-top-full-width";
+	function show_error(error){
+		toastr.error(error);
+	}
+
+
+
+
+
+</script>
+
+<div class="modal fade " id="publish-modal-add" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content ">
+            <div class="modal-header darkl">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <!--<h4 class="modal-title">Reserve a name</h4>-->
+                <!--<h4 align="left">Reserve a name</h4>-->
+                <!--<p align="left " alt="left">Reserve a name</p>-->
+                Reserve a name
+            </div>
+            <div class="modal-body highl">
+                <br>
+
+                <form id="publish-name-form" action="" method="GET" style="color: #999">
+                    <div class="form-group">
+                        <div class="container-fluid">
+	                <span class=" col-md-9 col-xs-9">
+                        <input type="hidden" id="publish-add-repo-input" name="repo"/>
+                        <input type="hidden" id="publish-add-ontology-input" name="ontology"/>
+                		<input type="text" name="name" class="form-control" id="newname"
+                               placeholder="Enter the name you would like to reserve">
+                        <br>
+	                </span>
+                    <span class="col-md-3 col-xs-3">
+                        <input type="submit" class="form-control btn" style="background-color: #333333;color: #FBFBFB;"
+                               value="Reserve"/>
+                    </span>
+                        </div>
+                    </div>
+                </form>
+
+
+            </div>
+            <!--<div class="modal-footer">-->
+            <!--<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>-->
+            <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+            <!--</div>-->
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<br><br><br><br>
+<br><br><br><br>
+
+
+{% endblock %}
