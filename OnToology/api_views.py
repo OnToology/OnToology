@@ -191,7 +191,8 @@ class PublishView(View):
     def get(self, request):
         user = request.user
         pns = PublishName.objects.filter(user=user)
-        return JsonResponse({'publishnames': pns}, status=200)
+        pns_j = [p.json() for p in pns]
+        return JsonResponse({'publishnames': pns_j}, status=200)
 
 ###################################################################
 #                         Action Level                            #

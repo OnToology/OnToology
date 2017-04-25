@@ -6,7 +6,7 @@ import os
 
 from django.test import Client
 from unittest import TestCase
-#from mongoengine.django.tests import MongoTestCase as TestCase
+# from mongoengine.django.tests import MongoTestCase as TestCase
 from OnToology.models import OUser, Repo
 
 
@@ -34,3 +34,4 @@ class TestLoginAPIs(TestCase):
         jresponse = json.loads(response.content)
         self.assertIn('token', jresponse, msg='token is not returned')
         self.assertEqual(jresponse['token'], self.token)
+

@@ -42,3 +42,4 @@ def create_publishname(name=None, user=None, repo=None, ontology=None):
         raise Exception('in create publishname, missing parameters')
     pn = PublishName(name=name, user=user, repo=repo, ontology=ontology)
     pn.save()
+

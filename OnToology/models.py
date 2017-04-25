@@ -55,12 +55,26 @@ try:
         token = StringField(default='no token')
         token_expiry = DateTimeField(default=datetime.now()+timedelta(days=1))
 
+        def json(self):
+            return {'id': str(self.id),
+                    'private': self.private,
+                    'email': self.email}
+
 
     class PublishName(Document):
         name = StringField()
         user = ReferenceField(OUser)
         repo = ReferenceField(Repo)
         ontology = StringField(default='')
+
+        def json(self):
+            return {
+                    'id': str(self.id),
+                    'name': self.name,
+                    'user': self.user.json(),
+                    'repo': self.repo.json(),
+                    'ontology': self.ontology
+                    }
 
 except:
     pass
