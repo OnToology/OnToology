@@ -11,7 +11,7 @@ ontology_formats = ['.rdf', '.owl', '.ttl']
 config_folder_name = 'OnToology'
 config_file_name = 'OnToology.cfg'
 log_file_dir = ''  # need to be set some how
-verification_log_fname = 'verification.log'
+# verification_log_fname = 'verification.log'
 
 g = None
 
@@ -58,19 +58,32 @@ def tools_execution(changed_files, base_dir, logfile, dolog_fname=None, target_r
         dolog = dolog_logg
     repo.notes = ''
     repo.save()
+    progress_out_of = 70.0
+    if len(changed_files) == 0:
+        repo.progress = progress_out_of
+        repo.save()
+        return
+    single_piece = progress_out_of/len(changed_files)
+    progress_inc = single_piece/4.0
     for f in changed_files:
         if f[-4:] in ontology_formats:
             if f[:len('OnToology/')] == 'OnToology/':  # This is to solve bug #265
                 dolog("nested prevented bug: "+f)
                 continue
             dolog("tools_execution: "+f)
-            handle_single_ofile(f, base_dir, target_repo=target_repo, change_status=change_status, repo=repo)
+            handle_single_ofile(f, base_dir, target_repo=target_repo, change_status=change_status, repo=repo,
+                                progress_inc=progress_inc)
 
 
-def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo=None):
+def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo=None, progress_inc=0.0):
     """
     assuming the change_file is an ontology file
     :param changed_file: relative directory of the file e.g. dir1/dir2/my.owl
+    :param base_dir:
+    :param target_repo:
+    :param change_status:
+    :param repo: a Repo instance of the target repo
+    :param progress_inc: how much to increment the progress after each
     :return:
     """
     import ar2dtool
@@ -89,14 +102,18 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
             print 'in init draw detected an error'
             repo.notes += 'Error generating diagrams for %s. ' % changed_file
             repo.save()
+    repo.progress += progress_inc
+    repo.save()
     if conf['widoco_enable']:
         dolog('will call widoco')
         change_status(target_repo, 'generating docs for: '+changed_file)
         r = widoco.generate_widoco_docs([changed_file], base_dir)
         if r != "":
-            print 'in init documentation detected an error'
+            print 'in init documentation detected an error for ontology file: %s' % changed_file
             repo.notes += 'Error generating documentation for %s. ' % changed_file
             repo.save()
+    repo.progress += progress_inc
+    repo.save()
     if conf['oops_enable']:
         dolog('will call oops')
         change_status(target_repo, 'evaluating: '+changed_file)
@@ -105,10 +122,14 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
             print 'in init evaluation detected an error'
             repo.notes += 'Error generating evaluation for %s. ' % changed_file
             repo.save()
+    repo.progress += progress_inc
+    repo.save()
     if conf['owl2jsonld_enable']:
         dolog('will call owl2jsonld')
         change_status(target_repo, 'generating context for: '+changed_file)
         owl2jsonld.generate_owl2jsonld_file([changed_file], base_dir=base_dir)
+    repo.progress += progress_inc
+    repo.save()
 
 
 def create_of_get_conf(ofile, base_dir):
