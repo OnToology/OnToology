@@ -22,7 +22,7 @@
               <div class="row">
                 <span class="col-md-3 col-xs-3 darktext" style="word-break: break-all">{{r.url}}</span>
                 <p class="col-md-3 col-xs-3" style="word-break: break-all">{{r.state}}</p>
-                <div class="col-md-2 col-xs-2">
+                <div class="col-md-3 col-xs-3">
                   <div class="progress">
                       {%if r.progress == 100 %}
                     <div class="progress-bar progress-bar-info" role="progressbar"
@@ -40,20 +40,7 @@
                       {%endif%}
                   </div>
                 </div>
-                {%if r.previsual_page_available %}
-                <div class="col-md-1 col-xs-1 ">
-            <a
-              href="/renew_previsual?target_repo={{r.url}}"
-              title="Renew previsualization">
-            <img src="media/icons/renew_previsual.png" height="20px"> </a>
-            </div>
-            {%else%}
-            <div class="col-md-1 col-xs-1 "> <a
-              href="/renew_previsual?target_repo={{r.url}}"
-              title="Generate previsualization">
-            <img src="media/icons/renew_previsual.png" height="20px"> </a>
-            </div>
-            {%endif%}
+
             <div class="col-md-3 col-xs-3 darktext " align="right">
             <!--{{r.last_used| date:"d-M-Y"}}-->
                 {{r.last_used}}
