@@ -133,14 +133,20 @@ def get_access_token(request):
         'redirect_uri': host + '/add_hook'
     }
     res = requests.post('https://github.com/login/oauth/access_token', data=data)
-    atts = res.text.split('&')
-    d = {}
-    for att in atts:
-        keyv = att.split('=')
-        d[keyv[0]] = keyv[1]
+    try:
+        atts = res.text.split('&')
+        d = {}
+        for att in atts:
+            keyv = att.split('=')
+            d[keyv[0]] = keyv[1]
+    except Exception as e:
+        print "Exception: %s" % str(e)
+        print "response: %s" % str(res.text)
+        return render(request, 'msg.html', {'Error getting the token from GitHub. please try again or contact us'})
     if 'access_token' not in d:
         print 'access_token is not there'
         return HttpResponseRedirect('/')
+
     access_token = d['access_token']
     request.session['access_token'] = access_token
     update_g(access_token)
