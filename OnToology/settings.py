@@ -75,7 +75,16 @@ else:
 
 
 from mongoengine import connect
-connect("OnToology")
+if 'db_username' not in os.environ or os.environ['db_username'].strip() == '':
+    print "no auth"
+    connect("OnToology")
+else:
+    print "with auth"
+    connect("OnToology", host=os.environ['db_host'], port=int(os.environ['db_port']),
+            username=os.environ['db_username'], password=os.environ['db_password'],
+            )
+            #authentication_mechanism='MONGODB-CR')
+            #authentication_mechanism='SCRAM-SHA-1')
 
 
 AUTH_USER_MODEL = 'mongo_auth.MongoUser'
