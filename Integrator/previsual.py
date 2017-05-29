@@ -129,9 +129,13 @@ def generate_previsual_page(repo_dir_folder, repo_name):
         at least for one ontology "
     sec_prev = 'prev-'+sec
     temp_folder_prev = os.path.join(temp_dir, sec_prev)
+    # comm = timeout_comm + "java -jar %s -i %s -o %s -n %s" % \
+    #        (os.path.join(previsual_dir, "vocabLite-1.0-jar-with-dependencies.jar"), repo_dir_folder, temp_folder_prev,
+    #         repo_name)
     comm = timeout_comm + "java -jar %s -i %s -o %s -n %s" % \
-           (os.path.join(previsual_dir, "vocabLite-1.0-jar-with-dependencies.jar"), repo_dir_folder, temp_folder_prev,
+           (os.path.join(previsual_dir, "vocabLite.jar"), repo_dir_folder, temp_folder_prev,
             repo_name)
+
     dolog('comm: '+comm)
     # call(comm, shell=True)
     error_msg, msg = call_and_get_log(comm)

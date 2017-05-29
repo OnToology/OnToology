@@ -157,3 +157,15 @@ There are two workflows:
 #### Case 2: If you are not added as a contributor yet (or you are a contributor who prefers this workflow):
 1. Fork from the current live branch (now it is `master`).
 2. Create a pull request, we will review it and merge if it is ok.
+
+## Auto deployment script
+Things that you might want to change the username and email of git
+```
+git config --global user.name
+git config --global user.email
+```
+
+And maybe you want to use the https url instead of git url
+```
+git clone https://github.com/OnToology/OnToology.git
+```
