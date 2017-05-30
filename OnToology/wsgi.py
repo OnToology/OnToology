@@ -1,4 +1,8 @@
 
+try:
+    import localwsgi
+except:
+    pass
 import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "OnToology.settings")
 
