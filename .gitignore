@@ -1,3 +1,7 @@
+
+#coverage report
+.coverage
+
 #local
 local*
 bootstrap.sh

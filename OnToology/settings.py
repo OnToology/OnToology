@@ -73,14 +73,17 @@ else:
     print "Going remote"
     print os.environ
 
+TEST = False
 
 from mongoengine import connect
+
+MONGO_DATABASE_NAME = "OnToology"
 if 'db_username' not in os.environ or os.environ['db_username'].strip() == '':
     print "no auth"
-    connect("OnToology")
+    connect(MONGO_DATABASE_NAME)
 else:
     print "with auth"
-    connect("OnToology", host=os.environ['db_host'], port=int(os.environ['db_port']),
+    connect(MONGO_DATABASE_NAME, host=os.environ['db_host'], port=int(os.environ['db_port']),
             username=os.environ['db_username'], password=os.environ['db_password'],
             )
             #authentication_mechanism='MONGODB-CR')
@@ -116,7 +119,6 @@ MEDIA_ROOT = BASE_DIR+'/media/'
 
 MEDIA_URL = '/media/'
 
-TEST = False    
     
 test_conf = {'local': False #don't interact with github at all, just mimic
              

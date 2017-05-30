@@ -1,6 +1,6 @@
 import os
 from subprocess import call
-from Integrator import dolog, get_file_from_path, build_path, delete_dir, verification_log_fname
+from Integrator import dolog, get_file_from_path, build_path, delete_dir
 from Integrator import get_parent_path, log_file_dir, config_folder_name
 
 from . import call_and_get_log, timeout_comm
