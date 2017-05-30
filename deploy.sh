@@ -74,7 +74,7 @@ allow from all
 Require all granted
 </Directory>
 WSGIDaemonProcess www-data python-path=$HOME:$HOME/venv/lib/python2.7/site-packages
-WSGIScriptAlias / $HOME/OnToology/wsgi.py process-group=www-data
+WSGIScriptAlias / $HOME/OnToology/OnToology/wsgi.py process-group=www-data
 <Directory $HOME/OnToology>
 <Files wsgi.py>
 Require all granted
