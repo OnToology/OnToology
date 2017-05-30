@@ -158,7 +158,11 @@ There are two workflows:
 1. Fork from the current live branch (now it is `master`).
 2. Create a pull request, we will review it and merge if it is ok.
 
+
 ## Auto deployment script
+
+Before you run the script check the below variables
+
 Things that you might want to change the username and email of git
 ```
 git config --global user.name
@@ -169,3 +173,10 @@ And maybe you want to use the https url instead of git url
 ```
 git clone https://github.com/OnToology/OnToology.git
 ```
+
+Using the script
+```
+sh OnToology/deploy.sh
+```
+
+
