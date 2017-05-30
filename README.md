@@ -116,8 +116,7 @@ sudo apt-get install git
 sudo sh OnToology/deploy.sh
 ```
 
-4. Append environment variables (Below) to virtual environment venv/bin/activate
-
+4. Append environment variables (Below) to virtual environment venv/bin/activate (note: this won't work with apache)
 
 #### Environment variables that you need to set
 
@@ -145,9 +144,37 @@ export db_username=
 export db_password=
 export db_host=
 export db_port=
-
 ```
-Or you can set them in apache e.g. ``` SetEnv github_username OnToologyUser```
+
+or in the local WSGI file `localwsgi.py`
+```
+import os
+environ = os.environ
+environ['github_username']="OnToologyUser"
+environ['github_password']=""
+environ['github_repos_dir']="/home/ubuntu/temp/"
+environ['ar2dtool_dir']="/home/ubuntu/ar2dtool/bin/"
+environ['ar2dtool_config']="/home/ubuntu/config/"
+environ['widoco_dir']="/home/ubuntu/widoco/"
+environ['owl2jsonld_dir']="/home/ubuntu/owl2jsonld"
+environ['SECRET_KEY']=""
+environ['tools_config_dir']="/home/ubuntu/config"
+environ['previsual_dir']="/home/ubuntu/vocabLite/jar"
+environ['wget_dir']="/home/ubuntu/temp/wget_dir"
+environ['client_id_login']=""
+environ['client_secret_login']=""
+environ['client_id_public']=""
+environ['client_secret_public']=""
+environ['client_id_private']=""
+environ['client_secret_private']=""
+environ['publish_dir']="/home/ubuntu/publish/"
+
+environ['db_username']=""
+environ['db_password']=""
+environ['db_host']=""
+environ['db_port']=""
+```
+
 
 
 #### External JARs you need to install (or you can use the deploy script)
