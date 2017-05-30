@@ -42,7 +42,7 @@ env_variables_to_pass = ['github_username', 'github_password', 'github_repos_dir
                          'wget_dir', 'tools_config_dir', 'widoco_dir', 'owl2jsonld_dir', 'SECRET_KEY',
                          'client_id_login', 'client_id_public', 'client_id_private',
                          'client_secret_login', 'client_secret_public', 'client_secret_private',
-                         'publish_dir', 'tool_token',
+                         'publish_dir', 'tool_token', 'db_username', 'db_password', 'db_host', 'db_port'
                          ]
 
 
