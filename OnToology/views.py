@@ -76,7 +76,6 @@ sys.stdout = sys.stderr
 
 
 def home(request):
-    r
     global client_id, client_secret, is_private
     print '****** Welcome to home page ********'
     print >> sys.stderr, '****** Welcome to the error output ******'
