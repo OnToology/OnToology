@@ -54,8 +54,6 @@ chmod 777 -R /var/log/apache2
 sudo pip install virtualenv
 virtualenv -p /usr/bin/python2.7 venv
 
-echo "download OnToology"
-cd $HOME; git clone git@github.com:OnToology/OnToology.git
 
 echo "Install OnToology requirements.txt for virtual environment"
 source $HOME/venv/bin/activate; pip install -r $HOME/OnToology/requirements.txt
