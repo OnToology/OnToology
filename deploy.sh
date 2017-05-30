@@ -64,6 +64,7 @@ echo "Writing to apache"
 cat <<EOT > /etc/apache2/sites-available/000-default.conf
 <VirtualHost *:80>
 ServerAdmin ontoology@delicias.dia.fi.upm.es
+Redirect "/favicon.ico" "https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/favicon/favicon.ico"
 Alias /publish/ $HOME/publish/
 <Directory $HOME/publish>
 Options Indexes FollowSymLinks MultiViews

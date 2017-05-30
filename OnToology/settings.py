@@ -98,11 +98,15 @@ SESSION_SERIALIZER = 'mongoengine.django.sessions.BSONSerializer'
 SECRET_KEY = 'xj1c6fel(z5@=%(br!j)u155a71j*^u_b+2'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+
+SERVER_EMAIL = 'ontoology@delicias.dia.fi.upm.es'
+
+ADMINS = (('Mr. Ahmad', 'ahmad88me@gmail.com'), ('Ahmad', 'aalobaid@fi.upm.es'))
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 TEMPLATE_DIRS = (
     BASE_DIR+'/templates',
