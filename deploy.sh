@@ -45,6 +45,7 @@ echo "mk dirs ..."
 cd ~
 mkdir publish
 mkdir temp
+mkdir temp/log
 mkdir config
 mkdir wget_dir
 mkdir repos

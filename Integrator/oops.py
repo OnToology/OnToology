@@ -121,7 +121,8 @@ def generate_oops_pitfalls(ont_file, base_dir):
     comm = "cd " + base_dir + "; "
     comm += timeout_comm + "java -jar "
     comm += ' -Dfile.encoding=utf-8 '
-    comm += widoco_dir + "widoco-0.0.1-jar-with-dependencies.jar -oops "
+    #comm += widoco_dir + "widoco-0.0.1-jar-with-dependencies.jar -oops "
+    comm += widoco_dir + "widoco.jar -oops "
     comm += " -ontFile '" + ont_file_abs_path
     comm += "' -outFolder '" + out_abs_dir + "'"
     # if not settings.TEST:
