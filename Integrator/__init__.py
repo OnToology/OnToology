@@ -181,6 +181,7 @@ def create_of_get_conf(ofile, base_dir):
             owl2jsonld_enable = False
     else:
         dolog(ofile+' configuration file does not exists (not an error)')
+        dolog('full path is: '+ofile_config_file_abs)
         config.add_section(ar2dtool_sec_name)
         config.set(ar2dtool_sec_name, 'enable', ar2dtool_enable)
         config.add_section(widoco_sec_name)
