@@ -1,6 +1,6 @@
 
 try:
-    import localwsgi
+    import OnToology.localwsgi
 except:
     pass
 import os

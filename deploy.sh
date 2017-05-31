@@ -73,7 +73,7 @@ Order allow,deny
 allow from all
 Require all granted
 </Directory>
-WSGIDaemonProcess www-data python-path=$HOME:$HOME/venv/lib/python2.7/site-packages
+WSGIDaemonProcess www-data python-path=$HOME/OnToology:$HOME/venv/lib/python2.7/site-packages
 WSGIScriptAlias / $HOME/OnToology/OnToology/wsgi.py process-group=www-data
 <Directory $HOME/OnToology>
 <Files wsgi.py>
