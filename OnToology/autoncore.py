@@ -54,6 +54,7 @@ parent_folder = None
 home = os.environ['github_repos_dir']
 verification_log_fname = 'verification.log'
 sleeping_time = 7
+refresh_sleeping_secs = 30  # because github takes time to refresh
 ontology_formats = ['.rdf', '.owl', '.ttl']
 g = None
 log_file_dir = None  # '&1'#which is stdout #sys.stdout#by default
@@ -105,11 +106,13 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
     local_repo = target_repo.replace(target_repo.split('/')[-2], ToolUser)
     if not settings.TEST or not settings.test_conf['local']:
         delete_repo(local_repo)
+        time.sleep(refresh_sleeping_secs)
     dolog('repo deleted')
     if not settings.TEST or not settings.test_conf['local']:
         dolog('will fork the repo')
         change_status(target_repo, 'forking repo')
         fork_repo(target_repo, username, password)
+        time.sleep(refresh_sleeping_secs)
         dolog('repo forked')
         drepo.progress = 10.0
         drepo.save()
