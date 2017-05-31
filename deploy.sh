@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 # This shell to be used for deployment
 echo "Install packages ..."
+sudo apt-add-repository -y ppa:webupd8team/java > /dev/null 2>&1
 sudo add-apt-repository -y ppa:git-core/ppa > /dev/null 2>&1
 sudo apt-get update > /dev/null 2>&1
 sudo apt-get install -y git
-sudo apt-get install -y default-jre
+# sudo apt-get install -y default-jre
+# https://www.liquidweb.com/kb/how-to-install-oracle-java-8-on-ubuntu-14-04-lts/
+sudo apt-get install -y oracle-java8-installer
 sudo apt-get install -y apache2 apache2-mpm-prefork apache2-utils libexpat1 ssl-cert
 sudo apt-get install -y libapache2-mod-wsgi
 sudo apt-get install -y python-dev python-pip
