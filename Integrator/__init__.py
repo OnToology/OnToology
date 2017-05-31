@@ -90,13 +90,13 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
     import widoco
     import oops
     import owl2jsonld
-    dolog("testing the base_dir content BEFORE")
+    print("testing the base_dir content BEFORE")
     comm = "ls "+base_dir
     call(comm, shell=True)
     dolog("will call create or get conf")
     conf = create_of_get_conf(changed_file, base_dir)
     dolog("conf: "+str(conf))
-    dolog("testing the base_dir content AFTER")
+    print("testing the base_dir content AFTER")
     comm = "ls "+base_dir
     call(comm, shell=True)
     if conf['ar2dtool_enable']:
