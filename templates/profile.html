@@ -124,21 +124,21 @@ function GetURLParameter(sParam)
                                     </div>
 									<div class="col-md-1 col-xs-1 ">
                                         <span class="generateall-btn handpointer" repo="{{r.url}}" title="Generate documentation, diagrams and evaluation">
-                                            <img src="media/icons/regenerate_all.png" height="20px">
+                                            <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/regenerate_all.png" height="20px">
                                         </span>
 									</div>
                                     {%if r.previsual_page_available %}
                                         <div class="col-md-1 col-xs-1 "> <a href="/renew_previsual?target_repo={{r.url}}" title="Renew previsualization">
-                                            <img src="media/icons/renew_previsual.png" height="20px"> </a>
+                                            <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/renew_previsual.png" height="20px"> </a>
                                         </div>
                                     {%else%}
                                         <div class="col-md-1 col-xs-1 "> <a href="/renew_previsual?target_repo={{r.url}}" title="Generate previsualization">
-                                            <img src="media/icons/renew_previsual.png" height="20px"> </a>
+                                            <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/renew_previsual.png" height="20px"> </a>
                                         </div>
                                     {%endif%}
                                     <div class="col-md-1 col-xs-1 ">
                                     {%if r.previsual_page_available %}
-                                        <a href="http://{{r.user}}.github.io/{{r.rrepo}}" title="Go to previsualization"><img src="media/icons/go_to_previsual.png"
+                                        <a href="http://{{r.user}}.github.io/{{r.rrepo}}" title="Go to previsualization"><img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/go_to_previsual.png"
                                                                         height="20px"></a>
                                     {%endif%}
                                         </div>
@@ -322,7 +322,7 @@ $( document ).ready(function() {
 		    	//temp=bodypanel.html();
 		    	//alert(ontologies[o].published);
 		    	if(ontologies[o].published==true){
-		    		republish_img = '/media/icons/republish.png';
+		    		republish_img = 'https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/republish.png';
 		    		republish_control_class = 'republish-class';
 		    		republish_title = "Republish this ontology"
 		    		w3id_text = "<a style='color: #C0C0C0 !important;' href='"+
@@ -332,7 +332,7 @@ $( document ).ready(function() {
 		    		 '<a href="/profile?delete-name='+ontologies[o].pname+'"><span class="glyphicon glyphicon-remove"></span></a>'
 		    	}
 		    	else{
-		    	    republish_img = '/media/icons/publish.png';
+		    	    republish_img = 'https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/publish.png';
 		    	    republish_control_class = 'publish-class';
 		    	    republish_title = "Publish this ontology"
 		    	    w3id_text = ""
@@ -399,7 +399,7 @@ $( document ).ready(function() {
 		    				'<img src="'+republish_img+'" height="20px" ontology="'+ontologies[o].ontology+
 		    					'" pname="'+ontologies[o].pname+
 		    					'" repo="'+current_url+'" > </span></div>'+
-		    				'<div class="col-md-1 col-xs-1"><span title="Download documentation, diagrams, evaluation and .htaccess" class="bundle-btn btn btn-default" repo="'+current_url+'" ontology="'+ontologies[o].ontology+'"><img src="/media/icons/bundle_download.png" height="20px"/></span></div>'+
+		    				'<div class="col-md-1 col-xs-1"><span title="Download documentation, diagrams, evaluation and .htaccess" class="bundle-btn btn btn-default" repo="'+current_url+'" ontology="'+ontologies[o].ontology+'"><img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/bundle_download.png" height="20px"/></span></div>'+
 		    			"<br><br>"
 		    			//);
 		    }//end for
