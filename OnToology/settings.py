@@ -73,9 +73,21 @@ else:
     print "Going remote"
     print os.environ
 
+TEST = False
 
 from mongoengine import connect
-connect("OnToology")
+
+MONGO_DATABASE_NAME = "OnToology"
+if 'db_username' not in os.environ or os.environ['db_username'].strip() == '':
+    print "no auth"
+    connect(MONGO_DATABASE_NAME)
+else:
+    print "with auth"
+    connect(MONGO_DATABASE_NAME, host=os.environ['db_host'], port=int(os.environ['db_port']),
+            username=os.environ['db_username'], password=os.environ['db_password'],
+            )
+            #authentication_mechanism='MONGODB-CR')
+            #authentication_mechanism='SCRAM-SHA-1')
 
 
 AUTH_USER_MODEL = 'mongo_auth.MongoUser'
@@ -89,11 +101,15 @@ SESSION_SERIALIZER = 'mongoengine.django.sessions.BSONSerializer'
 SECRET_KEY = 'xj1c6fel(z5@=%(br!j)u155a71j*^u_b+2'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+
+SERVER_EMAIL = 'ontoology@delicias.dia.fi.upm.es'
+
+ADMINS = (('Mr. Ahmad', 'ahmad88me@gmail.com'), ('Ahmad', 'aalobaid@fi.upm.es'))
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 TEMPLATE_DIRS = (
     BASE_DIR+'/templates',
@@ -103,7 +119,6 @@ MEDIA_ROOT = BASE_DIR+'/media/'
 
 MEDIA_URL = '/media/'
 
-TEST = False    
     
 test_conf = {'local': False #don't interact with github at all, just mimic
              

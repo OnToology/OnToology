@@ -17,9 +17,9 @@
 #
 
 
-from mongoengine import Document, StringField, DateTimeField, ListField, ReferenceField, BooleanField
+from mongoengine import Document, StringField, DateTimeField, ListField, ReferenceField, BooleanField, FloatField
 # from mongoengine.django.auth import User
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class Repo(Document):
@@ -30,6 +30,19 @@ class Repo(Document):
     previsual = BooleanField(default=False)
     previsual_page_available = BooleanField(default=False)
     notes = StringField(default='')
+    progress = FloatField(default=0.0)
+
+    def json(self):
+        return {
+            "id": str(self.id),
+            "url": self.url,
+            "last_used": self.last_used.strftime('%Y-%m-%d %H:%M'),
+            "state": self.state,
+            "owner": self.owner,
+            "previsual": self.previsual,
+            "previsual_page_available": self.previsual_page_available,
+            "notes": self.notes
+        }
 
 
 # The below is to avoid the error occue when importing Repo from autoncore because of the User class which cases the
@@ -40,12 +53,29 @@ try:
     class OUser(User):
         repos = ListField(ReferenceField(Repo))
         private = BooleanField(default=False)  # The permission access level to OnToology
+        token = StringField(default='no token')
+        token_expiry = DateTimeField(default=datetime.now()+timedelta(days=1))
+
+        def json(self):
+            return {'id': str(self.id),
+                    'private': self.private,
+                    'email': self.email}
+
 
     class PublishName(Document):
         name = StringField()
         user = ReferenceField(OUser)
         repo = ReferenceField(Repo)
         ontology = StringField(default='')
+
+        def json(self):
+            return {
+                    'id': str(self.id),
+                    'name': self.name,
+                    'user': self.user.json(),
+                    'repo': self.repo.json(),
+                    'ontology': self.ontology
+                    }
 
 except:
     pass

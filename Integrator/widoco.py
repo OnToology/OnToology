@@ -7,7 +7,6 @@ from subprocess import call
 
 from . import dolog, build_path
 from . import ontology_formats, get_parent_path, log_file_dir
-from . import verification_log_fname
 from . import call_and_get_log, timeout_comm
 #  import ontoology.settings as settings
 
@@ -69,7 +68,7 @@ def create_widoco_doc(rdf_file, base_dir):
     # if not settings.TEST:
     if True:
         comm += ' >> "' + log_file_dir + '" '
-    comm += " ; echo 'widoco' >> " + os.path.join(get_parent_path(out_abs_dir), verification_log_fname)
+    #comm += " ; echo 'widoco' >> " + os.path.join(get_parent_path(out_abs_dir), verification_log_fname)
     dolog(comm)
     #return_code = call(comm, shell=True)
     error_msg, msg = call_and_get_log(comm)

@@ -133,14 +133,20 @@ def get_access_token(request):
         'redirect_uri': host + '/add_hook'
     }
     res = requests.post('https://github.com/login/oauth/access_token', data=data)
-    atts = res.text.split('&')
-    d = {}
-    for att in atts:
-        keyv = att.split('=')
-        d[keyv[0]] = keyv[1]
+    try:
+        atts = res.text.split('&')
+        d = {}
+        for att in atts:
+            keyv = att.split('=')
+            d[keyv[0]] = keyv[1]
+    except Exception as e:
+        print "Exception: %s" % str(e)
+        print "response: %s" % str(res.text)
+        return render(request, 'msg.html', {'Error getting the token from GitHub. please try again or contact us'})
     if 'access_token' not in d:
         print 'access_token is not there'
         return HttpResponseRedirect('/')
+
     access_token = d['access_token']
     request.session['access_token'] = access_token
     update_g(access_token)
@@ -353,10 +359,12 @@ def generateforall(target_repo, user_email):
     comm += ' "' + target_repo + '" "' + user + '" "' + cloning_repo + '" '
     for c in changed_files:
         comm += '"' + c.strip() + '" '
-    if settings.TEST:
-        print 'will call git_magic with target=%s, user=%s, cloning_repo=%s, changed_files=%s' % \
-              (target_repo, user, cloning_repo, str(changed_files))
-        git_magic(target_repo, user, cloning_repo, changed_files)
+    # if settings.TEST:
+    #     print 'will call git_magic with target=%s, user=%s, cloning_repo=%s, changed_files=%s' % \
+    #           (target_repo, user, cloning_repo, str(changed_files))
+    #     git_magic(target_repo, user, cloning_repo, changed_files)
+    if False:
+        pass
     else:
         print 'running autoncore code as: ' + comm
 
@@ -521,7 +529,11 @@ def profile(request):
                 repo = r
                 break
         if found:  # if the repo belongs to the user
-            if len(PublishName.objects.filter(name=name)) == 0 or (PublishName.objects.get(name=name).user==user and
+
+            if len(PublishName.objects.filter(name=name)) > 1:
+                error_msg = 'a duplicate published names, please contact us ASAP to fix it'
+
+            elif len(PublishName.objects.filter(name=name)) == 0 or (PublishName.objects.get(name=name).user==user and
                                                         PublishName.objects.get(name=name).repo==repo and
                                                         PublishName.objects.get(name=name).ontology==ontology_rel_path):
                 if (len(PublishName.objects.filter(name=name)) == 0 and
@@ -841,3 +853,7 @@ def get_bundle(request):
             response['Content-Disposition'] = 'attachment; filename="%s"' % zip_dir.split('/')[-1]
         return response
 
+
+@login_required
+def progress_page(request):
+    return render(request, 'progress.html', {'repos': request.user.repos})

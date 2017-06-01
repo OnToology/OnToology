@@ -54,6 +54,7 @@ parent_folder = None
 home = os.environ['github_repos_dir']
 verification_log_fname = 'verification.log'
 sleeping_time = 7
+refresh_sleeping_secs = 10  # because github takes time to refresh
 ontology_formats = ['.rdf', '.owl', '.ttl']
 g = None
 log_file_dir = None  # '&1'#which is stdout #sys.stdout#by default
@@ -96,6 +97,8 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
     dolog('############################### magic #############################')
     dolog('target_repo: ' + target_repo)
     change_status(target_repo, 'Preparing')
+    from models import Repo
+    drepo = Repo.objects.get(url=target_repo)
     # so the tool user can takeover and do stuff
     username = os.environ['github_username']
     password = os.environ['github_password']
@@ -103,20 +106,23 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
     local_repo = target_repo.replace(target_repo.split('/')[-2], ToolUser)
     if not settings.TEST or not settings.test_conf['local']:
         delete_repo(local_repo)
+        time.sleep(refresh_sleeping_secs)
     dolog('repo deleted')
     if not settings.TEST or not settings.test_conf['local']:
         dolog('will fork the repo')
         change_status(target_repo, 'forking repo')
         fork_repo(target_repo, username, password)
+        time.sleep(refresh_sleeping_secs)
         dolog('repo forked')
+        drepo.progress = 10.0
+        drepo.save()
     if not settings.TEST or not settings.test_conf['local']:
         change_status(target_repo, 'cloning repo')
         clone_repo(cloning_repo, user)
         dolog('repo cloned')
+        drepo.progress = 20.0
     files_to_verify = []
     # print "will loop through changed files"
-    from models import Repo
-    drepo = Repo.objects.get(url=target_repo)
     Integrator.tools_execution(changed_files=changed_filesss, base_dir=os.path.join(home, user), logfile=log_file_dir,
                                target_repo=target_repo, g_local=g, dolog_fname=logger_fname,
                                change_status=change_status, repo=drepo)
@@ -177,6 +183,8 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
             exception_if_exists += str(e)
             dolog('failed to create pull request: '+exception_if_exists)
             change_status(target_repo, 'failed to create a pull request')
+    drepo.progress = 100
+    drepo.save()
     # change_status(target_repo, 'Ready')
 
 
@@ -558,16 +566,22 @@ def clone_repo(cloning_repo, parent_folder, dosleep=True):
         # the wait time to give github sometime so the repo can be cloned
         time.sleep(sleeping_time)
     try:
-        comm = "rm" + " -Rf " + home + parent_folder
+        # comm = "rm" + " -Rf " + home + parent_folder
+        comm = "rm" + " -Rf " + os.path.join(home, parent_folder)
         if not settings.TEST:
             comm += ' >> "' + log_file_dir + '"'
         dolog(comm)
         call(comm, shell=True)
     except Exception as e:
         dolog('rm failed: ' + str(e))
-    comm = "git" + " clone" + " " + cloning_repo + " " + home + parent_folder
+    # comm = "git" + " clone" + " " + cloning_repo + " " + home + parent_folder
+    comm = "git" + " clone" + " " + cloning_repo + " " + os.path.join(home, parent_folder)
     if not settings.TEST:
         comm += ' >> "' + log_file_dir + '"'
+    dolog(comm)
+    call(comm, shell=True)
+    # Change ownership to solve the problem of permission denied to create OnToology.cfg file
+    comm = "chown $USER " + os.path.join(home, parent_folder)
     dolog(comm)
     call(comm, shell=True)
     # comm = "chmod -R 777 " + home + parent_folder
@@ -575,7 +589,8 @@ def clone_repo(cloning_repo, parent_folder, dosleep=True):
     #     comm += ' >> "' + log_file_dir + '"'
     # dolog(comm)
     # call(comm, shell=True)
-    return home + parent_folder
+    # return home + parent_folder
+    return os.path.join(home, parent_folder)
 
 
 def commit_changes():
@@ -584,19 +599,23 @@ def commit_changes():
         init_g()
     gu = "git config  user.email \"ahmad88csc@gmail.com\";"
     gu += 'git config  user.name "%s" ;' % (ToolUser)
-    comm = "cd " + home + parent_folder + ";" + gu + " git add . "
+    # comm = "cd " + home + parent_folder + ";" + gu + " git add . "
+    comm = "cd " + os.path.join(home, parent_folder) + ";" + gu + " git add . "
     if not settings.TEST:
         comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
     call(comm, shell=True)
-    comm = "cd " + home + parent_folder + ";" + \
-        gu + " git commit -m 'automated change' "
+
+    # comm = "cd " + home + parent_folder + ";" + \
+    comm = "cd " + os.path.join(home, parent_folder) + ";" + \
+           gu + " git commit -m 'automated change' "
     if not settings.TEST:
         comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
     call(comm, shell=True)
     gup = "git config push.default matching;"
-    comm = "cd " + home + parent_folder + ";" + gu + gup + " git push "
+    # comm = "cd " + home + parent_folder + ";" + gu + gup + " git push "
+    comm = "cd " + os.path.join(home, parent_folder) + ";" + gu + gup + " git push "
     if not settings.TEST:
         comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
@@ -1030,8 +1049,9 @@ def get_proper_loggedin_scope(ouser, target_repo):
 
 
 def generate_user_log(log_file_name):
-    comm = 'cp ' + home + 'log/' + log_file_name + '  ' + \
-        os.path.join(settings.MEDIA_ROOT,
+    # comm = 'cp ' + home + 'log/' + log_file_name + '  ' + \
+    comm = 'cp ' + os.path.join(home,'log',log_file_name) + '  ' + \
+           os.path.join(settings.MEDIA_ROOT,
                      'logs')  # ' /home/ubuntu/auton/media/logs/'
     print comm
     sys.stdout.flush()
