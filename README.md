@@ -106,6 +106,8 @@ And maybe you want to use the https url instead of git url
 git clone https://github.com/OnToology/OnToology.git
 ```
 
+and in the case of git keys, make sure to generate one and add it to OnToologyUser
+
 2. Install git if not installed
 ```
 sudo apt-get install git
@@ -116,7 +118,15 @@ sudo apt-get install git
 sudo sh OnToology/deploy.sh
 ```
 
-4. Append environment variables (Below) to virtual environment venv/bin/activate (note: this won't work with apache)
+4. You may need to fix the permission for www-data (or another user).
+This one is kinda trick and there are different ways to do it.
+    * Ubuntu and www-data to have the same group number and user number (e.g. /etc/passwd and you can set it there)
+    but this might not be the best, but the easiest.
+    * Configure a separate user for the application and provide it with the permission of all necessary directories
+    things like logs folder, temp folder, ssh key for GitHub.
+
+
+5. Append environment variables (Below) to virtual environment venv/bin/activate (note: this won't work with apache)
 
 #### Environment variables that you need to set
 
