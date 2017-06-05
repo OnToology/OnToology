@@ -11,6 +11,7 @@ sudo apt-get install -y oracle-java8-installer
 sudo apt-get install -y apache2 apache2-mpm-prefork apache2-utils libexpat1 ssl-cert
 sudo apt-get install -y libapache2-mod-wsgi
 sudo apt-get install -y python-dev python-pip
+sudo apt-get install -y zip
 #Mongodb is not needed if it will connect to a remote mongodb
 #sudo apt-get install -y  mongodb
 git config --global user.name "OnToologyUser"
