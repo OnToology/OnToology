@@ -582,6 +582,8 @@ def clone_repo(cloning_repo, parent_folder, dosleep=True):
     call(comm, shell=True)
     # Change ownership to solve the problem of permission denied to create OnToology.cfg file
     comm = "chown $USER " + os.path.join(home, parent_folder)
+    print "chown command: "
+    print comm
     dolog(comm)
     call(comm, shell=True)
     # comm = "chmod -R 777 " + home + parent_folder
