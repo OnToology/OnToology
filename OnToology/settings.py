@@ -53,8 +53,7 @@ GITHUB_LOCAL_API_SECRET = '141f896e53db4a4427db177f1ef2c9975e8a3c1f'
 
 try:
     from localwsgi import *
-    print "printing os environ"
-    print os.environ['abc']
+    print "importing environ from local wsgi"
 except:
     print "no local wsgi"
 
