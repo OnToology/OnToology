@@ -41,6 +41,10 @@ from mongoengine import *
 
 
 from urllib import quote
+try:
+    from localwsgi import *
+except:
+    print "no local wsgi"
 
 use_database = True
 
