@@ -51,6 +51,14 @@ GITHUB_LOCAL_APP_ID = '3995f5db01f035de44c6'
 GITHUB_LOCAL_API_SECRET = '141f896e53db4a4427db177f1ef2c9975e8a3c1f'
 
 
+try:
+    from localwsgi import *
+    print "importing environ from local wsgi"
+except:
+    print "no local wsgi"
+
+
+
 # client_id_login = os.environ['client_id_login']       # 'e2ea731b481438fd1675'
 # client_id_public = os.environ['client_id_public']     # '878434ff1065b7fa5b92'
 # client_id_private = os.environ['client_id_private']   # 'dd002c8587d08edfaf5f'
