@@ -111,9 +111,20 @@ SECRET_KEY = 'xj1c6fel(z5@=%(br!j)u155a71j*^u_b+2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-SERVER_EMAIL = 'ontoology@delicias.dia.fi.upm.es'
+DEFAULT_FROM_EMAIL = os.environ['email_from']
+EMAIL_HOST = os.environ['email_server']
+EMAIL_HOST_PASSWORD = os.environ['email_password']
+EMAIL_HOST_USER = os.environ['email_username']
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+#SERVER_EMAIL = 'ontoology@delicias.dia.fi.upm.es'
 
-ADMINS = (('Mr. Ahmad', 'ahmad88me@gmail.com'), ('Ahmad', 'aalobaid@fi.upm.es'))
+print DEFAULT_FROM_EMAIL
+print EMAIL_HOST
+print EMAIL_HOST_PASSWORD
+print EMAIL_HOST_USER
+print SERVER_EMAIL
+
+ADMINS = (('Ahmad', 'ahmad88me@gmail.com'), ('Ahmad', 'aalobaid@fi.upm.es'))
 
 TEMPLATE_DEBUG = True
 
