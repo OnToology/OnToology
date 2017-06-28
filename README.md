@@ -154,6 +154,11 @@ export db_username=
 export db_password=
 export db_host=
 export db_port=
+
+export email_server=""
+export email_from=""
+export email_username=""
+export email_password=""
 ```
 
 or in the local WSGI file `localwsgi.py`
@@ -183,6 +188,11 @@ environ['db_username']=""
 environ['db_password']=""
 environ['db_host']=""
 environ['db_port']=""
+
+environ['email_server'] = ""
+environ['email_from'] = ""
+environ['email_username'] = ""
+environ['email_password'] = ""
 ```
 
 

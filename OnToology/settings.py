@@ -124,7 +124,7 @@ print EMAIL_HOST_PASSWORD
 print EMAIL_HOST_USER
 print SERVER_EMAIL
 
-ADMINS = (('Ahmad', 'ahmad88me@gmail.com'), ('Ahmad', 'aalobaid@fi.upm.es'))
+ADMINS = (('Ahmad', 'aalobaid@fi.upm.es'), )
 
 TEMPLATE_DEBUG = True
 
