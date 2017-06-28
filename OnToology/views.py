@@ -858,3 +858,8 @@ def get_bundle(request):
 @login_required
 def progress_page(request):
     return render(request, 'progress.html', {'repos': request.user.repos})
+
+
+def handler500(request):
+    return render(request, 'error.html', {'error_code': 500}, status=500)
+

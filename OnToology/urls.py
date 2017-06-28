@@ -63,10 +63,13 @@ urlpatterns = patterns('',
     url(r'^about', views.about, name='about'),
     url(r'^api/', include(api_urls)),
     url(r'^progress', views.progress_page),
+    url(r'500', views.handler500),
 
     # url(r'^admin', views.superadmin, name='superadmin'),
     url(r'', views.home, name='home'),
 )
+
+handler500 = 'OnToology.views.handler500'
 
 if settings.DEBUG:
     # static files (images, css, javascript, etc.)
