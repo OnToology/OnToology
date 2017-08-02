@@ -108,15 +108,8 @@ def home(request):
     repos = Repo.objects.order_by('-last_used')[:10]
     num_of_users = len(User.objects.all())
     num_of_repos = len(Repo.objects.all())
-    try:
-        last_used = Repo.objects.all().order_by('-last_used')[0].last_used
-    except:
-        last_used = datetime.now()
-    #last_updated = Github().get_repo('OnToology/OnToology').get_issues(state='closed')[0].closed_at
-    last_updated = datetime.now()
     return render(request, 'home.html', {'repos': repos, 'user': request.user, 'num_of_users': num_of_users,
-                                         'num_of_repos': num_of_repos, 'last_used': last_used,
-                                         'last_updated': last_updated})
+                                         'num_of_repos': num_of_repos})
 
 
 def grant_update(request):
