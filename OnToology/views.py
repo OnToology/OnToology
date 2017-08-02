@@ -423,12 +423,19 @@ def login_get_access(request):
     res = requests.post('https://github.com/login/oauth/access_token', data=data)
     atts = res.text.split('&')
     d = {}
-    for att in atts:
-        keyv = att.split('=')
-        d[keyv[0]] = keyv[1]
-    access_token = d['access_token']
-    request.session['access_token'] = access_token
-    print 'access_token: ' + access_token
+    try:
+        for att in atts:
+            keyv = att.split('=')
+            d[keyv[0]] = keyv[1]
+        access_token = d['access_token']
+        request.session['access_token'] = access_token
+        print 'access_token: ' + access_token
+    except Exception as e:
+        print "exception: "+str(e)
+        print "no access token"
+        print "response: %s" % res.text
+        return HttpResponseRedirect('/')
+
     g = Github(access_token)
     email = g.get_user().email
     username = g.get_user().login
