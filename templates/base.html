@@ -135,6 +135,21 @@
         padding: 0 !important;
         }
 
+        .tcolor{
+            color: pink !important;
+        }
+
+
+
+        a{
+            color: #4b84b7 !important;
+            //color: #2e6ca4 !important;
+            //color: green !important;
+        }
+
+
+
+
     </style>
     <style>
         /*For IOS look*/
@@ -262,7 +277,7 @@
 
 
             <nav class="navbar " role="navigation">
-                <div class="navbar-header">
+                <div class="navbar-header ">
                     <button type="button" class="navbar-toggle" data-toggle="collapse"
                             data-target="#bs-example-navbar-collapse-1" style="background-color: #2e6ca4;transform: translateX(-130px);">
                         <span class="sr-only">Toggle navigation</span>
@@ -276,24 +291,29 @@
 
 
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav nav-tab">
+                    <ul class="nav navbar-nav ">
 
-                        <li {% block home_head %} class="active"  {% endblock %} ><a href="/">Home  </a></li>
-                        <li {% block step_head %} {% endblock %} ><a href="/stepbystep">Step by Step </a></li>
-                        <li {% block about_head %} {% endblock %}><a href="/about">About </a></li>
+                        <li {% block home_head %} class="active"  {% endblock %} ><a class="" href="/">Home  </a></li>
+                        <li {% block step_head %} {% endblock %} ><a class="" href="/stepbystep">Step by Step </a></li>
+                        <li {% block about_head %} {% endblock %}><a class="" href="/about">About </a></li>
 
-
+                    </ul>
                         {%block teapot%}
                                 {% if request.user.is_authenticated %}
+                                <ul class="nav navbar-nav ">
                                 <li><a href="/progress">Progress  </a></li>
                                 <li><a class="curfont" href="/logout">Logout </a></li>
+                                </ul>
+                                <ul class="nav navbar-nav ">
                                 <li>
                                     <a href="/profile">
                                         <img src="{{request.session.avatar_url}}" class="img-rounded" style="height: 30px;vertical-align: top;transform: translateY(-20%);"/>
                                         My repositories
                                     </a>
                                 </li>
+                                </ul>
                                 {% else %}
+                                <ul class="nav navbar-nav ">
                                 <li >
                                     <a type="button" class="" href="/login" style="height: 50px;">
                                         <img src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png"
@@ -301,18 +321,18 @@
                                         Login through Github
                                     </a>
                                 </li>
+                                </ul>
                                 {% endif %}
                         {% endblock %}
 
 
-                    </ul>
                 </div>
             </nav>
 
 
 
-            </br></br></br></br></br>
-            <br><br>
+
+            <br>
             {% block body%}
             {% endblock %}
             <br><br><br><br><br><br>
