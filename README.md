@@ -1,4 +1,4 @@
-# ![alt text](https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/logoprop1.png "OnToology")
+# ![alt text](https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/logoprop1_readme.png "OnToology")
 
 A system for collaborative ontology development process. Given a repository with an owl file, **OnToology** will survey it and produce diagrams, a complete documentation and validation based on common pitfalls.
 
