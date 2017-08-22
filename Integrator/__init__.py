@@ -90,16 +90,21 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
     import widoco
     import oops
     import owl2jsonld
+    import syntaxchecker
     dolog("will call create or get conf")
     conf = create_of_get_conf(changed_file, base_dir)
     dolog("conf: "+str(conf))
+    if not syntaxchecker.valid_syntax(os.path.join(base_dir, changed_file)):
+        repo.notes += "syntax error in %s\n" % changed_file
+        repo.save()
+        return
     if conf['ar2dtool_enable']:
         dolog("will call draw diagrams")
         change_status(target_repo, 'drawing diagrams for: '+changed_file)
         r = ar2dtool.draw_diagrams([changed_file], base_dir)
         if r != "":
             print 'in init draw detected an error'
-            repo.notes += 'Error generating diagrams for %s. ' % changed_file
+            # repo.notes += 'Error generating diagrams for %s. ' % changed_file
             repo.save()
     repo.progress += progress_inc
     repo.save()
@@ -109,7 +114,7 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
         r = widoco.generate_widoco_docs([changed_file], base_dir)
         if r != "":
             print 'in init documentation detected an error for ontology file: %s' % changed_file
-            repo.notes += 'Error generating documentation for %s. ' % changed_file
+            # repo.notes += 'Error generating documentation for %s. ' % changed_file
             repo.save()
     repo.progress += progress_inc
     repo.save()
@@ -119,7 +124,7 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
         r = oops.oops_ont_files(target_repo=target_repo, changed_files=[changed_file], base_dir=base_dir)
         if r != "":
             print 'in init evaluation detected an error'
-            repo.notes += 'Error generating evaluation for %s. ' % changed_file
+            # repo.notes += 'Error generating evaluation for %s. ' % changed_file
             repo.save()
     repo.progress += progress_inc
     repo.save()
