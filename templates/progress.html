@@ -20,9 +20,10 @@
           <h4 class="panel-title">
             <a data-toggle="collapse" class="accordion-toggle">
               <div class="row">
-                <span class="col-md-3 col-xs-3 darktext" style="word-break: break-all">{{r.url}}</span>
-                <p class="col-md-3 col-xs-3" style="word-break: break-all">{{r.state}}</p>
-                <div class="col-md-3 col-xs-3">
+                <span class="col-md-3 col-sm-3 darktext" style="word-break: break-all">{{r.url}}</span>
+                <p class="col-md-2 col-sm-2" style="word-break: break-all">{{r.state}}</p>
+                  <div class="col-md-3 col-sm-3">{{r.notes}}</div>
+                <div class="col-md-2 col-sm-2">
                   <div class="progress">
                       {%if r.progress == 100 %}
                     <div class="progress-bar progress-bar-info" role="progressbar"
@@ -41,7 +42,7 @@
                   </div>
                 </div>
 
-            <div class="col-md-3 col-xs-3 darktext " align="right">
+            <div class="col-md-2 col-sm-2  darktext " align="right">
             <!--{{r.last_used| date:"d-M-Y"}}-->
                 {{r.last_used}}
             </div>

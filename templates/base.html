@@ -265,7 +265,7 @@
 
 <div class="container-fluid ">
     <div class="row">
-        <div class=" col-md-10 col-md-offset-1  ">
+        <div class=" col-md-10 col-md-offset-1">
             <!--<div class="col-md-4 col-xs-4" style="height: 100px;">-->
                 <!--<a href="/">-->
                     <!--<h3 class="masthead-brand ">-->
@@ -278,8 +278,10 @@
 
             <nav class="navbar " role="navigation">
                 <div class="navbar-header ">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse"
-                            data-target="#bs-example-navbar-collapse-1" style="background-color: #2e6ca4;transform: translateX(-130px);">
+                    <!--<button type="button" class="navbar-toggle" data-toggle="collapse"-->
+                            <!--data-target="#bs-example-navbar-collapse-1" style="background-color: #2e6ca4;transform: translateX(-130px);">-->
+                    <button type="button" class="navbar-toggle pull-left" data-toggle="collapse"
+                            data-target="#bs-example-navbar-collapse-1" style="background-color: #2e6ca4;">
                         <span class="sr-only">Toggle navigation</span>
                         <span class="icon-bar" style="background-color: #ffffff;"></span>
                         <span class="icon-bar" style="background-color: #ffffff;"></span>
@@ -291,7 +293,7 @@
 
 
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav ">
+                    <ul class="nav navbar-nav">
 
                         <li {% block home_head %} class="active"  {% endblock %} ><a class="" href="/">Home  </a></li>
                         <li {% block step_head %} {% endblock %} ><a class="" href="/stepbystep">Step by Step </a></li>
