@@ -260,7 +260,6 @@
     </style>
 
 </head>
-<body>
 
 
 <div class="container-fluid ">
@@ -366,7 +365,9 @@
 
 <br><br><br>
 
-<footer class="footer navbar-bottom  opac">
+
+<div id="footer" class=" opac">
+<!--<footer class="footer navbar-fixed-bottom opac">-->
     <div class="container-fluid">
         <div class="row ">
             <div class="col-md-6 col-md-offset-2 col-xs-6 " align="left">
@@ -389,7 +390,21 @@
             </div>
         </div>
     </div>
-</footer>
+</div>
+
+<script>
+  /*source: https://stackoverflow.com/questions/10099422/flushing-footer-to-bottom-of-the-page-twitter-bootstrap*/
+  $(document).ready(function() {
+
+   var docHeight = $(window).height();
+   var footerHeight = $('#footer').height();
+   var footerTop = $('#footer').position().top + footerHeight;
+
+   if (footerTop < docHeight) {
+    $('#footer').css('margin-top', (docHeight - footerTop) + 'px');
+   }
+  });
+ </script>
 
 
 </body>
