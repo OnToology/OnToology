@@ -736,9 +736,22 @@ def add_collaborator(target_repo, user, newg=None):
         if newg.get_repo(target_repo).has_in_collaborators(user):
             return {'status': True, 'msg': 'this user is already a collaborator'}
         else:
-            msg = newg.get_repo(target_repo).add_to_collaborators(user)
-            #return {'status': True, 'msg': str(msg)}
-            return {'status': True, 'msg': 'added as a new collaborator'}
+            invitation = newg.get_repo(target_repo).add_to_collaborators(user)
+            if invitation is None:
+                print "no invitation is created"
+                {'status': False, 'error': 'Invitation is not generated'}
+            else:
+                try:
+                    username = os.environ['github_username']
+                    password = os.environ['github_password']
+                    g_ontoology_user = Github(username, password)
+                    g_ontoology_user.get_user().accept_invitation(invitation)
+                    print "invitation accepted: "+str(invitation)
+                    return {'status': True, 'msg': 'added as a new collaborator'}
+                except Exception as e:
+                    print "exception: "+str(e)
+                    print "invitation not accepted or invalid: "+str(invitation)
+                    return {'status': False, 'error': 'Could not accept the invitation for becoming a collaborator'}
     except Exception as e:
         return {'status': False, 'error': str(e)}  # e.data}
 
