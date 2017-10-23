@@ -201,7 +201,16 @@
         right: 0px;
         }
     </style>
-
+    <style>
+        .alert-fixed {
+            //position:fixed;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            z-index:9999;
+            border-radius:0px
+        }
+    </style>
 
     <!-- Latest compiled and minified CSS -->
 
@@ -260,6 +269,20 @@
     </style>
 
 </head>
+
+<!--<div class="alert alert-success alert-dismissable">-->
+  <!--<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>-->
+  <!--<strong>Success!</strong> Indicates a successful or positive action.-->
+<!--</div>-->
+
+<div class="alert alert-warning alert-dismissable alert-fixed">
+  <a href="#" class="close pull-left" data-dismiss="alert" aria-label="close" >&times;</a>
+    <div class="container-fluid ">
+        <div class="col-md-offset-1 col-md-11 col-xs-offset-1 col-xs-11">
+            Help us by providing your feedback <a target="_blank" href="https://docs.google.com/forms/d/156IozYkCWNQGTdEeqMX04enu37fyjID5Y4FPmz2DeEg/edit">here</a>
+        </div>
+    </div>
+</div>
 
 
 <div class="container-fluid ">
@@ -343,6 +366,8 @@
         </div>
     </div>
 </div>
+
+
 
 
 {%block bel%}
