@@ -89,10 +89,38 @@ def parse_files(files):
     print stat_count
 
 
+###################################################################################################
+#                           Per repo stats                                                        #
+###################################################################################################
+
+def get_publish_repo(line):
+    if is_publish(line):
+        return line.split("profile?repo=")[1].split(' ')[0]
+    else:
+        return None
+
+def get_bundle_repo(line):
+    if is_bundle(line):
+        return ""
+    else:
+        return None
+
 def main():
-    files = sys.argv[1:]
-    print files
-    parse_files(files)
+    help_string = """
+        python stat.py all FILES
+        python stat.py repo FILES
+    """
+    print len(sys.argv)
+    if len(sys.argv) < 3:
+        print help_string
+        return
+    if sys.argv[1] == "all":
+        files = sys.argv[2:]
+        print files
+        parse_files(files)
+
+    else:
+        print help_string
 
 if __name__ == "__main__":
     main()
