@@ -126,7 +126,7 @@ print SERVER_EMAIL
 
 ADMINS = (('Ahmad', 'aalobaid@fi.upm.es'), )
 
-TEMPLATE_DEBUG = False
+TEMPLATE_DEBUG = DEBUG
 
 ALLOWED_HOSTS = ['*']
 
