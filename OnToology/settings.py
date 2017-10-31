@@ -81,7 +81,7 @@ else:
     print "Going remote"
     print os.environ
 
-TEST = False
+TEST = True
 
 from mongoengine import connect
 
