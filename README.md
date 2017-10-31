@@ -12,6 +12,7 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 
 <!--
 
+
 ###Project Plan
 * Provide a better solution for handling private and public repos.
 * Add new features (e.g. integrate with GitLab and Bitbucket)
