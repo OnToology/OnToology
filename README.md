@@ -8,7 +8,10 @@ Team: Ahmad Alobaid, Daniel Garijo, Maria Poveda, Idafen Santa, Oscar Corcho
 
 License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 
+![Configuration Status](http://ontoology.linkeddata.es/deploy/conf-pass.png)
+
 <!--
+
 
 ###Project Plan
 * Provide a better solution for handling private and public repos.
