@@ -237,6 +237,7 @@ def add_hook(request):
                 repo = Repo.objects.get(url=target_repo)
                 print 'got the repo'
                 repo.last_used = datetime.today()
+                repo.progress = 100.0
                 repo.save()
                 print 'repo saved'
             except DoesNotExist:
