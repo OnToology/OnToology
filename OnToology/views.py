@@ -492,30 +492,42 @@ def profile(request):
             if type(autoncore.g) == type(None):
                 print 'access token is: ' + request.session['access_token']
                 update_g(request.session['access_token'])
-            ontologies = parse_online_repo_for_ontologies(repo)
-            print 'ontologies: ' + str(len(ontologies))
-            arepo = Repo.objects.get(url=repo)
-            pnames = PublishName.objects.filter(user=user, repo=arepo)
-            for o in ontologies:
-                print '--------\n%s\n' % o
-                o['published'] = False
-                o['pname'] = ''
-                for pn in pnames:
-                    if pn.ontology==o['ontology']:
-                        o['published'] = True
-                        o['pname'] = pn.name
-                        break
-                for d in o:
-                    print '   '+d + ': ' + str(o[d])
-            print 'testing redirect'
-            print 'will return the Json'
-            # html = render(request, 'profile_sliders.html', {'ontologies': ontologies}).content
-            # jresponse = JsonResponse({'ontologies': ontologies, 'sliderhtml': html})
-            jresponse = JsonResponse({'ontologies': ontologies})
-            jresponse.__setitem__('Content-Length', len(jresponse.content))
-            sys.stdout.flush()
-            sys.stderr.flush()
-            return jresponse
+            try:
+                ontologies = parse_online_repo_for_ontologies(repo)
+                print 'ontologies: ' + str(len(ontologies))
+                arepo = Repo.objects.get(url=repo)
+                pnames = PublishName.objects.filter(user=user, repo=arepo)
+                for o in ontologies:
+                    print '--------\n%s\n' % o
+                    o['published'] = False
+                    o['pname'] = ''
+                    for pn in pnames:
+                        if pn.ontology==o['ontology']:
+                            o['published'] = True
+                            o['pname'] = pn.name
+                            break
+                    for d in o:
+                        print '   '+d + ': ' + str(o[d])
+                print 'testing redirect'
+                print 'will return the Json'
+                # html = render(request, 'profile_sliders.html', {'ontologies': ontologies}).content
+                # jresponse = JsonResponse({'ontologies': ontologies, 'sliderhtml': html})
+                jresponse = JsonResponse({'ontologies': ontologies})
+                jresponse.__setitem__('Content-Length', len(jresponse.content))
+                sys.stdout.flush()
+                sys.stderr.flush()
+                return jresponse
+            except Exception as e:
+                print "exception in getting the ontologies for the repo: "+str(repo)
+                arepo = Repo.objects.get(url=repo)
+                arepo.state = 'Invalid repository'
+                arepo.save()
+                ontologies = []
+                jresponse = JsonResponse({'ontologies': ontologies})
+                jresponse.__setitem__('Content-Length', len(jresponse.content))
+                sys.stdout.flush()
+                sys.stderr.flush()
+                return jresponse
         except Exception as e:
             print 'exception: ' + str(e)
     elif 'name' in request.GET:  # publish with a new name
