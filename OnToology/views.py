@@ -877,3 +877,8 @@ def progress_page(request):
 def handler500(request):
     return render(request, 'error.html', {'error_code': 500}, status=500)
 
+
+def faq(request):
+    return render(request, 'faq.html')
+
+
