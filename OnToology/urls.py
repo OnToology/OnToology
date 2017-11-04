@@ -63,9 +63,8 @@ urlpatterns = patterns('',
     url(r'^about', views.about, name='about'),
     url(r'^api/', include(api_urls)),
     url(r'^progress', views.progress_page),
-    url(r'^faq', views.faq),
     url(r'500', views.handler500),
-
+    url(r'faqs', views.faqs),
     # url(r'^admin', views.superadmin, name='superadmin'),
     url(r'', views.home, name='home'),
 )
