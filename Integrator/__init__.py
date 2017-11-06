@@ -271,10 +271,6 @@ def call_and_get_log(comm):
     return error_content, file_content
 
 
-def escape_f_names(f):
-    return f.replace("'",)
-
-
 # timeout_comm = "timeout 300;"
 # disable the timeout for now
 timeout_comm = ""
