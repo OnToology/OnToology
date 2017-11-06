@@ -270,7 +270,15 @@ def call_and_get_log(comm):
     os.remove(fname_err)
     return error_content, file_content
 
-timeout_comm = "timeout 300;"
+
+def escape_f_names(f):
+    return f.replace("'",)
+
+
+# timeout_comm = "timeout 300;"
+# disable the timeout for now
+timeout_comm = ""
+
 error_msg, output_msg = call_and_get_log(timeout_comm+" echo 'testing timeout command'")
 if error_msg.strip() != "":
     timeout_comm = "gtimeout 300;" # for mac os
@@ -278,5 +286,4 @@ if error_msg.strip() != "":
     if error_msg.strip() != "": # incase timeout and gtimeout are not installed
         timeout_comm = "echo "
 
-# disable the timeout for now
-timeout_comm = ""
+
