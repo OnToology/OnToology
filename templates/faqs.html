@@ -1,19 +1,24 @@
 {% extends "base.html"%}
 {%block body%}
+
+<div class="container-fluid ">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-1 col-sm-11 col-xs-12">
+
 </br></br>
 
 <ol>
     <li>
-        What is OnToology?
-        <p>
+        <strong>What is OnToology?</strong>
+        <p class="justify">
             A system to automate part of the collaborative ontology development process. Given a repository with an owl
             file, OnToology will survey it and produce diagrams, a complete documentation and validation based on
             common pitfalls.
         </p>
     </li>
     <li>
-        How to use it?
-        <p>
+        <strong>How to use it?</strong>
+        <p class="justify">
             Create a repository on GitHub with your ontologies. Add your repo to OnToology (e.g. user/reponame).
             Everything will be generated automatically and a
             <a href="https://help.github.com/articles/about-pull-requests/" target="_blank">pull request</a>
@@ -25,32 +30,35 @@
         </p>
     </li>
     <li>
-        What is the supported the files folders and files names?
-        <p>
+        <strong>What is the supported the files folders and files names?</strong>
+        <p class="justify">
             English alphabets (caps and small), underscores, dashes, and dots. Other alphabets and characters are not
             supported.
         </p>
     </li>
     <li>
-        What are the web browsers supported by OnToology?
-        <p>
+        <strong>What are the web browsers supported by OnToology?</strong>
+        <p class="justify">
             We tested OnToology with: Chrome, Opera, Firefox, and Safari.
         </p>
     </li>
     <li>
-        How to know what is happening with my repository in real time?
-        <p>
+        <strong>How to know what is happening with my repository in real time?</strong>
+        <p class="justify">
             go to the progress page. It show what is currently happening with a progress bar and extra information.
         </p>
     </li>
     <li>
-        Why ontology documentations doesn't show locally if the index file is opened locally?
-        <p>
+        <strong>Why ontology documentations doesn't show locally if the index file is opened locally?</strong>
+        <p class="justify">
             This is because chrome by default disables ajax on local html files. It should work with Firefox.
         </p>
     </li>
 
 </ol>
+        </div>
+    </div>
+</div>
 
 </br></br></br></br>
 </br></br></br></br>
