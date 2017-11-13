@@ -86,7 +86,7 @@ function GetURLParameter(sParam)
 </form>
 
 <p class="red">{{error}}</p>
-
+<h4>You can see what is going on with your repositories <a href="/progress">here</a></h4>
 <span id="profiletables">
 	<h3>Choose one of the below repo by clicking on it</h3>
 	<div class="panel-group " id="accordion">
@@ -107,8 +107,9 @@ function GetURLParameter(sParam)
                                     <div class="col-md-5 col-sm-5 " style="text-align: left">
                                         <i class="col-md-1 col-sm-1 indicator glyphicon glyphicon-chevron-right"></i>
                                         <span class="col-md-11 col-sm-11 " >
-                                            <span class="col-md-6 col-sm-6 darktext" style="word-break: break-all">{{r.url}}</span>
-                                            <p class="col-md-6 col-sm-6" style="word-break: break-all">{{r.state}}</p>
+                                            <span class="col-md-12 col-sm-12 darktext" style="word-break: break-all">{{r.url}}</span>
+                                            <!--<span class="col-md-6 col-sm-6 darktext" style="word-break: break-all">{{r.url}}</span>-->
+                                            <!--<p class="col-md-6 col-sm-6" style="word-break: break-all">{{r.state}}</p>-->
                                         </span>
                                     </div>
 
