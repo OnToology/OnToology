@@ -19,7 +19,10 @@ def oops_ont_files(target_repo, changed_files, base_dir):
     for r in changed_files:
         # if valid_ont_file(r): # this is moved to the caller function, we assume here the changed_files are all ont
         dolog('will oops: ' + r)
-        results += get_pitfalls(target_repo, r, base_dir)
+        try:
+            results += get_pitfalls(target_repo, r, base_dir)
+        except Exception as e:
+            dolog("for file: "+r+" cannot evaluate it using oops error: "+str(e))
     return results
 
 
@@ -30,8 +33,8 @@ def get_pitfalls(target_repo, ont_file, base_dir):
         return r
     else:
         dolog("generate oops pitfalls successfully")
-    # Here we are disabling the calling of OOPS webservices to create GitHub issue
-    return ""
+    # # Here we are disabling the calling of OOPS webservices to create GitHub issue
+    # return ""
     # if settings.TEST and settings.test_conf['local']:
     #    return
     ont_file_full_path = os.path.join(base_dir, ont_file)
