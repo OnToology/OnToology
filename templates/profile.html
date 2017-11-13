@@ -1,7 +1,9 @@
 {% extends "base.html"%} {%block body%}
 
+<META HTTP-EQUIV="refresh" CONTENT="20">
 
-<script src="http://fgnass.github.io/spin.js/spin.min.js"></script>
+
+
 
 
 <input type="hidden" id="button"/>
@@ -10,7 +12,6 @@
 </div>
 
 
-<div id="myspinner"></div>
 <div id="screen"></div>
 
 
@@ -29,19 +30,8 @@ $( function() {
 
 </script>
 
-<style>
-    #myspinner {
-        z-index: 10;
-    }
 
-    #screen {
-        position: absolute;
-        left: 0;
-        top: 0;
-        background: #000;
-    }
 
-</style>
 
 
 <script>
@@ -86,7 +76,7 @@ function GetURLParameter(sParam)
 </form>
 
 <p class="red">{{error}}</p>
-<h4>You can see what is going on with your repositories <a href="/progress">here</a></h4>
+<!--<h4>You can see what is going on with your repositories <a href="/progress">here</a></h4>-->
 <span id="profiletables">
 	<h3>Choose one of the below repo by clicking on it</h3>
 	<div class="panel-group " id="accordion">
@@ -104,45 +94,77 @@ function GetURLParameter(sParam)
                             <a data-toggle="collapse" class="accordion-toggle" data-parent="#accordion"
                                href="#coll{{forloop.counter}}">
                                 <div class="row">
-                                    <div class="col-md-5 col-sm-5 " style="text-align: left">
+                                    <div class="col-md-7 col-sm-7 " style="text-align: left">
                                         <i class="col-md-1 col-sm-1 indicator glyphicon glyphicon-chevron-right"></i>
                                         <span class="col-md-11 col-sm-11 " >
-                                            <span class="col-md-12 col-sm-12 darktext" style="word-break: break-all">{{r.url}}</span>
+                                            <!--<span class="col-md-12 col-sm-12 darktext" style="word-break: break-all">{{r.url}}</span>-->
                                             <!--<span class="col-md-6 col-sm-6 darktext" style="word-break: break-all">{{r.url}}</span>-->
                                             <!--<p class="col-md-6 col-sm-6" style="word-break: break-all">{{r.state}}</p>-->
+                                            <span class="col-md-4 col-sm-4 darktext" style="word-break: break-all">{{r.url}}</span>
+                                            <p class="col-md-3 col-sm-3" style="word-break: break-all">{{r.state}}</p>
+                                            <p class="col-md-3 col-sm-3" style="word-break: break-all">{{r.notes}}</p>
+                                            <div class="col-md-2 col-sm-2" style="word-break: break-all">
+                                                <div class="progress">
+                                                  {%if r.progress == 100 %}
+                                                <div class="progress-bar progress-bar-info" role="progressbar"
+                                                     aria-valuenow="{{r.progress|floatformat:1}}" aria-valuemin="0"
+                                                     aria-valuemax="100"
+                                                     style="width: {{r.progress}}%">
+                                                  {{r.progress|floatformat:1}}%
+                                                </div>
+                                                  {%else%}
+                                                  <div class="progress-bar progress-bar-info progress-bar-striped active"
+                                                       role="progressbar"
+                                                       aria-valuenow="{{r.progress|floatformat:1}}" aria-valuemin="0"
+                                                       aria-valuemax="100"
+                                                       style="width: {{r.progress}}%">
+                                                  {{r.progress|floatformat:1}}%
+                                                </div>
+
+                                                  {%endif%}
+                                              </div>
+                                            </div>
+
                                         </span>
                                     </div>
 
-                                    <div class="col-md-1 col-sm-1">
-                                        <a href="http://www.github.com/{{r.url}}" target="_blank"
-                                           title="Go to repo in GitHub">
-                                        <img src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png"
-                                             class="img-circle" height="25px"></a>
+
+                                    <div class="col-md-3 col-sm-3 ">
+
+                                        <div class="col-md-2 col-sm-2">
+                                            <a href="http://www.github.com/{{r.url}}" target="_blank"
+                                               title="Go to repo in GitHub">
+                                            <img src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png"
+                                                 class="img-circle" height="25px"></a>
+                                        </div>
+                                        <div class="col-md-2 col-sm-2 handpointer" style="color: #000;" >
+                                            <span class="glyphicon glyphicon-refresh  repo" url="{{r.url}}" title="Get ontologies configuration in this repo"></span>
+                                        </div>
+                                        <div class="col-md-2 col-sm-2 ">
+                                            <span class="generateall-btn handpointer" repo="{{r.url}}" title="Generate documentation, diagrams and evaluation">
+                                                <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/regenerate_all.png" height="20px">
+                                            </span>
+                                        </div>
+                                        {%if r.previsual_page_available %}
+                                            <div class="col-md-2 col-sm-2 "> <a href="/renew_previsual?target_repo={{r.url}}" title="Renew previsualization">
+                                                <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/renew_previsual.png" height="20px"> </a>
+                                            </div>
+                                        {%else%}
+                                            <div class="col-md-2 col-sm-2 "> <a href="/renew_previsual?target_repo={{r.url}}" title="Generate previsualization">
+                                                <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/renew_previsual.png" height="20px"> </a>
+                                            </div>
+                                        {%endif%}
+                                        <div class="col-md-2 col-sm-2 ">
+                                        {%if r.previsual_page_available %}
+                                            <a href="http://{{r.user}}.github.io/{{r.rrepo}}" title="Go to previsualization"><img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/go_to_previsual.png"
+                                                                            height="20px"></a>
+                                        {%endif%}
+                                            </div>
+
                                     </div>
-                                    <div class="col-md-1 col-sm-1 handpointer" style="color: #000;" >
-                                        <span class="glyphicon glyphicon-refresh  repo" url="{{r.url}}" title="Get ontologies configuration in this repo"></span>
-                                    </div>
-									<div class="col-md-1 col-sm-1 ">
-                                        <span class="generateall-btn handpointer" repo="{{r.url}}" title="Generate documentation, diagrams and evaluation">
-                                            <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/regenerate_all.png" height="20px">
-                                        </span>
-									</div>
-                                    {%if r.previsual_page_available %}
-                                        <div class="col-md-1 col-sm-1 "> <a href="/renew_previsual?target_repo={{r.url}}" title="Renew previsualization">
-                                            <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/renew_previsual.png" height="20px"> </a>
-                                        </div>
-                                    {%else%}
-                                        <div class="col-md-1 col-sm-1 "> <a href="/renew_previsual?target_repo={{r.url}}" title="Generate previsualization">
-                                            <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/renew_previsual.png" height="20px"> </a>
-                                        </div>
-                                    {%endif%}
-                                    <div class="col-md-1 col-sm-1 ">
-                                    {%if r.previsual_page_available %}
-                                        <a href="http://{{r.user}}.github.io/{{r.rrepo}}" title="Go to previsualization"><img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/go_to_previsual.png"
-                                                                        height="20px"></a>
-                                    {%endif%}
-                                        </div>
-                                    <div class="col-md-2 col-sm-2 darktext " align="right">
+
+
+                                    <div class="col-md-2 col-sm-2 darktext  " align="right">
                                         {{r.last_used| date:"d-M-Y"}}
                                     </div>
                                     </br>
@@ -195,37 +217,13 @@ var current_url;
 var m;
 $( document ).ready(function() {
 
-	var opts = {
-		  lines: 13, // The number of lines to draw
-		  length: 40, // The length of each line
-		  width: 22, // The line thickness
-		  radius: 60, // The radius of the inner circle
-		  corners: 1, // Corner roundness (0..1)
-		  rotate: 0, // The rotation offset
-		  direction: 1, // 1: clockwise, -1: counterclockwise
-		  color: '#BBB', // #rgb or #rrggbb or array of colors
-		  speed: 1, // Rounds per second
-		  trail: 60, // Afterglow percentage
-		  shadow: false, // Whether to render a shadow
-		  hwaccel: false, // Whether to use hardware acceleration
-		  className: 'spinner', // The CSS class to assign to the spinner
-		  zIndex: 2e9, // The z-index (defaults to 2000000000)
-		  top: '50%', // Top position relative to parent
-		  left: '50%' // Left position relative to parent
-		};
-	var target = document.getElementById('myspinner');
-	//var spinner = new Spinner(opts);//.spin(target);
-	//var spinner = new Spinner(opts).spin(target);
+
+
 
 
 	//taken from http://hungred.com/how-to/tutorial-simple-screen-grey-effect-jquery/
 	var greyout = function(){
-		//alert("clicked");
-		//$('.panel .panel-heading .repo').click(function(){return false;});
-		spinner.spin(target);
-		//$('#screen').css({"position": "absolute"});
 		$('#screen').css({	"display": "block", opacity: 0.7, "width":$(document).width(),"height":$(document).height()});
-		$('#box').css({"display": "block"}).click(function(){spinner.stop();$(this).css("display", "none");$('#screen').css("display", "none")});
 	}
 
 
@@ -271,8 +269,8 @@ $( document ).ready(function() {
 		var targetpanel = $(this);
 		//var bodypanel = $(this).parent().find(".ontologiesspace");
 		//var bodypanel = $(this).parent().parent().parent().parent().parent().parent().find(".ontologiesspace");
-		var bodypanel = $(this).parent().parent().parent().parent().parent().find(".ontologiesspace");
-
+		//var bodypanel = $(this).parent().parent().parent().parent().parent().find(".ontologiesspace");
+        var bodypanel = $(this).parent().parent().parent().parent().parent().parent().find(".ontologiesspace");
 		current_url = $(this).attr('url');
 		//greyout();
 		$.ajax({
