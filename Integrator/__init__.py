@@ -101,37 +101,49 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
     if conf['ar2dtool_enable']:
         dolog("will call draw diagrams")
         change_status(target_repo, 'drawing diagrams for: '+changed_file)
-        r = ar2dtool.draw_diagrams([changed_file], base_dir)
-        if r != "":
-            print 'in init draw detected an error'
-            # repo.notes += 'Error generating diagrams for %s. ' % changed_file
-            repo.save()
+        try:
+            r = ar2dtool.draw_diagrams([changed_file], base_dir)
+            if r != "":
+                print 'in init draw detected an error'
+                # repo.notes += 'Error generating diagrams for %s. ' % changed_file
+                repo.save()
+        except Exception as e:
+            dolog("Exception in running ar2dtool.draw_diagrams: "+str(e))
     repo.progress += progress_inc
     repo.save()
     if conf['widoco_enable']:
         dolog('will call widoco')
         change_status(target_repo, 'generating docs for: '+changed_file)
-        r = widoco.generate_widoco_docs([changed_file], base_dir)
-        if r != "":
-            print 'in init documentation detected an error for ontology file: %s' % changed_file
-            # repo.notes += 'Error generating documentation for %s. ' % changed_file
-            repo.save()
+        try:
+            r = widoco.generate_widoco_docs([changed_file], base_dir)
+            if r != "":
+                print 'in init documentation detected an error for ontology file: %s' % changed_file
+                # repo.notes += 'Error generating documentation for %s. ' % changed_file
+                repo.save()
+        except Exception as e:
+            dolog("Exception in running widoco.generate_widoco_docs: "+str(e))
     repo.progress += progress_inc
     repo.save()
     if conf['oops_enable']:
         dolog('will call oops')
         change_status(target_repo, 'evaluating: '+changed_file)
-        r = oops.oops_ont_files(target_repo=target_repo, changed_files=[changed_file], base_dir=base_dir)
-        if r != "":
-            print 'in init evaluation detected an error'
-            # repo.notes += 'Error generating evaluation for %s. ' % changed_file
-            repo.save()
+        try:
+            r = oops.oops_ont_files(target_repo=target_repo, changed_files=[changed_file], base_dir=base_dir)
+            if r != "":
+                print 'in init evaluation detected an error'
+                # repo.notes += 'Error generating evaluation for %s. ' % changed_file
+                repo.save()
+        except Exception as e:
+            dolog("Exception in running oops.oops.oops_ont_files: "+str(e))
     repo.progress += progress_inc
     repo.save()
     if conf['owl2jsonld_enable']:
         dolog('will call owl2jsonld')
         change_status(target_repo, 'generating context for: '+changed_file)
-        owl2jsonld.generate_owl2jsonld_file([changed_file], base_dir=base_dir)
+        try:
+            owl2jsonld.generate_owl2jsonld_file([changed_file], base_dir=base_dir)
+        except Exception as e:
+            dolog("Exception in running owl2jsonld.generate_owl2jsonld_file: "+str(e))
     repo.progress += progress_inc
     repo.save()
 
