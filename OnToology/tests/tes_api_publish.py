@@ -3,7 +3,7 @@ import string
 import random
 
 import os
-from . import create_user, delete_all_repos, create_repo, delete_all_publishnames, create_publishname
+from api_util import create_user, delete_all_repos, create_repo, delete_all_publishnames, create_publishname
 
 from django.test import Client
 from unittest import TestCase
