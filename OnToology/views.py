@@ -521,6 +521,7 @@ def profile(request):
                 return jresponse
             except Exception as e:
                 print "exception in getting the ontologies for the repo: "+str(repo)
+                print "exception:  "+str(e)
                 arepo = Repo.objects.get(url=repo)
                 arepo.state = 'Invalid repository'
                 arepo.save()
