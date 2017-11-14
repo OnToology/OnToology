@@ -1,4 +1,5 @@
 import rdflib
+from Integrator import dolog
 
 format_extension_mapping = {
     'rdf': 'xml',
@@ -14,6 +15,8 @@ def valid_syntax(file_abs_dir):
         # print "correct syntax"
         return True
     except Exception as e:
-        print "sytax error for the file %s" % str(file_abs_dir)
+        print "syntax error for the file %s" % str(file_abs_dir)
         print str(e)
+        dolog("syntax error for the file %s" % str(file_abs_dir))
+        dolog("syntax error: "+str(e))
     return False
