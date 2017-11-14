@@ -46,6 +46,7 @@ mkdir temp
 mkdir config
 mkdir wget_dir
 mkdir repos
+mkdir repos/log
 chmod 777 *
 chmod 777 -R /var/log/apache2
 

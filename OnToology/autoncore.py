@@ -93,7 +93,7 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
     global parent_folder
     global log_file_dir
     parent_folder = user
-    if not settings.TEST:
+    if not settings.test_conf['local']:
         prepare_log(user)
     dolog('############################### magic #############################')
     dolog('target_repo: ' + target_repo)
@@ -105,11 +105,11 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
     password = os.environ['github_password']
     g = Github(username, password)
     local_repo = target_repo.replace(target_repo.split('/')[-2], ToolUser)
-    if not settings.TEST or not settings.test_conf['local']:
+    if not settings.test_conf['local']:
         delete_repo(local_repo)
         time.sleep(refresh_sleeping_secs)
     dolog('repo deleted')
-    if not settings.TEST or not settings.test_conf['local']:
+    if not settings.test_conf['local'] or settings.test_conf['fork']:  # in case it is not test or test with fork option
         dolog('will fork the repo')
         change_status(target_repo, 'forking repo')
         fork_repo(target_repo, username, password)
@@ -117,7 +117,9 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
         dolog('repo forked')
         drepo.progress = 10.0
         drepo.save()
-    if not settings.TEST or not settings.test_conf['local']:
+    else:
+        print "no fork"
+    if not settings.test_conf['local'] or settings.test_conf['clone']:
         change_status(target_repo, 'cloning repo')
         clone_repo(cloning_repo, user)
         dolog('repo cloned')
@@ -194,7 +196,7 @@ def git_magic1(target_repo, user, cloning_repo, changed_filesss):
     global g
     global parent_folder
     parent_folder = user
-    if not settings.TEST:
+    if settings.test_conf['local']:
         prepare_log(user)
     dolog('############################### magic #############################')
     dolog('target_repo: ' + target_repo)
@@ -204,15 +206,15 @@ def git_magic1(target_repo, user, cloning_repo, changed_filesss):
     password = os.environ['github_password']
     g = Github(username, password)
     local_repo = target_repo.replace(target_repo.split('/')[-2], ToolUser)
-    if not settings.TEST or not settings.test_conf['local']:
+    if not settings.test_conf['local']:
         delete_repo(local_repo)
     dolog('repo deleted')
-    if not settings.TEST or not settings.test_conf['local']:
+    if not settings.test_conf['local']:
         dolog('will fork the repo')
         change_status(target_repo, 'forking repo')
         fork_repo(target_repo, username, password)
         dolog('repo forked')
-    if not settings.TEST or not settings.test_conf['local']:
+    if not settings.test_conf['local']:
         change_status(target_repo, 'cloning repo')
         clone_repo(cloning_repo, user)
         dolog('repo cloned')
@@ -312,7 +314,7 @@ def git_magic1(target_repo, user, cloning_repo, changed_filesss):
     if len(files_to_verify) == 0:
         change_status(target_repo, 'Ready')
         return
-    if not settings.TEST or not settings.test_conf['local']:
+    if not settings.test_conf['local']:
         commit_changes()
         dolog('changes committed')
         remove_old_pull_requests(target_repo)
@@ -341,7 +343,7 @@ def git_magic1(target_repo, user, cloning_repo, changed_filesss):
             r.state = s
             r.save()
             # The below "return" is commented so pull request are created even if there are files that are not generated
-    if not settings.TEST or not settings.test_conf['local']:
+    if not settings.test_conf['local']:
         change_status(target_repo, 'creating a pull request')
         try:
             r = send_pull_request(target_repo, ToolUser)
@@ -375,7 +377,7 @@ def verify_tools_generation_when_ready(ver_file_comp, repo=None):
         return verify_tools_generation(ver_file_comp, repo)
     repo.state = ver_file_comp['file'] + \
         ' is talking too much time to generate output'
-    if settings.TEST:
+    if settings.test_conf['local']:
         assert False, 'Taking too much time for verification'
     else:  # I want to see the file in case of testing
         os.remove(ver_file)  # the verification file is no longer needed
@@ -424,7 +426,7 @@ def verify_tools_generation(ver_file_comp, repo=None):
             repo.state += ' The Diagram of the file %s is not generated ' % \
                 (ver_file_comp['file'])
             repo.save()
-        if settings.TEST:
+        if settings.test_conf['local']:
             assert file_exists, 'the file %s is not generated' % (target_file)
         elif not file_exists:
             dolog('The Diagram of the file %s is not generated ' %
@@ -439,7 +441,7 @@ def verify_tools_generation(ver_file_comp, repo=None):
             repo.state += ' The Documentation of the file %s if not generated ' % (
                 ver_file_comp['file'])
             repo.save()
-        if settings.TEST:
+        if settings.test_conf['local']:
             assert file_exists, 'the file %s is not generated' % (target_file)
         elif not file_exists:
             dolog('The Documentation of the file %s if not generated ' %
@@ -454,7 +456,7 @@ def verify_tools_generation(ver_file_comp, repo=None):
             repo.state += ' The Evaluation report of the file %s if not generated ' % (
                 ver_file_comp['file'])
             repo.save()
-        if settings.TEST:
+        if settings.test_conf['local']:
             assert file_exists, 'the file %s is not generated' % (target_file)
         elif not file_exists:
             dolog('The Evaluation report of the file %s if not generated ' %
@@ -470,7 +472,7 @@ def verify_tools_generation(ver_file_comp, repo=None):
             repo.state += ' The Context documentation of the file %s if not generated ' % (
                 ver_file_comp['file'])
             repo.save()
-        if settings.TEST:
+        if settings.test_conf['local']:
             assert file_exists, 'the file %s is not generated' % (target_file)
         elif not file_exists:
             dolog('The Context documentation of the file %s if not generated ' %
@@ -552,7 +554,7 @@ def fork_repo(target_repo, username, password):
     # this is a workaround and not a proper way to do a fork
     comm = "curl --user \"%s:%s\" --request POST --data \'{}\' https://api.github.com/repos/%s/forks" % (
         username, password, target_repo)
-    if not settings.TEST:
+    if not settings.test_conf['local']:
         comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
     call(comm, shell=True)
@@ -572,7 +574,7 @@ def clone_repo(cloning_repo, parent_folder, dosleep=True):
     try:
         # comm = "rm" + " -Rf " + home + parent_folder
         comm = "rm" + " -Rf " + os.path.join(home, parent_folder)
-        if not settings.TEST:
+        if not settings.test_conf['local']:
             comm += ' >> "' + log_file_dir + '"'
         dolog(comm)
         call(comm, shell=True)
@@ -580,7 +582,7 @@ def clone_repo(cloning_repo, parent_folder, dosleep=True):
         dolog('rm failed: ' + str(e))
     # comm = "git" + " clone" + " " + cloning_repo + " " + home + parent_folder
     comm = "git" + " clone" + " " + cloning_repo + " " + os.path.join(home, parent_folder)
-    if not settings.TEST:
+    if not settings.test_conf['local']:
         comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
     call(comm, shell=True)
@@ -607,7 +609,7 @@ def commit_changes():
     gu += 'git config  user.name "%s" ;' % (ToolUser)
     # comm = "cd " + home + parent_folder + ";" + gu + " git add . "
     comm = "cd " + os.path.join(home, parent_folder) + ";" + gu + " git add . "
-    if not settings.TEST:
+    if not settings.test_conf['local']:
         comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
     call(comm, shell=True)
@@ -615,14 +617,14 @@ def commit_changes():
     # comm = "cd " + home + parent_folder + ";" + \
     comm = "cd " + os.path.join(home, parent_folder) + ";" + \
            gu + " git commit -m 'automated change' "
-    if not settings.TEST:
+    if not settings.test_conf['local']:
         comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
     call(comm, shell=True)
     gup = "git config push.default matching;"
     # comm = "cd " + home + parent_folder + ";" + gu + gup + " git push "
     comm = "cd " + os.path.join(home, parent_folder) + ";" + gu + gup + " git push "
-    if not settings.TEST:
+    if not settings.test_conf['local']:
         comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
     call(comm, shell=True)
@@ -964,7 +966,7 @@ def get_auton_config(conf_file_abs, from_string=True):
 
 def delete_dir(target_directory):
     comm = "rm -Rf " + target_directory
-    if not settings.TEST:
+    if not settings.test_conf['local']:
         comm += '  >> "' + log_file_dir + '" '
     print comm
     call(comm, shell=True)

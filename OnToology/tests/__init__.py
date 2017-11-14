@@ -5,9 +5,7 @@ from django.test import TestCase
 from django.test.simple import DjangoTestSuiteRunner
 
 from OnToology import settings
-from OnToology.tests import __path__
 from OnToology.models import *
-
 
 
 from mongoengine import connection, connect
@@ -16,33 +14,12 @@ import pyclbr
 def suite():
     return unittest.TestLoader().discover("OnToology.tests", pattern="*.py")
 
-# print "__path__ is: %s" % str(__path__)
-
-for loader, module_name, is_pkg in pkgutil.walk_packages(__path__):
-    print ' module_name: '+str(module_name)+', is_pkg: '+str(is_pkg)
-    module = loader.find_module(module_name).load_module(module_name)
-    #print 'dir module: '+str(dir(module))
-    for name in dir(module):
-        #print 'name: '+str(name)
-        obj = getattr(module, name)
-        if isinstance(obj, type) and issubclass(obj, unittest.case.TestCase):
-            print "obj %s" % str(obj)
-            exec ('%s = obj' % obj.__name__)
-
-
-# class NoSQLTestRunner(DjangoTestSuiteRunner):
-#     def setup_databases(self):
-#         settings.test_conf['local']=True
-#         settings.TEST = True
-#
-#     def teardown_databases(self, *args):
-#         pass
-
 
 class NoSQLTestRunner(DjangoTestSuiteRunner):
     def setup_databases(self):
         settings.test_conf['local'] = True
-        settings.TEST = True
+        settings.test_conf['fork'] = False
+        settings.test_conf['clone'] = False
 
         self.clearing_db_connection()
         new_db_name = "test_OnToology"
