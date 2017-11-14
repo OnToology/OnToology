@@ -357,8 +357,11 @@ def generateforall(target_repo, user_email):
     #     print 'will call git_magic with target=%s, user=%s, cloning_repo=%s, changed_files=%s' % \
     #           (target_repo, user, cloning_repo, str(changed_files))
     #     git_magic(target_repo, user, cloning_repo, changed_files)
-    if False:
-        pass
+    # if False:
+    #     pass
+    if settings.test_conf['local']:
+        print "running autoncode in the same thread"
+        git_magic(target_repo, user, cloning_repo, changed_files)
     else:
         print 'running autoncore code as: ' + comm
 
@@ -374,7 +377,7 @@ def generateforall(target_repo, user_email):
                         'error': 'make sure that your repository filenames does not have accents or special characters'}
             else:
                 return {'status': False,
-                        'error': 'generic error, please report the problem to us ontoology@delicias.dia.fi.upm.es'}
+                        'error': 'generic error, please report the problem to us at ontoology@delicias.dia.fi.upm.es'}
     sys.stdout.flush()
     sys.stderr.flush()
     return {'status': True}
