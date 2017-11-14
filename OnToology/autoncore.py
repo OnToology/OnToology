@@ -488,17 +488,20 @@ def get_ontologies_in_online_repo(target_repo):
     global g
     if type(g) == type(None):
         init_g()
-    repo = g.get_repo(target_repo)
-    sha = repo.get_commits()[0].sha
-    files = repo.get_git_tree(sha=sha, recursive=True).tree
-    ontologies = []
-    ontoology_home_name = 'OnToology'
-    for f in files:
-        if f.path[:len(ontoology_home_name)] != ontoology_home_name:
-            for ontfot in ontology_formats:
-                if f.path[-len(ontfot):] == ontfot:
-                    ontologies.append(f.path)
-                    break
+    try:
+        repo = g.get_repo(target_repo)
+        sha = repo.get_commits()[0].sha
+        files = repo.get_git_tree(sha=sha, recursive=True).tree
+        ontologies = []
+        ontoology_home_name = 'OnToology'
+        for f in files:
+            if f.path[:len(ontoology_home_name)] != ontoology_home_name:
+                for ontfot in ontology_formats:
+                    if f.path[-len(ontfot):] == ontfot:
+                        ontologies.append(f.path)
+                        break
+    except Exception as e:
+        print "get_ontologies_in_online_repo exception: "+str(e)
     return ontologies
 
 
