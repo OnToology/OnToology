@@ -13,7 +13,7 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 <!--
 
 
-###Project Plan
+### Project Plan
 * Provide a better solution for handling private and public repos.
 * Add new features (e.g. integrate with GitLab and Bitbucket)
 * Deploy on the live server (now on a testing server)
@@ -23,7 +23,7 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 * Use profilers.
 
 
-###What the system does now:
+### What the system does now:
 * Draw two kinds of diagrams from rdf files using ar2dtool (https://github.com/idafensp/ar2dtool).
 * Create a documentation of the ontology using Widoco tool (https://github.com/dgarijo/Widoco).
 * Validate the ontology using OOPS tool and generate a summary of the issues found by OOPS (http://oops-ws.oeg-upm.net/).
@@ -31,7 +31,7 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 * Publish the ontology (content negotiation)
 
 
-###How to use it 
+### How to use it 
 1. From the website, you only have to put the repo as user/repo i.e. myuser/myrepo (now it doesnot work with organization, for more technical info please refere to the issues section).
 2. Update/create OnToology.cfg (will use default configurations otherwise)
 3. Update your repo and push.
@@ -71,7 +71,7 @@ how to do them
  https://gist.github.com/jexchan/2351996
 
 
-##Tests (the new tests with Vagrant configuration will be available soon)
+## Tests (the new tests with Vagrant configuration will be available soon)
 ID | Test Case | Expected Result  | Status
 :--|:---------:|:---------------: | :----:
 1  | Adding non-existing repo | shouldn't add the non-existing repo and should add an error page | :heavy_check_mark:
