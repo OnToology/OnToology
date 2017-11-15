@@ -191,10 +191,10 @@ environ['email_password'] = ""
 
 
 
-#### External JARs you need to install (or you can use the deploy script)
-1. [Widoco](http://github.com/dgarijo/Widoco/releases) and rename it to "widoco.jar"
-2. [AR2DTool](http://github.com/idafensp/ar2dtool) and rename it to "ar2dtool.jar"
-3. [vocabLite](http://github.com/dgarijo/vocabLite/releases) and rename it to "vocabLite-1.0-jar-with-dependencies.jar"
+#### External tools used by OnToology
+1. [Widoco](http://github.com/dgarijo/Widoco/) 
+2. [AR2DTool](http://github.com/idafensp/ar2dtool)
+3. [vocabLite](http://github.com/dgarijo/vocabLite/)
 
 Make sure the are located in the same dir as the environment variable e.g. (ar2dtool_dir, widoco_dir) and they can be
 executed (x permission is given).
