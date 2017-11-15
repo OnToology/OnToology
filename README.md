@@ -63,7 +63,7 @@ the modification go the rdfxml.py file you will see the original Sink commented 
 To install pip follow the instructions here https://pip.pypa.io/en/latest/installing.html
 
 
-## Tests (the new tests with Vagrant configuration will be available soon)
+## Tests (under refactoring)
 ID | Test Case | Expected Result  | Status
 :--|:---------:|:---------------: | :----:
 1  | Adding non-existing repo | shouldn't add the non-existing repo and should add an error page | :heavy_check_mark:
