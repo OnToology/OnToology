@@ -183,19 +183,6 @@ environ['email_password'] = ""
 
 
 
-#### External tools used by OnToology
-1. [Widoco](http://github.com/dgarijo/Widoco/) 
-2. [AR2DTool](http://github.com/idafensp/ar2dtool)
-3. [vocabLite](http://github.com/dgarijo/vocabLite/)
-
-Make sure the are located in the same dir as the environment variable e.g. (ar2dtool_dir, widoco_dir) and they can be
-executed (x permission is given).
-
-#### Set default configuration files
-In the folder that specified in the environment variable ```ar2dtool_config```, include default configuration files for
-AR2DTool .
-
-
 ## How to contribute
 There are two workflows:
 
