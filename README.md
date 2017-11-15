@@ -41,14 +41,6 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 -->
 
 
-### used python libraries:
-* django
-* pygithub
-* mongoengine
-* rdfxml (http://infomesh.net/2003/rdfparser/)
-* requests
-
-
 ### Install the libraries using pip (or use automatic deployment script)
 ```
 pip install -r requirements.txt
