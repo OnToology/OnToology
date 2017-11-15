@@ -4,7 +4,7 @@ A system for collaborative ontology development process. Given a repository with
 
 You can find a live version of OnToology online: http://ontoology.linkeddata.es.
 
-Team: Ahmad Alobaid, Daniel Garijo, Maria Poveda, Idafen Santa, Oscar Corcho
+Team: Ahmad Alobaid, Daniel Garijo, Maria Poveda, Idafen Santa, Oscar Corcho, Alba Fernandez Izquierdo
 
 License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 
