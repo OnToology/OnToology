@@ -41,18 +41,8 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 -->
 
 
-### Install the libraries using pip (or use automatic deployment script)
-```
-pip install -r requirements.txt
-```
-Note: you must navigate to the requirements.txt using the "cd" command
-
-rdfxml (can be downloaded from http://infomesh.net/2003/rdfparser/)
-note: I modified rdfxml to return a dictionary rather than a string, to see 
-the modification go the rdfxml.py file you will see the original Sink commented out
- and right beneath it is my Sink function
-
-To install pip follow the instructions here https://pip.pypa.io/en/latest/installing.html
+### Install with vagrant
+see boostrap sample file and everything is completly automated, including the JARs and all prerequisites. 
 
 
 ## Tests (under refactoring)
