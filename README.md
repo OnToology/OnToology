@@ -63,14 +63,6 @@ the modification go the rdfxml.py file you will see the original Sink commented 
 To install pip follow the instructions here https://pip.pypa.io/en/latest/installing.html
 
 
-## Working with Multiple ssh keys
-At some point, you may need to perform tests locally (django tests), you may need 
-to have multiple ssh keys for github at the same time. If so there is good example on
-how to do them 
- http://techamad.blogspot.com.es/2015/05/github-with-multiple-keys.html or
- https://gist.github.com/jexchan/2351996
-
-
 ## Tests (the new tests with Vagrant configuration will be available soon)
 ID | Test Case | Expected Result  | Status
 :--|:---------:|:---------------: | :----:
