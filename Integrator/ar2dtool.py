@@ -63,8 +63,6 @@ def draw_file(rdf_file, config_type, base_dir):
         outtype + ' -c ' + config_file_abs + ' -GV -gml '
     if not settings.test_conf['local']:
        comm += ' >> "' + log_file_dir + '"'
-    # comm += " ; echo 'ar2dtool' >> " + os.path.join(get_parent_path(get_parent_path(
-    #    get_parent_path(rdf_file_abs + '.' + outtype))), verification_log_fname)
     dolog("drawing is: "+comm)
     error_msg, msg = call_and_get_log(comm)
     dolog(msg+error_msg)

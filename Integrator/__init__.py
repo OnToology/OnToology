@@ -11,13 +11,9 @@ ontology_formats = ['.rdf', '.owl', '.ttl']
 config_folder_name = 'OnToology'
 config_file_name = 'OnToology.cfg'
 log_file_dir = ''  # need to be set some how
-# verification_log_fname = 'verification.log'
 
 g = None
 
-# def dolog(msg):
-#     print(msg)
-#     # dolog_function(msg)
 
 tools_conf = {
     'ar2dtool': {'folder_name': 'diagrams', 'type': 'png'},
@@ -103,10 +99,10 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
         change_status(target_repo, 'drawing diagrams for: '+changed_file)
         try:
             r = ar2dtool.draw_diagrams([changed_file], base_dir)
-            if r != "":
-                print 'in init draw detected an error'
-                # repo.notes += 'Error generating diagrams for %s. ' % changed_file
-                repo.save()
+            # if r != "":
+            #     print 'in init draw detected an error'
+            #     # repo.notes += 'Error generating diagrams for %s. ' % changed_file
+            #     repo.save()
         except Exception as e:
             dolog("Exception in running ar2dtool.draw_diagrams: "+str(e))
     repo.progress += progress_inc
@@ -116,10 +112,10 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
         change_status(target_repo, 'generating docs for: '+changed_file)
         try:
             r = widoco.generate_widoco_docs([changed_file], base_dir)
-            if r != "":
-                print 'in init documentation detected an error for ontology file: %s' % changed_file
-                # repo.notes += 'Error generating documentation for %s. ' % changed_file
-                repo.save()
+            # if r != "":
+            #     print 'in init documentation detected an error for ontology file: %s' % changed_file
+            #     # repo.notes += 'Error generating documentation for %s. ' % changed_file
+            #     repo.save()
         except Exception as e:
             dolog("Exception in running widoco.generate_widoco_docs: "+str(e))
     repo.progress += progress_inc
@@ -129,10 +125,10 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
         change_status(target_repo, 'evaluating: '+changed_file)
         try:
             r = oops.oops_ont_files(target_repo=target_repo, changed_files=[changed_file], base_dir=base_dir)
-            if r != "":
-                print 'in init evaluation detected an error'
-                # repo.notes += 'Error generating evaluation for %s. ' % changed_file
-                repo.save()
+            # if r != "":
+            #     print 'in init evaluation detected an error'
+            #     # repo.notes += 'Error generating evaluation for %s. ' % changed_file
+            #     repo.save()
         except Exception as e:
             dolog("Exception in running oops.oops.oops_ont_files: "+str(e))
     repo.progress += progress_inc
@@ -228,7 +224,6 @@ def build_path(file_with_abs_dir):
     :param file_with_abs_dir:
     :return: abs_dir as string
     """
-    # file_with_abs_dir = os.path.join(repo_abs_dir, file_with_rel_dir)
     abs_dir = get_parent_path(file_with_abs_dir)
     if not os.path.exists(abs_dir):
         os.makedirs(abs_dir)

@@ -200,9 +200,6 @@ class PublishView(View):
 
 @token_required
 def generate_all(request):
-    import settings
-    print 'settings test local is: '
-    print settings.test_conf['local']
     if request.method != 'POST':
         return JsonResponse({'message': 'Invalid method'}, status=405)
     try:

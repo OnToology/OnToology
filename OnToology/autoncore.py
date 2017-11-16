@@ -126,6 +126,8 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
         drepo.progress = 20.0
     files_to_verify = []
     # print "will loop through changed files"
+    if log_file_dir is None:
+        prepare_log(user)
     Integrator.tools_execution(changed_files=changed_filesss, base_dir=os.path.join(home, user), logfile=log_file_dir,
                                target_repo=target_repo, g_local=g, dolog_fname=logger_fname,
                                change_status=change_status, repo=drepo)
@@ -136,7 +138,7 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
         if c[:-4] in ontology_formats:
             print "file to verify: "+c
         else:
-            print "c: %s c-4: %s"%(c, c[-4:])
+            print "c: %s c-4: %s" % (c, c[-4:])
 
     # After the loop
     dolog("number of files to verify %d" % (len(files_to_verify)))
@@ -144,9 +146,12 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
         print "files: "+str(files_to_verify)
         change_status(target_repo, 'Ready')
         return
-    # if not settings.TEST or not settings.test_conf['local']:
-    commit_changes()
-    dolog('changes committed')
+    # if not test or test with push
+    if not settings.test_conf['local'] or settings.test_conf['push']:
+        commit_changes()
+        dolog('changes committed')
+    else:
+        print 'No push for testing'
     remove_old_pull_requests(target_repo)
     if exception_if_exists == "":  # no errors
         change_status(target_repo, 'validating')
@@ -174,8 +179,8 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
             r.state = s
             r.save()
             # The below "return" is commented so pull request are created even if there are files that are not generated
-    # if not settings.TEST or not settings.test_conf['local']:
-    if True:
+    # if not testing or testing with pull enabled
+    if not settings.test_conf['local'] or settings.test_conf['pull']:
         change_status(target_repo, 'creating a pull request')
         try:
             r = send_pull_request(target_repo, ToolUser)
@@ -186,6 +191,8 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
             exception_if_exists += str(e)
             dolog('failed to create pull request: '+exception_if_exists)
             change_status(target_repo, 'failed to create a pull request')
+    else:
+        print 'No pull for testing'
     drepo.progress = 100
     drepo.save()
     # change_status(target_repo, 'Ready')

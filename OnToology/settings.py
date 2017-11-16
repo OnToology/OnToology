@@ -142,6 +142,8 @@ MEDIA_URL = '/media/'
 test_conf = {'local': False,  # doing test
              'fork': False,  # perform fork
              'clone': False,  # perform clone
+             'push': False,  # push the changes to GitHub
+             'pull': False,  # to create a pull request from the forked on
              }
 # Application definition
 
