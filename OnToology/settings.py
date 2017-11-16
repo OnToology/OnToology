@@ -83,8 +83,6 @@ else:
     print "Going remote"
     print os.environ
 
-TEST = False
-
 from mongoengine import connect
 
 MONGO_DATABASE_NAME = "OnToology"
@@ -141,8 +139,11 @@ MEDIA_ROOT = BASE_DIR+'/media/'
 MEDIA_URL = '/media/'
 
     
-test_conf = {'local': False  # don't interact with github at all, just mimic
-             
+test_conf = {'local': False,  # doing test
+             'fork': False,  # perform fork
+             'clone': False,  # perform clone
+             'push': False,  # push the changes to GitHub
+             'pull': False,  # to create a pull request from the forked on
              }
 # Application definition
 

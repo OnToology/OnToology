@@ -208,7 +208,7 @@ def get_changed_files_from_payload(payload):
 @csrf_exempt
 def add_hook(request):
     print "in add hook function"
-    if settings.TEST:
+    if settings.test_conf['local']:
         print 'We are in test mode'
     try:
         print "\n\nPOST DATA\n\n: "+str(request.POST)
@@ -246,7 +246,7 @@ def add_hook(request):
                 print 'database_exception: ' + str(e)
             msg = 'This indicate that this merge request will be ignored'
             print msg
-            if settings.TEST:
+            if settings.test_conf['local']:
                 print msg
                 return
             else:
@@ -254,7 +254,7 @@ def add_hook(request):
     except Exception as e:
         print "add hook exception: "+str(e)
         msg = 'This request should be a webhook ping'
-        if settings.TEST:
+        if settings.test_conf['local']:
             print msg
             return
         else:
@@ -276,7 +276,7 @@ def add_hook(request):
     comm += ' "' + target_repo + '" "' + user + '" "' + cloning_repo + '" '
     for c in changed_files:
         comm += '"' + c + '" '
-    if settings.TEST:
+    if settings.test_conf['local']:
         print 'will call git_magic with target=%s, user=%s, cloning_repo=%s, changed_files=%s' % (target_repo, user,
                                                                                                   cloning_repo,
                                                                                                   str(changed_files))
@@ -353,12 +353,9 @@ def generateforall(target_repo, user_email):
     comm += ' "' + target_repo + '" "' + user + '" "' + cloning_repo + '" '
     for c in changed_files:
         comm += '"' + c.strip() + '" '
-    # if settings.TEST:
-    #     print 'will call git_magic with target=%s, user=%s, cloning_repo=%s, changed_files=%s' % \
-    #           (target_repo, user, cloning_repo, str(changed_files))
-    #     git_magic(target_repo, user, cloning_repo, changed_files)
-    if False:
-        pass
+    if settings.test_conf['local']:
+        print "running autoncode in the same thread"
+        git_magic(target_repo, user, cloning_repo, changed_files)
     else:
         print 'running autoncore code as: ' + comm
 
@@ -374,7 +371,7 @@ def generateforall(target_repo, user_email):
                         'error': 'make sure that your repository filenames does not have accents or special characters'}
             else:
                 return {'status': False,
-                        'error': 'generic error, please report the problem to us ontoology@delicias.dia.fi.upm.es'}
+                        'error': 'generic error, please report the problem to us at ontoology@delicias.dia.fi.upm.es'}
     sys.stdout.flush()
     sys.stderr.flush()
     return {'status': True}
