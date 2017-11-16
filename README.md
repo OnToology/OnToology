@@ -4,7 +4,7 @@ A system for collaborative ontology development process. Given a repository with
 
 You can find a live version of OnToology online: http://ontoology.linkeddata.es.
 
-Team: Ahmad Alobaid, Daniel Garijo, Maria Poveda, Idafen Santa, Oscar Corcho
+Team: Ahmad Alobaid, Daniel Garijo, Maria Poveda, Idafen Santa, Oscar Corcho, Alba Fernandez Izquierdo
 
 License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 
@@ -13,7 +13,7 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 <!--
 
 
-###Project Plan
+### Project Plan
 * Provide a better solution for handling private and public repos.
 * Add new features (e.g. integrate with GitLab and Bitbucket)
 * Deploy on the live server (now on a testing server)
@@ -23,7 +23,7 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 * Use profilers.
 
 
-###What the system does now:
+### What the system does now:
 * Draw two kinds of diagrams from rdf files using ar2dtool (https://github.com/idafensp/ar2dtool).
 * Create a documentation of the ontology using Widoco tool (https://github.com/dgarijo/Widoco).
 * Validate the ontology using OOPS tool and generate a summary of the issues found by OOPS (http://oops-ws.oeg-upm.net/).
@@ -31,7 +31,7 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 * Publish the ontology (content negotiation)
 
 
-###How to use it 
+### How to use it 
 1. From the website, you only have to put the repo as user/repo i.e. myuser/myrepo (now it doesnot work with organization, for more technical info please refere to the issues section).
 2. Update/create OnToology.cfg (will use default configurations otherwise)
 3. Update your repo and push.
@@ -41,37 +41,11 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 -->
 
 
-### used python libraries:
-* django
-* pygithub
-* mongoengine
-* rdfxml (http://infomesh.net/2003/rdfparser/)
-* requests
+### Install with vagrant
+see boostrap sample file and everything is completly automated, including the JARs and all prerequisites. 
 
 
-### Install the libraries using pip (or use automatic deployment script)
-```
-pip install -r requirements.txt
-```
-Note: you must navigate to the requirements.txt using the "cd" command
-
-rdfxml (can be downloaded from http://infomesh.net/2003/rdfparser/)
-note: I modified rdfxml to return a dictionary rather than a string, to see 
-the modification go the rdfxml.py file you will see the original Sink commented out
- and right beneath it is my Sink function
-
-To install pip follow the instructions here https://pip.pypa.io/en/latest/installing.html
-
-
-## Working with Multiple ssh keys
-At some point, you may need to perform tests locally (django tests), you may need 
-to have multiple ssh keys for github at the same time. If so there is good example on
-how to do them 
- http://techamad.blogspot.com.es/2015/05/github-with-multiple-keys.html or
- https://gist.github.com/jexchan/2351996
-
-
-##Tests (the new tests with Vagrant configuration will be available soon)
+## Tests (under refactoring)
 ID | Test Case | Expected Result  | Status
 :--|:---------:|:---------------: | :----:
 1  | Adding non-existing repo | shouldn't add the non-existing repo and should add an error page | :heavy_check_mark:
@@ -197,19 +171,6 @@ environ['email_username'] = ""
 environ['email_password'] = ""
 ```
 
-
-
-#### External JARs you need to install (or you can use the deploy script)
-1. [Widoco](http://github.com/dgarijo/Widoco/releases) and rename it to "widoco.jar"
-2. [AR2DTool](http://github.com/idafensp/ar2dtool) and rename it to "ar2dtool.jar"
-3. [vocabLite](http://github.com/dgarijo/vocabLite/releases) and rename it to "vocabLite-1.0-jar-with-dependencies.jar"
-
-Make sure the are located in the same dir as the environment variable e.g. (ar2dtool_dir, widoco_dir) and they can be
-executed (x permission is given).
-
-#### Set default configuration files
-In the folder that specified in the environment variable ```ar2dtool_config```, include default configuration files for
-AR2DTool .
 
 
 ## How to contribute

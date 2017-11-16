@@ -145,6 +145,8 @@ def git_magic(target_repo, user, cloning_repo, changed_filesss):
     if len(files_to_verify) == 0:
         print "files: "+str(files_to_verify)
         change_status(target_repo, 'Ready')
+        drepo.progress = 100
+        drepo.save()
         return
     # if not test or test with push
     if not settings.test_conf['local'] or settings.test_conf['push']:
