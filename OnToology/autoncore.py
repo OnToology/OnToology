@@ -497,13 +497,13 @@ def verify_tools_generation(ver_file_comp, repo=None):
 
 def get_ontologies_in_online_repo(target_repo):
     global g
+    ontologies = []
     if type(g) == type(None):
         init_g()
     try:
         repo = g.get_repo(target_repo)
         sha = repo.get_commits()[0].sha
         files = repo.get_git_tree(sha=sha, recursive=True).tree
-        ontologies = []
         ontoology_home_name = 'OnToology'
         for f in files:
             if f.path[:len(ontoology_home_name)] != ontoology_home_name:
