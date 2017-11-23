@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Journal of Web Semantics RO</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+
+    <style>
+        canvas {
+    border-bottom-style: solid;
+    border-width: 1px;
+    border-color: rgb(255,0,0, 0.5);
+    //border-color: red;
+}
+
+
+
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <ul class="nav nav-stacked nav-pills navbar-fixed-top col-md-2 col-sm-4">
+        <li role="presentation" class=""><a href="#abstract">Abstract</a></li>
+        <li role="presentation"><a href="#stats">Usage Statistics</a></li>
+        <!--<li role="presentation"><a href="#questionnaire">Questionnaire</a></li>-->
+        <!--<li role="presentation"><a href="#actions">Actions</a></li>-->
+        <!--<li role="presentation" class=""><a href="#rawdata">Raw data</a></li>-->
+        <!--<li role="presentation" class=""><a href="#results">Results</a></li>-->
+    </ul>
+    <div class=" col-md-10 col-md-offset-2 col-sm-8 col-sm-offset-4 col-lg-8 col-lg-offset-2">
+        <div class="jumbotron">
+            <h3>Supporting Ontology Engineering with OnToology
+                <span style="color: #BBBBBB"> (Additional Material for the original paper)</span>
+            </h3>
+            Journal of Web Semantic 2017 (currently under submission)
+
+            <br><br>
+            <span>Authors: Ahmad Alobaid, Daniel Garijo, Maria Poveda-Villalon, Idafen Santana-Perez, Alba Fernandez,
+                and Oscar Corcho </span>
+
+            <br>
+
+
+        </div>
+        <div id="abstract">
+            <h3>Abstract</h3>
+            <span style='color: #CCCCCC'> This abstract is from the original paper</span>
+        </div>
+
+        <hr>
+
+        <div id="stats">
+            <h3>Usage Statistics</h3>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Item</th>
+                    <th scope="col">Frequency</th>
+                    <th scope="col">Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Content Negotiation</td>
+                    <td>382</td>
+                    <td>how many requests to an ontology hosted with OnToology</td>
+                </tr>
+                <tr>
+                    <td>Bundle</td>
+                    <td>29</td>
+                    <td>how many bundle downloads</td>
+                </tr>
+                <tr>
+                    <td>Configuration Update</td>
+                    <td>13</td>
+                    <td>How many updates using online Web Gui</td>
+                </tr>
+                <tr>
+                    <td>Access published documentation</td>
+                    <td>843</td>
+                    <td>how many time the index.html of the documentation is accessed for the ontologies hosted on
+                        OnToology (bundles are not included)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Publish</td>
+                    <td>57</td>
+                    <td>how many (re-)publish requests to publish an ontology and to be hosted with OnToology</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <hr>
+
+
+        <!--<div id="actions">-->
+            <!--<h3>Actions</h3>-->
+            <!--Below we list actions we asked the users to perform for evaluating the usability of OnToology that we-->
+            <!--included in the paper-->
+            <!--<ol>-->
+                <!--<li>Login and authorize OnToology application</li>-->
+                <!--<li>Add a repository to watch</li>-->
+                <!--<li>Authorize application to access public repository-->
+                <!--</li>-->
+                <!--<li>See watched repositories and check that yours is there.</li>-->
+                <!--<li>Check that OnToology has generated a pull request with the files-->
+                <!--</li>-->
+                <!--<li>Merge using GitHub the generated resources by OnToology</li>-->
+                <!--<li>Edit your ontology and commit it to GitHub</li>-->
+                <!--<li>Generate previsualization</li>-->
+                <!--<li>Change configuration using the web interface</li>-->
+                <!--<li>Force the generation of documentation, diagrams and evaluation</li>-->
+                <!--<li>Publish the ontology with w3id</li>-->
+                <!--<li>Check the published ontology with the w3id</li>-->
+                <!--<li>Download the bundle</li>-->
+                <!--<li>Stop watching the repo and check that it does not appear anymore</li>-->
+            <!--</ol>-->
+        <!--</div>-->
+
+        <!--<hr>-->
+
+        <!--<div id="questionnaire">-->
+            <!--<h3>Questionnaire</h3>-->
+            <!--<p>Below we list the questions used for the evaluation section in the paper</p>-->
+            <!--<ol>-->
+                <!--<li>Are you familiar with software engineering?</li>-->
+                <!--<li>Are you familiar with ontology engineering?</li>-->
+                <!--<li>How manu ontologies have you built?</li>-->
+                <!--<li>It helps me be more effective</li>-->
+                <!--<li>It helps me be more productive</li>-->
+                <!--<li>It is useful</li>-->
+                <!--<li>It gives me more control over the activities in my life</li>-->
+                <!--<li>It makes the things I want to accomplish easier to get done</li>-->
+                <!--<li>It saves me time when I use it</li>-->
+                <!--<li>It meets my needs</li>-->
+                <!--<li>It does everything I would expect it to do</li>-->
+                <!--<li>It is easy to use</li>-->
+                <!--<li>It is simple to use</li>-->
+                <!--<li>It is user friendly</li>-->
+                <!--<li>It requires the fewest steps possible to accomplish what I want to do with it</li>-->
+                <!--<li>It is flexible</li>-->
+                <!--<li>Using it is effortless</li>-->
+                <!--<li>I can use it without written instructions</li>-->
+                <!--<li>I don't notice any inconsistencies as I use it</li>-->
+                <!--<li>Both occasional and regular users would like it</li>-->
+                <!--<li>I can recover from mistakes quickly and easily</li>-->
+                <!--<li>I can use it successfully every time</li>-->
+                <!--<li>I learned to use it quickly</li>-->
+                <!--<li>I easily remember how to use it</li>-->
+                <!--<li>It is easy to learn to use it</li>-->
+                <!--<li>I quickly became skillful with it</li>-->
+                <!--<li>I am satisfied with it</li>-->
+                <!--<li>I would recommend it to a friend</li>-->
+                <!--<li>It is fun to use</li>-->
+                <!--<li>It works the way I want it to work</li>-->
+                <!--<li>It is wonderful</li>-->
+                <!--<li>I feel I need to have it</li>-->
+                <!--<li>It is pleasant to use</li>-->
+            <!--</ol>-->
+        <!--</div>-->
+
+        <!--<hr>-->
+
+        <!--<div id="rawdata">-->
+            <!--<h3>Raw Data</h3>-->
+            <!--The below raw data are the results we used for the evaluation section in the paper-->
+            <!--<ul>-->
+                <!--<li><a href="rawdata/General.html">Go to raw results for the general form</a></li>-->
+                <!--<li><a href="rawdata/Students.html">Go to raw results for the students form</a></li>-->
+                <!--<li><a href="rawdata/Total.html">Go to raw results (compiled)</a></li>-->
+            <!--</ul>-->
+        <!--</div>-->
+
+        <!--<hr>-->
+
+        <!--<div id="results">-->
+            <!--<h3>Results</h3>-->
+            <!--<div class="col-md-12">-->
+                <!--<div class=" col-md-6">-->
+                    <!--<canvas id="chart_all" width="400" height="400"></canvas>-->
+                    <!--<canvas id="chart_usefulness" width="400" height="400"></canvas>-->
+                    <!--<canvas id="chart_easeofuse" width="400" height="400"></canvas>-->
+                <!--</div>-->
+                <!--<div class="col-md-6">-->
+                    <!--<canvas id="chart_easeoflearning" width="400" height="400"></canvas>-->
+                    <!--<canvas id="chart_easeofsatisfaction" width="400" height="400"></canvas>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+
+
+    <!--</div>-->
+<!--</div>-->
+<!--<script>-->
+
+<!--var title_position = 'bottom';-->
+
+<!--var ctx_all = document.getElementById("chart_all");-->
+<!--new Chart(ctx_all, {-->
+    <!--type: 'radar',-->
+    <!--data: {-->
+        <!--labels: ["Usefulness", "Ease of Use", "Ease of learning", "Satisfaction"],-->
+        <!--datasets: [-->
+        <!--{-->
+            <!--label: "General Median",-->
+            <!--backgroundColor: "rgba(74,111,227,0.2)",-->
+            <!--borderColor: "rgba(74,111,227,1)",-->
+            <!--pointBackgroundColor: "rgba(74,111,227,1)",-->
+            <!--pointBorderColor: "#fff",-->
+            <!--pointHoverBackgroundColor: "#fff",-->
+            <!--pointHoverBorderColor: "rgba(74,111,227,1)",-->
+            <!--data: [6, 5, 5.5, 6]-->
+        <!--},-->
+        <!--{-->
+            <!--label: "General Mean",-->
+            <!--backgroundColor: "rgba(17,198,56,0.2)",-->
+            <!--borderColor: "rgba(17,198,56,1)",-->
+            <!--pointBackgroundColor: "rgba(17,198,56,1)",-->
+            <!--pointBorderColor: "#fff",-->
+            <!--pointHoverBackgroundColor: "#fff",-->
+            <!--pointHoverBorderColor: "rgba(17,198,56,1)",-->
+            <!--data: [5.71, 4.45, 5.25, 5.44]-->
+        <!--},-->
+        <!--{-->
+            <!--label: "Students Median",-->
+            <!--backgroundColor: "rgba(211,63,106,0.2)",-->
+            <!--borderColor: "rgba(211,63,106,1)",-->
+            <!--pointBackgroundColor: "rgba(211,63,106,1)",-->
+            <!--pointBorderColor: "#fff",-->
+            <!--pointHoverBackgroundColor: "#fff",-->
+            <!--pointHoverBorderColor: "rgba(211,63,106,1)",-->
+            <!--data: [4.5, 4, 4.75, 5]-->
+        <!--},-->
+        <!--{-->
+            <!--label: "Students Mean",-->
+            <!--backgroundColor: "rgba(239,151,8,0.2)",-->
+            <!--borderColor: "rgba(239,151,8,1)",-->
+            <!--pointBackgroundColor: "rgba(239,151,8,1)",-->
+            <!--pointBorderColor: "#fff",-->
+            <!--pointHoverBackgroundColor: "#fff",-->
+            <!--pointHoverBorderColor: "rgba(239,151,8,1)",-->
+            <!--data: [4.31, 4.14, 4.67, 4.71]-->
+        <!--}-->
+    <!--]-->
+
+    <!--},-->
+    <!--options: {-->
+            <!--scale: {-->
+                <!--reverse: false,-->
+                <!--ticks: {-->
+                    <!--beginAtZero: true,-->
+                    <!--max: 7.0-->
+                <!--}-->
+            <!--},-->
+            <!--title: {-->
+                <!--display: true,-->
+                <!--text: 'Usability Study as a whole',-->
+                <!--position: title_position-->
+            <!--}-->
+    <!--}-->
+<!--});-->
+
+<!--var ctx_usefulness = document.getElementById("chart_usefulness");-->
+<!--new Chart(ctx_usefulness, {-->
+    <!--type: 'radar',-->
+    <!--data: {-->
+        <!--labels: ["more effective", "more productive", "It is useful", "easier to get done", "save me time", "meets my needs", "meets my expectations"],-->
+        <!--datasets: [-->
+        <!--{-->
+            <!--label: "General Median",-->
+            <!--backgroundColor: "rgba(74,111,227,0.2)",-->
+            <!--borderColor: "rgba(74,111,227,1)",-->
+            <!--pointBackgroundColor: "rgba(74,111,227,1)",-->
+            <!--pointBorderColor: "#fff",-->
+            <!--pointHoverBackgroundColor: "#fff",-->
+            <!--pointHoverBorderColor: "rgba(74,111,227,1)",-->
+            <!--data: [5,6,7,6,6,6,5]-->
+        <!--},-->
+        <!--{-->
+            <!--label: "General Mean",-->
+            <!--backgroundColor: "rgba(17,198,56,0.2)",-->
+            <!--borderColor: "rgba(17,198,56,1)",-->
+            <!--pointBackgroundColor: "rgba(17,198,56,1)",-->
+            <!--pointBorderColor: "#fff",-->
+            <!--pointHoverBackgroundColor: "#fff",-->
+            <!--pointHoverBorderColor: "rgba(17,198,56,1)",-->
+            <!--data: [5.44, 5.67, 6.78, 5.89, 5.56, 5.67, 5]-->
+        <!--},-->
+        <!--{-->
+            <!--label: "Students Median",-->
+            <!--backgroundColor: "rgba(211,63,106,0.2)",-->
+            <!--borderColor: "rgba(211,63,106,1)",-->
+            <!--pointBackgroundColor: "rgba(211,63,106,1)",-->
+            <!--pointBorderColor: "#fff",-->
+            <!--pointHoverBackgroundColor: "#fff",-->
+            <!--pointHoverBorderColor: "rgba(211,63,106,1)",-->
+            <!--data: [4.5,	4.5, 5, 4, 4.5, 4.5, 4]-->
+        <!--},-->
+        <!--{-->
+            <!--label: "Students Mean",-->
+            <!--backgroundColor: "rgba(239,151,8,0.2)",-->
+            <!--borderColor: "rgba(239,151,8,1)",-->
+            <!--pointBackgroundColor: "rgba(239,151,8,1)",-->
+            <!--pointBorderColor: "#fff",-->
+            <!--pointHoverBackgroundColor: "#fff",-->
+            <!--pointHoverBorderColor: "rgba(239,151,8,1)",-->
+            <!--data: [4.33, 4.5, 5.17, 4.17, 4.5, 4, 3.5]-->
+        <!--}-->
+    <!--]-->
+    <!--},-->
+    <!--options: {-->
+            <!--scale: {-->
+                <!--reverse: false,-->
+                <!--ticks: {-->
+                    <!--beginAtZero: true,-->
+                    <!--max: 7.0-->
+                <!--}-->
+            <!--},-->
+            <!--title: {-->
+                <!--display: true,-->
+                <!--text: 'Usefulness',-->
+                <!--position: title_position-->
+            <!--}-->
+    <!--}-->
+<!--});-->
+
+<!--var ctx_easeofuse = document.getElementById("chart_easeofuse");-->
+<!--new Chart(ctx_easeofuse, {-->
+    <!--type: 'radar',-->
+    <!--data: {-->
+        <!--labels: ["easy to use", "simple to use", "user friendly", "fewest possible steps", "flexible", "effortless",-->
+        <!--"intuitive", "consistency", "occasional and regular user", "easily recover from mistakes",-->
+        <!--"success of use every time" ],-->
+        <!--datasets: [-->
+        <!--{-->
+            <!--label: "General Median",-->
+            <!--backgroundColor: "rgba(74,111,227,0.2)",-->
+            <!--borderColor: "rgba(74,111,227,1)",-->
+            <!--pointBackgroundColor: "rgba(74,111,227,1)",-->
+            <!--pointBorderColor: "#fff",-->
+            <!--pointHoverBackgroundColor: "#fff",-->
+            <!--pointHoverBorderColor: "rgba(74,111,227,1)",-->
+            <!--data: [5, 4, 4, 5, 5, 5, 4, 5, 5.5, 4, 4]-->
+        <!--},-->
+        <!--{-->
+            <!--label: "General Mean",-->
+            <!--backgroundColor: "rgba(17,198,56,0.2)",-->
+            <!--borderColor: "rgba(17,198,56,1)",-->
+            <!--pointBackgroundColor: "rgba(17,198,56,1)",-->
+            <!--pointBorderColor: "#fff",-->
+            <!--pointHoverBackgroundColor: "#fff",-->
+            <!--pointHoverBorderColor: "rgba(17,198,56,1)",-->
+            <!--data: [4.44, 4.33, 4.22, 4.67, 4.78, 4.56, 3.89, 4.44, 4.88, 4.44, 4.33]-->
+        <!--},-->
+        <!--{-->
+            <!--label: "Students Median",-->
+            <!--backgroundColor: "rgba(211,63,106,0.2)",-->
+            <!--borderColor: "rgba(211,63,106,1)",-->
+            <!--pointBackgroundColor: "rgba(211,63,106,1)",-->
+            <!--pointBorderColor: "#fff",-->
+            <!--pointHoverBackgroundColor: "#fff",-->
+            <!--pointHoverBorderColor: "rgba(211,63,106,1)",-->
+            <!--data: [4.5, 4, 4.5, 4, 4, 3, 4, 4, 4, 4.5, 4]-->
+        <!--},-->
+        <!--{-->
+            <!--label: "Students Mean",-->
+            <!--backgroundColor: "rgba(239,151,8,0.2)",-->
+            <!--borderColor: "rgba(239,151,8,1)",-->
+            <!--pointBackgroundColor: "rgba(239,151,8,1)",-->
+            <!--pointBorderColor: "#fff",-->
+            <!--pointHoverBackgroundColor: "#fff",-->
+            <!--pointHoverBorderColor: "rgba(239,151,8,1)",-->
+            <!--data: [4.5, 4.17, 4, 4.17, 4.17, 3.67, 4.67, 3.83, 4.17, 4.5, 3.67]-->
+        <!--}-->
+    <!--]-->
+    <!--},-->
+    <!--options: {-->
+            <!--scale: {-->
+                <!--reverse: false,-->
+                <!--ticks: {-->
+                    <!--beginAtZero: true,-->
+                    <!--max: 7.0-->
+                <!--}-->
+            <!--},-->
+            <!--title: {-->
+                <!--display: true,-->
+                <!--text: 'Ease of Use',-->
+                <!--position: title_position-->
+            <!--}-->
+    <!--}-->
+<!--});-->
+
+<!--var ctx_easeoflearning = document.getElementById("chart_easeoflearning");-->
+<!--new Chart(ctx_easeoflearning, {-->
+    <!--type: 'radar',-->
+    <!--data: {-->
+        <!--labels: ["fast to learn", "easy to remember use", "easy to learn", "quickly skillful"],-->
+        <!--datasets: [-->
+        <!--{-->
+            <!--label: "General Median",-->
+            <!--backgroundColor: "rgba(74,111,227,0.2)",-->
+            <!--borderColor: "rgba(74,111,227,1)",-->
+            <!--pointBackgroundColor: "rgba(74,111,227,1)",-->
+            <!--pointBorderColor: "#fff",-->
+            <!--pointHoverBackgroundColor: "#fff",-->
+            <!--pointHoverBorderColor: "rgba(74,111,227,1)",-->
+            <!--data: [5,6,6,5]-->
+        <!--},-->
+        <!--{-->
+            <!--label: "General Mean",-->
+            <!--backgroundColor: "rgba(17,198,56,0.2)",-->
+            <!--borderColor: "rgba(17,198,56,1)",-->
+            <!--pointBackgroundColor: "rgba(17,198,56,1)",-->
+            <!--pointBorderColor: "#fff",-->
+            <!--pointHoverBackgroundColor: "#fff",-->
+            <!--pointHoverBorderColor: "rgba(17,198,56,1)",-->
+            <!--data: [5, 5.44, 5.44, 5.11]-->
+        <!--},-->
+        <!--{-->
+            <!--label: "Students Median",-->
+            <!--backgroundColor: "rgba(211,63,106,0.2)",-->
+            <!--borderColor: "rgba(211,63,106,1)",-->
+            <!--pointBackgroundColor: "rgba(211,63,106,1)",-->
+            <!--pointBorderColor: "#fff",-->
+            <!--pointHoverBackgroundColor: "#fff",-->
+            <!--pointHoverBorderColor: "rgba(211,63,106,1)",-->
+            <!--data: [5, 4.5, 4.83, 4.33]-->
+        <!--},-->
+        <!--{-->
+            <!--label: "Students Mean",-->
+            <!--backgroundColor: "rgba(239,151,8,0.2)",-->
+            <!--borderColor: "rgba(239,151,8,1)",-->
+            <!--pointBackgroundColor: "rgba(239,151,8,1)",-->
+            <!--pointBorderColor: "#fff",-->
+            <!--pointHoverBackgroundColor: "#fff",-->
+            <!--pointHoverBorderColor: "rgba(239,151,8,1)",-->
+            <!--data: [5, 4.5, 4.83, 4.33]-->
+        <!--}-->
+    <!--]-->
+    <!--},-->
+    <!--options: {-->
+            <!--scale: {-->
+                <!--reverse: false,-->
+                <!--ticks: {-->
+                    <!--beginAtZero: true,-->
+                    <!--max: 7.0-->
+                <!--}-->
+            <!--},-->
+            <!--title: {-->
+                <!--display: true,-->
+                <!--text: 'Ease of Learning',-->
+                <!--position: title_position-->
+            <!--}-->
+    <!--}-->
+<!--});-->
+
+<!--var ctx_easeofsatisfaction = document.getElementById("chart_easeofsatisfaction");-->
+<!--new Chart(ctx_easeofsatisfaction, {-->
+    <!--type: 'radar',-->
+    <!--data: {-->
+        <!--labels: ["I'm satisfied", "I recommend it", "It works as expected", "I need it"],-->
+        <!--datasets: [-->
+        <!--{-->
+            <!--label: "General Median",-->
+            <!--backgroundColor: "rgba(74,111,227,0.2)",-->
+            <!--borderColor: "rgba(74,111,227,1)",-->
+            <!--pointBackgroundColor: "rgba(74,111,227,1)",-->
+            <!--pointBorderColor: "#fff",-->
+            <!--pointHoverBackgroundColor: "#fff",-->
+            <!--pointHoverBorderColor: "rgba(74,111,227,1)",-->
+            <!--data: [6,6,6,5]-->
+        <!--},-->
+        <!--{-->
+            <!--label: "General Mean",-->
+            <!--backgroundColor: "rgba(17,198,56,0.2)",-->
+            <!--borderColor: "rgba(17,198,56,1)",-->
+            <!--pointBackgroundColor: "rgba(17,198,56,1)",-->
+            <!--pointBorderColor: "#fff",-->
+            <!--pointHoverBackgroundColor: "#fff",-->
+            <!--pointHoverBorderColor: "rgba(17,198,56,1)",-->
+            <!--data: [5.75, 6.25, 4.88, 4.88]-->
+        <!--},-->
+        <!--{-->
+            <!--label: "Students Median",-->
+            <!--backgroundColor: "rgba(211,63,106,0.2)",-->
+            <!--borderColor: "rgba(211,63,106,1)",-->
+            <!--pointBackgroundColor: "rgba(211,63,106,1)",-->
+            <!--pointBorderColor: "#fff",-->
+            <!--pointHoverBackgroundColor: "#fff",-->
+            <!--pointHoverBorderColor: "rgba(211,63,106,1)",-->
+            <!--data: [5.5, 5, 5, 3.5]-->
+        <!--},-->
+        <!--{-->
+            <!--label: "Students Mean",-->
+            <!--backgroundColor: "rgba(239,151,8,0.2)",-->
+            <!--borderColor: "rgba(239,151,8,1)",-->
+            <!--pointBackgroundColor: "rgba(239,151,8,1)",-->
+            <!--pointBorderColor: "#fff",-->
+            <!--pointHoverBackgroundColor: "#fff",-->
+            <!--pointHoverBorderColor: "rgba(239,151,8,1)",-->
+            <!--data: [5.17, 5.17, 4.67, 3.83]-->
+        <!--}-->
+    <!--]-->
+    <!--},-->
+    <!--options: {-->
+            <!--scale: {-->
+                <!--reverse: false,-->
+                <!--ticks: {-->
+                    <!--beginAtZero: true,-->
+                    <!--max: 7.0-->
+                <!--}-->
+            <!--},-->
+            <!--title: {-->
+                <!--display: true,-->
+                <!--text: 'Ease of Learning',-->
+                <!--position: title_position-->
+            <!--}-->
+    <!--}-->
+<!--});-->
+
+
+
+
+
+<!--</script>-->
+</body>
+</html>
+
