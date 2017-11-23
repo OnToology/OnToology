@@ -1,10 +1,61 @@
 {% extends "base.html"%} {%block body%}
 
-<META HTTP-EQUIV="refresh" CONTENT="20">
+<!--<META HTTP-EQUIV="refresh" CONTENT="20">-->
 
+<!--<script>-->
+    <!--$(document).ready( function(){-->
+    <!--//Get the canvas &-->
+    <!--context var c = $('#myCanvas');-->
+    <!--var ct = c.get(0).getContext('2d');-->
+    <!--var container = $(c).parent();-->
 
+    <!--//Run function when browser resizes-->
+    <!--$(window).resize( respondCanvas );-->
 
+    <!--function respondCanvas(){-->
+        <!--c.attr('width', $(container).width() ); //max width-->
+        <!--c.attr('height', $(container).height() ); //max height-->
+        <!--//Call a function to redraw other content (texts, images etc)-->
+    <!--}-->
 
+    <!--//Initial call-->
+    <!--respondCanvas();-->
+
+<!--});-->
+<!--</script>-->
+
+<!--<script src="https://ahmad88me.github.io/outlinejs/cdn/outline.js"></script>-->
+<script src="media/js/outline.js"></script>
+
+<canvas id="myCanvas"  height="200" width="400"  style="border:1px solid #d3d3d3;">
+            Your browser does not support the canvas element.
+        </canvas>
+ <script>
+        var base_area_component = document.getElementById("basearea");
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+        ctx.canvas.width = base_area_component.offsetWidth;
+        var g = new OutlineGraph(ctx, {
+                                 "title_color": "black",
+                                 "items_color": "blue",
+                                 "inner_color": "#3498DB",
+                                 "title_font": "15px Helvetica",
+                                 "items_font": "10px Comic Sans MS",
+                                 "points": [
+                                    //{"title": "my title", "items": ["item1", "item2"]},
+                                     //{"title": "frutas", "items": ["manzana", "naranja"]},
+                                     //{"title": "vegetales", "items": ["lechuga", "Zanahoria"]},
+                                    //{"title": "fruits", "items": ["apple", "orange"]}
+                                    {"title": "Pending", "items": ["step 1 a","step 1 b" ]},
+                                    {"title": "Generating Diagrams", "items": ["step 2 a","step 2 b" ]},
+                                    {"title": "Generating Documentation", "items": ["step 3 a","step 3 b" ]},
+                                    {"title": "Evaluating", "items": ["step 4 a","step 4 b" ]},
+                                    {"title": "JSON-LD", "items": ["step 4 a","step 4 b" ]},
+                                    {"title": "Finished", "items": ["step 4 a","step 4 b" ]},
+                                 ]});
+        g.draw();
+        g.draw_inner(2);
+        </script>
 
 <input type="hidden" id="button"/>
 <div id="box">

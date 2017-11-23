@@ -22,6 +22,17 @@ from mongoengine import Document, StringField, DateTimeField, ListField, Referen
 from datetime import datetime, timedelta
 
 
+class OntologyStatusPair(Document):
+    name = StringField(max_length=120)
+    status = StringField(choices=('documentation', 'diagram', 'evaluation', 'jsonld', 'pending', 'finished'))
+
+    def json(self):
+        return {
+            "name": self.name,
+            "status": self.status
+        }
+
+
 class Repo(Document):
     url = StringField(max_length=200, default='Not set yet')
     last_used = DateTimeField(default=datetime.now())
@@ -31,6 +42,7 @@ class Repo(Document):
     previsual_page_available = BooleanField(default=False)
     notes = StringField(default='')
     progress = FloatField(default=0.0)
+    ontology_status_pairs = ListField(OntologyStatusPair, default=[])
 
     def json(self):
         return {
@@ -44,8 +56,7 @@ class Repo(Document):
             "notes": self.notes
         }
 
-
-# The below is to avoid the error occue when importing Repo from autoncore because of the User class which cases the
+# The below is to avoid the error occur when importing Repo from autoncore because of the User class which cases the
 # error
 try:    
     from mongoengine.django.auth import User
@@ -76,7 +87,6 @@ try:
                     'repo': self.repo.json(),
                     'ontology': self.ontology
                     }
-
 except:
     pass
 
