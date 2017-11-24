@@ -18,10 +18,10 @@ def suite():
 class NoSQLTestRunner(DjangoTestSuiteRunner):
     def setup_databases(self):
         settings.test_conf['local'] = True
-        settings.test_conf['fork'] = False
-        settings.test_conf['clone'] = False
-        settings.test_conf['push'] = False
-        settings.test_conf['pull'] = False
+        settings.test_conf['fork'] = True
+        settings.test_conf['clone'] = True
+        settings.test_conf['push'] = True
+        settings.test_conf['pull'] = True
 
         self.clearing_db_connection()
         new_db_name = "test_OnToology"
