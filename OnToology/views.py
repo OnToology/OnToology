@@ -273,14 +273,14 @@ def add_hook(request):
     else:
         comm = "python %s " % \
             (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
-    comm += ' "' + target_repo + '" "' + user + '" "' + cloning_repo + '" '
+    comm += ' "' + target_repo + '" "' + user + '" '
     for c in changed_files:
         comm += '"' + c + '" '
     if settings.test_conf['local']:
         print 'will call git_magic with target=%s, user=%s, cloning_repo=%s, changed_files=%s' % (target_repo, user,
                                                                                                   cloning_repo,
                                                                                                   str(changed_files))
-        git_magic(target_repo, user, cloning_repo, changed_files)
+        git_magic(target_repo, user, changed_files)
         return
     else:
         print 'running autoncore code as: ' + comm
@@ -350,12 +350,12 @@ def generateforall(target_repo, user_email):
         print 'virtual_env_dir is NOT in environ'
         comm = "python %s " % \
             (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
-    comm += ' "' + target_repo + '" "' + user + '" "' + cloning_repo + '" '
+    comm += ' "' + target_repo + '" "' + user + '" '
     for c in changed_files:
         comm += '"' + c.strip() + '" '
     if settings.test_conf['local']:
         print "running autoncode in the same thread"
-        git_magic(target_repo, user, cloning_repo, changed_files)
+        git_magic(target_repo, user, changed_files)
     else:
         print 'running autoncore code as: ' + comm
 
