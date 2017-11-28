@@ -36,6 +36,50 @@ dolog = p
 def prepare_logger(log_fname):
     logging.basicConfig(filename=log_fname, format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
 
+# for the outline
+# def tools_execution(changed_files, base_dir, logfile, dolog_fname=None, target_repo=None, g_local=None,
+#                     change_status=None, repo=None):
+#     """
+#     :param changed_files:  changed files include relative path
+#             base_dir: abs dir to the repo file name, e.g. /home/user/myrepo/
+#     :return:
+#     """
+#     global g
+#     global dolog
+#     global log_file_dir
+#
+#     # clean up status pairs for that repo
+#     for sp in repo.ontology_status_pairs:
+#         sp.delete()
+#     repo.ontology_status_pairs = []
+#     repo.save()
+#     g = g_local
+#     log_file_dir = logfile
+#     if dolog_fname is not None:
+#         prepare_logger(dolog_fname)
+#         dolog = dolog_logg
+#     repo.notes = ''
+#     repo.save()
+#     progress_out_of = 70.0
+#     if len(changed_files) == 0:
+#         repo.progress = progress_out_of
+#         repo.save()
+#         return
+#
+#     single_piece = progress_out_of/len(changed_files)
+#     progress_inc = single_piece/4.0
+#     for f in changed_files:
+#         if f[-4:] in ontology_formats:
+#             if f[:len('OnToology/')] == 'OnToology/':  # This is to solve bug #265
+#                 dolog("nested prevented bug: "+f)
+#                 continue
+#             dolog("tools_execution: "+f)
+#             handle_single_ofile(f, base_dir, target_repo=target_repo, change_status=change_status, repo=repo,
+#                                 progress_inc=progress_inc)
+
+
+
+
 
 def tools_execution(changed_files, base_dir, logfile, dolog_fname=None, target_repo=None, g_local=None,
                     change_status=None, repo=None):

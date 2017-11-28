@@ -42,20 +42,60 @@
                                  "title_font": "15px Helvetica",
                                  "items_font": "10px Comic Sans MS",
                                  "points": [
-                                    //{"title": "my title", "items": ["item1", "item2"]},
-                                     //{"title": "frutas", "items": ["manzana", "naranja"]},
-                                     //{"title": "vegetales", "items": ["lechuga", "Zanahoria"]},
-                                    //{"title": "fruits", "items": ["apple", "orange"]}
-                                    {"title": "Pending", "items": ["step 1 a","step 1 b" ]},
-                                    {"title": "Generating Diagrams", "items": ["step 2 a","step 2 b" ]},
-                                    {"title": "Generating Documentation", "items": ["step 3 a","step 3 b" ]},
-                                    {"title": "Evaluating", "items": ["step 4 a","step 4 b" ]},
-                                    {"title": "JSON-LD", "items": ["step 4 a","step 4 b" ]},
-                                    {"title": "Finished", "items": ["step 4 a","step 4 b" ]},
+                                    {"title": "Pending", "items": ["ontology1.owl","ontology2.owl" ]},
+                                    {"title": "Diagrams", "items": ["ontology3.owl","ontology4.owl" ]},
+                                    {"title": "Documentation", "items": []},
+                                    {"title": "Evaluating", "items": []},
+                                    {"title": "JSON-LD", "items": []},
+                                    {"title": "Finished", "items": []},
                                  ]});
         g.draw();
         g.draw_inner(2);
-        </script>
+
+function compute_index(j){
+   return 2;
+}
+
+var outline_function = function(){
+
+
+    var graph_data = {
+                 "title_color": "black",
+                 "items_color": "blue",
+                 "inner_color": "#3498DB",
+                 "title_font": "15px Helvetica",
+                 "items_font": "10px Comic Sans MS",
+                 "points": [
+                 ]
+     }
+
+
+    $.getJSON('get_outline', function(data){
+        console.log('data: ');
+        console.log(data);
+        var stages = Object.keys(data);
+        var i;
+        var points = [];
+        console.log('stages: ');
+        console.log(stages);
+        console.log('stages_length'+stages.length);
+        for(i=0;i<stages.length;i++){
+            p = {"title": stages[i], "items": data[stages[i]]}
+            points.push(p);
+        }
+        console.log(points);
+        graph_data["points"] = points
+        delete window.g;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        g = new OutlineGraph(ctx, graph_data);
+        g.draw();
+        g.draw_inner(3);
+    });
+    //delete window.g
+}//outline_function
+//setInterval(outline_function, 5000);
+
+</script>
 
 <input type="hidden" id="button"/>
 <div id="box">

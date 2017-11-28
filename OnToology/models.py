@@ -23,14 +23,25 @@ from datetime import datetime, timedelta
 
 
 class OntologyStatusPair(Document):
+    STATUSES = (
+        ('documentation', 'documentation'),
+        ('diagram', 'diagram'),
+        ('evaluation', 'evaluation'),
+        ('jsonld', 'jsonld'),
+        ('pending', 'pending'),
+        ('finished', 'finished')
+    )
     name = StringField(max_length=120)
-    status = StringField(choices=('documentation', 'diagram', 'evaluation', 'jsonld', 'pending', 'finished'))
+    status = StringField(choices=STATUSES)
 
     def json(self):
         return {
             "name": self.name,
             "status": self.status
         }
+
+    def __unicode__(self):
+        return self.name + ' - ' + self.status
 
 
 class Repo(Document):
@@ -42,7 +53,7 @@ class Repo(Document):
     previsual_page_available = BooleanField(default=False)
     notes = StringField(default='')
     progress = FloatField(default=0.0)
-    ontology_status_pairs = ListField(OntologyStatusPair, default=[])
+    ontology_status_pairs = ListField(ReferenceField(OntologyStatusPair), default=[])
 
     def json(self):
         return {
@@ -55,6 +66,9 @@ class Repo(Document):
             "previsual_page_available": self.previsual_page_available,
             "notes": self.notes
         }
+
+    def __unicode__(self):
+        return self.url
 
 # The below is to avoid the error occur when importing Repo from autoncore because of the User class which cases the
 # error
@@ -72,6 +86,9 @@ try:
                     'private': self.private,
                     'email': self.email}
 
+        def __unicode__(self):
+            return self.username
+
 
     class PublishName(Document):
         name = StringField()
@@ -87,6 +104,9 @@ try:
                     'repo': self.repo.json(),
                     'ontology': self.ontology
                     }
+
+        def __unicode__(self):
+            return self.name
 except:
     pass
 

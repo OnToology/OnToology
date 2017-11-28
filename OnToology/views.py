@@ -866,6 +866,29 @@ def get_bundle(request):
 
 
 @login_required
+def get_outline(request):
+    repos = []
+    o_pairs = []
+    for r in request.user.repos:
+        if r.progress != 100:
+            repos.append(r)
+    for r in repos:
+        o_pairs += r.ontology_status_pairs
+        print 'status pairs:'
+        print r.ontology_status_pairs
+    stages = {}
+    for sp in o_pairs:
+        print 'pair: '
+        print sp
+        if sp.status not in stages:
+            stages[sp.status] = []
+        stages[sp.status].append(sp.name)
+    print 'stages:'
+    print stages
+    return JsonResponse(stages)
+
+
+@login_required
 def progress_page(request):
     return render(request, 'progress.html', {'repos': request.user.repos})
 
@@ -876,3 +899,4 @@ def handler500(request):
 
 def faqs(request):
     return render(request, 'faqs.html')
+
