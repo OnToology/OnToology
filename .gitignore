@@ -1,3 +1,13 @@
+
+#coverage report
+.coverage
+
+#local
+local*
+bootstrap.sh
+.vagrant
+
+
 #local
 local*
 
