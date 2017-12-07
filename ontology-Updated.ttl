@@ -1,0 +1,165 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/jmerlin/ontologies/2017/10/untitled-ontology-5#"
+     xml:base="http://www.semanticweb.org/jmerlin/ontologies/2017/10/untitled-ontology-5"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/jmerlin/ontologies/2017/10/untitled-ontology-5"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/jmerlin/ontologies/2017/10/untitled-ontology-5#hasDireccion -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/jmerlin/ontologies/2017/10/untitled-ontology-5#hasDireccion">
+        <rdfs:domain rdf:resource="http://schema.org/place"/>
+        <rdfs:range rdf:resource="http://schema.org/address"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/jmerlin/ontologies/2017/10/untitled-ontology-5#ocurre_en -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/jmerlin/ontologies/2017/10/untitled-ontology-5#ocurre_en">
+        <rdfs:domain rdf:resource="http://open.vocab.org/terms/SportEvent"/>
+        <rdfs:range rdf:resource="http://linkedgeodata.org/ontology/SportsCentre"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/jmerlin/ontologies/2017/10/untitled-ontology-5#hasClaseVial -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/jmerlin/ontologies/2017/10/untitled-ontology-5#hasClaseVial">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+        <rdfs:domain rdf:resource="http://schema.org/address"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/jmerlin/ontologies/2017/10/untitled-ontology-5#hasCodPostal -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/jmerlin/ontologies/2017/10/untitled-ontology-5#hasCodPostal">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+        <rdfs:domain rdf:resource="http://schema.org/place"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/jmerlin/ontologies/2017/10/untitled-ontology-5#hasDistrito -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/jmerlin/ontologies/2017/10/untitled-ontology-5#hasDistrito">
+        <rdfs:domain rdf:resource="http://schema.org/place"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/jmerlin/ontologies/2017/10/untitled-ontology-5#hasName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/jmerlin/ontologies/2017/10/untitled-ontology-5#hasName">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/jmerlin/ontologies/2017/10/untitled-ontology-5#hasNombreVía -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/jmerlin/ontologies/2017/10/untitled-ontology-5#hasNombreVía">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+        <rdfs:domain rdf:resource="http://schema.org/address"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/jmerlin/ontologies/2017/10/untitled-ontology-5#hasNumVía -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/jmerlin/ontologies/2017/10/untitled-ontology-5#hasNumVía">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+        <rdfs:domain rdf:resource="http://schema.org/address"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/jmerlin/ontologies/2017/10/untitled-ontology-5#hasURL -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/jmerlin/ontologies/2017/10/untitled-ontology-5#hasURL">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://linkedgeodata.org/ontology/Parking -->
+
+    <owl:Class rdf:about="http://linkedgeodata.org/ontology/Parking">
+        <rdfs:subClassOf rdf:resource="http://schema.org/place"/>
+    </owl:Class>
+    
+
+
+    <!-- http://linkedgeodata.org/ontology/SportsCentre -->
+
+    <owl:Class rdf:about="http://linkedgeodata.org/ontology/SportsCentre">
+        <rdfs:subClassOf rdf:resource="http://schema.org/place"/>
+    </owl:Class>
+    
+
+
+    <!-- http://open.vocab.org/terms/SportEvent -->
+
+    <owl:Class rdf:about="http://open.vocab.org/terms/SportEvent"/>
+    
+
+
+    <!-- http://schema.org/address -->
+
+    <owl:Class rdf:about="http://schema.org/address"/>
+    
+
+
+    <!-- http://schema.org/place -->
+
+    <owl:Class rdf:about="http://schema.org/place"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
+
