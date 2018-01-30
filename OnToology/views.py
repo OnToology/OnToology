@@ -641,7 +641,7 @@ def profile(request):
     # return render(request, 'profile.html', {'repos': repos, 'pnames': PublishName.objects.filter(user=user),
     #                                         'error': error_msg, 'last_updated': last_updated})
     return render(request, 'profile.html', {'repos': repos, 'pnames': PublishName.objects.filter(user=user),
-                                            'error': error_msg})
+                                            'error': error_msg, 'manager': request.user.email in get_managers()})
 
 
 def update_conf(request):
@@ -876,3 +876,27 @@ def handler500(request):
 
 def faqs(request):
     return render(request, 'faqs.html')
+
+
+@login_required
+def show_repos_list(request):
+    if request.user.email in get_managers():
+        return render(request, 'show_repos_list.html', {'repos': Repo.objects.all()})
+    return HttpResponseRedirect('/')
+
+
+@login_required
+def get_repos_list_file(request):
+    if request.user.email in get_managers():
+        import csv
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="repos.csv"'
+        writer = csv.writer(response)
+        for r in Repo.objects.all():
+            writer.writerow([r.url])
+        return response
+    return HttpResponseRedirect('/')
+
+
+def get_managers():
+    return ['mpovedavillalon'+'@gmail.com', 'ahmad88me'+'@gmail.com']

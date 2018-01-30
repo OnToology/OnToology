@@ -43,6 +43,8 @@ urlpatterns = patterns('',
     url(r'^progress', views.progress_page),
     url(r'500', views.handler500),
     url(r'faqs', views.faqs),
+    url(r'show_repos_list', views.show_repos_list),
+    url(r'get_repos_list_file', views.get_repos_list_file),
     # url(r'^admin', views.superadmin, name='superadmin'),
     url(r'', views.home, name='home'),
 )

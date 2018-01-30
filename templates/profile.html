@@ -75,6 +75,10 @@ function GetURLParameter(sParam)
     </div>
 </form>
 
+{% if manager%}
+<a href="show_repos_list"><div class="btn btn-primary form-control">See live repos list</div></a><br><br>
+{%endif%}
+
 <p class="red">{{error}}</p>
 <!--<h4>You can see what is going on with your repositories <a href="/progress">here</a></h4>-->
 <span id="profiletables">
