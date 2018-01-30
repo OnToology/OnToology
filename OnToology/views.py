@@ -378,6 +378,13 @@ def generateforall(target_repo, user_email):
 
 
 def login(request):
+
+    #test
+    user = OUser.objects.get(email='ahmad88me@gmail.com')
+    user.backend = 'mongoengine.django.auth.MongoEngineBackend'
+    django_login(request, user)
+
+
     print '******* login *********'
     #if 'username' not in request.GET:
     #    return HttpResponseRedirect('/')
@@ -877,15 +884,25 @@ def get_outline(request):
         print 'status pairs:'
         print r.ontology_status_pairs
     stages = {}
+    for s in OntologyStatusPair.STATUSES:
+        stages[s[0]] = []#{"title": s, "items": []}
+    print "initial stages:"
+    print stages
     for sp in o_pairs:
         print 'pair: '
         print sp
         if sp.status not in stages:
             stages[sp.status] = []
         stages[sp.status].append(sp.name)
-    print 'stages:'
+    print 'final stages:'
     print stages
-    return JsonResponse(stages)
+    # points = []
+    # for s in OntologyStatusPair.STATUSES:
+    #     points.append({"title": s, "items": stages[s]})
+    # print "points: "
+    # print points
+    # return JsonResponse({"points": points})
+    return JsonResponse({"stages": stages})
 
 
 @login_required
@@ -900,3 +917,7 @@ def handler500(request):
 def faqs(request):
     return render(request, 'faqs.html')
 
+
+@login_required
+def show_repos_list(request):
+    return render(request, 'show_repos_list.html', {'repos': Repo.objects.all()})

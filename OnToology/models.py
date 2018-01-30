@@ -24,11 +24,11 @@ from datetime import datetime, timedelta
 
 class OntologyStatusPair(Document):
     STATUSES = (
-        ('documentation', 'documentation'),
+        ('pending', 'pending'),
         ('diagram', 'diagram'),
+        ('documentation', 'documentation'),
         ('evaluation', 'evaluation'),
         ('jsonld', 'jsonld'),
-        ('pending', 'pending'),
         ('finished', 'finished')
     )
     name = StringField(max_length=120)
