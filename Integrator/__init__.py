@@ -275,6 +275,18 @@ def build_path(file_with_abs_dir):
     return file_with_abs_dir
 
 
+def build_path_all(abs_dir):
+    """
+    build each of the folders in the path. It differs from build_path as it creates all the folders, while build_path
+    builds all the folders except for the last one (as it assume the last one is a file).
+    :param abs_dir:
+    :return:
+    """
+    if not os.path.exists(abs_dir):
+        os.makedirs(abs_dir)
+    dolog("build_path_all abs_dir: "+abs_dir)  # file_with_abs_dir
+
+
 def delete_dir(target_directory):
     comm = "rm -Rf " + target_directory
     comm += '  >> "' + log_file_dir + '" '
