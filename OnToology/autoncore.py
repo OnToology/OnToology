@@ -183,6 +183,10 @@ def git_magic(target_repo, user, changed_filesss):
             r.save()
             # The below "return" is commented so pull request are created even if there are files that are not generated
     # if not testing or testing with pull enabled
+    if settings.test_conf['pull']:
+        print "pull is true"
+    else:
+        print "pull is false"
     if not settings.test_conf['local'] or settings.test_conf['pull']:
         change_status(target_repo, 'creating a pull request')
         try:

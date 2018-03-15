@@ -4,14 +4,21 @@ sudo add-apt-repository -y ppa:git-core/ppa > /dev/null 2>&1
 sudo apt-get update > /dev/null 2>&1
 sudo apt-get install -y git
 sudo apt-get install -y default-jre
+# Because Widoco require the new java version: source: https://www.digitalocean.com/community/tutorials/how-to-install-java-with-apt-get-on-ubuntu-16-04
+#sudo add-apt-repository -y  ppa:webupd8team/java > /dev/null 2>&1
+#sudo apt-get update > /dev/null 2>&1
+#sudo apt-get install -y oracle-java9-installer
+
 sudo apt-get install -y apache2 apache2-mpm-prefork apache2-utils libexpat1 ssl-cert
 sudo apt-get install -y libapache2-mod-wsgi
 sudo apt-get install -y python-dev python-pip
 sudo apt-get install -y  mongodb
+sudo apt-get install -y graphviz
+
 git config --global user.name "OnToologyUser"
 git config --global user.email ontoology@delicias.dia.fi.upm.es
 
-
+sudo pip install virtualenv
 
 echo "Old Home is: "
 echo $HOME
@@ -35,6 +42,12 @@ cd $HOME;mkdir vocabLite;cd vocabLite; mkdir jar; cd jar; wget --progress=bar:fo
 
 echo "owl2jsonld"
 cd $HOME;mkdir owl2jsonld; cd owl2jsonld; wget --progress=bar:force https://github.com/stain/owl2jsonld/releases/download/0.2.1/owl2jsonld-0.2.1-standalone.jar
+
+
+# setup oops report
+echo "OOPS! report ..."
+cd $HOME;git clone git@github.com:OnToology/oops-report.git
+cd $HOME; cd oops-report;virtualenv -p /usr/bin/python2.7 .venv;.venv/bin/pip install -r requirements.txt
 
 
 echo "mk dirs ..."
@@ -93,6 +106,7 @@ export previsual_dir=/home/vagrant/vocabLite/jar
 export publish_dir=/home/vagrant/publish
 export wget_dir=/home/vagrant/wget_dir
 export owl2jsonld_dir=/home/vagrant/owl2jsonld/
+export oops_dir=/home/vagrant/oops-report/
 
 EOT
 
