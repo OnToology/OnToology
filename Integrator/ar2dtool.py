@@ -33,8 +33,6 @@ def draw_diagrams(rdf_files, base_dir):
 
 
 def get_ar2dtool_config(config_type):
-    # f = open(ar2dtool_config + '/' + config_type, "r")
-    #print "get ar2dtool: %s" % str(os.path.join(ar2dtool_config, config_type))
     f = open(os.path.join(ar2dtool_config, config_type), "r")
     return f.read()
 
@@ -59,7 +57,6 @@ def draw_file(rdf_file, config_type, base_dir):
         dolog('in draw_file: exception opening the file: ' + str(e))
         return 'in draw_file: exception opening the file: ' + str(e)
     comm = timeout_comm + 'java -jar '
-    #comm += ar2dtool_dir + 'ar2dtool.jar -i '
     comm += os.path.join(ar2dtool_dir, 'ar2dtool.jar')
     comm += ' -i '
     comm += '"' + os.path.join(base_dir, rdf_file) + '"' + ' -o '
