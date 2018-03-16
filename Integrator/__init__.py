@@ -78,9 +78,6 @@ def prepare_logger(log_fname):
 #                                 progress_inc=progress_inc)
 
 
-
-
-
 def tools_execution(changed_files, base_dir, logfile, dolog_fname=None, target_repo=None, g_local=None,
                     change_status=None, repo=None):
     """
@@ -141,6 +138,8 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
     if conf['ar2dtool_enable']:
         dolog("will call draw diagrams")
         change_status(target_repo, 'drawing diagrams for: '+changed_file)
+        repo.update_ontology_status(ontology=changed_file, status='diagram')
+        repo.save()
         try:
             r = ar2dtool.draw_diagrams([changed_file], base_dir)
             # if r != "":
@@ -154,6 +153,8 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
     if conf['widoco_enable']:
         dolog('will call widoco')
         change_status(target_repo, 'generating docs for: '+changed_file)
+        repo.update_ontology_status(ontology=changed_file, status='documentation')
+        repo.save()
         try:
             r = widoco.generate_widoco_docs([changed_file], base_dir)
             # if r != "":
@@ -167,6 +168,8 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
     if conf['oops_enable']:
         dolog('will call oops')
         change_status(target_repo, 'evaluating: '+changed_file)
+        repo.update_ontology_status(ontology=changed_file, status='evaluation')
+        repo.save()
         try:
             r = oops.oops_ont_files(target_repo=target_repo, changed_files=[changed_file], base_dir=base_dir)
             # if r != "":
@@ -180,11 +183,14 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
     if conf['owl2jsonld_enable']:
         dolog('will call owl2jsonld')
         change_status(target_repo, 'generating context for: '+changed_file)
+        repo.update_ontology_status(ontology=changed_file, status='jsonld')
+        repo.save()
         try:
             owl2jsonld.generate_owl2jsonld_file([changed_file], base_dir=base_dir)
         except Exception as e:
             dolog("Exception in running owl2jsonld.generate_owl2jsonld_file: "+str(e))
     repo.progress += progress_inc
+    repo.update_ontology_status(ontology=changed_file, status='finished')
     repo.save()
 
 

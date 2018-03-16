@@ -67,6 +67,24 @@ class Repo(Document):
             "notes": self.notes
         }
 
+    def update_ontology_status(self, ontology, status):
+        for osp in self.ontology_status_pairs:
+            if osp.name == ontology:
+                osp.status = status
+                osp.save()
+                return True
+        osp = OntologyStatusPair(name=ontology, status=status)
+        osp.save()
+        self.ontology_status_pairs.append(osp)
+        self.save()
+
+    def clear_ontology_status_pairs(self):
+        for osp in self.ontology_status_pairs:
+            osp.delete()
+        self.ontology_status_pairs = []
+        self.save()
+
+
     def __unicode__(self):
         return self.url
 

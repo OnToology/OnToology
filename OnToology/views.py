@@ -102,6 +102,8 @@ def home(request):
         request.session['target_repo'] = target_repo
         request.session['state'] = state
         request.session['access_token_time'] = '1'
+        print "will be redirecting to:"
+        print webhook_access_url
         return HttpResponseRedirect(webhook_access_url)
     repos = Repo.objects.order_by('-last_used')[:10]
     num_of_users = len(User.objects.all())
@@ -116,6 +118,7 @@ def grant_update(request):
 
 
 def get_access_token(request):
+    print "get_access_token"
     global is_private, client_id, client_secret
     if 'state' not in request.session or request.GET['state'] != request.session['state']:
         return HttpResponseRedirect('/')
@@ -154,7 +157,9 @@ def get_access_token(request):
         request.session['state'] = state
         return HttpResponseRedirect(webhook_access_url)
 
+    print "adding webhook"
     rpy_wh = add_webhook(request.session['target_repo'], host + "/add_hook")
+    print "adding a collaborator"
     rpy_coll = add_collaborator(request.session['target_repo'], ToolUser)
     error_msg = ""
     if rpy_wh['status'] == False:
@@ -876,33 +881,30 @@ def get_bundle(request):
 def get_outline(request):
     repos = []
     o_pairs = []
-    for r in request.user.repos:
-        if r.progress != 100:
-            repos.append(r)
+    # for r in request.user.repos:
+    #     if r.progress != 100:
+    #         repos.append(r)
+    # include all the repos for testing
+    repos = [r for r in request.user.repos]
     for r in repos:
         o_pairs += r.ontology_status_pairs
-        print 'status pairs:'
-        print r.ontology_status_pairs
     stages = {}
-    for s in OntologyStatusPair.STATUSES:
-        stages[s[0]] = []#{"title": s, "items": []}
-    print "initial stages:"
-    print stages
+    stages_values = {} # to draw the inner fill
+    for i, s in enumerate(OntologyStatusPair.STATUSES):
+        stages[s[0]] = []
+        stages_values[s[0]] = i+1
+
+    # print "stages_values: "
+    # print stages_values
     for sp in o_pairs:
-        print 'pair: '
-        print sp
         if sp.status not in stages:
             stages[sp.status] = []
         stages[sp.status].append(sp.name)
-    print 'final stages:'
-    print stages
-    # points = []
-    # for s in OntologyStatusPair.STATUSES:
-    #     points.append({"title": s, "items": stages[s]})
-    # print "points: "
-    # print points
-    # return JsonResponse({"points": points})
-    return JsonResponse({"stages": stages})
+    # print "values:"
+    # print [stages_values[sp.status] for sp in o_pairs]
+    # min([stages_values[sp] for sp in o_pairs])
+
+    return JsonResponse({"stages": stages, "inner": min([stages_values[sp.status] for sp in o_pairs])})
 
 
 @login_required
