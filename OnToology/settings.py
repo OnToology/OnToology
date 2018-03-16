@@ -109,7 +109,7 @@ SESSION_SERIALIZER = 'mongoengine.django.sessions.BSONSerializer'
 SECRET_KEY = 'xj1c6fel(z5@=%(br!j)u155a71j*^u_b+2'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 DEFAULT_FROM_EMAIL = os.environ['email_from']
 EMAIL_HOST = os.environ['email_server']

@@ -3,12 +3,11 @@ echo "Install packages ..."
 sudo add-apt-repository -y ppa:git-core/ppa > /dev/null 2>&1
 sudo apt-get update > /dev/null 2>&1
 sudo apt-get install -y git
-sudo apt-get install -y default-jre
-# Because Widoco require the new java version: source: https://www.digitalocean.com/community/tutorials/how-to-install-java-with-apt-get-on-ubuntu-16-04
-#sudo add-apt-repository -y  ppa:webupd8team/java > /dev/null 2>&1
-#sudo apt-get update > /dev/null 2>&1
-#sudo apt-get install -y oracle-java9-installer
-
+#sudo apt-get install -y default-jre
+# source: https://askubuntu.com/questions/464755/how-to-install-openjdk-8-on-14-04-lts
+sudo add-apt-repository ppa:openjdk-r/ppa
+sudo apt-get update
+sudo apt-get install openjdk-8-jdk
 sudo apt-get install -y apache2 apache2-mpm-prefork apache2-utils libexpat1 ssl-cert
 sudo apt-get install -y libapache2-mod-wsgi
 sudo apt-get install -y python-dev python-pip

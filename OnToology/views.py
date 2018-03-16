@@ -102,8 +102,6 @@ def home(request):
         request.session['target_repo'] = target_repo
         request.session['state'] = state
         request.session['access_token_time'] = '1'
-        print "will be redirecting to:"
-        print webhook_access_url
         return HttpResponseRedirect(webhook_access_url)
     repos = Repo.objects.order_by('-last_used')[:10]
     num_of_users = len(User.objects.all())
@@ -157,9 +155,7 @@ def get_access_token(request):
         request.session['state'] = state
         return HttpResponseRedirect(webhook_access_url)
 
-    print "adding webhook"
     rpy_wh = add_webhook(request.session['target_repo'], host + "/add_hook")
-    print "adding a collaborator"
     rpy_coll = add_collaborator(request.session['target_repo'], ToolUser)
     error_msg = ""
     if rpy_wh['status'] == False:
@@ -383,13 +379,6 @@ def generateforall(target_repo, user_email):
 
 
 def login(request):
-
-    #test
-    user = OUser.objects.get(email='ahmad88me@gmail.com')
-    user.backend = 'mongoengine.django.auth.MongoEngineBackend'
-    django_login(request, user)
-
-
     print '******* login *********'
     #if 'username' not in request.GET:
     #    return HttpResponseRedirect('/')
