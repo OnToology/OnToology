@@ -892,8 +892,10 @@ def get_outline(request):
     # print "values:"
     # print [stages_values[sp.status] for sp in o_pairs]
     # min([stages_values[sp] for sp in o_pairs])
-
-    return JsonResponse({"stages": stages, "inner": min([stages_values[sp.status] for sp in o_pairs])})
+    inner = 0
+    if len(o_pairs) > 0:
+        inner = min([stages_values[sp.status] for sp in o_pairs])
+    return JsonResponse({"stages": stages, "inner": inner})
 
 
 @login_required
