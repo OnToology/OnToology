@@ -72,6 +72,8 @@ except:
 
 
 host = 'http://ontoology.linkeddata.es'
+if 'host' in os.environ:
+    host = os.environ['host']
 local = False
 if 'OnToology_home' in os.environ and os.environ['OnToology_home'].lower() == "true":
     local = True
