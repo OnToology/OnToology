@@ -69,10 +69,6 @@ echo "Install OnToology requirements.txt"
 $HOME/venv/bin/pip install -r $HOME/OnToology/requirements.txt
 
 
-#echo "Install OnToology requirements.txt for virtual environment"
-#$HOME/venv/bin/pip install -r /vagrant/requirements.txt
-#source /home/vagrant/venv/bin/activate; pip install -r /vagrant/requirements.txt
-
 
 cat <<EOT >> $HOME/venv/bin/activate
 export client_id_public=""
