@@ -24,8 +24,8 @@
 <!--});-->
 <!--</script>-->
 
-<!--<script src="https://ahmad88me.github.io/outlinejs/cdn/outline.js"></script>-->
-<script src="media/js/outline.js"></script>
+<script src="https://ahmad88me.github.io/outlinejs/cdn/outline.js"></script>
+<!--<script src="media/js/outline.js"></script>-->
 
 <canvas id="myCanvas"  height="200" width="400"  style="border:1px solid #d3d3d3;">
             Your browser does not support the canvas element.
@@ -35,8 +35,7 @@
         var canvas = document.getElementById("myCanvas");
         var ctx = canvas.getContext("2d");
         ctx.canvas.width = base_area_component.offsetWidth;
-        var g = new OutlineGraph(ctx, {
-                                 "title_color": "black",
+        var g = new OutlineGraph(ctx, {"title_color": "black",
                                  "items_color": "blue",
                                  "inner_color": "#3498DB",
                                  "title_font": "15px Helvetica",
