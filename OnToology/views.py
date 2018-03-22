@@ -274,6 +274,9 @@ def add_hook(request):
     else:
         comm = "python %s " % \
             (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
+    print 'in addhook'
+    print "target repo: %s" % target_repo
+    print "user: %s" % user
     comm += ' "' + target_repo + '" "' + user + '" '
     for c in changed_files:
         comm += '"' + c + '" '
