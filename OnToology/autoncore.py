@@ -100,6 +100,11 @@ def git_magic(target_repo, user, changed_filesss):
     change_status(target_repo, 'Preparing')
     from models import Repo
     drepo = Repo.objects.get(url=target_repo)
+    drepo.clear_ontology_status_pairs()
+    for ftov in changed_filesss:
+        if ftov[-4:] in ontology_formats:
+            if ftov[:len('OnToology/')] != 'OnToology/':  # This is to solve bug #265
+                drepo.update_ontology_status(ontology=ftov, status='pending')
     # so the tool user can takeover and do stuff
     username = os.environ['github_username']
     password = os.environ['github_password']
@@ -129,6 +134,7 @@ def git_magic(target_repo, user, changed_filesss):
     # print "will loop through changed files"
     if log_file_dir is None:
         prepare_log(user)
+
     Integrator.tools_execution(changed_files=changed_filesss, base_dir=os.path.join(home, user), logfile=log_file_dir,
                                target_repo=target_repo, g_local=g, dolog_fname=logger_fname,
                                change_status=change_status, repo=drepo)
@@ -183,6 +189,10 @@ def git_magic(target_repo, user, changed_filesss):
             r.save()
             # The below "return" is commented so pull request are created even if there are files that are not generated
     # if not testing or testing with pull enabled
+    if settings.test_conf['pull']:
+        print "pull is true"
+    else:
+        print "pull is false"
     if not settings.test_conf['local'] or settings.test_conf['pull']:
         change_status(target_repo, 'creating a pull request')
         try:

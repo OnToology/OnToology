@@ -1,4 +1,7 @@
 
+#profile data
+profile_output.txt
+
 #coverage report
 .coverage
 

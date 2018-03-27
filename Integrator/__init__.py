@@ -36,6 +36,47 @@ dolog = p
 def prepare_logger(log_fname):
     logging.basicConfig(filename=log_fname, format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
 
+# for the outline
+# def tools_execution(changed_files, base_dir, logfile, dolog_fname=None, target_repo=None, g_local=None,
+#                     change_status=None, repo=None):
+#     """
+#     :param changed_files:  changed files include relative path
+#             base_dir: abs dir to the repo file name, e.g. /home/user/myrepo/
+#     :return:
+#     """
+#     global g
+#     global dolog
+#     global log_file_dir
+#
+#     # clean up status pairs for that repo
+#     for sp in repo.ontology_status_pairs:
+#         sp.delete()
+#     repo.ontology_status_pairs = []
+#     repo.save()
+#     g = g_local
+#     log_file_dir = logfile
+#     if dolog_fname is not None:
+#         prepare_logger(dolog_fname)
+#         dolog = dolog_logg
+#     repo.notes = ''
+#     repo.save()
+#     progress_out_of = 70.0
+#     if len(changed_files) == 0:
+#         repo.progress = progress_out_of
+#         repo.save()
+#         return
+#
+#     single_piece = progress_out_of/len(changed_files)
+#     progress_inc = single_piece/4.0
+#     for f in changed_files:
+#         if f[-4:] in ontology_formats:
+#             if f[:len('OnToology/')] == 'OnToology/':  # This is to solve bug #265
+#                 dolog("nested prevented bug: "+f)
+#                 continue
+#             dolog("tools_execution: "+f)
+#             handle_single_ofile(f, base_dir, target_repo=target_repo, change_status=change_status, repo=repo,
+#                                 progress_inc=progress_inc)
+
 
 def tools_execution(changed_files, base_dir, logfile, dolog_fname=None, target_repo=None, g_local=None,
                     change_status=None, repo=None):
@@ -97,6 +138,8 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
     if conf['ar2dtool_enable']:
         dolog("will call draw diagrams")
         change_status(target_repo, 'drawing diagrams for: '+changed_file)
+        repo.update_ontology_status(ontology=changed_file, status='diagram')
+        repo.save()
         try:
             r = ar2dtool.draw_diagrams([changed_file], base_dir)
             # if r != "":
@@ -110,6 +153,8 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
     if conf['widoco_enable']:
         dolog('will call widoco')
         change_status(target_repo, 'generating docs for: '+changed_file)
+        repo.update_ontology_status(ontology=changed_file, status='documentation')
+        repo.save()
         try:
             r = widoco.generate_widoco_docs([changed_file], base_dir)
             # if r != "":
@@ -123,6 +168,8 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
     if conf['oops_enable']:
         dolog('will call oops')
         change_status(target_repo, 'evaluating: '+changed_file)
+        repo.update_ontology_status(ontology=changed_file, status='evaluation')
+        repo.save()
         try:
             r = oops.oops_ont_files(target_repo=target_repo, changed_files=[changed_file], base_dir=base_dir)
             # if r != "":
@@ -136,11 +183,14 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
     if conf['owl2jsonld_enable']:
         dolog('will call owl2jsonld')
         change_status(target_repo, 'generating context for: '+changed_file)
+        repo.update_ontology_status(ontology=changed_file, status='jsonld')
+        repo.save()
         try:
             owl2jsonld.generate_owl2jsonld_file([changed_file], base_dir=base_dir)
         except Exception as e:
             dolog("Exception in running owl2jsonld.generate_owl2jsonld_file: "+str(e))
     repo.progress += progress_inc
+    repo.update_ontology_status(ontology=changed_file, status='finished')
     repo.save()
 
 
@@ -229,6 +279,18 @@ def build_path(file_with_abs_dir):
         os.makedirs(abs_dir)
     dolog("build_path abs_dir: "+abs_dir)  # file_with_abs_dir
     return file_with_abs_dir
+
+
+def build_path_all(abs_dir):
+    """
+    build each of the folders in the path. It differs from build_path as it creates all the folders, while build_path
+    builds all the folders except for the last one (as it assume the last one is a file).
+    :param abs_dir:
+    :return:
+    """
+    if not os.path.exists(abs_dir):
+        os.makedirs(abs_dir)
+    dolog("build_path_all abs_dir: "+abs_dir)  # file_with_abs_dir
 
 
 def delete_dir(target_directory):

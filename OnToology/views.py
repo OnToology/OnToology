@@ -116,6 +116,7 @@ def grant_update(request):
 
 
 def get_access_token(request):
+    print "get_access_token"
     global is_private, client_id, client_secret
     if 'state' not in request.session or request.GET['state'] != request.session['state']:
         return HttpResponseRedirect('/')
@@ -273,6 +274,9 @@ def add_hook(request):
     else:
         comm = "python %s " % \
             (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
+    print 'in addhook'
+    print "target repo: %s" % target_repo
+    print "user: %s" % user
     comm += ' "' + target_repo + '" "' + user + '" '
     for c in changed_files:
         comm += '"' + c + '" '
@@ -866,6 +870,38 @@ def get_bundle(request):
 
 
 @login_required
+def get_outline(request):
+    repos = []
+    o_pairs = []
+    for r in request.user.repos:
+        if r.progress != 100:
+            repos.append(r)
+    # include all the repos for testing
+    # repos = [r for r in request.user.repos]
+    for r in repos:
+        o_pairs += r.ontology_status_pairs
+    stages = {}
+    stages_values = {} # to draw the inner fill
+    for i, s in enumerate(OntologyStatusPair.STATUSES):
+        stages[s[0]] = []
+        stages_values[s[0]] = i+1
+
+    # print "stages_values: "
+    # print stages_values
+    for sp in o_pairs:
+        if sp.status not in stages:
+            stages[sp.status] = []
+        stages[sp.status].append(sp.name)
+    # print "values:"
+    # print [stages_values[sp.status] for sp in o_pairs]
+    # min([stages_values[sp] for sp in o_pairs])
+    inner = 0
+    if len(o_pairs) > 0:
+        inner = min([stages_values[sp.status] for sp in o_pairs])
+    return JsonResponse({"stages": stages, "inner": inner})
+
+
+@login_required
 def progress_page(request):
     return render(request, 'progress.html', {'repos': request.user.repos})
 
@@ -900,3 +936,4 @@ def get_repos_list_file(request):
 
 def get_managers():
     return ['mpovedavillalon'+'@gmail.com', 'ahmad88me'+'@gmail.com']
+

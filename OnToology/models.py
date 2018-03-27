@@ -22,6 +22,28 @@ from mongoengine import Document, StringField, DateTimeField, ListField, Referen
 from datetime import datetime, timedelta
 
 
+class OntologyStatusPair(Document):
+    STATUSES = (
+        ('pending', 'pending'),
+        ('diagram', 'diagram'),
+        ('documentation', 'documentation'),
+        ('evaluation', 'evaluation'),
+        ('jsonld', 'jsonld'),
+        ('finished', 'finished')
+    )
+    name = StringField(max_length=120)
+    status = StringField(choices=STATUSES)
+
+    def json(self):
+        return {
+            "name": self.name,
+            "status": self.status
+        }
+
+    def __unicode__(self):
+        return self.name + ' - ' + self.status
+
+
 class Repo(Document):
     url = StringField(max_length=200, default='Not set yet')
     last_used = DateTimeField(default=datetime.now())
@@ -31,6 +53,7 @@ class Repo(Document):
     previsual_page_available = BooleanField(default=False)
     notes = StringField(default='')
     progress = FloatField(default=0.0)
+    ontology_status_pairs = ListField(ReferenceField(OntologyStatusPair), default=[])
 
     def json(self):
         return {
@@ -44,8 +67,28 @@ class Repo(Document):
             "notes": self.notes
         }
 
+    def update_ontology_status(self, ontology, status):
+        for osp in self.ontology_status_pairs:
+            if osp.name == ontology:
+                osp.status = status
+                osp.save()
+                return True
+        osp = OntologyStatusPair(name=ontology, status=status)
+        osp.save()
+        self.ontology_status_pairs.append(osp)
+        self.save()
 
-# The below is to avoid the error occue when importing Repo from autoncore because of the User class which cases the
+    def clear_ontology_status_pairs(self):
+        for osp in self.ontology_status_pairs:
+            osp.delete()
+        self.ontology_status_pairs = []
+        self.save()
+
+
+    def __unicode__(self):
+        return self.url
+
+# The below is to avoid the error occur when importing Repo from autoncore because of the User class which cases the
 # error
 try:    
     from mongoengine.django.auth import User
@@ -60,6 +103,9 @@ try:
             return {'id': str(self.id),
                     'private': self.private,
                     'email': self.email}
+
+        def __unicode__(self):
+            return self.username
 
 
     class PublishName(Document):
@@ -77,6 +123,8 @@ try:
                     'ontology': self.ontology
                     }
 
+        def __unicode__(self):
+            return self.name
 except:
     pass
 

@@ -72,6 +72,8 @@ except:
 
 
 host = 'http://ontoology.linkeddata.es'
+if 'host' in os.environ:
+    host = os.environ['host']
 local = False
 if 'OnToology_home' in os.environ and os.environ['OnToology_home'].lower() == "true":
     local = True
@@ -84,8 +86,10 @@ else:
     print os.environ
 
 from mongoengine import connect
-
 MONGO_DATABASE_NAME = "OnToology"
+if "db_name" in os.environ:
+    MONGO_DATABASE_NAME = os.environ["db_name"]
+
 if 'db_username' not in os.environ or os.environ['db_username'].strip() == '':
     print "no auth"
     connect(MONGO_DATABASE_NAME)

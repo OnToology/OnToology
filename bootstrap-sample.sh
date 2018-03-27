@@ -3,15 +3,21 @@ echo "Install packages ..."
 sudo add-apt-repository -y ppa:git-core/ppa > /dev/null 2>&1
 sudo apt-get update > /dev/null 2>&1
 sudo apt-get install -y git
-sudo apt-get install -y default-jre
+#sudo apt-get install -y default-jre
+# source: https://askubuntu.com/questions/464755/how-to-install-openjdk-8-on-14-04-lts
+sudo add-apt-repository -y ppa:openjdk-r/ppa
+sudo apt-get update
+sudo apt-get install -y openjdk-8-jdk
 sudo apt-get install -y apache2 apache2-mpm-prefork apache2-utils libexpat1 ssl-cert
 sudo apt-get install -y libapache2-mod-wsgi
 sudo apt-get install -y python-dev python-pip
 sudo apt-get install -y  mongodb
+sudo apt-get install -y graphviz
+
 git config --global user.name "OnToologyUser"
 git config --global user.email ontoology@delicias.dia.fi.upm.es
 
-
+sudo pip install virtualenv
 
 echo "Old Home is: "
 echo $HOME
@@ -37,6 +43,12 @@ echo "owl2jsonld"
 cd $HOME;mkdir owl2jsonld; cd owl2jsonld; wget --progress=bar:force https://github.com/stain/owl2jsonld/releases/download/0.2.1/owl2jsonld-0.2.1-standalone.jar
 
 
+# setup oops report
+echo "OOPS! report ..."
+cd $HOME;git clone git@github.com:OnToology/oops-report.git
+cd $HOME; cd oops-report;virtualenv -p /usr/bin/python2.7 .venv;.venv/bin/pip install -r requirements.txt
+
+
 echo "mk dirs ..."
 
 # publish dir
@@ -54,13 +66,11 @@ sudo pip install virtualenv
 virtualenv -p /usr/bin/python2.7 venv
 
 echo "Install OnToology requirements.txt"
-sudo pip install -r /vagrant/requirements.txt
-
-echo "Install OnToology requirements.txt for virtual environment"
-source /home/vagrant/venv/bin/activate; pip install -r /vagrant/requirements.txt
+$HOME/venv/bin/pip install -r $HOME/OnToology/requirements.txt
 
 
-cat <<EOT >> /home/vagrant/venv/bin/activate
+
+cat <<EOT >> $HOME/venv/bin/activate
 export client_id_public=""
 export client_secret_public=""
 export client_id_login=""
@@ -74,59 +84,58 @@ export email_server=""
 export email_from=""
 export email_username=""
 export email_password=""
-export github_repos_dir=/home/vagrant/repos/
-export ar2dtool_dir=/home/vagrant/ar2dtool/bin/
-export ar2dtool_config=/home/vagrant/config/
-export widoco_dir=/home/vagrant/widoco/
+export github_repos_dir=$HOME/repos/
+export ar2dtool_dir=$HOME/ar2dtool/bin/
+export ar2dtool_config=$HOME/config/
+export widoco_dir=$HOME/widoco/
 export SECRET_KEY=""
-export tools_config_dir=/home/vagrant/ar2dtool_config
+export tools_config_dir=$HOME/ar2dtool_config
 export user_github_username=
 export user_github_password=
 export test_repo=
-export test_folder=/home/vagrant/test
-export tests_ssh_key=/home/vagrant/.ssh/id_rsa
+export test_folder=$HOME/test
+export tests_ssh_key=$HOME/.ssh/id_rsa
 export test_github_username=
 export test_github_password=
 export client_id_private=
 export client_secret_private=
-export previsual_dir=/home/vagrant/vocabLite/jar
-export publish_dir=/home/vagrant/publish
-export wget_dir=/home/vagrant/wget_dir
-export owl2jsonld_dir=/home/vagrant/owl2jsonld/
+export previsual_dir=$HOME/vocabLite/jar
+export publish_dir=$HOME/publish
+export wget_dir=$HOME/wget_dir
+export owl2jsonld_dir=$HOME/owl2jsonld/
+export oops_dir=$HOME/oops-report/
 
 EOT
 
 echo "Writing to apache"
 #source: http://unix.stackexchange.com/questions/77277/how-to-append-multiple-lines-to-a-file-with-bash
 cat <<EOT > /etc/apache2/sites-available/000-default.conf
-#WSGIPythonPath /vagrant
 <VirtualHost *:80>
 ServerAdmin ontoology@delicias.dia.fi.upm.es
-Alias /publish/ /home/vagrant/publish/
-<Directory /home/vagrant/publish>
+Alias /publish/ $HOME/publish/
+<Directory $HOME/publish>
 Options Indexes FollowSymLinks MultiViews
 AllowOverride All
 Order allow,deny
 allow from all
 Require all granted
 </Directory>
-WSGIDaemonProcess www-data python-path=/vagrant:/home/vagrant/venv/lib/python2.7/site-packages
-WSGIScriptAlias / /vagrant/OnToology/wsgi.py process-group=www-data
-#WSGIScriptAlias / /vagrant/OnToology/wsgi.py
-<Directory /vagrant/OnToology>
+WSGIDaemonProcess www-data python-path=$HOME/OnToology:$HOME/venv/lib/python2.7/site-packages
+WSGIScriptAlias / $HOME/OnToology/OnToology/wsgi.py process-group=www-data
+<Directory $HOME/OnToology/OnToology>
 <Files wsgi.py>
 Require all granted
 </Files>
 </Directory>
-DocumentRoot /vagrant
+DocumentRoot $HOME/OnToology
 ErrorLog \${APACHE_LOG_DIR}/error.log
 CustomLog \${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>
 EOT
 
-cat <<EOT > /home/vagrant/config/ar2dtool-class.conf
+cat <<EOT > $HOME/config/ar2dtool-class.conf
 pathToDot=/usr/bin/dot;
-pathToTempDir=/home/vagrant/temp;
+pathToTempDir=$HOME/temp;
 
 imageSize=1501;
 rankdir=LR;
@@ -169,9 +178,9 @@ synthesizeObjectProperties=true;
 ignoreElementList=[<http://www.w3.org/2000/01/rdf-schema#subClassOf,http://www.w3.org/2000/01/rdf-schema#isDefinedBy,http://www.w3.org/2002/07/owl#inverseOf>];
 EOT
 
-cat <<EOT > /home/vagrant/config/ar2dtool-taxonomy.conf
+cat <<EOT > $HOME/config/ar2dtool-taxonomy.conf
 pathToDot=/usr/bin/dot;
-pathToTempDir=/home/vagrant/temp;
+pathToTempDir=$HOME/temp;
 
 imageSize=1000;
 rankdir=LR;
