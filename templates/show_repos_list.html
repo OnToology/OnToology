@@ -1,0 +1,30 @@
+{% extends "base.html"%}
+{%block body%}
+
+
+
+<a href="get_repos_list_file"><div class="btn btn-primary form-control">Download repos as CSV</div></a><br><br>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">repo</th>
+      <th scope="col">last used</th>
+      <th scope="col">state</th>
+    </tr>
+  </thead>
+  <tbody>
+  {%for r in repos%}
+    <tr>
+      <td>{{r.url}}</td>
+      <td>{{r.last_used}}</td>
+      <td>{{r.state}}</td>
+    </tr>
+  {%endfor%}
+
+  </tbody>
+</table>
+
+
+
+
+{% endblock %}
