@@ -41,15 +41,15 @@
                                  "title_font": "15px Helvetica",
                                  "items_font": "10px Comic Sans MS",
                                  "points": [
-                                    {"title": "Pending", "items": ["ontology1.owl","ontology2.owl" ]},
-                                    {"title": "Diagrams", "items": ["ontology3.owl","ontology4.owl" ]},
+                                    {"title": "Pending", "items": []},
+                                    {"title": "Diagrams", "items": []},
                                     {"title": "Documentation", "items": []},
                                     {"title": "Evaluating", "items": []},
                                     {"title": "JSON-LD", "items": []},
                                     {"title": "Finished", "items": []},
                                  ]});
         g.draw();
-        g.draw_inner(2);
+        g.draw_inner(0);
 
 function compute_index(j){
    return 2;
@@ -70,26 +70,26 @@ var outline_function = function(){
 
 
     $.getJSON('get_outline', function(data){
-        console.log('data: ');
-        console.log(data);
+        //console.log('data: ');
+        //console.log(data);
         var stages = Object.keys(data["stages"]);
         var i;
         var points = [];
-        console.log('stages: ');
-        console.log(stages);
+        //console.log('stages: ');
+        //console.log(stages);
 
-        console.log('stages_length'+stages.length);
+        //console.log('stages_length'+stages.length);
         for(i=0;i<stages.length;i++){
             p = {"title": stages[i], "items": data["stages"][stages[i]]}
             points.push(p);
         }
-        console.log('points: .....')
-        console.log(points);
+        //console.log('points: .....')
+        //console.log(points);
         graph_data["points"] = points
 
 
-        console.log('pending: ')
-        console.log(data["stages"]["pending"])
+        //console.log('pending: ')
+        //console.log(data["stages"]["pending"])
         graph_data["points"] = [
             {"title": "Pending", "items": data["stages"]["pending"]},
             {"title": "Diagrams", "items": data["stages"]["diagram"]},
@@ -99,14 +99,14 @@ var outline_function = function(){
             {"title": "Finished", "items": data["stages"]["finished"]}
         ]
 
-        console.log('points: beau')
-        console.log(graph_data["points"]);
+        //console.log('points: beau')
+        //console.log(graph_data["points"]);
 
 
         delete window.g;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        console.log('graph data')
-        console.log(graph_data);
+        //console.log('graph data')
+        //console.log(graph_data);
         g = new OutlineGraph(ctx, graph_data);
         /*
         var g = new OutlineGraph(ctx, {

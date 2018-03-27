@@ -873,11 +873,11 @@ def get_bundle(request):
 def get_outline(request):
     repos = []
     o_pairs = []
-    # for r in request.user.repos:
-    #     if r.progress != 100:
-    #         repos.append(r)
+    for r in request.user.repos:
+        if r.progress != 100:
+            repos.append(r)
     # include all the repos for testing
-    repos = [r for r in request.user.repos]
+    # repos = [r for r in request.user.repos]
     for r in repos:
         o_pairs += r.ontology_status_pairs
     stages = {}
