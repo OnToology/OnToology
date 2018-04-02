@@ -527,13 +527,17 @@ def send_pull_request(target_repo, username):
     body = title
     err = ""
     time.sleep(sleeping_time)
+    repo = g.get_repo(target_repo)
     try:
-        g.get_repo(target_repo).create_pull(head=username +
-                                            ':master', base='master', title=title, body=body)
+        repo.create_pull(head=username + ':master', base='master', title=title, body=body)
         return {'status': True, 'msg': 'pull request created successfully'}
     except Exception as e:
         err = str(e)
         dolog('pull request error: ' + err)
+        if 'No commits between' in err:
+            dolog('pull request detecting no commits')
+            repo.notes = 'No difference to generate the pull request, make a change in the repo so the pull request can be generated.'
+            repo.save()
     return {'status': False, 'error': err}
 
 
