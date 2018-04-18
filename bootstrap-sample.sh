@@ -13,6 +13,7 @@ sudo apt-get install -y libapache2-mod-wsgi
 sudo apt-get install -y python-dev python-pip
 sudo apt-get install -y  mongodb
 sudo apt-get install -y graphviz
+sudo apt-get install -y zip
 
 git config --global user.name "OnToologyUser"
 git config --global user.email ontoology@delicias.dia.fi.upm.es
