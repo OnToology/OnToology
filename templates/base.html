@@ -308,13 +308,13 @@
                         <li {% block home_head %} class="active"  {% endblock %} ><a class="" href="/">Home  </a></li>
                         <li {% block step_head %} {% endblock %} ><a class="" href="/stepbystep">Step by Step </a></li>
                         <li {% block about_head %} {% endblock %}><a class="" href="/about">About </a></li>
-                        <li {% block faq_head %} {% endblock %}><a class="" href="/faqs">FAQs </a></li>
+                        <li {% block faq_head %} {% endblock %}><a class="" href="/faqs">FAQ </a></li>
 
                     </ul>
                         {%block teapot%}
                                 {% if request.user.is_authenticated %}
                                 <ul class="nav navbar-nav ">
-                                <li><a href="/progress">Progress  </a></li>
+                                <!--<li><a href="/progress">Progress  </a></li>-->
                                 <li><a class="curfont" href="/logout">Logout </a></li>
                                 </ul>
                                 <ul class="nav navbar-nav ">
@@ -384,7 +384,7 @@
                     <br>
                     <!-->
                 <p>
-                    Latest revision November, 2017<br>
+                    <!--Latest revision November, 2017<br>-->
                     Ontology Engineering Group<br>
                     Contact: ontoology (at) delicias.dia.fi.upm.es<br>
                     Powered by <a class="color1 underline" href="https://github.com/dgarijo/Widoco">Widoco</a>, <a
