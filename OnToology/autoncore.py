@@ -28,6 +28,7 @@ import random
 import time
 import StringIO
 import settings
+import io
 
 from __init__ import *
 
@@ -344,6 +345,51 @@ def verify_tools_generation(ver_file_comp, repo=None):
         repo.create_issue('OnToology error notification', repo.state)
 
 
+def get_ontologies_from_a_submodule(path, url):
+    """
+    :param path: local path within the repository
+    :param url: url of the repository
+    :return: list of detected ontologies
+    """
+    global g
+    ontologies = []
+    try:
+        repo = g.get_repo(url)
+        sha = repo.get_commits()[0].sha
+        files = repo.get_git_tree(sha=sha, recursive=True).tree
+        ontoology_home_name = 'OnToology'
+        for f in files:
+            if f.path[:len(ontoology_home_name)] != ontoology_home_name:
+                if f.type == 'blob':
+                    for ontfot in ontology_formats:
+                        if f.path[-len(ontfot):] == ontfot:
+                            ontologies.append(os.path.join(path, f.path))
+                            break
+    except Exception as e:
+        print "get_ontologies_from_a_submodule exception: "+str(e)
+    return ontologies
+
+
+def get_ontologies_from_submodules_tree(tree):
+    """
+    :param tree: a github tree
+    :return: a list of detected ontologies
+    """
+    ontologies = []
+    submodule_tree_elements = [f for f in tree if f.path == '.gitmodules']
+    if len(submodule_tree_elements) == 1:
+        config_parser = ConfigParser.RawConfigParser()
+        file_content = repo.get_file_contents(submodule_tree_elements[0].path).decoded_content
+        config_parser.readfp(io.BytesIO(file_content))
+        sections = config_parser.sections()
+
+        for sec in sections:
+            p = config_parser.get(sec, "path")
+            u = config_parser.get(sec, "url")
+            ontologies += get_ontologies_from_a_submodule(path=p, url=u)
+    return ontologies
+
+
 def get_ontologies_in_online_repo(target_repo):
     global g
     ontologies = []
@@ -354,12 +400,15 @@ def get_ontologies_in_online_repo(target_repo):
         sha = repo.get_commits()[0].sha
         files = repo.get_git_tree(sha=sha, recursive=True).tree
         ontoology_home_name = 'OnToology'
+
         for f in files:
             if f.path[:len(ontoology_home_name)] != ontoology_home_name:
-                for ontfot in ontology_formats:
-                    if f.path[-len(ontfot):] == ontfot:
-                        ontologies.append(f.path)
-                        break
+                if f.type == 'blob':
+                    for ontfot in ontology_formats:
+                        if f.path[-len(ontfot):] == ontfot:
+                            ontologies.append(f.path)
+                            break
+        ontologies += get_ontologies_from_submodules_tree(files)
     except Exception as e:
         print "get_ontologies_in_online_repo exception: "+str(e)
     return ontologies
