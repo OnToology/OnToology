@@ -450,7 +450,7 @@ def clone_repo(cloning_url, parent_folder, dosleep=True):
     except Exception as e:
         dolog('rm failed: ' + str(e))
     # comm = "git" + " clone" + " " + cloning_repo + " " + home + parent_folder
-    comm = "git" + " clone" + " " + cloning_url + " " + os.path.join(home, parent_folder)
+    comm = "git clone --recurse-submodules  " + cloning_url + " " + os.path.join(home, parent_folder)
     if not settings.test_conf['local']:
         comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
