@@ -353,8 +353,10 @@ def get_ontologies_from_a_submodule(path, url):
     """
     global g
     ontologies = []
+    print "get_ontologies_from_a_submodule: path=%s and url=%s" % (path, url)
     try:
-        repo = g.get_repo(url)
+        target_repo = ("/".join(url.split('/')[-2:])).strip()[:-4]
+        repo = g.get_repo(target_repo)
         sha = repo.get_commits()[0].sha
         files = repo.get_git_tree(sha=sha, recursive=True).tree
         ontoology_home_name = 'OnToology'
@@ -363,6 +365,7 @@ def get_ontologies_from_a_submodule(path, url):
                 if f.type == 'blob':
                     for ontfot in ontology_formats:
                         if f.path[-len(ontfot):] == ontfot:
+                            print "get_ontologies_from_a_submodule f.path: %s" % f.path
                             ontologies.append(os.path.join(path, f.path))
                             break
     except Exception as e:
@@ -370,9 +373,10 @@ def get_ontologies_from_a_submodule(path, url):
     return ontologies
 
 
-def get_ontologies_from_submodules_tree(tree):
+def get_ontologies_from_submodules_tree(tree, repo):
     """
     :param tree: a github tree
+    :param repo: a repo object from GitHub
     :return: a list of detected ontologies
     """
     ontologies = []
@@ -380,6 +384,9 @@ def get_ontologies_from_submodules_tree(tree):
     if len(submodule_tree_elements) == 1:
         config_parser = ConfigParser.RawConfigParser()
         file_content = repo.get_file_contents(submodule_tree_elements[0].path).decoded_content
+        print "file_content"
+        print file_content
+        file_content = file_content.replace('\t', '')  # because it was containing \t
         config_parser.readfp(io.BytesIO(file_content))
         sections = config_parser.sections()
 
@@ -408,7 +415,7 @@ def get_ontologies_in_online_repo(target_repo):
                         if f.path[-len(ontfot):] == ontfot:
                             ontologies.append(f.path)
                             break
-        ontologies += get_ontologies_from_submodules_tree(files)
+        ontologies += get_ontologies_from_submodules_tree(files, repo)
     except Exception as e:
         print "get_ontologies_in_online_repo exception: "+str(e)
     return ontologies
