@@ -1,0 +1,15 @@
+
+[run]
+branch = True
+source = ./
+include = ./
+
+[report]
+source =./*
+include =./*
+omit = 
+	./OnToology/tests/*
+	./OnToology/*wsgi*
+	./util/*	
+	./manage*
+	./runserver*

@@ -27,7 +27,7 @@ echo "New Home is: "
 echo $HOME
 # setup widoco
 echo "Widoco setup ..."
-cd $HOME;mkdir widoco;cd widoco; wget --progress=bar:force https://github.com/dgarijo/Widoco/releases/download/v1.4.1/widoco-1.4.1-jar-with-dependencies.jar ; mv widoco-* widoco.jar ; chmod 777 widoco-*
+cd $HOME;mkdir widoco;cd widoco; wget --progress=bar:force https://github.com/dgarijo/Widoco/releases/download/v1.4.4/widoco-1.4.4-jar-with-dependencies.jar ; mv widoco-* widoco.jar ; chmod 777 widoco-*
 #cd $HOME;mkdir widoco;cd widoco; wget --progress=bar:force https://github.com/dgarijo/Widoco/releases/download/v1.2.3/widoco-1.2.3-jar-with-dependencies.jar ; mv widoco-* widoco-0.0.1-jar-with-dependencies.jar ; chmod 777 widoco-*
 
 # setup ar2dtool
