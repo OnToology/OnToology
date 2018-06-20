@@ -12,7 +12,7 @@ from mongoengine import connection, connect
 import pyclbr
 
 def suite():
-    return unittest.TestLoader().discover("OnToology.tests", pattern="*.py")
+    return unittest.TestLoader().discover("OnToology.tests", pattern="test*.py")
 
 
 class NoSQLTestRunner(DjangoTestSuiteRunner):
