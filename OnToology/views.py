@@ -335,16 +335,10 @@ def generateforall_view(request):
 
 
 def generateforall(target_repo, user_email):
-    cloning_repo = 'git@github.com:' + target_repo
-    tar = cloning_repo.split('/')[-2].split(':')[1]
-    cloning_repo = cloning_repo.replace(tar, ToolUser)
     user = user_email
     ontologies = get_ontologies_in_online_repo(target_repo)
     changed_files = ontologies
     print 'current file dir: %s' % str(os.path.dirname(os.path.realpath(__file__)))
-    # comm = "python /home/ubuntu/OnToology/OnToology/autoncore.py "
-    #comm = "python %s " % \
-    #       str((os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py')))
     if 'virtual_env_dir' in os.environ:
         print 'virtual_env_dir is in environ'
         comm = "%s %s " % \
@@ -383,13 +377,10 @@ def generateforall(target_repo, user_email):
 
 def login(request):
     print '******* login *********'
-    #if 'username' not in request.GET:
-    #    return HttpResponseRedirect('/')
-    #username = request.GET['username']
     redirect_url = host + '/login_get_access'
     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
     request.session['state'] = sec
-    scope = 'user:email' #get_proper_scope_to_login(username)
+    scope = 'user:email'  # get_proper_scope_to_login(username)
     # scope = 'admin:org_hook'
     # scope+=',admin:org,admin:public_key,admin:repo_hook,gist,notifications,delete_repo,repo_deployment,repo,public_repo,user,admin:public_key'
     redirect_url = "https://github.com/login/oauth/authorize?client_id=" + client_id_login + "&redirect_uri=" + redirect_url + "&scope=" + scope + "&state=" + sec
@@ -473,7 +464,6 @@ def profile(request):
     else:
         print 'not faking'
         user = request.user
-    # ouser = OUser.objects.get(email=request.user.email)
     error_msg = ''
     if 'repo' in request.GET and 'name' not in request.GET:  # asking for ontologies in a repo
         repo = request.GET['repo']
@@ -510,8 +500,6 @@ def profile(request):
                         print '   '+d + ': ' + str(o[d])
                 print 'testing redirect'
                 print 'will return the Json'
-                # html = render(request, 'profile_sliders.html', {'ontologies': ontologies}).content
-                # jresponse = JsonResponse({'ontologies': ontologies, 'sliderhtml': html})
                 jresponse = JsonResponse({'ontologies': ontologies})
                 jresponse.__setitem__('Content-Length', len(jresponse.content))
                 sys.stdout.flush()
@@ -536,7 +524,6 @@ def profile(request):
         name = request.GET['name']
         target_repo = request.GET['repo']
         ontology_rel_path = request.GET['ontology']
-        # user = request.user
         found = False
         for r in user.repos:
             if target_repo == r.url:
@@ -636,14 +623,8 @@ def profile(request):
             user.update(pull__repos=r)
             user.save()
     request.GET = []
-    # if error_msg == '':
-    #     return HttpResponseRedirect(reverse('profile'))
     sys.stdout.flush()
     sys.stderr.flush()
-    # due to github rate-limiting
-    # last_updated = Github().get_repo('OnToology/OnToology').get_issues(state='closed')[0].closed_at
-    # return render(request, 'profile.html', {'repos': repos, 'pnames': PublishName.objects.filter(user=user),
-    #                                         'error': error_msg, 'last_updated': last_updated})
     return render(request, 'profile.html', {'repos': repos, 'pnames': PublishName.objects.filter(user=user),
                                             'error': error_msg, 'manager': request.user.email in get_managers()})
 
@@ -672,48 +653,9 @@ def update_conf(request):
         except Exception as e:
             print 'Error in updating the configuration: ' + str(e)
             return render(request, 'msg.html', {'msg': str(e)})
-            # return JsonResponse(
-            #     {'status': False, 'error': str(e)})  # return render(request,'msg.html',{'msg': str(e)})
         print 'returned from update_file'
     print 'will return msg html'
     return HttpResponseRedirect('/profile')
-
-
-# def update_conf(request):
-#     print 'inside update_conf'
-#     if request.method == "GET":
-#         return render(request, "msg.html", {"msg": "This method expects POST only"})
-#     indic = '-ar2dtool'
-#     data = request.POST
-#     print 'will go to the loop'
-#     for key in data:
-#         print 'inside the loop'
-#         if indic in key:
-#             print 'inside the if'
-#             onto = key[:-len(indic)]
-#             ar2dtool = data[onto + '-ar2dtool']
-#             print 'ar2dtool: ' + str(ar2dtool)
-#             widoco = data[onto + '-widoco']
-#             print 'widoco: ' + str(widoco)
-#             oops = data[onto + '-oops']
-#             print 'oops: ' + str(oops)
-#             print 'will call get_conf'
-#             new_conf = get_conf(ar2dtool, widoco, oops)
-#             print 'will call update_file'
-#             onto = 'OnToology' + onto + '/OnToology.cfg'
-#             try:
-#                 print "will call update file"
-#                 print "will call update file with repo %s, ontology: %s" % (data['repo'], onto)
-#                 update_file(data['repo'], onto, 'OnToology Configuration', new_conf)
-#             except Exception as e:
-#                 print 'Error in updating the configuration: ' + str(e)
-#                 sys.stdout.flush()
-#                 sys.stderr.flush()
-#                 return JsonResponse(
-#                     {'status': False, 'error': str(e)})  # return render(request,'msg.html',{'msg': str(e)})
-#             print 'returned from update_file'
-#     print 'will return msg html'
-#     return JsonResponse({'status': True, 'msg': 'successfully'})
 
 
 def get_conf(ar2dtool, widoco, oops):
@@ -797,8 +739,6 @@ def renew_previsual(request):
             repo.state = 'Ready'
             repo.save()
             return render(request, 'msg.html', {'msg': msg})
-            #return render(request, 'profile.html', {'repos': user.repos, 'pnames': PublishName.objects.filter(user=user),
-            #                                'error': msg})
     repo.state = 'Ready'
     repo.save()
     return render(request, 'msg.html',
@@ -825,17 +765,6 @@ def superadmin(request):
         return render(request, 'superadmin.html', {'msg': 'statuses of all repos are changed to: ' + new_status})
 
     return render(request, 'superadmin.html')
-
-#
-# def get_proper_scope_to_login(username=None):
-#     # try:  # The user is registered
-#     #     ouser = OUser.objects.get(username=username)
-#     #     if ouser.private:
-#     #         return 'repo'
-#     #     return 'public_repo'  # the user is not private and neither the repo
-#     # except:  # new user
-#     #     return 'public_repo'
-#     return 'user:email'
 
 
 @login_required
@@ -876,25 +805,19 @@ def get_outline(request):
     for r in request.user.repos:
         if r.progress != 100:
             repos.append(r)
-    # include all the repos for testing
-    # repos = [r for r in request.user.repos]
     for r in repos:
         o_pairs += r.ontology_status_pairs
     stages = {}
-    stages_values = {} # to draw the inner fill
+    stages_values = {}  # to draw the inner fill
     for i, s in enumerate(OntologyStatusPair.STATUSES):
         stages[s[0]] = []
         stages_values[s[0]] = i+1
 
-    # print "stages_values: "
-    # print stages_values
     for sp in o_pairs:
         if sp.status not in stages:
             stages[sp.status] = []
         stages[sp.status].append(sp.name)
-    # print "values:"
-    # print [stages_values[sp.status] for sp in o_pairs]
-    # min([stages_values[sp] for sp in o_pairs])
+
     inner = 0
     if len(o_pairs) > 0:
         inner = min([stages_values[sp.status] for sp in o_pairs])
@@ -936,4 +859,8 @@ def get_repos_list_file(request):
 
 def get_managers():
     return ['mpovedavillalon'+'@gmail.com', 'ahmad88me'+'@gmail.com']
+
+
+
+
 
