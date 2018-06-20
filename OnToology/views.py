@@ -861,6 +861,71 @@ def get_managers():
     return ['mpovedavillalon'+'@gmail.com', 'ahmad88me'+'@gmail.com']
 
 
+@login_required
+def publish_view(request):
+    if 'name' not in request.GET:
+        return HttpResponseRedirect('/')
+    if 'repo' not in request.GET:
+        return HttpResponseRedirect('/')
+    if 'ontology' not in request.GET:
+        return HttpResponseRedirect('/')
+    name = request.GET['name']
+    target_repo = request.GET['repo']
+    ontology_rel_path = request.GET['ontology']
+    if publish(name=name, target_repo=target_repo, ontology_rel_path=ontology_rel_path, user=request.user) == "":
+        return render(request, 'msg.html', {'msg': '%s is published successfully'%ontology_rel_path})
 
 
+def publish(name, target_repo, ontology_rel_path, user):
+    """
+    To publish the ontology via github.
+    :param name:
+    :param target_repo:
+    :param ontology_rel_path:
+    :param user:
+    :return: error message, it will return an empty string if everything went ok
+    """
+    error_msg = ""
+    found = False
+    for r in user.repos:
+        if target_repo == r.url:
+            found = True
+            repo = r
+            break
 
+    name = ''.join(ch for ch in name if ch.isalnum() or ch == '_')
+    if found:  # if the repo belongs to the user
+        if len(PublishName.objects.filter(name=name)) > 1:
+            error_msg = 'a duplicate published names, please contact us ASAP to fix it'
+            return error_msg
+
+        if (len(PublishName.objects.filter(name=name)) == 0 and
+                len(PublishName.objects.filter(user=user, ontology=ontology_rel_path, repo=repo)) > 0):
+            error_msg += 'can not reserve multiple names for the same ontology'
+            return error_msg
+
+        if len(PublishName.objects.filter(name=name)) == 1 and len(PublishName.objects.filter(user=user, ontology=ontology_rel_path, repo=repo)) == 0:
+            error_msg = "This name is already taken, please choose a different one"
+
+        if (PublishName.objects.get(name=name).user == user and
+            PublishName.objects.get(name=name).repo == repo and
+            PublishName.objects.get(name=name).ontology == ontology_rel_path) or (len(PublishName.objects.filter(name=name)) == 0 and
+                len(PublishName.objects.filter(user=user, ontology=ontology_rel_path, repo=repo)) > 0):
+
+            htaccess = autoncore.get_file_content(target_repo=target_repo, path=os.path.join('/OnToology', ontology_rel_path, 'documentation/.htaccess'))
+            print("htaccess content: ")
+            print(htaccess)
+            comm = "mkdir " % os.path.join(publish_dir, name)
+            call(comm, shell=True)
+            f = open(os.path.join(publish_dir, name, '.htaccess'), 'w')
+            f.write(htaccess)
+            f.close()
+
+            if len(PublishName.objects.filter(name=name)) == 0:
+                p = PublishName(name=name, user=user, repo=repo, ontology=ontology_rel_path)
+                p.save()
+            return ""  # means it is published correctly
+
+    else:
+        return """This repository is not register under your account. If you are the owner, you can add it to OnToology,
+         Or you can fork it to your GitHub account and register the fork to OnToology"""

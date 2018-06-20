@@ -241,7 +241,6 @@ def verify_tools_generation_when_ready(ver_file_comp, repo=None):
         os.remove(ver_file)  # the verification file is no longer needed
 
 
-# copied from new-look and fixed
 def update_file(target_repo, path, message, content):
     global g
     username = os.environ['github_username']
@@ -637,6 +636,16 @@ def add_collaborator(target_repo, user, newg=None):
 def update_g(token):
     global g
     g = Github(token)
+
+
+def get_file_content(target_repo, path):
+    global g
+    username = os.environ['github_username']
+    password = os.environ['github_password']
+    g = Github(username, password)
+    repo = g.get_repo(target_repo)
+    sha = repo.get_file_contents(path).sha
+    return repo.get_file_contents(path).decoded_content
 
 
 def generate_bundle(base_dir, target_repo, ontology_bundle):
