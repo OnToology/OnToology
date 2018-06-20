@@ -15,9 +15,8 @@ class TestActionAPIs(TestCase):
     def setUp(self):
         if len(OUser.objects.all()) == 0:
             create_user()
-        self.url = 'ahmad88me/demo'
+        self.url = 'ahmad88me/ontoology-auto-test-no-res'
         self.user = OUser.objects.all()[0]
-
 
     def test_generate_all_check_generated_resources_slash(self):
         import OnToology.settings as settings
