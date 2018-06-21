@@ -520,81 +520,81 @@ def profile(request):
                 return jresponse
         except Exception as e:
             print 'exception: ' + str(e)
-    elif 'name' in request.GET:  # publish with a new name
-        print request.GET
-        name = request.GET['name']
-        target_repo = request.GET['repo']
-        ontology_rel_path = request.GET['ontology']
-        found = False
-        for r in user.repos:
-            if target_repo == r.url:
-                found = True
-                repo = r
-                break
-        if found:  # if the repo belongs to the user
-
-            if len(PublishName.objects.filter(name=name)) > 1:
-                error_msg = 'a duplicate published names, please contact us ASAP to fix it'
-
-            elif len(PublishName.objects.filter(name=name)) == 0 or (PublishName.objects.get(name=name).user == user and
-                                                                     PublishName.objects.get(name=name).repo == repo and
-                                                                     PublishName.objects.get(
-                                                                         name=name).ontology == ontology_rel_path):
-                if (len(PublishName.objects.filter(name=name)) == 0 and
-                        len(PublishName.objects.filter(user=user, ontology=ontology_rel_path, repo=repo)) > 0):
-                    error_msg += 'can not reserve multiple names for the same ontology'
-                else:
-                    autoncore.prepare_log(user.email)
-                    # cloning_repo should look like 'git@github.com:user/reponame.git'
-                    cloning_repo = 'git@github.com:%s.git' % target_repo
-                    sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
-                    folder_name = 'pub-' + sec
-                    clone_repo(cloning_repo, folder_name, dosleep=True)
-                    repo_dir = os.path.join(autoncore.home, folder_name)
-                    doc_dir = os.path.join(repo_dir, 'OnToology', ontology_rel_path[1:], 'documentation')
-                    print 'repo_dir: %s' % repo_dir
-                    print 'doc_dir: %s' % doc_dir
-                    htaccess_f = os.path.join(doc_dir, '.htaccess')
-                    if not os.path.exists(htaccess_f):
-                        print 'htaccess is not found'
-                        # error_msg += 'make sure your ontology has documentation and htaccess'
-                        error_msg += 'We couldn\'t reserve your w3id. Please make sure that your ontology has ' \
-                                     'documentation and htacess. For that, click on "Generate documentation, diagrams' \
-                                     ' and evaluation" on the menu, and once the process is completed, accept the ' \
-                                     'pull request on you GitHub repository'
-                    else:
-                        print 'found htaccesss'
-                        f = open(htaccess_f, 'r')
-                        file_content = f.read()
-                        f.close()
-                        f = open(htaccess_f, 'w')
-                        for line in file_content.split('\n'):
-                            if line[:11] == 'RewriteBase':
-                                f.write('RewriteBase /publish/%s \n' % name)
-                            else:
-                                f.write(line + '\n')
-                        f.close()
-                        # comm = 'rm -Rf /home/ubuntu/publish/%s' % name
-                        comm = 'rm -Rf ' + os.path.join(publish_dir, name)
-                        print(comm)
-                        call(comm, shell=True)
-                        # comm = 'mv %s /home/ubuntu/publish/%s' % (doc_dir, name)
-                        comm = 'mv %s %s' % (doc_dir, os.path.join(publish_dir, name))
-                        print comm
-                        call(comm, shell=True)
-                        if len(PublishName.objects.filter(name=name)) == 0:
-                            p = PublishName(name=name, user=user, repo=repo, ontology=ontology_rel_path)
-                            p.save()
-            else:
-                if PublishName.objects.get(name=name).user == user:
-                    print 'same user'
-                if PublishName.objects.get(name=name).repo == repo:
-                    print 'same repo'
-                if PublishName.objects.get(name=name).ontology == ontology_rel_path:
-                    print 'same ontology'
-                error_msg += ' Name already taken'
-        else:  # not found
-            error_msg += 'You should add this repo to OnToology first'
+    # elif 'name' in request.GET:  # publish with a new name
+    #     print request.GET
+    #     name = request.GET['name']
+    #     target_repo = request.GET['repo']
+    #     ontology_rel_path = request.GET['ontology']
+    #     found = False
+    #     for r in user.repos:
+    #         if target_repo == r.url:
+    #             found = True
+    #             repo = r
+    #             break
+    #     if found:  # if the repo belongs to the user
+    #
+    #         if len(PublishName.objects.filter(name=name)) > 1:
+    #             error_msg = 'a duplicate published names, please contact us ASAP to fix it'
+    #
+    #         elif len(PublishName.objects.filter(name=name)) == 0 or (PublishName.objects.get(name=name).user == user and
+    #                                                                  PublishName.objects.get(name=name).repo == repo and
+    #                                                                  PublishName.objects.get(
+    #                                                                      name=name).ontology == ontology_rel_path):
+    #             if (len(PublishName.objects.filter(name=name)) == 0 and
+    #                     len(PublishName.objects.filter(user=user, ontology=ontology_rel_path, repo=repo)) > 0):
+    #                 error_msg += 'can not reserve multiple names for the same ontology'
+    #             else:
+    #                 autoncore.prepare_log(user.email)
+    #                 # cloning_repo should look like 'git@github.com:user/reponame.git'
+    #                 cloning_repo = 'git@github.com:%s.git' % target_repo
+    #                 sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
+    #                 folder_name = 'pub-' + sec
+    #                 clone_repo(cloning_repo, folder_name, dosleep=True)
+    #                 repo_dir = os.path.join(autoncore.home, folder_name)
+    #                 doc_dir = os.path.join(repo_dir, 'OnToology', ontology_rel_path[1:], 'documentation')
+    #                 print 'repo_dir: %s' % repo_dir
+    #                 print 'doc_dir: %s' % doc_dir
+    #                 htaccess_f = os.path.join(doc_dir, '.htaccess')
+    #                 if not os.path.exists(htaccess_f):
+    #                     print 'htaccess is not found'
+    #                     # error_msg += 'make sure your ontology has documentation and htaccess'
+    #                     error_msg += 'We couldn\'t reserve your w3id. Please make sure that your ontology has ' \
+    #                                  'documentation and htacess. For that, click on "Generate documentation, diagrams' \
+    #                                  ' and evaluation" on the menu, and once the process is completed, accept the ' \
+    #                                  'pull request on you GitHub repository'
+    #                 else:
+    #                     print 'found htaccesss'
+    #                     f = open(htaccess_f, 'r')
+    #                     file_content = f.read()
+    #                     f.close()
+    #                     f = open(htaccess_f, 'w')
+    #                     for line in file_content.split('\n'):
+    #                         if line[:11] == 'RewriteBase':
+    #                             f.write('RewriteBase /publish/%s \n' % name)
+    #                         else:
+    #                             f.write(line + '\n')
+    #                     f.close()
+    #                     # comm = 'rm -Rf /home/ubuntu/publish/%s' % name
+    #                     comm = 'rm -Rf ' + os.path.join(publish_dir, name)
+    #                     print(comm)
+    #                     call(comm, shell=True)
+    #                     # comm = 'mv %s /home/ubuntu/publish/%s' % (doc_dir, name)
+    #                     comm = 'mv %s %s' % (doc_dir, os.path.join(publish_dir, name))
+    #                     print comm
+    #                     call(comm, shell=True)
+    #                     if len(PublishName.objects.filter(name=name)) == 0:
+    #                         p = PublishName(name=name, user=user, repo=repo, ontology=ontology_rel_path)
+    #                         p.save()
+    #         else:
+    #             if PublishName.objects.get(name=name).user == user:
+    #                 print 'same user'
+    #             if PublishName.objects.get(name=name).repo == repo:
+    #                 print 'same repo'
+    #             if PublishName.objects.get(name=name).ontology == ontology_rel_path:
+    #                 print 'same ontology'
+    #             error_msg += ' Name already taken'
+    #     else:  # not found
+    #         error_msg += 'You should add this repo to OnToology first'
 
     elif 'delete-name' in request.GET:
         name = request.GET['delete-name']
@@ -875,8 +875,16 @@ def publish_view(request):
     name = request.GET['name']
     target_repo = request.GET['repo']
     ontology_rel_path = request.GET['ontology']
-    if publish(name=name, target_repo=target_repo, ontology_rel_path=ontology_rel_path, user=request.user) == "":
-        return render(request, 'msg.html', {'msg': '%s is published successfully' % ontology_rel_path})
+    request.GET['target_repo'] = target_repo
+    error_msg = autoncore.previsual(user=OUser.objects.get(email=request.user.email),
+                                    target_repo=target_repo, ontology_rel_path=ontology_rel_path)
+    if error_msg=="":
+        error_msg = publish(name=name, target_repo=target_repo, ontology_rel_path=ontology_rel_path, user=request.user)
+        if error_msg == "":
+            return render(request, 'msg.html', {
+                'msg': '''%s is published successfully. This might take a few minutes for the published ontology to be
+                available for GitHub pages''' % ontology_rel_path})
+    return render(request, 'msg.html', {'msg': error_msg})
 
 
 def publish(name, target_repo, ontology_rel_path, user):
@@ -903,6 +911,8 @@ def publish(name, target_repo, ontology_rel_path, user):
         ontology_rel_path = ontology_rel_path[:-1]
     name = ''.join(ch for ch in name if ch.isalnum() or ch == '_')
     if found:  # if the repo belongs to the user
+        if error_msg != "":
+            return error_msg
         if len(PublishName.objects.filter(name=name)) > 1:
             error_msg = 'a duplicate published names, please contact us ASAP to fix it'
             return error_msg
@@ -916,6 +926,7 @@ def publish(name, target_repo, ontology_rel_path, user):
                 PublishName.objects.filter(user=user, ontology=ontology_rel_path, repo=repo)) == 0:
             error_msg = "This name is already taken, please choose a different one"
             return error_msg
+
         # new name and ontology is not published or old name and ontology published with the same name
         if (len(PublishName.objects.filter(name=name)) == 0 and
             len(PublishName.objects.filter(user=user, ontology=ontology_rel_path, repo=repo)) == 0) or (
@@ -926,56 +937,65 @@ def publish(name, target_repo, ontology_rel_path, user):
                                                                         'documentation/.htaccess'))
             except Exception as e:
                 if '404' in str(e):
-                    #return "documentation of the ontology has to be generated first."
-                    return "documentation of the ontology has to be generated first. %s" % os.path.join('OnToology',
-                                                                                                        ontology_rel_path,
-                                                                                                        'documentation/.htaccess')
+                    # return "documentation of the ontology has to be generated first."
+                    return """documentation of the ontology has to be generated first. 
+                    %s""" % os.path.join('OnToology', ontology_rel_path, 'documentation/.htaccess')
                 else:
                     return "github error: %s" % str(e)
             print("htaccess content: ")
             print(htaccess)
-            rewrites = [
-                "RewriteRule ^$ index-en.html [R=303, L]",
-                "RewriteRule ^$ ontology.n3 [R=303, L]",
-                "RewriteRule ^$ ontology.xml [R=303, L]",
-                "RewriteRule ^$ ontology.ttl [R=303, L]",
-                "RewriteRule ^$ 406.html [R=406, L]",
-                "RewriteRule ^$ ontology.json [R=303, L]",
-                "RewriteRule ^$ ontology.nt [R=303, L]",
-
-                "RewriteRule ^$ index-en.html [R=303,L]",
-                "RewriteRule ^$ ontology.n3 [R=303,L]",
-                "RewriteRule ^$ ontology.xml [R=303,L]",
-                "RewriteRule ^$ ontology.ttl [R=303,L]",
-                "RewriteRule ^$ 406.html [R=406,L]",
-                "RewriteRule ^$ ontology.json [R=303,L]",
-                "RewriteRule ^$ ontology.nt [R=303,L]"
-
-            ]
-            user_username = target_repo.split('/')[0]
-            repo_name = target_repo.split('/')[1]
-            base_url = "https://%s.github.io/%s/OnToology/%s/documentation/" % (user_username, repo_name, ontology_rel_path)
-            new_htaccess = ""
-            for line in htaccess.split('\n'):
-                if line.strip() in rewrites:
-                    rewr_rule = line.split(' ')
-                    rewr_rule[2] = base_url+rewr_rule[2]
-                    new_htaccess+=" ".join(rewr_rule)+"\n"
-                else:
-                    if "RewriteRule" in line:
-                        print "NOTIN: "+line
-                    new_htaccess+=line+"\n"
+            new_htaccess = htaccess_github_rewrite(target_repo=target_repo, htaccess_content=htaccess,
+                                                   ontology_rel_path=ontology_rel_path)
             comm = 'mkdir "%s"' % os.path.join(publish_dir, name)
             call(comm, shell=True)
             f = open(os.path.join(publish_dir, name, '.htaccess'), 'w')
             f.write(new_htaccess)
             f.close()
-
             if len(PublishName.objects.filter(name=name)) == 0:
                 p = PublishName(name=name, user=user, repo=repo, ontology=ontology_rel_path)
                 p.save()
             return ""  # means it is published correctly
-
     else:
         return """This repository is not register under your account. If you are the owner, you can add it to OnToology,
          Or you can fork it to your GitHub account and register the fork to OnToology"""
+
+
+def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):
+    """
+    :param htaccess_content:
+    :param target_repo: username/reponame
+    :param ontology_rel_path: without leading or trailing /
+    :return: htaccess with github rewrite as the domain
+    """
+    rewrites = [
+        "RewriteRule ^$ index-en.html [R=303, L]",
+        "RewriteRule ^$ ontology.n3 [R=303, L]",
+        "RewriteRule ^$ ontology.xml [R=303, L]",
+        "RewriteRule ^$ ontology.ttl [R=303, L]",
+        "RewriteRule ^$ 406.html [R=406, L]",
+        "RewriteRule ^$ ontology.json [R=303, L]",
+        "RewriteRule ^$ ontology.nt [R=303, L]",
+
+        "RewriteRule ^$ index-en.html [R=303,L]",
+        "RewriteRule ^$ ontology.n3 [R=303,L]",
+        "RewriteRule ^$ ontology.xml [R=303,L]",
+        "RewriteRule ^$ ontology.ttl [R=303,L]",
+        "RewriteRule ^$ 406.html [R=406,L]",
+        "RewriteRule ^$ ontology.json [R=303,L]",
+        "RewriteRule ^$ ontology.nt [R=303,L]"
+
+    ]
+    user_username = target_repo.split('/')[0]
+    repo_name = target_repo.split('/')[1]
+    base_url = "https://%s.github.io/%s/OnToology/%s/documentation/" % (user_username, repo_name, ontology_rel_path)
+    new_htaccess = ""
+    for line in htaccess_content.split('\n'):
+        if line.strip() in rewrites:
+            rewr_rule = line.split(' ')
+            rewr_rule[2] = base_url + rewr_rule[2]
+            new_htaccess += " ".join(rewr_rule) + "\n"
+        else:
+            if "RewriteRule" in line:
+                print "NOTIN: " + line
+            new_htaccess += line + "\n"
+    return new_htaccess

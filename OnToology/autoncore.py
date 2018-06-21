@@ -689,6 +689,42 @@ def add_collaborator(target_repo, user, newg=None):
         return {'status': False, 'error': str(e)}  # e.data}
 
 
+def previsual(user, target_repo):
+    found = False
+    repo = None
+    for r in user.repos:
+        if target_repo == r.url:
+            found = True
+            repo = r
+            break
+    if found:
+        repo.state = 'Generating Previsualization'
+        repo.notes = ''
+        repo.previsual_page_available = True
+        repo.save()
+        prepare_log(user.email)
+        # cloning_repo should look like 'git@github.com:AutonUser/target.git'
+        cloning_repo = 'git@github.com:%s.git' % target_repo
+        sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
+        folder_name = 'prevclone-' + sec
+        clone_repo(cloning_repo, folder_name, dosleep=True)
+        repo_dir = os.path.join(home, folder_name)
+        msg = Integrator.previsual.start_previsual(repo_dir, target_repo)
+        if msg == "":  # not errors
+            repo.state = 'Ready'
+            repo.save()
+            return ""
+        else:
+            repo.notes = msg
+            repo.state = 'Ready'
+            repo.save()
+            return msg
+    else:  # not found
+        repo.state = 'Ready'
+        repo.save()
+        return 'You should add the repo while you are logged in before the revisual renewal'
+
+
 def update_g(token):
     global g
     g = Github(token)
