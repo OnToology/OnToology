@@ -1175,6 +1175,10 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description='')
     #parser.add_argument('task', type=str)
+
+    parser.add_argument('--ontology_rel_path', default="")
+    parser.add_argument('--publishname', default="")
+    parser.add_argument('--publish', action='store_true', default=False)
     parser.add_argument('--previsual', action='store_true', default=False)
     parser.add_argument('--target_repo')
     parser.add_argument('--useremail')
@@ -1193,7 +1197,8 @@ if __name__ == "__main__":
             if args.previsual:
                 msg = previsual(useremail=args.useremail, target_repo=args.target_repo)
                 if args.publish:
-                    pass
+                    publish(name=args.publishname, target_repo=args.target_repo,
+                            ontology_rel_path=args.ontology_rel_path, user=OUser.objects.get(email=args.useremail))
             elif args.publish:
                 pass
         else:

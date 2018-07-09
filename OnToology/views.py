@@ -886,7 +886,7 @@ def publish_view(request):
     else:
         comm = "python %s " % \
                (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
-    comm += ' --target_repo "' + target_repo + '" --useremail "' + user + '" --ontology_rel_path "'
+    comm += ' --target_repo "' + target_repo + '" --useremail "' + user.email + '" --ontology_rel_path "'
     comm += ontology_rel_path + '" ' + '--publishname "' + name + '" --previsual'
     try:
         subprocess.Popen(comm, shell=True)
