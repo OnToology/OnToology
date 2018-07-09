@@ -95,37 +95,5 @@ class TestActionAPIs(TestCase):
             files_to_check.append(ff)
         for f in files_to_check:
             print os.path.join(resources_dir, f)
-            self.assertTrue(os.path.exists(os.path.join(resources_dir, f)), msg=(f + " does not exists"))
+            self.assertTrue(os.path.exists(os.path.join(resources_dir, f)), msg=(f + " does not exists. This issue is from OOPS!"))
         delete_all_repos_from_db()
-
-# # Included by the previous two cases
-#     # def test_generate_all_check_status(self):
-#     #     create_repo()
-#     #     c = Client()
-#     #     response = c.post('/api/generate_all', {'url': Repo.objects.all()[0].url},
-#     #                       HTTP_AUTHORIZATION='Token '+self.user.token)
-#     #     self.assertEqual(response.status_code, 202, msg=response.content)
-#     #     print get_repo_resource_dir(os.environ['test_user_email'])
-#     #     delete_all_repos_from_db()
-#
-#     def test_generate_all_wrong_repo(self):
-#         create_repo()
-#         c = Client()
-#         response = c.post('/api/generate_all', {'url': Repo.objects.all()[0].url+'wrong'},
-#                           HTTP_AUTHORIZATION='Token '+self.user.token)
-#         self.assertEqual(response.status_code, 404, msg=response.content)
-#         delete_all_repos_from_db()
-#
-#     def test_generate_all_missing_parameter(self):
-#         create_repo()
-#         c = Client()
-#         response = c.post('/api/generate_all', HTTP_AUTHORIZATION='Token '+self.user.token)
-#         self.assertEqual(response.status_code, 400, msg=response.content)
-#         delete_all_repos_from_db()
-#
-#     def test_generate_all_missing_authorization(self):
-#         create_repo()
-#         c = Client()
-#         response = c.post('/api/generate_all', {'url': Repo.objects.all()[0].url})
-#         self.assertEqual(response.status_code, 401, msg=response.content)
-#         delete_all_repos_from_db()

@@ -689,7 +689,11 @@ def add_collaborator(target_repo, user, newg=None):
         return {'status': False, 'error': str(e)}  # e.data}
 
 
-def previsual(user, target_repo):
+def previsual(useremail, target_repo):
+    user = OUser.objects.filter(email=useremail)
+    if len(user) != 1:
+        return "%s is invalid email %s" % useremail
+    user = user[0]
     found = False
     repo = None
     for r in user.repos:
@@ -1059,9 +1063,43 @@ def generate_user_log(log_file_name):
 # ###################################   main  #############################
 # #########################################################################
 
+#
+# if __name__ == "__main__":
+#     print "autoncore command: " + str(sys.argv)
+#     if use_database:
+#         connect('OnToology')
+#     git_magic(sys.argv[1], sys.argv[2], sys.argv[3:])
+#
+#
 
 if __name__ == "__main__":
-    print "autoncore command: " + str(sys.argv)
-    if use_database:
-        connect('OnToology')
-    git_magic(sys.argv[1], sys.argv[2], sys.argv[3:])
+    import argparse
+    parser = argparse.ArgumentParser(description='')
+    #parser.add_argument('task', type=str)
+    parser.add_argument('--previsual', action='store_true', default=False)
+    parser.add_argument('--target_repo')
+    parser.add_argument('--useremail')
+    parser.add_argument('--magic', action='store_true', default=False)
+    parser.add_argument('--changedfiles', action='append', nargs='*')
+    # parser.add_argument('runid', type=int, metavar='Annotation_Run_ID', help='the id of the Annotation Run ')
+    # parser.add_argument('--csvfiles', action='append', nargs='+', help='the list of csv files to be annotated')
+    # parser.add_argument('--dotype', action='store_true', help='To conclude the type/class of the given csv file')
+    args = parser.parse_args()
+    if args.useremail and '@' in args.useremail:
+        if args.target_repo and len(args.target_repo.split('/')) == 2:
+            if args.magic:
+                print "changed files: "
+                print args.changedfiles[0]
+                git_magic(args.target_repo, args.useremail, args.changedfiles[0])
+            if args.previsual:
+                msg = previsual(useremail=args.useremail, target_repo=args.target_repo)
+                if args.publish:
+                    pass
+            elif args.publish:
+                pass
+        else:
+            print 'autoncore> invalid target repo: <%s>' % args.target_repo
+    else:
+        print 'autoncore> invalid user email: <%s>' % args.useremail
+
+
