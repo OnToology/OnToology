@@ -11,7 +11,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
-from OnToology.views import generateforall, publish
+from OnToology.views import generateforall
+from OnToology.autoncore import publish
 from OnToology import autoncore
 from models import *
 from views import publish_dir
