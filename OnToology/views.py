@@ -279,7 +279,7 @@ def add_hook(request):
     print "target repo: %s" % target_repo
     print "user: %s" % user
     # comm += ' "' + target_repo + '" "' + user + '" '
-    comm += ' --target_repo "' + target_repo + '" --useremail "' + user + '" --changedfiles '
+    comm += '--magic --target_repo "' + target_repo + '" --useremail "' + user + '" --changedfiles '
     for c in changed_files:
         comm += '"' + c + '" '
     if settings.test_conf['local']:
@@ -350,7 +350,7 @@ def generateforall(target_repo, user_email):
         print 'virtual_env_dir is NOT in environ'
         comm = "python %s " % \
                (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
-    comm += ' --target_repo "' + target_repo + '" --useremail "' + user + '" --changedfiles '
+    comm += '--magic --target_repo "' + target_repo + '" --useremail "' + user + '" --changedfiles '
     for c in changed_files:
         comm += '"' + c.strip() + '" '
     if settings.test_conf['local']:
