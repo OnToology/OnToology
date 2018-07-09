@@ -1155,7 +1155,7 @@ def django_setup_script():
     # venv_python = os.path.join(proj_path, '..', '.venv', 'bin', 'python')
     # This is so Django knows where to find stuff.
     sys.path.append(os.path.join(proj_path, '..'))
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "setynuco.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "OnToology.settings")
     sys.path.append(proj_path)
 
     # This is so my local_settings.py gets loaded.
