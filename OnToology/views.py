@@ -877,88 +877,33 @@ def publish_view(request):
     target_repo = request.GET['repo']
     ontology_rel_path = request.GET['ontology']
     request.GET['target_repo'] = target_repo
-    error_msg = autoncore.previsual(user=OUser.objects.get(email=request.user.email),
-                                    target_repo=target_repo, ontology_rel_path=ontology_rel_path)
-    if error_msg=="":
-        error_msg = publish(name=name, target_repo=target_repo, ontology_rel_path=ontology_rel_path, user=request.user)
-        if error_msg == "":
-            return render(request, 'msg.html', {
-                'msg': '''%s is published successfully. This might take a few minutes for the published ontology to be
-                available for GitHub pages''' % ontology_rel_path})
-    return render(request, 'msg.html', {'msg': error_msg})
-
-
-def publish(name, target_repo, ontology_rel_path, user):
-    """
-    To publish the ontology via github.
-    :param name:
-    :param target_repo:
-    :param ontology_rel_path:
-    :param user:
-    :return: error message, it will return an empty string if everything went ok
-    """
-    error_msg = ""
-    found = False
-    print "user repos"
-    print user.repos
-    for r in user.repos:
-        if target_repo == r.url:
-            found = True
-            repo = r
-            break
-    if ontology_rel_path[0] == '/':
-        ontology_rel_path = ontology_rel_path[1:]
-    if ontology_rel_path[-1] == '/':
-        ontology_rel_path = ontology_rel_path[:-1]
-    name = ''.join(ch for ch in name if ch.isalnum() or ch == '_')
-    if found:  # if the repo belongs to the user
-        if error_msg != "":
-            return error_msg
-        if len(PublishName.objects.filter(name=name)) > 1:
-            error_msg = 'a duplicate published names, please contact us ASAP to fix it'
-            return error_msg
-
-        if (len(PublishName.objects.filter(name=name)) == 0 and
-                len(PublishName.objects.filter(user=user, ontology=ontology_rel_path, repo=repo)) > 0):
-            error_msg += 'can not reserve multiple names for the same ontology'
-            return error_msg
-
-        if len(PublishName.objects.filter(name=name)) == 1 and len(
-                PublishName.objects.filter(user=user, ontology=ontology_rel_path, repo=repo)) == 0:
-            error_msg = "This name is already taken, please choose a different one"
-            return error_msg
-
-        # new name and ontology is not published or old name and ontology published with the same name
-        if (len(PublishName.objects.filter(name=name)) == 0 and
-            len(PublishName.objects.filter(user=user, ontology=ontology_rel_path, repo=repo)) == 0) or (
-                len(PublishName.objects.filter(user=user, ontology=ontology_rel_path, repo=repo, name=name)) == 1):
-            try:
-                htaccess = autoncore.get_file_content(target_repo=target_repo,
-                                                      path=os.path.join('OnToology', ontology_rel_path,
-                                                                        'documentation/.htaccess'))
-            except Exception as e:
-                if '404' in str(e):
-                    # return "documentation of the ontology has to be generated first."
-                    return """documentation of the ontology has to be generated first. 
-                    %s""" % os.path.join('OnToology', ontology_rel_path, 'documentation/.htaccess')
-                else:
-                    return "github error: %s" % str(e)
-            print("htaccess content: ")
-            print(htaccess)
-            new_htaccess = htaccess_github_rewrite(target_repo=target_repo, htaccess_content=htaccess,
-                                                   ontology_rel_path=ontology_rel_path)
-            comm = 'mkdir "%s"' % os.path.join(publish_dir, name)
-            call(comm, shell=True)
-            f = open(os.path.join(publish_dir, name, '.htaccess'), 'w')
-            f.write(new_htaccess)
-            f.close()
-            if len(PublishName.objects.filter(name=name)) == 0:
-                p = PublishName(name=name, user=user, repo=repo, ontology=ontology_rel_path)
-                p.save()
-            return ""  # means it is published correctly
+    # error_msg = autoncore.previsual(user=OUser.objects.get(email=request.user.email),
+    #                                 target_repo=target_repo, ontology_rel_path=ontology_rel_path)
+    if 'virtual_env_dir' in os.environ:
+        comm = "%s %s " % \
+               (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
+                (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py')))
     else:
-        return """This repository is not register under your account. If you are the owner, you can add it to OnToology,
-         Or you can fork it to your GitHub account and register the fork to OnToology"""
+        comm = "python %s " % \
+               (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
+    comm += ' --target_repo "' + target_repo + '" --useremail "' + user + '" --ontology_rel_path "'
+    comm += ontology_rel_path + '" ' + '--publishname "' + name + '" --previsual'
+    try:
+        subprocess.Popen(comm, shell=True)
+        msg = '''%s is published successfully. This might take a few minutes for the published ontology to be
+            available for GitHub pages''' % ontology_rel_path
+    except Exception as e:
+        print "publish_view> error : %s" % str(e)
+        msg = "Error publishing your ontology. Please contact us to fix it."
+    return render(request, 'msg.html', {'msg': msg})
+
+    # if error_msg=="":
+    #     error_msg = autoncore.publish(name=name, target_repo=target_repo, ontology_rel_path=ontology_rel_path, user=request.user)
+    #     if error_msg == "":
+    #         return render(request, 'msg.html', {
+    #             'msg': '''%s is published successfully. This might take a few minutes for the published ontology to be
+    #             available for GitHub pages''' % ontology_rel_path})
+    # return render(request, 'msg.html', {'msg': error_msg})
 
 
 def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):
