@@ -876,7 +876,7 @@ def publish_view(request):
     name = request.GET['name']
     target_repo = request.GET['repo']
     ontology_rel_path = request.GET['ontology']
-    request.GET['target_repo'] = target_repo
+    # request.GET['target_repo'] = target_repo
     # error_msg = autoncore.previsual(user=OUser.objects.get(email=request.user.email),
     #                                 target_repo=target_repo, ontology_rel_path=ontology_rel_path)
     if 'virtual_env_dir' in os.environ:
