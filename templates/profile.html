@@ -416,6 +416,10 @@ $( document ).ready(function() {
 			}
 		}).done(function( resp ) {
 		    hide_progress()
+		    console.log('resp: ')
+		    console.log(resp)
+		    console.log('ontologies: ')
+		    console.log(resp.ontologies)
 		    ontologies = resp.ontologies;
 		    if (ontologies.length==0){
 		    	alert("Make sure you merge the pull request. If there is no pull request, made a change to the ontology and push it to your repository");
