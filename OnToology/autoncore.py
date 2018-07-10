@@ -690,7 +690,7 @@ def add_collaborator(target_repo, user, newg=None):
 
 
 def previsual(useremail, target_repo):
-
+    from Integrator.previsual import start_previsual
     user = OUser.objects.filter(email=useremail)
     if len(user) != 1:
         return "%s is invalid email %s" % useremail
@@ -714,7 +714,7 @@ def previsual(useremail, target_repo):
         folder_name = 'prevclone-' + sec
         clone_repo(cloning_repo, folder_name, dosleep=True)
         repo_dir = os.path.join(home, folder_name)
-        msg = Integrator.previsual.start_previsual(repo_dir, target_repo)
+        msg = start_previsual(repo_dir, target_repo)
         if msg == "":  # not errors
             repo.state = 'Ready'
             repo.save()
