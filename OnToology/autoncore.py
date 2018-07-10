@@ -509,9 +509,10 @@ def clone_repo(cloning_url, parent_folder, dosleep=True):
     if not settings.test_conf['local']:
         comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
+    print "comm: %s" % comm
     call(comm, shell=True)
     # Change ownership to solve the problem of permission denied to create OnToology.cfg file
-    comm = "chown $USER " + os.path.join(home, parent_folder)
+    comm = 'chown $USER  "%s"' % os.path.join(home, parent_folder)
     print "chown command: "
     print comm
     dolog(comm)
@@ -529,7 +530,7 @@ def commit_changes():
     global g
     if g is None:
         init_g()
-    gu = "git config  user.email \"ahmad88csc@gmail.com\";"
+    gu = 'git config  user.email "ontoology'+'@delicias.dia.fi.upm.es";'
     gu += 'git config  user.name "%s" ;' % (ToolUser)
     # comm = "cd " + home + parent_folder + ";" + gu + " git add . "
     comm = "cd " + os.path.join(home, parent_folder) + ";" + gu + " git add . "

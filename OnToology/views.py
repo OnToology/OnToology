@@ -139,6 +139,7 @@ def get_access_token(request):
         return render(request, 'msg.html', {'Error getting the token from GitHub. please try again or contact us'})
     if 'access_token' not in d:
         print 'access_token is not there'
+        print d
         return HttpResponseRedirect('/')
 
     access_token = d['access_token']
@@ -378,7 +379,7 @@ def generateforall(target_repo, user_email):
 
 
 def login(request):
-    print '******* login *********'
+    print '******* login ********* testing'
     redirect_url = host + '/login_get_access'
     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
     request.session['state'] = sec
@@ -460,12 +461,6 @@ def login_get_access(request):
 def profile(request):
     print '************* profile ************'
     print str(datetime.today())
-    if 'fake' in request.GET and request.user.email == 'ahmad88me@gmail.com':
-        print 'faking the user: ' + request.GET['fake']
-        user = OUser.objects.get(email=request.GET['fake'])
-    else:
-        print 'not faking'
-        user = request.user
     error_msg = ''
     if 'repo' in request.GET and 'name' not in request.GET:  # asking for ontologies in a repo
         repo = request.GET['repo']
@@ -945,3 +940,4 @@ def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):
                 print "NOTIN: " + line
             new_htaccess += line + "\n"
     return new_htaccess
+
