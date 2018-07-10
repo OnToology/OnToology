@@ -690,6 +690,7 @@ def add_collaborator(target_repo, user, newg=None):
 
 
 def previsual(useremail, target_repo):
+
     user = OUser.objects.filter(email=useremail)
     if len(user) != 1:
         return "%s is invalid email %s" % useremail
@@ -1172,6 +1173,7 @@ def django_setup_script():
 
 if __name__ == "__main__":
     django_setup_script()
+    from OnToology.models import *
     import argparse
     parser = argparse.ArgumentParser(description='')
     #parser.add_argument('task', type=str)
