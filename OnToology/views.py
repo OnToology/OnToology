@@ -607,6 +607,7 @@ def profile(request):
         else:
             error_msg += 'You are trying to delete a name that does not belong to you'
     print 'testing redirect'
+    user = request.user
     repos = user.repos
     for r in repos:
         try:
