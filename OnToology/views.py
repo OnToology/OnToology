@@ -941,3 +941,7 @@ def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):
             new_htaccess += line + "\n"
     return new_htaccess
 
+
+def error_test(request):
+    raise Exception("error")
+    return render(request, 'msg.html',  {'msg': 'expecting an exception'})
