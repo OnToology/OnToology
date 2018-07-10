@@ -462,6 +462,7 @@ def profile(request):
     print '************* profile ************'
     print str(datetime.today())
     error_msg = ''
+    user = request.user
     if 'repo' in request.GET and 'name' not in request.GET:  # asking for ontologies in a repo
         repo = request.GET['repo']
         print 'repo :<%s>' % (repo)
@@ -607,7 +608,6 @@ def profile(request):
         else:
             error_msg += 'You are trying to delete a name that does not belong to you'
     print 'testing redirect'
-    user = request.user
     repos = user.repos
     for r in repos:
         try:
