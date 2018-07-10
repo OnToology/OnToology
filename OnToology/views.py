@@ -884,6 +884,7 @@ def publish_view(request):
                (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
     comm += ' --target_repo "' + target_repo + '" --useremail "' + request.user.email + '" --ontology_rel_path "'
     comm += ontology_rel_path + '" ' + '--publishname "' + name + '" --previsual'
+    print "comm: "+comm
     try:
         subprocess.Popen(comm, shell=True)
         msg = '''%s is published successfully. This might take a few minutes for the published ontology to be
