@@ -231,8 +231,9 @@ def add_hook(request):
         print "user email: " + str(user)
         changed_files = get_changed_files_from_payload(j)
         print "early changed files: " + str(changed_files)
-        if 'Merge pull request' in j['head_commit']['message'] or 'OnToology Configuration' == j['head_commit'][
-            'message']:
+        if 'Merge pull request' in j['head_commit']['message'] or \
+                'OnToology Configuration' == j['head_commit']['message'] or \
+                'OnToology Publish' == j['head_commit']['message']:
             print 'This is a merge request or Configuration push'
             try:
                 repo = Repo.objects.get(url=target_repo)
@@ -490,7 +491,7 @@ def profile(request):
                     o['published'] = False
                     o['pname'] = ''
                     for pn in pnames:
-                        if pn.ontology == o['ontology']:
+                        if pn.ontology == o['ontology']:  # to compare without the leading /
                             o['published'] = True
                             o['pname'] = pn.name
                             break
@@ -883,7 +884,7 @@ def publish_view(request):
         comm = "python %s " % \
                (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
     comm += ' --target_repo "' + target_repo + '" --useremail "' + request.user.email + '" --ontology_rel_path "'
-    comm += ontology_rel_path + '" ' + '--publishname "' + name + '" --previsual'
+    comm += ontology_rel_path + '" ' + '--publish --publishname "' + name + '" --previsual'
     print "comm: "+comm
     try:
         subprocess.Popen(comm, shell=True)
@@ -903,45 +904,7 @@ def publish_view(request):
     # return render(request, 'msg.html', {'msg': error_msg})
 
 
-def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):
-    """
-    :param htaccess_content:
-    :param target_repo: username/reponame
-    :param ontology_rel_path: without leading or trailing /
-    :return: htaccess with github rewrite as the domain
-    """
-    rewrites = [
-        "RewriteRule ^$ index-en.html [R=303, L]",
-        "RewriteRule ^$ ontology.n3 [R=303, L]",
-        "RewriteRule ^$ ontology.xml [R=303, L]",
-        "RewriteRule ^$ ontology.ttl [R=303, L]",
-        "RewriteRule ^$ 406.html [R=406, L]",
-        "RewriteRule ^$ ontology.json [R=303, L]",
-        "RewriteRule ^$ ontology.nt [R=303, L]",
 
-        "RewriteRule ^$ index-en.html [R=303,L]",
-        "RewriteRule ^$ ontology.n3 [R=303,L]",
-        "RewriteRule ^$ ontology.xml [R=303,L]",
-        "RewriteRule ^$ ontology.ttl [R=303,L]",
-        "RewriteRule ^$ 406.html [R=406,L]",
-        "RewriteRule ^$ ontology.json [R=303,L]",
-        "RewriteRule ^$ ontology.nt [R=303,L]"
-
-    ]
-    user_username = target_repo.split('/')[0]
-    repo_name = target_repo.split('/')[1]
-    base_url = "https://%s.github.io/%s/OnToology/%s/documentation/" % (user_username, repo_name, ontology_rel_path)
-    new_htaccess = ""
-    for line in htaccess_content.split('\n'):
-        if line.strip() in rewrites:
-            rewr_rule = line.split(' ')
-            rewr_rule[2] = base_url + rewr_rule[2]
-            new_htaccess += " ".join(rewr_rule) + "\n"
-        else:
-            if "RewriteRule" in line:
-                print "NOTIN: " + line
-            new_htaccess += line + "\n"
-    return new_htaccess
 
 
 def error_test(request):
