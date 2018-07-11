@@ -903,12 +903,12 @@ def publish(name, target_repo, ontology_rel_path, useremail):
             update_file(target_repo=target_repo, path=os.path.join('OnToology', ontology_rel_path, 'documentation',
                                                                    '.htaccess'),
                         content=new_htaccess, branch='gh-pages', message='OnToology Publish')
-            # comm = 'mkdir "%s"' % os.path.join(publish_dir, name)
-            # dolog("publish> "+comm)
-            # call(comm, shell=True)
-            # f = open(os.path.join(publish_dir, name, '.htaccess'), 'w')
-            # f.write(new_htaccess)
-            # f.close()
+            comm = 'mkdir "%s"' % os.path.join(publish_dir, name)
+            dolog("publish> "+comm)
+            call(comm, shell=True)
+            f = open(os.path.join(publish_dir, name, '.htaccess'), 'w')
+            f.write(new_htaccess)
+            f.close()
             if len(PublishName.objects.filter(name=name)) == 0:
                 p = PublishName(name=name, user=user, repo=repo, ontology=ontology_rel_path_with_slash)
                 p.save()
