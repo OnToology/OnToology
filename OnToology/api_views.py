@@ -12,7 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
 from OnToology.views import generateforall
-from OnToology.autoncore import publish
+from OnToology.autoncore import publish, previsual, django_setup_script
 from OnToology import autoncore
 from models import *
 from views import publish_dir
@@ -116,10 +116,16 @@ class PublishView(View):
     def post(self, request):
         user = request.user
         if 'name' in request.POST and 'repo' in request.POST and 'ontology' in request.POST:
+            django_setup_script()
             name = request.POST['name']
             target_repo = request.POST['repo']
             ontology_rel_path = request.POST['ontology']
-            error_msg = publish(name=name, target_repo=target_repo, ontology_rel_path=ontology_rel_path, user=request.user)
+            print("going to previsual")
+            error_msg = previsual(useremail=request.user.email, target_repo=target_repo)
+            if error_msg != "":
+                return JsonResponse({'message': error_msg}, status=400)
+            print("going to publish")
+            error_msg = publish(name=name, target_repo=target_repo, ontology_rel_path=ontology_rel_path, useremail=request.user.email)
             if error_msg != "":
                 return JsonResponse({'message': error_msg}, status=400)
             return JsonResponse({'message': 'The ontology is published successfully'}, status=200)

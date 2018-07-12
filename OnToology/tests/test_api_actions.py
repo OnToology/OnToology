@@ -68,8 +68,8 @@ class TestActionAPIs(TestCase):
         # comm = "rm -Rf %s" % resources_dir
         # print comm
         settings.test_conf['local'] = True
-        settings.test_conf['fork'] = False
-        settings.test_conf['clone'] = False
+        settings.test_conf['fork'] = True
+        settings.test_conf['clone'] = True
         settings.test_conf['push'] = False
         settings.test_conf['pull'] = False
         delete_all_repos_from_db()

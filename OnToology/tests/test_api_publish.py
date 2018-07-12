@@ -38,13 +38,13 @@ class TestPublishAPI(TestCase):
     def test_add_publishname_with_doc(self):
         delete_all_publishnames()
         c = Client()
-        print "repos no doc of user"
+        print "repos of user with doc"
         print self.user.repos
-        response = c.post('/api/publishnames', {'name': 'myalo', 'repo': self.url_with_res, 'ontology': '/alo.owl'},
+        response = c.post('/api/publishnames', {'name': 'myaloautotest', 'repo': self.url_with_res, 'ontology': '/alo.owl'},
                           HTTP_AUTHORIZATION='Token ' + self.user.token)
         self.assertEqual(response.status_code, 200, msg='status code is not 200> '+response.content)
         self.assertEqual(len(PublishName.objects.all()), 1, msg='PublishName is not added')
-    #
+
     # def test_list_publishname(self):
     #     delete_all_publishnames()
     #     create_publishname(name='myalo', user=self.user, repo=Repo.objects.all()[0], ontology='/alo.owl')

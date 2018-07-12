@@ -701,9 +701,15 @@ def add_collaborator(target_repo, user, newg=None):
 
 def previsual(useremail, target_repo):
     from Integrator.previsual import start_previsual
+    try:
+        OUser.objects.all()
+    except:
+        django_setup_script()
+    from OnToology.models import OUser
     user = OUser.objects.filter(email=useremail)
     if len(user) != 1:
         error_msg = "%s is invalid email %s" % useremail
+        print(error_msg)
         dolog("previsual> "+error_msg)
         return error_msg
     user = user[0]
@@ -836,10 +842,15 @@ def publish(name, target_repo, ontology_rel_path, useremail):
     :param user:
     :return: error message, it will return an empty string if everything went ok
     """
+    try:
+        OUser.objects.all()
+    except:
+        django_setup_script()
+    from OnToology.models import OUser, PublishName, Repo
     error_msg = ""
     found = False
     try:
-        user = OUser.objects.get(email=args.useremail)
+        user = OUser.objects.get(email=useremail)
         dolog("publish> user is found")
     except Exception as e:
         error_msg = "user is not found"
@@ -1250,7 +1261,6 @@ def django_setup_script():
     application = get_wsgi_application()
 
     #################################################################
-
 
 
 if __name__ == "__main__":
