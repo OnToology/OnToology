@@ -739,6 +739,7 @@ def previsual(useremail, target_repo):
             dolog("previsual> completed successfully")
             repo.state = 'Ready'
             repo.save()
+            dolog("previsual> test state: %s" % repo.state)
             return ""
         else:
             repo.notes = msg
