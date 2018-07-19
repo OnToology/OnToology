@@ -23,6 +23,17 @@ tools_conf = {
     'owl2jsonld': {'folder_name': 'context'}
 }
 
+#
+# # currently only user for the previsualization
+# def prepare_logger(file_name):
+#     home = os.environ['github_repos_dir']
+#     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
+#     l = os.path.join(home, 'log', file_name)
+#     f = open(l, 'w')
+#     f.close()
+#     logging.basicConfig(filename=l, format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
+#     return l
+
 
 def dolog_logg(msg):
     logging.critical(msg)

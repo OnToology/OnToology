@@ -12,6 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
 from OnToology.views import generateforall
+from OnToology.autoncore import publish, previsual, django_setup_script
 from OnToology import autoncore
 from models import *
 from views import publish_dir
@@ -115,77 +116,19 @@ class PublishView(View):
     def post(self, request):
         user = request.user
         if 'name' in request.POST and 'repo' in request.POST and 'ontology' in request.POST:
+            django_setup_script()
             name = request.POST['name']
             target_repo = request.POST['repo']
             ontology_rel_path = request.POST['ontology']
-            found = False
-            for r in user.repos:
-                if target_repo == r.url:
-                    found = True
-                    repo = r
-                    break
-            error_msg = ''
-            if found:
-                if len(PublishName.objects.filter(name=name)) > 1:
-                    return JsonResponse({'message': 'duplicate published names, please contact us ASAP to fix it'},
-                                        status=500)
-
-                # publishing a new name or updating a published name under the same user/repo/ontology
-                elif len(PublishName.objects.filter(name=name)) == 0 or (
-                                    PublishName.objects.get(name=name).user == user and
-                                    PublishName.objects.get(name=name).repo == repo and
-                                PublishName.objects.get(name=name).ontology == ontology_rel_path):
-
-                    if (len(PublishName.objects.filter(name=name)) == 0 and
-                                len(PublishName.objects.filter(user=user, ontology=ontology_rel_path, repo=repo)) > 0):
-                        error_msg += 'can not reserve multiple names for the same ontology'
-                    else:
-                        autoncore.prepare_log(user.email)
-                        # cloning_repo should look like 'git@github.com:user/reponame.git'
-                        cloning_repo = 'git@github.com:%s.git' % target_repo
-                        sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
-                        folder_name = 'pub-' + sec
-                        autoncore.clone_repo(cloning_repo, folder_name, dosleep=True)
-                        repo_dir = os.path.join(autoncore.home, folder_name)
-                        doc_dir = os.path.join(repo_dir, 'OnToology', ontology_rel_path[1:], 'documentation')
-                        print 'repo_dir: %s' % repo_dir
-                        print 'doc_dir: %s' % doc_dir
-                        htaccess_f = os.path.join(doc_dir, '.htaccess')
-                        if not os.path.exists(htaccess_f):
-                            print 'htaccess is not found'
-                            error_msg += 'We couldn\'t reserve your w3id. Please make sure that your ontology has' \
-                                         ' documentation and htacess. For that, click on "Generate documentation, ' \
-                                         'diagrams and evaluation" on the menu, and once the process is completed, ' \
-                                         'accept the pull request on you GitHub repository'
-                        else:
-                            print 'found htaccesss'
-                            f = open(htaccess_f, 'r')
-                            file_content = f.read()
-                            f.close()
-                            f = open(htaccess_f, 'w')
-                            for line in file_content.split('\n'):
-                                if line[:11] == 'RewriteBase':
-                                    f.write('RewriteBase /publish/%s \n' % name)
-                                else:
-                                    f.write(line + '\n')
-                            f.close()
-                            # comm = 'rm -Rf /home/ubuntu/publish/%s' % name
-                            comm = 'rm -Rf ' + os.path.join(publish_dir, name)
-                            print(comm)
-                            call(comm, shell=True)
-                            # comm = 'mv %s /home/ubuntu/publish/%s' % (doc_dir, name)
-                            comm = 'mv %s %s' % (doc_dir, os.path.join(publish_dir, name))
-                            print comm
-                            call(comm, shell=True)
-                            if len(PublishName.objects.filter(name=name)) == 0:
-                                p = PublishName(name=name, user=user, repo=repo, ontology=ontology_rel_path)
-                                p.save()
-                            return JsonResponse({'message': 'Ontology is published'}, status=200)
-            else:
-                error_msg += 'This repo should belongs to the user first'
-            return JsonResponse({'message': error_msg}, status=400)
-        else:
-            return JsonResponse({'message': 'missing parameter'}, status=400)
+            print("going to previsual")
+            error_msg = previsual(useremail=request.user.email, target_repo=target_repo)
+            if error_msg != "":
+                return JsonResponse({'message': error_msg}, status=400)
+            print("going to publish")
+            error_msg = publish(name=name, target_repo=target_repo, ontology_rel_path=ontology_rel_path, useremail=request.user.email)
+            if error_msg != "":
+                return JsonResponse({'message': error_msg}, status=400)
+            return JsonResponse({'message': 'The ontology is published successfully'}, status=200)
 
     @method_decorator(token_required)
     def get(self, request):

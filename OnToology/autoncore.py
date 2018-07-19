@@ -18,8 +18,8 @@
 #
 
 
-import sys
-import os
+
+
 from github import Github
 from datetime import datetime
 from subprocess import call
@@ -52,8 +52,9 @@ ToolUser = 'OnToologyUser'
 parent_folder = None
 
 
-# e.g. home = 'blahblah/temp/'
-home = os.environ['github_repos_dir']
+
+publish_dir = os.environ['publish_dir']
+home = os.environ['github_repos_dir']  # e.g. home = 'blahblah/temp/'
 verification_log_fname = 'verification.log'
 sleeping_time = 7
 refresh_sleeping_secs = 10  # because github takes time to refresh
@@ -68,9 +69,9 @@ tools_conf = {
 }
 
 
-def prepare_logger(user):
+def prepare_logger(user, ext='.log_new'):
     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
-    l = os.path.join(home, 'log', user + sec + '.log_new')
+    l = os.path.join(home, 'log', user + sec + ext)
     f = open(l, 'w')
     f.close()
     logging.basicConfig(filename=l, format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
@@ -242,24 +243,31 @@ def verify_tools_generation_when_ready(ver_file_comp, repo=None):
         os.remove(ver_file)  # the verification file is no longer needed
 
 
-# copied from new-look and fixed
-def update_file(target_repo, path, message, content):
+def update_file(target_repo, path, message, content, branch=None):
     global g
     username = os.environ['github_username']
     password = os.environ['github_password']
     g = Github(username, password)
     repo = g.get_repo(target_repo)
-    sha = repo.get_file_contents(path).sha
+    if branch is None:
+        sha = repo.get_file_contents(path).sha
+        dolog('default branch with file sha: %s' % str(sha))
+    else:
+        sha = repo.get_file_contents(path, branch).sha
+        dolog('branch %s with file %s sha: %s' % (branch, path, str(sha)))
     apath = path
     if apath[0] != "/":
         apath = "/" + apath.strip()
-    print "username: " + username
+    dolog("username: " + username)
     dolog('will update the file <%s> on repo<%s> with the content <%s>,  sha <%s> and message <%s>' %
           (apath, target_repo, content, sha, message))
-    print "repo.update_file('%s', '%s', \"\"\"%s\"\"\" , '%s' )" % (apath, message, content, sha)
+    dolog("repo.update_file('%s', '%s', \"\"\"%s\"\"\" , '%s' )" % (apath, message, content, sha))
     for i in range(3):
         try:
-            repo.update_file(apath, message, content, sha)
+            if branch is None:
+                repo.update_file(apath, message, content, sha)
+            else:
+                repo.update_file(apath, message, content, sha, branch=branch)
             dolog('file updated')
             return
         except:
@@ -492,27 +500,28 @@ def clone_repo(cloning_url, parent_folder, dosleep=True):
         init_g()
     dolog('home: %s' % (home))
     dolog('parent_folder: %s' % (parent_folder))
-    dolog('logfile: %s' % (log_file_dir))
+    #dolog('logfile: %s' % (log_file_dir))
     if dosleep:
         # the wait time to give github sometime so the repo can be cloned
         time.sleep(sleeping_time)
     try:
         # comm = "rm" + " -Rf " + home + parent_folder
         comm = "rm" + " -Rf " + os.path.join(home, parent_folder)
-        if not settings.test_conf['local']:
-            comm += ' >> "' + log_file_dir + '"'
+        # if not settings.test_conf['local']:
+        #     comm += ' >> "' + log_file_dir + '"'
         dolog(comm)
         call(comm, shell=True)
     except Exception as e:
         dolog('rm failed: ' + str(e))
     # comm = "git" + " clone" + " " + cloning_repo + " " + home + parent_folder
     comm = "git clone --recurse-submodules  " + cloning_url + " " + os.path.join(home, parent_folder)
-    if not settings.test_conf['local']:
-        comm += ' >> "' + log_file_dir + '"'
+    # if not settings.test_conf['local']:
+    #     comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
+    print "comm: %s" % comm
     call(comm, shell=True)
     # Change ownership to solve the problem of permission denied to create OnToology.cfg file
-    comm = "chown $USER " + os.path.join(home, parent_folder)
+    comm = 'chown $USER  "%s"' % os.path.join(home, parent_folder)
     print "chown command: "
     print comm
     dolog(comm)
@@ -530,7 +539,7 @@ def commit_changes():
     global g
     if g is None:
         init_g()
-    gu = "git config  user.email \"ahmad88csc@gmail.com\";"
+    gu = 'git config  user.email "ontoology'+'@delicias.dia.fi.upm.es";'
     gu += 'git config  user.name "%s" ;' % (ToolUser)
     # comm = "cd " + home + parent_folder + ";" + gu + " git add . "
     comm = "cd " + os.path.join(home, parent_folder) + ";" + gu + " git add . "
@@ -690,9 +699,77 @@ def add_collaborator(target_repo, user, newg=None):
         return {'status': False, 'error': str(e)}  # e.data}
 
 
+def previsual(useremail, target_repo):
+    from Integrator.previsual import start_previsual
+    try:
+        OUser.objects.all()
+    except:
+        django_setup_script()
+    from OnToology.models import OUser
+    user = OUser.objects.filter(email=useremail)
+    if len(user) != 1:
+        error_msg = "%s is invalid email %s" % useremail
+        print(error_msg)
+        dolog("previsual> "+error_msg)
+        return error_msg
+    user = user[0]
+    found = False
+    repo = None
+    for r in user.repos:
+        if target_repo == r.url:
+            found = True
+            repo = r
+            break
+    if found:
+        dolog("previsual> "+"repo is found and now generating previsualization")
+        repo.state = 'Generating Previsualization'
+        repo.notes = ''
+        repo.previsual_page_available = True
+        repo.save()
+        #prepare_log(user.email)
+        # cloning_repo should look like 'git@github.com:AutonUser/target.git'
+        cloning_repo = 'git@github.com:%s.git' % target_repo
+        sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
+        folder_name = 'prevclone-' + sec
+        clone_repo(cloning_repo, folder_name, dosleep=True)
+        repo_dir = os.path.join(home, folder_name)
+        dolog("previsual> will call start previsual")
+        msg = start_previsual(repo_dir, target_repo)
+        if msg == "":  # not errors
+            dolog("previsual> completed successfully")
+            repo.state = 'Ready'
+            repo.save()
+            dolog("previsual> test state: %s" % repo.state)
+            return ""
+        else:
+            repo.notes = msg
+            repo.state = 'Ready'
+            repo.save()
+            return msg
+    else:  # not found
+        repo.state = 'Ready'
+        repo.save()
+        error_msg = 'You should add the repo while you are logged in before the revisual renewal'
+        dolog("previsual> "+error_msg)
+        return error_msg
+
+
 def update_g(token):
     global g
     g = Github(token)
+
+
+def get_file_content(target_repo, path, branch=None):
+    global g
+    username = os.environ['github_username']
+    password = os.environ['github_password']
+    g = Github(username, password)
+    repo = g.get_repo(target_repo)
+    #sha = repo.get_file_contents(path).sha
+    if branch is None:
+        return repo.get_file_contents(path).decoded_content
+    else:
+        return repo.get_file_contents(path, branch).decoded_content
 
 
 def generate_bundle(base_dir, target_repo, ontology_bundle):
@@ -756,6 +833,104 @@ def generate_bundle(base_dir, target_repo, ontology_bundle):
         print 'error in generate_bundle: '+str(e)
         return None
 
+
+def publish(name, target_repo, ontology_rel_path, useremail):
+    """
+    To publish the ontology via github.
+    :param name:
+    :param target_repo:
+    :param ontology_rel_path:
+    :param user:
+    :return: error message, it will return an empty string if everything went ok
+    """
+    try:
+        OUser.objects.all()
+    except:
+        django_setup_script()
+    from OnToology.models import OUser, PublishName, Repo
+    error_msg = ""
+    found = False
+    try:
+        user = OUser.objects.get(email=useremail)
+        dolog("publish> user is found")
+    except Exception as e:
+        error_msg = "user is not found"
+        dolog("publish> error: %s" % str(e))
+        return error_msg
+    for r in user.repos:
+        if target_repo == r.url:
+            found = True
+            repo = r
+            break
+    if ontology_rel_path[0] == '/':
+        ontology_rel_path = ontology_rel_path[1:]
+    if ontology_rel_path[-1] == '/':
+        ontology_rel_path = ontology_rel_path[:-1]
+    ontology_rel_path_with_slash = "/"+ontology_rel_path
+    name = ''.join(ch for ch in name if ch.isalnum() or ch == '_')
+    if found:  # if the repo belongs to the user
+        if len(PublishName.objects.filter(name=name)) > 1:
+            error_msg = 'a duplicate published names, please contact us ASAP to fix it'
+            dolog("publish> "+error_msg)
+            return error_msg
+
+        if (len(PublishName.objects.filter(name=name)) == 0 and
+                len(PublishName.objects.filter(user=user, ontology=ontology_rel_path_with_slash, repo=repo)) > 0):
+            error_msg = 'can not reserve multiple names for the same ontology'
+            dolog("publish> "+error_msg)
+            return error_msg
+
+        if len(PublishName.objects.filter(name=name)) == 1 and len(
+                PublishName.objects.filter(user=user, ontology=ontology_rel_path_with_slash, repo=repo)) == 0:
+            error_msg = "This name is already taken, please choose a different one"
+            dolog("publish> "+error_msg)
+            return error_msg
+
+        # new name and ontology is not published or old name and ontology published with the same name
+        if (len(PublishName.objects.filter(name=name)) == 0 and
+            len(PublishName.objects.filter(user=user, ontology=ontology_rel_path_with_slash, repo=repo)) == 0) or (
+                len(PublishName.objects.filter(user=user, ontology=ontology_rel_path_with_slash, repo=repo, name=name)) == 1):
+            try:
+                htaccess = get_file_content(target_repo=target_repo,
+                                                      path=os.path.join('OnToology', ontology_rel_path,
+                                                                        'documentation/.htaccess'), branch='gh-pages')
+                dolog("publish> "+"gotten the htaccess successfully")
+            except Exception as e:
+                if '404' in str(e):
+                    # return "documentation of the ontology has to be generated first."
+                    error_msg= """documentation of the ontology has to be generated first. 
+                    %s""" % os.path.join('OnToology', ontology_rel_path, 'documentation/.htaccess')
+                    dolog("publish> "+error_msg)
+                    return error_msg
+                else:
+                    error_msg = "github error: %s" % str(e)
+                    dolog("publish> "+error_msg)
+                    return error_msg
+            dolog("publish> "+"htaccess content: ")
+            dolog(htaccess)
+            new_htaccess = htaccess_github_rewrite(target_repo=target_repo, htaccess_content=htaccess,
+                                                   ontology_rel_path=ontology_rel_path)
+            dolog("new htaccess: ")
+            dolog(new_htaccess)
+            update_file(target_repo=target_repo, path=os.path.join('OnToology', ontology_rel_path, 'documentation',
+                                                                   '.htaccess'),
+                        content=new_htaccess, branch='gh-pages', message='OnToology Publish')
+            comm = 'mkdir "%s"' % os.path.join(publish_dir, name)
+            dolog("publish> "+comm)
+            call(comm, shell=True)
+            f = open(os.path.join(publish_dir, name, '.htaccess'), 'w')
+            f.write(new_htaccess)
+            f.close()
+            if len(PublishName.objects.filter(name=name)) == 0:
+                p = PublishName(name=name, user=user, repo=repo, ontology=ontology_rel_path_with_slash)
+                p.save()
+            dolog("publish> "+"published correctly")
+            return ""  # means it is published correctly
+    else:
+        error_msg =  """This repository is not register under your account. If you are the owner, you can add it to OnToology,
+         Or you can fork it to your GitHub account and register the fork to OnToology"""
+        dolog("publish> "+error_msg)
+        return error_msg
 
 ########################################################################
 ########################################################################
@@ -888,6 +1063,47 @@ def get_auton_config(conf_file_abs, from_string=True):
             'owl2jsonld_enable': owl2jsonld_enable}
 
 
+def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):
+    """
+    :param htaccess_content:
+    :param target_repo: username/reponame
+    :param ontology_rel_path: without leading or trailing /
+    :return: htaccess with github rewrite as the domain
+    """
+    rewrites = [
+        "RewriteRule ^$ index-en.html [R=303, L]",
+        "RewriteRule ^$ ontology.n3 [R=303, L]",
+        "RewriteRule ^$ ontology.xml [R=303, L]",
+        "RewriteRule ^$ ontology.ttl [R=303, L]",
+        "RewriteRule ^$ 406.html [R=406, L]",
+        "RewriteRule ^$ ontology.json [R=303, L]",
+        "RewriteRule ^$ ontology.nt [R=303, L]",
+
+        "RewriteRule ^$ index-en.html [R=303,L]",
+        "RewriteRule ^$ ontology.n3 [R=303,L]",
+        "RewriteRule ^$ ontology.xml [R=303,L]",
+        "RewriteRule ^$ ontology.ttl [R=303,L]",
+        "RewriteRule ^$ 406.html [R=406,L]",
+        "RewriteRule ^$ ontology.json [R=303,L]",
+        "RewriteRule ^$ ontology.nt [R=303,L]"
+
+    ]
+    user_username = target_repo.split('/')[0]
+    repo_name = target_repo.split('/')[1]
+    base_url = "https://%s.github.io/%s/OnToology/%s/documentation/" % (user_username, repo_name, ontology_rel_path)
+    new_htaccess = ""
+    for line in htaccess_content.split('\n'):
+        if line.strip() in rewrites:
+            rewr_rule = line.split(' ')
+            rewr_rule[2] = base_url + rewr_rule[2]
+            new_htaccess += " ".join(rewr_rule) + "\n"
+        else:
+            if "RewriteRule" in line:
+                print "NOTIN: " + line
+            new_htaccess += line + "\n"
+    return new_htaccess
+
+
 ##########################################################################
 ################################# generic helper functions ###############
 ##########################################################################
@@ -1014,9 +1230,76 @@ def generate_user_log(log_file_name):
 # ###################################   main  #############################
 # #########################################################################
 
+#
+# if __name__ == "__main__":
+#     print "autoncore command: " + str(sys.argv)
+#     if use_database:
+#         connect('OnToology')
+#     git_magic(sys.argv[1], sys.argv[2], sys.argv[3:])
+#
+#
+
+def django_setup_script():
+    #################################################################
+    #           TO make this app compatible with Django             #
+    #################################################################
+    import os
+    import sys
+
+    proj_path = (os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
+    # venv_python = os.path.join(proj_path, '..', '.venv', 'bin', 'python')
+    # This is so Django knows where to find stuff.
+    sys.path.append(os.path.join(proj_path, '..'))
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "OnToology.settings")
+    sys.path.append(proj_path)
+
+    # This is so my local_settings.py gets loaded.
+    os.chdir(proj_path)
+
+    # This is so models get loaded.
+    from django.core.wsgi import get_wsgi_application
+
+    application = get_wsgi_application()
+
+    #################################################################
+
 
 if __name__ == "__main__":
-    print "autoncore command: " + str(sys.argv)
-    if use_database:
-        connect('OnToology')
-    git_magic(sys.argv[1], sys.argv[2], sys.argv[3:])
+    django_setup_script()
+    from OnToology.models import *
+    import argparse
+    parser = argparse.ArgumentParser(description='')
+    #parser.add_argument('task', type=str)
+
+    parser.add_argument('--ontology_rel_path', default="")
+    parser.add_argument('--publishname', default="")
+    parser.add_argument('--publish', action='store_true', default=False)
+    parser.add_argument('--previsual', action='store_true', default=False)
+    parser.add_argument('--target_repo')
+    parser.add_argument('--useremail')
+    parser.add_argument('--magic', action='store_true', default=False)
+    parser.add_argument('--changedfiles', action='append', nargs='*')
+    # parser.add_argument('runid', type=int, metavar='Annotation_Run_ID', help='the id of the Annotation Run ')
+    # parser.add_argument('--csvfiles', action='append', nargs='+', help='the list of csv files to be annotated')
+    # parser.add_argument('--dotype', action='store_true', help='To conclude the type/class of the given csv file')
+    args = parser.parse_args()
+    if args.useremail and '@' in args.useremail:
+        prepare_logger(args.useremail, ext='.core')
+        if args.target_repo and len(args.target_repo.split('/')) == 2:
+            if args.magic:
+                print "changed files: "
+                print args.changedfiles[0]
+                git_magic(args.target_repo, args.useremail, args.changedfiles[0])
+            if args.previsual:
+                msg = previsual(useremail=args.useremail, target_repo=args.target_repo)
+                if args.publish:
+                    publish(name=args.publishname, target_repo=args.target_repo,
+                            ontology_rel_path=args.ontology_rel_path, useremail=args.useremail)
+            elif args.publish:
+                pass
+        else:
+            print 'autoncore> invalid target repo: <%s>' % args.target_repo
+    else:
+        print 'autoncore> invalid user email: <%s>' % args.useremail
+
+

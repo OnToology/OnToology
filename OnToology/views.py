@@ -48,17 +48,16 @@ from autoncore import get_proper_loggedin_scope, get_ontologies_in_online_repo, 
 from models import *
 import autoncore
 from settings import host
-#from settings import client_id_login, client_id_public, client_id_private, client_secret_login, client_secret_public, client_secret_private
+# from settings import client_id_login, client_id_public, client_id_private, client_secret_login, client_secret_public, client_secret_private
 import Integrator.previsual as previsual
 
-client_id_login = os.environ['client_id_login']       # 'e2ea731b481438fd1675'
-client_id_public = os.environ['client_id_public']     # '878434ff1065b7fa5b92'
-client_id_private = os.environ['client_id_private']   # 'dd002c8587d08edfaf5f'
+client_id_login = os.environ['client_id_login']  # 'e2ea731b481438fd1675'
+client_id_public = os.environ['client_id_public']  # '878434ff1065b7fa5b92'
+client_id_private = os.environ['client_id_private']  # 'dd002c8587d08edfaf5f'
 
-client_secret_login = os.environ['client_secret_login']        # 'ba0f149934e3d78816cbd89d1f3c5109b82898ab'
-client_secret_public = os.environ['client_secret_public']       # 'c76144cbbbf5df080df0232928af9811d78792dd'
-client_secret_private = os.environ['client_secret_private']      # 'c5fbaa760362ba23f7c8d07c35021ac111ca5418'
-
+client_secret_login = os.environ['client_secret_login']  # 'ba0f149934e3d78816cbd89d1f3c5109b82898ab'
+client_secret_public = os.environ['client_secret_public']  # 'c76144cbbbf5df080df0232928af9811d78792dd'
+client_secret_private = os.environ['client_secret_private']  # 'c5fbaa760362ba23f7c8d07c35021ac111ca5418'
 
 settings.SECRET_KEY = os.environ['SECRET_KEY']
 client_id = None
@@ -68,6 +67,7 @@ is_private = None
 publish_dir = os.environ['publish_dir']
 
 import sys
+
 reload(sys)
 sys.setdefaultencoding("UTF-8")
 
@@ -90,7 +90,7 @@ def home(request):
         # if not has_access_to_repo(target_repo):# this for the organization
         # return render(request,'msg.html',{'msg': 'repos under organizations are not supported at the moment'})
         wgets_dir = os.environ['wget_dir']
-        if call('cd %s; wget %s;' % (wgets_dir, 'http://github.com/'+target_repo.strip()), shell=True) == 0:
+        if call('cd %s; wget %s;' % (wgets_dir, 'http://github.com/' + target_repo.strip()), shell=True) == 0:
             is_private = False
             client_id = client_id_public
             client_secret = client_secret_public
@@ -139,6 +139,7 @@ def get_access_token(request):
         return render(request, 'msg.html', {'Error getting the token from GitHub. please try again or contact us'})
     if 'access_token' not in d:
         print 'access_token is not there'
+        print d
         return HttpResponseRedirect('/')
 
     access_token = d['access_token']
@@ -212,25 +213,27 @@ def add_hook(request):
     if settings.test_conf['local']:
         print 'We are in test mode'
     try:
-        print "\n\nPOST DATA\n\n: "+str(request.POST)
+        print "\n\nPOST DATA\n\n: " + str(request.POST)
         s = str(request.POST['payload'])
-        print "payload: "+s
+        print "payload: " + s
         j = json.loads(s, strict=False)
         print "json is loaded"
         if j["ref"] == "refs/heads/gh-pages":
             print "it is just gh-pages"
             return render(request, 'msg.html', {'msg': 'it is gh-pages, so nothing'})
         s = j['repository']['url'] + 'updated files: ' + str(j['head_commit']['modified'])
-        print "just s: "+str(s)
+        print "just s: " + str(s)
         cloning_repo = j['repository']['git_url']
         target_repo = j['repository']['full_name']
         user = j['repository']['owner']['email']
-        print "cloning_repo: "+str(cloning_repo)
-        print "target_repo: "+str(target_repo)
-        print "user email: "+str(user)
+        print "cloning_repo: " + str(cloning_repo)
+        print "target_repo: " + str(target_repo)
+        print "user email: " + str(user)
         changed_files = get_changed_files_from_payload(j)
-        print "early changed files: "+str(changed_files)
-        if 'Merge pull request' in j['head_commit']['message'] or 'OnToology Configuration' == j['head_commit']['message']:
+        print "early changed files: " + str(changed_files)
+        if 'Merge pull request' in j['head_commit']['message'] or \
+                'OnToology Configuration' == j['head_commit']['message'] or \
+                'OnToology Publish' == j['head_commit']['message']:
             print 'This is a merge request or Configuration push'
             try:
                 repo = Repo.objects.get(url=target_repo)
@@ -253,7 +256,7 @@ def add_hook(request):
             else:
                 return render_to_response('msg.html', {'msg': msg}, context_instance=RequestContext(request))
     except Exception as e:
-        print "add hook exception: "+str(e)
+        print "add hook exception: " + str(e)
         msg = 'This request should be a webhook ping'
         if settings.test_conf['local']:
             print msg
@@ -273,11 +276,12 @@ def add_hook(request):
                 (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py')))
     else:
         comm = "python %s " % \
-            (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
+               (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
     print 'in addhook'
     print "target repo: %s" % target_repo
     print "user: %s" % user
-    comm += ' "' + target_repo + '" "' + user + '" '
+    # comm += ' "' + target_repo + '" "' + user + '" '
+    comm += '--magic --target_repo "' + target_repo + '" --useremail "' + user + '" --changedfiles '
     for c in changed_files:
         comm += '"' + c + '" '
     if settings.test_conf['local']:
@@ -292,7 +296,7 @@ def add_hook(request):
             subprocess.Popen(comm, shell=True)
         except Exception as e:
             error_msg = str(e)
-            print 'error running generall all subprocess: '+error_msg
+            print 'error running generall all subprocess: ' + error_msg
             sys.stdout.flush()
             sys.stderr.flush()
             if 'execv() arg 2 must contain only strings' in error_msg:
@@ -335,16 +339,10 @@ def generateforall_view(request):
 
 
 def generateforall(target_repo, user_email):
-    cloning_repo = 'git@github.com:' + target_repo
-    tar = cloning_repo.split('/')[-2].split(':')[1]
-    cloning_repo = cloning_repo.replace(tar, ToolUser)
     user = user_email
     ontologies = get_ontologies_in_online_repo(target_repo)
     changed_files = ontologies
     print 'current file dir: %s' % str(os.path.dirname(os.path.realpath(__file__)))
-    # comm = "python /home/ubuntu/OnToology/OnToology/autoncore.py "
-    #comm = "python %s " % \
-    #       str((os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py')))
     if 'virtual_env_dir' in os.environ:
         print 'virtual_env_dir is in environ'
         comm = "%s %s " % \
@@ -353,8 +351,8 @@ def generateforall(target_repo, user_email):
     else:
         print 'virtual_env_dir is NOT in environ'
         comm = "python %s " % \
-            (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
-    comm += ' "' + target_repo + '" "' + user + '" '
+               (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
+    comm += '--magic --target_repo "' + target_repo + '" --useremail "' + user + '" --changedfiles '
     for c in changed_files:
         comm += '"' + c.strip() + '" '
     if settings.test_conf['local']:
@@ -369,7 +367,7 @@ def generateforall(target_repo, user_email):
             sys.stdout.flush()
             sys.stderr.flush()
             error_msg = str(e)
-            print 'error running generall all subprocess: '+error_msg
+            print 'error running generall all subprocess: ' + error_msg
             if 'execv() arg 2 must contain only strings' in error_msg:
                 return {'status': False,
                         'error': 'make sure that your repository filenames does not have accents or special characters'}
@@ -382,14 +380,11 @@ def generateforall(target_repo, user_email):
 
 
 def login(request):
-    print '******* login *********'
-    #if 'username' not in request.GET:
-    #    return HttpResponseRedirect('/')
-    #username = request.GET['username']
+    print '******* login ********* testing'
     redirect_url = host + '/login_get_access'
     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
     request.session['state'] = sec
-    scope = 'user:email' #get_proper_scope_to_login(username)
+    scope = 'user:email'  # get_proper_scope_to_login(username)
     # scope = 'admin:org_hook'
     # scope+=',admin:org,admin:public_key,admin:repo_hook,gist,notifications,delete_repo,repo_deployment,repo,public_repo,user,admin:public_key'
     redirect_url = "https://github.com/login/oauth/authorize?client_id=" + client_id_login + "&redirect_uri=" + redirect_url + "&scope=" + scope + "&state=" + sec
@@ -425,7 +420,7 @@ def login_get_access(request):
         request.session['access_token'] = access_token
         print 'access_token: ' + access_token
     except Exception as e:
-        print "exception: "+str(e)
+        print "exception: " + str(e)
         print "no access token"
         print "response: %s" % res.text
         return HttpResponseRedirect('/')
@@ -467,14 +462,8 @@ def login_get_access(request):
 def profile(request):
     print '************* profile ************'
     print str(datetime.today())
-    if 'fake' in request.GET and request.user.email=='ahmad88me@gmail.com':
-        print 'faking the user: '+request.GET['fake']
-        user = OUser.objects.get(email=request.GET['fake'])
-    else:
-        print 'not faking'
-        user = request.user
-    # ouser = OUser.objects.get(email=request.user.email)
     error_msg = ''
+    user = request.user
     if 'repo' in request.GET and 'name' not in request.GET:  # asking for ontologies in a repo
         repo = request.GET['repo']
         print 'repo :<%s>' % (repo)
@@ -502,24 +491,22 @@ def profile(request):
                     o['published'] = False
                     o['pname'] = ''
                     for pn in pnames:
-                        if pn.ontology==o['ontology']:
+                        if pn.ontology == o['ontology']:  # to compare without the leading /
                             o['published'] = True
                             o['pname'] = pn.name
                             break
                     for d in o:
-                        print '   '+d + ': ' + str(o[d])
+                        print '   ' + d + ': ' + str(o[d])
                 print 'testing redirect'
                 print 'will return the Json'
-                # html = render(request, 'profile_sliders.html', {'ontologies': ontologies}).content
-                # jresponse = JsonResponse({'ontologies': ontologies, 'sliderhtml': html})
                 jresponse = JsonResponse({'ontologies': ontologies})
                 jresponse.__setitem__('Content-Length', len(jresponse.content))
                 sys.stdout.flush()
                 sys.stderr.flush()
                 return jresponse
             except Exception as e:
-                print "exception in getting the ontologies for the repo: "+str(repo)
-                print "exception:  "+str(e)
+                print "exception in getting the ontologies for the repo: " + str(repo)
+                print "exception:  " + str(e)
                 arepo = Repo.objects.get(url=repo)
                 arepo.state = 'Invalid repository'
                 arepo.save()
@@ -531,81 +518,81 @@ def profile(request):
                 return jresponse
         except Exception as e:
             print 'exception: ' + str(e)
-    elif 'name' in request.GET:  # publish with a new name
-        print request.GET
-        name = request.GET['name']
-        target_repo = request.GET['repo']
-        ontology_rel_path = request.GET['ontology']
-        # user = request.user
-        found = False
-        for r in user.repos:
-            if target_repo == r.url:
-                found = True
-                repo = r
-                break
-        if found:  # if the repo belongs to the user
-
-            if len(PublishName.objects.filter(name=name)) > 1:
-                error_msg = 'a duplicate published names, please contact us ASAP to fix it'
-
-            elif len(PublishName.objects.filter(name=name)) == 0 or (PublishName.objects.get(name=name).user==user and
-                                                        PublishName.objects.get(name=name).repo==repo and
-                                                        PublishName.objects.get(name=name).ontology==ontology_rel_path):
-                if (len(PublishName.objects.filter(name=name)) == 0 and
-                        len(PublishName.objects.filter(user=user, ontology=ontology_rel_path, repo=repo)) > 0):
-                    error_msg += 'can not reserve multiple names for the same ontology'
-                else:
-                    autoncore.prepare_log(user.email)
-                    # cloning_repo should look like 'git@github.com:user/reponame.git'
-                    cloning_repo = 'git@github.com:%s.git' % target_repo
-                    sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
-                    folder_name = 'pub-'+sec
-                    clone_repo(cloning_repo, folder_name, dosleep=True)
-                    repo_dir = os.path.join(autoncore.home, folder_name)
-                    doc_dir = os.path.join(repo_dir, 'OnToology', ontology_rel_path[1:], 'documentation')
-                    print 'repo_dir: %s' % repo_dir
-                    print 'doc_dir: %s' % doc_dir
-                    htaccess_f = os.path.join(doc_dir, '.htaccess')
-                    if not os.path.exists(htaccess_f):
-                        print 'htaccess is not found'
-                        #error_msg += 'make sure your ontology has documentation and htaccess'
-                        error_msg += 'We couldn\'t reserve your w3id. Please make sure that your ontology has ' \
-                                     'documentation and htacess. For that, click on "Generate documentation, diagrams' \
-                                     ' and evaluation" on the menu, and once the process is completed, accept the ' \
-                                     'pull request on you GitHub repository'
-                    else:
-                        print 'found htaccesss'
-                        f = open(htaccess_f, 'r')
-                        file_content = f.read()
-                        f.close()
-                        f = open(htaccess_f, 'w')
-                        for line in file_content.split('\n'):
-                            if line[:11] == 'RewriteBase':
-                                f.write('RewriteBase /publish/%s \n' % name)
-                            else:
-                                f.write(line+'\n')
-                        f.close()
-                        # comm = 'rm -Rf /home/ubuntu/publish/%s' % name
-                        comm = 'rm -Rf ' + os.path.join(publish_dir, name)
-                        print(comm)
-                        call(comm, shell=True)
-                        # comm = 'mv %s /home/ubuntu/publish/%s' % (doc_dir, name)
-                        comm = 'mv %s %s' % (doc_dir, os.path.join(publish_dir, name))
-                        print comm
-                        call(comm, shell=True)
-                        if len(PublishName.objects.filter(name=name)) == 0:
-                            p = PublishName(name=name, user=user, repo=repo, ontology=ontology_rel_path)
-                            p.save()
-            else:
-                if PublishName.objects.get(name=name).user==user:
-                    print 'same user'
-                if PublishName.objects.get(name=name).repo==repo:
-                    print 'same repo'
-                if PublishName.objects.get(name=name).ontology==ontology_rel_path:
-                    print 'same ontology'
-                error_msg += ' Name already taken'
-        else:  # not found
-            error_msg += 'You should add this repo to OnToology first'
+    # elif 'name' in request.GET:  # publish with a new name
+    #     print request.GET
+    #     name = request.GET['name']
+    #     target_repo = request.GET['repo']
+    #     ontology_rel_path = request.GET['ontology']
+    #     found = False
+    #     for r in user.repos:
+    #         if target_repo == r.url:
+    #             found = True
+    #             repo = r
+    #             break
+    #     if found:  # if the repo belongs to the user
+    #
+    #         if len(PublishName.objects.filter(name=name)) > 1:
+    #             error_msg = 'a duplicate published names, please contact us ASAP to fix it'
+    #
+    #         elif len(PublishName.objects.filter(name=name)) == 0 or (PublishName.objects.get(name=name).user == user and
+    #                                                                  PublishName.objects.get(name=name).repo == repo and
+    #                                                                  PublishName.objects.get(
+    #                                                                      name=name).ontology == ontology_rel_path):
+    #             if (len(PublishName.objects.filter(name=name)) == 0 and
+    #                     len(PublishName.objects.filter(user=user, ontology=ontology_rel_path, repo=repo)) > 0):
+    #                 error_msg += 'can not reserve multiple names for the same ontology'
+    #             else:
+    #                 autoncore.prepare_log(user.email)
+    #                 # cloning_repo should look like 'git@github.com:user/reponame.git'
+    #                 cloning_repo = 'git@github.com:%s.git' % target_repo
+    #                 sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
+    #                 folder_name = 'pub-' + sec
+    #                 clone_repo(cloning_repo, folder_name, dosleep=True)
+    #                 repo_dir = os.path.join(autoncore.home, folder_name)
+    #                 doc_dir = os.path.join(repo_dir, 'OnToology', ontology_rel_path[1:], 'documentation')
+    #                 print 'repo_dir: %s' % repo_dir
+    #                 print 'doc_dir: %s' % doc_dir
+    #                 htaccess_f = os.path.join(doc_dir, '.htaccess')
+    #                 if not os.path.exists(htaccess_f):
+    #                     print 'htaccess is not found'
+    #                     # error_msg += 'make sure your ontology has documentation and htaccess'
+    #                     error_msg += 'We couldn\'t reserve your w3id. Please make sure that your ontology has ' \
+    #                                  'documentation and htacess. For that, click on "Generate documentation, diagrams' \
+    #                                  ' and evaluation" on the menu, and once the process is completed, accept the ' \
+    #                                  'pull request on you GitHub repository'
+    #                 else:
+    #                     print 'found htaccesss'
+    #                     f = open(htaccess_f, 'r')
+    #                     file_content = f.read()
+    #                     f.close()
+    #                     f = open(htaccess_f, 'w')
+    #                     for line in file_content.split('\n'):
+    #                         if line[:11] == 'RewriteBase':
+    #                             f.write('RewriteBase /publish/%s \n' % name)
+    #                         else:
+    #                             f.write(line + '\n')
+    #                     f.close()
+    #                     # comm = 'rm -Rf /home/ubuntu/publish/%s' % name
+    #                     comm = 'rm -Rf ' + os.path.join(publish_dir, name)
+    #                     print(comm)
+    #                     call(comm, shell=True)
+    #                     # comm = 'mv %s /home/ubuntu/publish/%s' % (doc_dir, name)
+    #                     comm = 'mv %s %s' % (doc_dir, os.path.join(publish_dir, name))
+    #                     print comm
+    #                     call(comm, shell=True)
+    #                     if len(PublishName.objects.filter(name=name)) == 0:
+    #                         p = PublishName(name=name, user=user, repo=repo, ontology=ontology_rel_path)
+    #                         p.save()
+    #         else:
+    #             if PublishName.objects.get(name=name).user == user:
+    #                 print 'same user'
+    #             if PublishName.objects.get(name=name).repo == repo:
+    #                 print 'same repo'
+    #             if PublishName.objects.get(name=name).ontology == ontology_rel_path:
+    #                 print 'same ontology'
+    #             error_msg += ' Name already taken'
+    #     else:  # not found
+    #         error_msg += 'You should add this repo to OnToology first'
 
     elif 'delete-name' in request.GET:
         name = request.GET['delete-name']
@@ -636,14 +623,8 @@ def profile(request):
             user.update(pull__repos=r)
             user.save()
     request.GET = []
-    # if error_msg == '':
-    #     return HttpResponseRedirect(reverse('profile'))
     sys.stdout.flush()
     sys.stderr.flush()
-    # due to github rate-limiting
-    # last_updated = Github().get_repo('OnToology/OnToology').get_issues(state='closed')[0].closed_at
-    # return render(request, 'profile.html', {'repos': repos, 'pnames': PublishName.objects.filter(user=user),
-    #                                         'error': error_msg, 'last_updated': last_updated})
     return render(request, 'profile.html', {'repos': repos, 'pnames': PublishName.objects.filter(user=user),
                                             'error': error_msg, 'manager': request.user.email in get_managers()})
 
@@ -667,53 +648,15 @@ def update_conf(request):
         print 'will call update_file'
         o = 'OnToology' + onto + '/OnToology.cfg'
         try:
-            print "target_repo <%s> ,  path <%s> ,  message <%s> ,   content <%s>" % (data['repo'], o, 'OnToology Configuration', new_conf)
+            print "target_repo <%s> ,  path <%s> ,  message <%s> ,   content <%s>" % (
+                data['repo'], o, 'OnToology Configuration', new_conf)
             update_file(data['repo'], o, 'OnToology Configuration', new_conf)
         except Exception as e:
             print 'Error in updating the configuration: ' + str(e)
             return render(request, 'msg.html', {'msg': str(e)})
-            # return JsonResponse(
-            #     {'status': False, 'error': str(e)})  # return render(request,'msg.html',{'msg': str(e)})
         print 'returned from update_file'
     print 'will return msg html'
     return HttpResponseRedirect('/profile')
-
-
-# def update_conf(request):
-#     print 'inside update_conf'
-#     if request.method == "GET":
-#         return render(request, "msg.html", {"msg": "This method expects POST only"})
-#     indic = '-ar2dtool'
-#     data = request.POST
-#     print 'will go to the loop'
-#     for key in data:
-#         print 'inside the loop'
-#         if indic in key:
-#             print 'inside the if'
-#             onto = key[:-len(indic)]
-#             ar2dtool = data[onto + '-ar2dtool']
-#             print 'ar2dtool: ' + str(ar2dtool)
-#             widoco = data[onto + '-widoco']
-#             print 'widoco: ' + str(widoco)
-#             oops = data[onto + '-oops']
-#             print 'oops: ' + str(oops)
-#             print 'will call get_conf'
-#             new_conf = get_conf(ar2dtool, widoco, oops)
-#             print 'will call update_file'
-#             onto = 'OnToology' + onto + '/OnToology.cfg'
-#             try:
-#                 print "will call update file"
-#                 print "will call update file with repo %s, ontology: %s" % (data['repo'], onto)
-#                 update_file(data['repo'], onto, 'OnToology Configuration', new_conf)
-#             except Exception as e:
-#                 print 'Error in updating the configuration: ' + str(e)
-#                 sys.stdout.flush()
-#                 sys.stderr.flush()
-#                 return JsonResponse(
-#                     {'status': False, 'error': str(e)})  # return render(request,'msg.html',{'msg': str(e)})
-#             print 'returned from update_file'
-#     print 'will return msg html'
-#     return JsonResponse({'status': True, 'msg': 'successfully'})
 
 
 def get_conf(ar2dtool, widoco, oops):
@@ -743,7 +686,7 @@ def delete_repo(request):
                 # remove_webhook(repo, host + "/add_hook")
                 return JsonResponse({'status': True})
             except Exception as e:
-                print "error deleting the webhook: "+str(e)
+                print "error deleting the webhook: " + str(e)
                 return JsonResponse({'status': False, 'error': str(e)})
     return JsonResponse({'status': False, 'error': 'You should add this repo first'})
 
@@ -784,7 +727,7 @@ def renew_previsual(request):
         # cloning_repo should look like 'git@github.com:AutonUser/target.git'
         cloning_repo = 'git@github.com:%s.git' % target_repo
         sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
-        folder_name = 'prevclone-'+sec
+        folder_name = 'prevclone-' + sec
         clone_repo(cloning_repo, folder_name, dosleep=True)
         repo_dir = os.path.join(autoncore.home, folder_name)
         msg = previsual.start_previsual(repo_dir, target_repo)
@@ -797,8 +740,6 @@ def renew_previsual(request):
             repo.state = 'Ready'
             repo.save()
             return render(request, 'msg.html', {'msg': msg})
-            #return render(request, 'profile.html', {'repos': user.repos, 'pnames': PublishName.objects.filter(user=user),
-            #                                'error': msg})
     repo.state = 'Ready'
     repo.save()
     return render(request, 'msg.html',
@@ -826,17 +767,6 @@ def superadmin(request):
 
     return render(request, 'superadmin.html')
 
-#
-# def get_proper_scope_to_login(username=None):
-#     # try:  # The user is registered
-#     #     ouser = OUser.objects.get(username=username)
-#     #     if ouser.private:
-#     #         return 'repo'
-#     #     return 'public_repo'  # the user is not private and neither the repo
-#     # except:  # new user
-#     #     return 'public_repo'
-#     return 'user:email'
-
 
 @login_required
 def get_bundle(request):
@@ -850,10 +780,10 @@ def get_bundle(request):
     r[0].notes = ''
     r[0].save()
     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(3)])
-    folder_name = 'bundle-'+sec
+    folder_name = 'bundle-' + sec
     repo_dir = os.path.join(autoncore.home, folder_name)
     if os.path.exists(repo_dir):
-       shutil.rmtree(repo_dir)
+        shutil.rmtree(repo_dir)
     os.makedirs(repo_dir)
     if ontology[0] == '/':
         ontology = ontology[1:]
@@ -876,25 +806,19 @@ def get_outline(request):
     for r in request.user.repos:
         if r.progress != 100:
             repos.append(r)
-    # include all the repos for testing
-    # repos = [r for r in request.user.repos]
     for r in repos:
         o_pairs += r.ontology_status_pairs
     stages = {}
-    stages_values = {} # to draw the inner fill
+    stages_values = {}  # to draw the inner fill
     for i, s in enumerate(OntologyStatusPair.STATUSES):
         stages[s[0]] = []
-        stages_values[s[0]] = i+1
+        stages_values[s[0]] = i + 1
 
-    # print "stages_values: "
-    # print stages_values
     for sp in o_pairs:
         if sp.status not in stages:
             stages[sp.status] = []
         stages[sp.status].append(sp.name)
-    # print "values:"
-    # print [stages_values[sp.status] for sp in o_pairs]
-    # min([stages_values[sp] for sp in o_pairs])
+
     inner = 0
     if len(o_pairs) > 0:
         inner = min([stages_values[sp.status] for sp in o_pairs])
@@ -935,5 +859,54 @@ def get_repos_list_file(request):
 
 
 def get_managers():
-    return ['mpovedavillalon'+'@gmail.com', 'ahmad88me'+'@gmail.com']
+    return ['mpovedavillalon' + '@gmail.com', 'ahmad88me' + '@gmail.com']
 
+
+@login_required
+def publish_view(request):
+    if 'name' not in request.GET:
+        return HttpResponseRedirect('/')
+    if 'repo' not in request.GET:
+        return HttpResponseRedirect('/')
+    if 'ontology' not in request.GET:
+        return HttpResponseRedirect('/')
+    name = request.GET['name']
+    target_repo = request.GET['repo']
+    ontology_rel_path = request.GET['ontology']
+    # request.GET['target_repo'] = target_repo
+    # error_msg = autoncore.previsual(user=OUser.objects.get(email=request.user.email),
+    #                                 target_repo=target_repo, ontology_rel_path=ontology_rel_path)
+    if 'virtual_env_dir' in os.environ:
+        comm = "%s %s " % \
+               (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
+                (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py')))
+    else:
+        comm = "python %s " % \
+               (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
+    comm += ' --target_repo "' + target_repo + '" --useremail "' + request.user.email + '" --ontology_rel_path "'
+    comm += ontology_rel_path + '" ' + '--publish --publishname "' + name + '" --previsual'
+    print "comm: "+comm
+    try:
+        subprocess.Popen(comm, shell=True)
+        msg = '''%s is published successfully. This might take a few minutes for the published ontology to be
+            available for GitHub pages''' % ontology_rel_path
+    except Exception as e:
+        print "publish_view> error : %s" % str(e)
+        msg = "Error publishing your ontology. Please contact us to fix it."
+    return render(request, 'msg.html', {'msg': msg})
+
+    # if error_msg=="":
+    #     error_msg = autoncore.publish(name=name, target_repo=target_repo, ontology_rel_path=ontology_rel_path, user=request.user)
+    #     if error_msg == "":
+    #         return render(request, 'msg.html', {
+    #             'msg': '''%s is published successfully. This might take a few minutes for the published ontology to be
+    #             available for GitHub pages''' % ontology_rel_path})
+    # return render(request, 'msg.html', {'msg': error_msg})
+
+
+
+
+
+def error_test(request):
+    raise Exception("error")
+    return render(request, 'msg.html',  {'msg': 'expecting an exception'})

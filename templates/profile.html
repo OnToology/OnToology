@@ -416,6 +416,10 @@ $( document ).ready(function() {
 			}
 		}).done(function( resp ) {
 		    hide_progress()
+		    console.log('resp: ')
+		    console.log(resp)
+		    console.log('ontologies: ')
+		    console.log(resp.ontologies)
 		    ontologies = resp.ontologies;
 		    if (ontologies.length==0){
 		    	alert("Make sure you merge the pull request. If there is no pull request, made a change to the ontology and push it to your repository");
@@ -778,7 +782,7 @@ $('#accordion').on('show.bs.collapse', toggleChevron);
             <div class="modal-body highl">
                 <br>
 
-                <form id="publish-name-form" action="" method="GET" style="color: #999">
+                <form id="publish-name-form" action="publish" method="GET" style="color: #999">
                     <div class="form-group">
                         <div class="container-fluid">
 	                <span class=" col-md-9 col-xs-9">

@@ -119,6 +119,7 @@ DEFAULT_FROM_EMAIL = os.environ['email_from']
 EMAIL_HOST = os.environ['email_server']
 EMAIL_HOST_PASSWORD = os.environ['email_password']
 EMAIL_HOST_USER = os.environ['email_username']
+EMAIL_PORT = 587
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 #SERVER_EMAIL = 'ontoology@delicias.dia.fi.upm.es'
 

@@ -22,11 +22,13 @@ import os
 # from . import dolog
 import random
 import string
-from . import call_and_get_log, timeout_comm
+from . import call_and_get_log, timeout_comm, dolog_logg, prepare_logger
 
 
-def dolog(msg):
-    print(msg)
+dolog = dolog_logg
+
+# def dolog(msg):
+#     print(msg)
 
 ToolUser = 'OnToologyUser'
 ToolEmail = 'ontoology@delicias.dia.fi.upm.es'
@@ -40,6 +42,8 @@ def start_previsual(repo_dir, target_repo):
         repo_dir: is absolute repository dir e.g. '/home/.../targetrepo'
         target_repo: as text
     """
+    #prepare_logger("__".join(target_repo.split('/'))+".prevlog")
+    dolog("testing the new logger")
     return generate_previsual(repo_dir, target_repo)
 
 
