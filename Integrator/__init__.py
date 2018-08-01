@@ -147,7 +147,7 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
         repo.notes += "syntax error in %s\n" % changed_file
         repo.save()
         return
-    if conf['ar2dtool_enable']:
+    if conf['ar2dtool']['enable']:
         dolog("will call draw diagrams")
         change_status(target_repo, 'drawing diagrams for: '+changed_file)
         repo.update_ontology_status(ontology=changed_file, status='diagram')
@@ -162,13 +162,13 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
             dolog("Exception in running ar2dtool.draw_diagrams: "+str(e))
     repo.progress += progress_inc
     repo.save()
-    if conf['widoco_enable']:
+    if conf['widoco']['enable']:
         dolog('will call widoco')
         change_status(target_repo, 'generating docs for: '+changed_file)
         repo.update_ontology_status(ontology=changed_file, status='documentation')
         repo.save()
         try:
-            r = widoco.generate_widoco_docs([changed_file], base_dir)
+            r = widoco.generate_widoco_docs([changed_file], base_dir, languages=conf['widoco']['languages'])
             # if r != "":
             #     print 'in init documentation detected an error for ontology file: %s' % changed_file
             #     # repo.notes += 'Error generating documentation for %s. ' % changed_file
@@ -177,7 +177,7 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
             dolog("Exception in running widoco.generate_widoco_docs: "+str(e))
     repo.progress += progress_inc
     repo.save()
-    if conf['oops_enable']:
+    if conf['oops']['enable']:
         dolog('will call oops')
         change_status(target_repo, 'evaluating: '+changed_file)
         repo.update_ontology_status(ontology=changed_file, status='evaluation')
@@ -192,7 +192,7 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
             dolog("Exception in running oops.oops.oops_ont_files: "+str(e))
     repo.progress += progress_inc
     repo.save()
-    if conf['owl2jsonld_enable']:
+    if conf['owl2jsonld']['enable']:
         dolog('will call owl2jsonld')
         change_status(target_repo, 'generating context for: '+changed_file)
         repo.update_ontology_status(ontology=changed_file, status='jsonld')
@@ -219,51 +219,69 @@ def create_of_get_conf(ofile, base_dir):
     widoco_sec_name = 'widoco'
     oops_sec_name = 'oops'
     owl2jsonld_sec_name = 'owl2jsonld'
-    ar2dtool_enable = True
-    widoco_enable = True
-    oops_enable = True
-    owl2jsonld_enable = True
     config = ConfigParser.RawConfigParser()
+    dolog('found configuration file: ')
+    f = open(ofile_config_file_abs)
+    cc = f.read()
+    dolog(cc)
+    f.close()
+    # import subprocess
+    # subprocess.call('echo "terminal output: "', shell=True)
+    # comm = 'cat %s'%ofile_config_file_abs
+    # print "comm: "+comm
+    # subprocess.call(comm, shell=True)
+    # par_file = "/".join(ofile_config_file_abs.split('/')[:-1])
+    # comm = "ls %s" % par_file
+    # print "comm: "+comm
+    # subprocess.call(comm, shell=True)
     conf_file = config.read(ofile_config_file_abs)
+    config_result = {
+        'widoco': {
+            'enable': True,
+            'languages': ['en'],
+        },
+        'ar2dtool': {
+            'enable': True
+        },
+        'oops': {
+            'enable': True
+        },
+        'owl2jsonld': {
+            'enable': True
+        }
+    }
     if len(conf_file) == 1:
         dolog(ofile+' configuration file exists')
         try:
-            ar2dtool_enable = config.getboolean(ar2dtool_sec_name, 'enable')
-            dolog('got ar2dtool enable value: ' + str(ar2dtool_enable))
+            config_result['ar2dtool']['enable'] = config.getboolean(ar2dtool_sec_name, 'enable')
+            dolog('got ar2dtool enable value: ' + str(config_result['ar2dtool']['enable']))
         except:
             dolog('ar2dtool enable value doesnot exist')
-            ar2dtool_enable = False
-            pass
+
         try:
-            widoco_enable = config.getboolean(widoco_sec_name, 'enable')
-            dolog('got widoco enable value: ' + str(widoco_enable))
+            config_result['widoco']['enable'] = config.getboolean(widoco_sec_name, 'enable')
+            config_result['widoco']['languages'] = config.get(widoco_sec_name, 'languages').replace(' ','').replace('"','').replace("'", '').split(',')
+            dolog('got widoco enable value: ' + str(config_result['widoco']['enable']))
         except:
             dolog('widoco enable value doesnot exist')
-            widoco_enable = False
-            pass
+
         try:
-            oops_enable = config.getboolean(oops_sec_name, 'enable')
-            dolog('got oops enable value: ' + str(oops_enable))
+            config_result['oops']['enable'] = config.getboolean(oops_sec_name, 'enable')
+            dolog('got oops enable value: ' + str(config_result['oops']['enable']))
         except:
             dolog('oops enable value doesnot exist')
-            oops_enable = False
         try:
-            owl2jsonld_enable = config.getboolean(owl2jsonld_sec_name, 'enable')
-            dolog('got owl2jsonld enable value: ' + str(owl2jsonld_enable))
+            config_result['owl2jsonld']['enable'] = config.getboolean(owl2jsonld_sec_name, 'enable')
+            dolog('got owl2jsonld enable value: ' + str(config_result['owl2jsonld']['enable']))
         except:
             dolog('owl2jsonld enable value doesnot exist')
-            owl2jsonld_enable = False
     else:
         dolog(ofile+' configuration file does not exists (not an error)')
         dolog('full path is: '+ofile_config_file_abs)
-        config.add_section(ar2dtool_sec_name)
-        config.set(ar2dtool_sec_name, 'enable', ar2dtool_enable)
-        config.add_section(widoco_sec_name)
-        config.set(widoco_sec_name, 'enable', widoco_enable)
-        config.add_section(oops_sec_name)
-        config.set(oops_sec_name, 'enable', oops_enable)
-        config.add_section(owl2jsonld_sec_name)
-        config.set(owl2jsonld_sec_name, 'enable', owl2jsonld_enable)
+        for sec in config_result.keys():
+            config.add_section(sec)
+            for k in config_result[sec].keys():
+                config.set(sec, k, config_result[sec][k])
         dolog('will create conf file: ' + ofile_config_file_abs)
         try:
             with open(ofile_config_file_abs, 'wb') as configfile:
@@ -271,10 +289,7 @@ def create_of_get_conf(ofile, base_dir):
         except Exception as e:
             dolog('exception: ')
             dolog(e)
-    return {'ar2dtool_enable': ar2dtool_enable,
-            'widoco_enable': widoco_enable,
-            'oops_enable': oops_enable,
-            'owl2jsonld_enable': owl2jsonld_enable}
+    return config_result
 
 
 #######################

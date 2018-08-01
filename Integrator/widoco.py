@@ -23,18 +23,18 @@ def get_widoco_config():
     return f.read()
 
 
-def generate_widoco_docs(changed_files, base_dir):
+def generate_widoco_docs(changed_files, base_dir, languages):
     results = ""
     for r in changed_files:
         if r[-4:] in ontology_formats:
             dolog('will widoco '+r)
-            results += create_widoco_doc(r, base_dir)
+            results += create_widoco_doc(r, base_dir, languages)
         else:
             pass
     return results
 
 
-def create_widoco_doc(rdf_file, base_dir):
+def create_widoco_doc(rdf_file, base_dir, languages):
     dolog('in Widoco function')
     rdf_file_abs = os.path.join(base_dir, rdf_file)
     # rdf_file_abs = get_abs_path(rdf_file)
@@ -65,6 +65,7 @@ def create_widoco_doc(rdf_file, base_dir):
         comm += " -getOntologyMetadata "
         comm += " -saveConfig " + config_file_abs
     comm += " -htaccess "
+    comm += '-lang %s' % ('-'.join(languages))
     # if not settings.TEST:
     if True:
         comm += ' >> "' + log_file_dir + '" '
