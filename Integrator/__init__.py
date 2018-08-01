@@ -257,6 +257,8 @@ def create_of_get_conf(ofile, base_dir):
             config_result['widoco']['enable'] = config.getboolean(widoco_sec_name, 'enable')
             config_result['widoco']['languages'] = config.get(widoco_sec_name, 'languages').replace(' ','').replace('"','').replace("'", '').split(',')
             dolog('got widoco enable value: ' + str(config_result['widoco']['enable']))
+            dolog('languages: ')
+            dolog(config_result['widoco']['languages'])
         except:
             dolog('widoco enable value doesnot exist')
 
@@ -276,7 +278,9 @@ def create_of_get_conf(ofile, base_dir):
         for sec in config_result.keys():
             config.add_section(sec)
             for k in config_result[sec].keys():
-                config.set(sec, k, config_result[sec][k])
+                if k != 'languages':
+                    config.set(sec, k, config_result[sec][k])
+        config.set(widoco_sec_name, 'languages', ",".join(config_result[widoco_sec_name]['languages']))
         dolog('will create conf file: ' + ofile_config_file_abs)
         try:
             with open(ofile_config_file_abs, 'wb') as configfile:
