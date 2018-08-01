@@ -67,6 +67,10 @@ def create_widoco_doc(rdf_file, base_dir, languages):
     comm += " -htaccess "
     comm += '-lang %s' % ('-'.join(languages))
     # if not settings.TEST:
+    dolog("languages: ")
+    dolog(languages)
+    dolog("merged: ")
+    dolog('-'.join(languages))
     if True:
         comm += ' >> "' + log_file_dir + '" '
     #comm += " ; echo 'widoco' >> " + os.path.join(get_parent_path(out_abs_dir), verification_log_fname)
