@@ -220,11 +220,6 @@ def create_of_get_conf(ofile, base_dir):
     oops_sec_name = 'oops'
     owl2jsonld_sec_name = 'owl2jsonld'
     config = ConfigParser.RawConfigParser()
-    dolog('found configuration file: ')
-    f = open(ofile_config_file_abs)
-    cc = f.read()
-    dolog(cc)
-    f.close()
     # import subprocess
     # subprocess.call('echo "terminal output: "', shell=True)
     # comm = 'cat %s'%ofile_config_file_abs
