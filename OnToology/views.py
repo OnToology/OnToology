@@ -888,9 +888,9 @@ def publish_view(request):
     print "comm: "+comm
     try:
         subprocess.Popen(comm, shell=True)
-        msg = '''%s is published successfully. This might take a few minutes for the published ontology to be
-            available for GitHub pages''' % ontology_rel_path
-        print "Will send the image"
+        msg = '''<i>%s</i> is published successfully. This might take a few minutes for the published ontology to be
+            available for GitHub pages. In the image below we show how to enable it for the first time. 
+            If you re-published it, do you not need to do anything.''' % ontology_rel_path[1:]
         return render(request, 'msg.html', {'msg': msg, 'img': 'https://github.com/OnToology/OnToology/raw/master/media/misc/gh-pages.png'})
     except Exception as e:
         print "publish_view> error : %s" % str(e)
