@@ -890,10 +890,12 @@ def publish_view(request):
         subprocess.Popen(comm, shell=True)
         msg = '''%s is published successfully. This might take a few minutes for the published ontology to be
             available for GitHub pages''' % ontology_rel_path
+        print "Will send the image"
+        return render(request, 'msg.html', {'msg': msg, 'img': 'https://github.com/OnToology/OnToology/raw/master/media/misc/gh-pages.png'})
     except Exception as e:
         print "publish_view> error : %s" % str(e)
         msg = "Error publishing your ontology. Please contact us to fix it."
-    return render(request, 'msg.html', {'msg': msg})
+        return render(request, 'msg.html', {'msg': msg})
 
     # if error_msg=="":
     #     error_msg = autoncore.publish(name=name, target_repo=target_repo, ontology_rel_path=ontology_rel_path, user=request.user)
