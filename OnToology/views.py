@@ -218,7 +218,7 @@ def add_hook(request):
         print "payload: " + s
         j = json.loads(s, strict=False)
         print "json is loaded"
-        if j["ref"] == "refs/heads/gh-pages":
+        if "ref" in j and j["ref"] == "refs/heads/gh-pages":
             print "it is just gh-pages"
             return render(request, 'msg.html', {'msg': 'it is gh-pages, so nothing'})
         s = j['repository']['url'] + 'updated files: ' + str(j['head_commit']['modified'])
