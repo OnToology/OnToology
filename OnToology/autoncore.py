@@ -1071,6 +1071,9 @@ def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):
     :return: htaccess with github rewrite as the domain
     """
     rewrites = [
+        "RewriteRule ^$ index-pt.html [R=303, L]",
+        "RewriteRule ^$ index-it.html [R=303, L]",
+        "RewriteRule ^$ index-es.html [R=303, L]",
         "RewriteRule ^$ index-en.html [R=303, L]",
         "RewriteRule ^$ ontology.n3 [R=303, L]",
         "RewriteRule ^$ ontology.xml [R=303, L]",
@@ -1079,6 +1082,9 @@ def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):
         "RewriteRule ^$ ontology.json [R=303, L]",
         "RewriteRule ^$ ontology.nt [R=303, L]",
 
+        "RewriteRule ^$ index-pt.html [R=303,L]",
+        "RewriteRule ^$ index-it.html [R=303,L]",
+        "RewriteRule ^$ index-es.html [R=303,L]",
         "RewriteRule ^$ index-en.html [R=303,L]",
         "RewriteRule ^$ ontology.n3 [R=303,L]",
         "RewriteRule ^$ ontology.xml [R=303,L]",
