@@ -906,7 +906,8 @@ def publish_view(request):
     # return render(request, 'msg.html', {'msg': error_msg})
 
 
-
+def publications(request):
+    return render(request, 'publications.html')
 
 
 def error_test(request):
