@@ -188,6 +188,10 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
             #     print 'in init evaluation detected an error'
             #     # repo.notes += 'Error generating evaluation for %s. ' % changed_file
             #     repo.save()
+            if r != "":
+                dolog("Error in producing OOPS! report: "+str(r))
+                repo.notes += "Error in producing the evaluation report for: %s" % str(changed_file)
+                repo.save()
         except Exception as e:
             dolog("Exception in running oops.oops.oops_ont_files: "+str(e))
     repo.progress += progress_inc

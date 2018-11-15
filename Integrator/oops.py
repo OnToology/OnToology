@@ -44,4 +44,6 @@ def generate_oops_report(target_repo, ontology_rel_dir, base_dir):
     error_msg, msg = call_and_get_log(comm)
     dolog("msg: %s"%msg)
     dolog("error_msg: %s"%error_msg)
+    if "exception in generating oops error" in msg:
+        return "Error in generating OOPS! evaluation report"
     return ""
