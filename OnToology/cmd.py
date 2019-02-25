@@ -60,15 +60,15 @@ def get_stats():
 def update_stats():
     stats = get_stats()
     stats_html = """
-{% extends "base.html"%}
-{%block body%}
+{%% extends "base.html"%%}
+{%%block body%%}
     The average number of ontologies per repository: %d</br>
     The median number of ontologies per repository: %d</br>
     The total number of ontologies: %d</br>
     The total number of repositories: %d</br>
     The total number of published ontologies: %d</br>
     The total number of registered users: %d</br>
-{% endblock %}
+{%% endblock %%}
     """ % (
         stats['mean'],
         stats['median'],
