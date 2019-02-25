@@ -847,9 +847,9 @@ def get_repos_list_file(request):
 
 
 def show_stats(request):
-    print("I am in show stats function")
-    return render(request, 'msg.html', {'msg': 'testing show stats'})
-    # return render(request, 'stats.html')
+    print("I am in show stats function2")
+    #return render(request, 'msg.html', {'msg': 'testing show stats'})
+    return render(request, 'stats.html')
 
 
 def get_managers():
