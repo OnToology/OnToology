@@ -23,6 +23,8 @@ from OnToology.models import *
 from autoncore import get_ontologies_in_online_repo
 from OnToology import settings
 
+from datetime import datetime
+
 def get_stats():
     stats = {
         'mean': 0,
@@ -59,9 +61,11 @@ def get_stats():
 
 def update_stats():
     stats = get_stats()
+    dt = datetime.now()
     stats_html = """
 {%% extends "base.html"%%}
 {%%block body%%}
+    generation date: %d - %d - %d </br></br>
     The average number of ontologies per repository: %d</br>
     The median number of ontologies per repository: %d</br>
     The total number of ontologies: %d</br>
@@ -70,6 +74,7 @@ def update_stats():
     The total number of registered users: %d</br>
 {%% endblock %%}
     """ % (
+        dt.day, dt.month, dt.year,
         stats['mean'],
         stats['median'],
         stats['num_of_ontologies'],
