@@ -1,6 +1,7 @@
 
 .venv
-
+# This template should be regenerated from the server
+templates/stats.html
 #profile data
 profile_output.txt
 
