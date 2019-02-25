@@ -848,6 +848,7 @@ def update_stats():
 
 def show_stats(request):
     print("I am in show stats function")
+    return render(request, 'msg.html', {'msg': 'testing show stats'})
     # return render(request, 'stats.html')
 
 
