@@ -78,7 +78,7 @@ def update_stats():
         stats['num_of_reg_users']
     )
     stats_dir = os.path.join(settings.BASE_DIR, 'templates', 'stats.html')
-    f = open(stats_dir)
+    f = open(stats_dir, 'w')
     f.write(stats_html)
     f.close()
 
