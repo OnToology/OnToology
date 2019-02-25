@@ -847,7 +847,8 @@ def update_stats():
 
 
 def show_stats(request):
-    return render(request, 'stats.html')
+    print("I am in show stats function")
+    # return render(request, 'stats.html')
 
 
 def get_managers():
