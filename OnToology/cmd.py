@@ -19,8 +19,6 @@ from django.core.wsgi import get_wsgi_application
 
 application = get_wsgi_application()
 
-from OnToology.views import update_stats
-
 
 def get_stats():
     stats = {
