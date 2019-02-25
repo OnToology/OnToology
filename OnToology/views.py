@@ -788,8 +788,6 @@ def update_stats_view(request):
         return render(request, 'msg.html', {'msg': 'This functionality is only available for the admins'})
     else:
         comm = "python %s " % (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'cmd.py updatestats'))
-
-        comm = ""
         subprocess.Popen(comm, shell=True)
         return render(request, 'msg.html', {'msg': 'The stats file is being updated'})
 
