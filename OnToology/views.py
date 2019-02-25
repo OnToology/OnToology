@@ -787,7 +787,10 @@ def update_stats_view(request):
     if request.user.email not in get_managers():
         return render(request, 'msg.html', {'msg': 'This functionality is only available for the admins'})
     else:
-        comm = "python %s " % (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'cmd.py updatestats'))
+        comm = "%s %s " % \
+               (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
+                (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'cmd.py updatestats')))
+
         subprocess.Popen(comm, shell=True)
         return render(request, 'msg.html', {'msg': 'The stats file is being updated'})
 
