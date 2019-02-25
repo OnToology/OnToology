@@ -20,6 +20,7 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 from OnToology.models import *
+from autoncore import get_ontologies_in_online_repo
 
 
 def get_stats():
