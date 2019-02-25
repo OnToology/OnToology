@@ -21,7 +21,7 @@ application = get_wsgi_application()
 
 from OnToology.models import *
 from autoncore import get_ontologies_in_online_repo
-
+from OnToology import settings
 
 def get_stats():
     stats = {
