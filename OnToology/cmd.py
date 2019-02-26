@@ -27,6 +27,18 @@ from datetime import datetime
 from collections import Counter
 
 
+def llog(msg):
+    """
+    local log
+    :return:
+    """
+    f = open("alog.log", "a")
+    f.write(str(datetime.now()) + " : ")
+    f.write(msg)
+    f.write("\n")
+    f.close()
+
+
 def get_stats():
     stats = {
         'mean': 0,
@@ -50,7 +62,7 @@ def get_stats():
             ontologies_per_repo.append(num_of_ontos)
             num_corr_repos += 1
             if num_of_ontos > 400:
-                print("large repo: "+r.url)
+                llog("large repo: "+r.url)
 
     num_of_ontologies = sum(ontologies_per_repo)
     stats['mean'] = num_of_ontologies/num_corr_repos
