@@ -63,7 +63,7 @@ def get_stats():
     stats['num_of_pub'] = len(PublishName.objects.all())
     stats['num_of_reg_users'] = len(OUser.objects.all())
     c = Counter(ontologies_per_repo)
-    for k in c:
+    for k in sorted(c.keys()):
         stats['onto_per_repo']['data'].append(c[k])
         stats['onto_per_repo']['labels'].append(k)
     return stats
@@ -99,7 +99,6 @@ def update_stats():
         'rgb(153, 102, 255)',
         'rgb(255, 205, 86)',
         'rgb(75, 192, 192)',
-        'rgb(201, 203, 207)',
         '#4dc9f6',
         '#f67019',
         '#f53794',
