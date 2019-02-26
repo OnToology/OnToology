@@ -46,8 +46,12 @@ def get_stats():
     for r in repos:
         ontos = get_ontologies_in_online_repo(r.url)
         if ontos != []:
-            ontologies_per_repo.append(len(ontos))
+            num_of_ontos = len(ontos)
+            ontologies_per_repo.append(num_of_ontos)
             num_corr_repos += 1
+            if num_of_ontos > 400:
+                print("large repo: "+r.url)
+
     num_of_ontologies = sum(ontologies_per_repo)
     stats['mean'] = num_of_ontologies/num_corr_repos
     if num_corr_repos > 0:
