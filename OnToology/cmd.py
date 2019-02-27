@@ -106,9 +106,15 @@ def update_stats():
     The total number of published ontologies: %d</br>
     The total number of registered users: %d</br>
     
+        
+    <div class="container-fluid ">
+        <div class="row">
+            <div class="col-lg-4 col-md-6 col-sm-7 col-xs-10">
+                <canvas id="myChart" ></canvas>
+            </div>
+        </div>
+    </div>
     
-    <canvas id="myChart" height="100px"></canvas>
-
     <script>
     var data = %s;
     var labels = %s;
