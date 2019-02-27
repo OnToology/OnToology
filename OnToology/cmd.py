@@ -27,16 +27,16 @@ from datetime import datetime
 from collections import Counter
 
 
-# def llog(msg):
-#     """
-#     local log
-#     :return:
-#     """
-#     f = open("alog.log", "a")
-#     f.write(str(datetime.now()) + " : ")
-#     f.write(msg)
-#     f.write("\n")
-#     f.close()
+def llog(msg):
+    """
+    local log
+    :return:
+    """
+    f = open("alog.log", "a")
+    f.write(str(datetime.now()) + " : ")
+    f.write(msg)
+    f.write("\n")
+    f.close()
 
 
 def get_stats():
@@ -52,17 +52,21 @@ def get_stats():
             'labels': []
         }
     }
+
     repos = Repo.objects.all()
     ontologies_per_repo = []
     num_corr_repos = 0  # number of repos that has at least one ontology
     for r in repos:
-        ontos = get_ontologies_in_online_repo(r.url)
-        if ontos != []:
-            num_of_ontos = len(ontos)
-            ontologies_per_repo.append(num_of_ontos)
-            num_corr_repos += 1
-            # if num_of_ontos > 400:
-            #     llog("large repo: "+r.url)
+        if '/Curso2017-2018' not in r.url:
+            ontos = get_ontologies_in_online_repo(r.url)
+            if ontos != []:
+                num_of_ontos = len(ontos)
+                ontologies_per_repo.append(num_of_ontos)
+                num_corr_repos += 1
+                if num_of_ontos > 99:
+                    msg = "large repo: "+r.url
+                    print(msg)
+                    llog(msg)
 
     num_of_ontologies = sum(ontologies_per_repo)
     stats['mean'] = num_of_ontologies/num_corr_repos
@@ -102,9 +106,15 @@ def update_stats():
     The total number of published ontologies: %d</br>
     The total number of registered users: %d</br>
     
+        
+    <div class="container-fluid ">
+        <div class="row">
+            <div class="col-lg-4 col-md-6 col-sm-7 col-xs-10">
+                <canvas id="myChart" ></canvas>
+            </div>
+        </div>
+    </div>
     
-    <canvas id="myChart" height="100px"></canvas>
-
     <script>
     var data = %s;
     var labels = %s;
