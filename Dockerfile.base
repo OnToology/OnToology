@@ -1,0 +1,8 @@
+FROM debian:stretch-slim
+RUN mkdir -p playground
+RUN mkdir -p playground/OnToology
+WORKDIR /playground/OnToology
+COPY scripts scripts
+COPY *.sh ./
+COPY *.txt ./
+RUN sh scripts/setup_docker_base.sh
