@@ -84,7 +84,6 @@ export email_from=""
 export email_username=""
 export email_password=""
 
-123
 export github_password="$github_password"
 export client_id_login="$client_id_login"
 export client_id_public="$client_id_public"
