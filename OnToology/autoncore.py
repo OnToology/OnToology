@@ -1110,7 +1110,8 @@ def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):
         elif "RewriteRule" in line and "^def" in line:
             rewr_rule = line.split(' ')
             rewr_rule[2] = base_url_for_hashed + rewr_rule[2]
-            new_htaccess += " ".join(rewr_rule) + "\n"
+            new_htaccess += "RewriteRule ^$ "
+            new_htaccess += " ".join(rewr_rule[2:]) + "\n"
         else:
             if "RewriteRule" in line:
                 print "NOTIN: " + line
