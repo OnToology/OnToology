@@ -1097,11 +1097,19 @@ def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):
     user_username = target_repo.split('/')[0]
     repo_name = target_repo.split('/')[1]
     base_url = "https://%s.github.io/%s/OnToology/%s/documentation/" % (user_username, repo_name, ontology_rel_path)
+    base_url_for_hashed = "https://%s.github.io/%s/OnToology/%s/documentation/doc/" % (user_username, repo_name, ontology_rel_path)
     new_htaccess = ""
+
     for line in htaccess_content.split('\n'):
+        # for slash-based ontologies
         if line.strip() in rewrites:
             rewr_rule = line.split(' ')
             rewr_rule[2] = base_url + rewr_rule[2]
+            new_htaccess += " ".join(rewr_rule) + "\n"
+        # for hash-based ontologies
+        elif "RewriteRule" in line and "^def" in line:
+            rewr_rule = line.split(' ')
+            rewr_rule[2] = base_url_for_hashed + rewr_rule[2]
             new_htaccess += " ".join(rewr_rule) + "\n"
         else:
             if "RewriteRule" in line:

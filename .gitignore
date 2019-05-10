@@ -1,3 +1,4 @@
+scripts/secret_setup.sh
 
 .venv
 # This template should be regenerated from the server
