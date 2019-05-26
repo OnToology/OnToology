@@ -2,7 +2,7 @@ import pkgutil
 import unittest
 
 from django.test import TestCase
-from django.test.simple import DjangoTestSuiteRunner
+from django.test.runner import DiscoverRunner
 
 from OnToology import settings
 from OnToology.models import *
@@ -15,7 +15,7 @@ def suite():
     return unittest.TestLoader().discover("OnToology.tests", pattern="test*.py")
 
 
-class NoSQLTestRunner(DjangoTestSuiteRunner):
+class NoSQLTestRunner(DiscoverRunner):
     def setup_databases(self):
         settings.test_conf['local'] = True
         settings.test_conf['fork'] = True

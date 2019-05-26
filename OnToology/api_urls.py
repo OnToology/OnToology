@@ -17,12 +17,12 @@
 #
 
 
-from django.conf.urls import patterns, include, url
+from django.conf.urls import  include, url
 from django.contrib import admin
 from OnToology import api_views as views
 from django.conf import settings
 
-urlpatterns = patterns('',
+urlpatterns = [
     # url(r'^admin', views.superadmin, name='superadmin'),
     url(r'login', views.login),
     url(r'repos$', views.ReposView.as_view()),  # for add and list
@@ -31,4 +31,4 @@ urlpatterns = patterns('',
     url(r'generate_all', views.generate_all),
     url(r'publishnames', views.PublishView.as_view()),
     #url(r'', views.home, name='home'),
-)
+]

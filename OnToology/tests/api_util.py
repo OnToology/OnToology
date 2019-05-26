@@ -2,6 +2,7 @@ import os
 import string
 import random
 from OnToology.models import *
+from subprocess import call
 
 user_password = os.environ['test_user_token']
 
@@ -54,3 +55,13 @@ def get_repo_resource_dir(user_email):
     from Integrator import config_folder_name
     abs_path = os.path.join(base_dir, config_folder_name)
     return abs_path
+
+
+def clone_if_not(resources_dir, repo):
+    repo_dir = os.path.join(resources_dir, os.pardir)
+    repo_dir = os.sep.join(resources_dir.split(os.sep)[:-1])
+    if not os.path.isdir(repo_dir):
+        cloning_url = "git@github.com:%s.git" % repo.strip()
+        comm = "git clone --recurse-submodules  " + cloning_url + " " + repo_dir
+        print "comm: %s" % comm
+        call(comm, shell=True)

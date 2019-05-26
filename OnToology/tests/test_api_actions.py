@@ -1,10 +1,10 @@
 import json
 import string
 import random
-
+import shutil
 import os
 from subprocess import call
-from api_util import create_user, create_repo, delete_all_repos_from_db, get_repo_resource_dir
+from api_util import create_user, create_repo, delete_all_repos_from_db, get_repo_resource_dir, clone_if_not
 
 from django.test import Client
 from unittest import TestCase
@@ -114,6 +114,16 @@ class TestActionAPIs(TestCase):
         settings.test_conf['pull'] = False
         delete_all_repos_from_db()
         create_repo(self.url)
+
+        # If the setup is not to clone a fresh copy then check if it exists, if not then clone
+        if settings.test_conf['clone'] is False:
+            clone_if_not(resources_dir, self.url)
+        if not os.path.exists(resources_dir):
+            os.mkdir(resources_dir)
+        ontology_dir = os.path.join(resources_dir, 'alo.owl')
+        if os.path.exists(ontology_dir):
+            shutil.rmtree(ontology_dir)
+        os.mkdir(ontology_dir)
         # inject the configuration file with the multi-lang
         f = open(os.path.join(resources_dir, 'alo.owl/OnToology.cfg'), 'w')
         conf_file_content="""

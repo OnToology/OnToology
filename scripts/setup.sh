@@ -14,6 +14,8 @@ export client_secret_public=""
 export client_secret_private=""
 export test_user_token=""
 export test_user_email=""
+export db_host=""
+export db_port=""
 
 echo "pre secret PLAYGROUND: $PLAYGROUND"
 
@@ -57,7 +59,8 @@ environ['client_secret_public']="$client_secret_public"
 environ['client_secret_private']="$client_secret_private"
 environ['test_user_token']="$test_user_token"
 environ['test_user_email']="$test_user_email"
-
+environ['db_host']="$db_host"
+environ['db_port']="$db_port"
 
 EOT
 
@@ -114,6 +117,7 @@ mkdir $PLAYGROUND/repos/log
 #mongod &
 
 
+
 echo "Will run mongo"
 #mongod --config /etc/mongod.conf
 #nohup sh -c mongod --config /etc/mongod.conf &
@@ -125,3 +129,7 @@ nohup bash -c " mongod --config /etc/mongod.conf 2>&1 &" && sleep 4
 echo "Will run the tests"
 #.venv/bin/python manage.py test OnToology
 
+
+# This should be moved to the base
+.venv/bin/pip install https://github.com/MongoEngine/django-mongoengine/archive/master.zip
+.venv/bin/pip install -r requirements.txt

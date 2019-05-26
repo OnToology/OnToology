@@ -20,5 +20,6 @@ COPY .coveragerc ./
 #ENTRYPOINT ["mongod", "--config", "/etc/mongod.conf", " & "]
 #CMD ["mongod", "--config", "/etc/mongod.conf", " & "]
 
+
 RUN sh scripts/setup.sh
 

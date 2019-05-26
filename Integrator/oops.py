@@ -39,7 +39,6 @@ def generate_oops_report(target_repo, ontology_rel_dir, base_dir):
     # report_output_abs_file = os.path.join(report_output_dir, 'oops.html')
     # dolog("report output file: %s"%report_output_abs_file)
     comm = "%s %s --ontologydir '%s' --outputdir '%s'" % (python_venv, os.path.join(oops_dir, 'main.py'), ontology_dir, report_output_dir)
-    #comm += ' >> "' + log_file_dir + '"'
     dolog("comm: %s" % comm)
     error_msg, msg = call_and_get_log(comm)
     dolog("msg: %s"%msg)
