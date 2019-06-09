@@ -14,8 +14,8 @@ export client_secret_public=""
 export client_secret_private=""
 export test_user_token=""
 export test_user_email=""
-export db_host=""
-export db_port=""
+#export db_host=""
+#export db_port=""
 
 echo "pre secret PLAYGROUND: $PLAYGROUND"
 
@@ -107,6 +107,10 @@ mkdir $PLAYGROUND/config
 mkdir $PLAYGROUND/wget_dir
 mkdir $PLAYGROUND/repos
 mkdir $PLAYGROUND/repos/log
+
+# Add github to known hosts
+mkdir ~/.ssh
+ssh-keyscan github.com > ~/.ssh/known_hosts
 
 
 # Setup OnToology libs
