@@ -11,7 +11,8 @@ COPY *.py ./
 COPY *.sh ./
 COPY *.txt ./
 COPY .coveragerc ./
-
+#COPY ssh/id_rsa ~/.ssh/
+#COPY ssh/id_rsa.pub ~/.ssh/
 
 ARG db_host=db
 ARG db_port=27017
@@ -36,4 +37,9 @@ RUN sh scripts/setup.sh
 #RUN .venv/bin/coverage run manage.py test OnToology
 #RUN .venv/bin/coverage report
 #RUN sh test.sh
+
+COPY ssh/id_rsa /root/.ssh/
+COPY ssh/id_rsa.pub /root/.ssh/
+RUN chmod 400 /root/.ssh/*
+
 
