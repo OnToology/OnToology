@@ -101,6 +101,7 @@ class TestActionAPIs(TestCase):
     def test_doc_multi_lang(self):
         import OnToology.settings as settings
         resources_dir = get_repo_resource_dir(os.environ['test_user_email'])
+        print("resources dir: <%s>" % resources_dir)
         # The below two assertion is to protect the deletion of important files
         self.assertEqual(resources_dir.split('/')[-1], 'OnToology', msg='might be a wrong resources dir OnToology')
         self.assertIn(os.environ['test_user_email'], resources_dir, msg='might be a wrong resources dir or wrong user')
@@ -154,6 +155,7 @@ enable = False\n
             ff = os.path.join('alo.owl/documentation', f)
             files_to_check.append(ff)
         for f in files_to_check:
-            print os.path.join(resources_dir, f)
-            self.assertTrue(os.path.exists(os.path.join(resources_dir, f)), msg=(f+" does not exists"))
+            fdir_to_check = os.path.join(resources_dir, f)
+            print fdir_to_check
+            self.assertTrue(os.path.exists(fdir_to_check), msg=(f+" does not exists"))
         delete_all_repos_from_db()
