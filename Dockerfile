@@ -1,4 +1,5 @@
-FROM ahmad88me/ontoology:latest
+#FROM ahmad88me/ontoology:latest
+FROM ahmad88me/ontoology:alpine
 WORKDIR /playground/OnToology
 
 COPY Integrator Integrator

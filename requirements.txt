@@ -1,8 +1,8 @@
 certifi==2018.1.18
 chardet==3.0.4
 coverage==3.7.1
-Django==1.11
-#django-mongoengine==0.3.1
+Django==1.11.21
+django-mongoengine==0.3.3
 idna==2.6
 isodate==0.6.0
 mongoengine==0.14.3

@@ -1,27 +1,53 @@
-export DEBIAN_FRONTEND=noninteractive
-apt-get update
-apt-get update && apt-get install -y --no-install-recommends apt-utils
-apt-get install apt-transport-https -y
-apt-get install vim -y
-apt-get install python2.7 python-pip virtualenv  -y
-apt-get install -y git
-mkdir -p /usr/share/man/man1
-apt-get install -y openjdk-8-jre-headless
-#apt-get install -y default-jre
-apt-get install -y graphviz
-apt-get install -y zip
-apt-get install -y wget
-apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+apk add --update \
+    python \
+    python-dev \
+    py-pip \
+    build-base \
+    wget \
+    git \
+    vim \
+    graphviz \
+    zip \
+    openjdk8-jre \
+    py-virtualenv \
+    openssh \
+  && rm -rf /var/cache/apk/*
 
-# ubuntu
-#echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0 multiverse" |  tee /etc/apt/sources.list.d/mongodb-org-4.0.list
-#mkdir -p /data/db
 
-#debian
-echo "deb http://repo.mongodb.org/apt/debian stretch/mongodb-org/4.0 main" |  tee /etc/apt/sources.list.d/mongodb-org-4.0.list
-apt-get update
-apt-get install -y mongodb-org
-
-# Install python libraries
 virtualenv -p /usr/bin/python2.7 .venv
 .venv/bin/pip install -r requirements.txt
+
+
+mkdir $PLAYGROUND/publish
+mkdir $PLAYGROUND/temp
+mkdir $PLAYGROUND/config
+mkdir $PLAYGROUND/wget_dir
+mkdir $PLAYGROUND/repos
+mkdir $PLAYGROUND/repos/log
+
+
+
+
+
+# setup widoco
+echo "Widoco setup ..."
+cd $PLAYGROUND;mkdir widoco;cd widoco; wget --progress=bar:force https://github.com/dgarijo/Widoco/releases/download/v1.4.11/widoco-1.4.11-jar-with-dependencies.jar ; mv widoco-* widoco.jar ; chmod 777 widoco*
+
+# setup ar2dtool
+echo "ar2dtool ..."
+cd $PLAYGROUND;git clone https://github.com/idafensp/ar2dtool.git; chmod 777 ar2dtool/bin/ar2dtool.jar
+
+# vocablite
+echo "vocabLite ..."
+cd $PLAYGROUND;mkdir vocabLite;cd vocabLite; mkdir jar; cd jar; wget --progress=bar:force https://github.com/dgarijo/vocabLite/releases/download/v1.0.1/vocabLite-1.0.1-jar-with-dependencies.jar ; mv vocabLite-*  vocabLite.jar; chmod 777 vocabLite-*
+
+
+echo "owl2jsonld"
+cd $PLAYGROUND;mkdir owl2jsonld; cd owl2jsonld; wget --progress=bar:force https://github.com/stain/owl2jsonld/releases/download/0.2.1/owl2jsonld-0.2.1-standalone.jar
+
+
+# setup oops report
+echo "OOPS! report ..."
+cd $PLAYGROUND;git clone https://github.com/OnToology/oops-report.git
+cd $PLAYGROUND; cd oops-report;virtualenv -p /usr/bin/python2.7 .venv;.venv/bin/pip install -r requirements.txt
+

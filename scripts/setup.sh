@@ -24,6 +24,11 @@ echo "pre secret PLAYGROUND: $PLAYGROUND"
 
 echo "post secret PLAYGROUND: $PLAYGROUND"
 
+# In case it does not exists
+echo "" >>  $PLAYGROUND/OnToology/OnToology/localwsgi.py
+#cat $PLAYGROUND/OnToology/OnToology/localwsgi.py
+
+
 cat <<EOT >> $PLAYGROUND/OnToology/OnToology/localwsgi.py
 
 import os
@@ -101,12 +106,13 @@ export test_user_email="$test_user_email"
 EOT
 
 
-mkdir $PLAYGROUND/publish
-mkdir $PLAYGROUND/temp
-mkdir $PLAYGROUND/config
-mkdir $PLAYGROUND/wget_dir
-mkdir $PLAYGROUND/repos
-mkdir $PLAYGROUND/repos/log
+#mkdir $PLAYGROUND/publish
+#mkdir $PLAYGROUND/temp
+#mkdir $PLAYGROUND/config
+#mkdir $PLAYGROUND/wget_dir
+#mkdir $PLAYGROUND/repos
+#mkdir $PLAYGROUND/repos/log
+
 
 # Add github to known hosts
 mkdir ~/.ssh
@@ -122,18 +128,18 @@ ssh-keyscan github.com > ~/.ssh/known_hosts
 
 
 
-echo "Will run mongo"
+#echo "Will run mongo"
 #mongod --config /etc/mongod.conf
 #nohup sh -c mongod --config /etc/mongod.conf &
-nohup bash -c " mongod --config /etc/mongod.conf 2>&1 &" && sleep 4
+#nohup bash -c " mongod --config /etc/mongod.conf 2>&1 &" && sleep 4
 #cat nohup.out
 
 
 #Run tests
-echo "Will run the tests"
+#echo "Will run the tests"
 #.venv/bin/python manage.py test OnToology
 
 
 # This should be moved to the base
-.venv/bin/pip install https://github.com/MongoEngine/django-mongoengine/archive/master.zip
-.venv/bin/pip install -r requirements.txt
+#.venv/bin/pip install https://github.com/MongoEngine/django-mongoengine/archive/master.zip
+#.venv/bin/pip install -r requirements.txt
