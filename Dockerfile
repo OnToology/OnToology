@@ -1,4 +1,3 @@
-#FROM ahmad88me/ontoology:latest
 FROM ahmad88me/ontoology:alpine
 WORKDIR /playground/OnToology
 
@@ -43,4 +42,6 @@ COPY ssh/id_rsa /root/.ssh/
 COPY ssh/id_rsa.pub /root/.ssh/
 RUN chmod 400 /root/.ssh/*
 
-
+RUN echo "This is web"
+CMD .venv/bin/python manage.py test OnToology
+#CMD .venv/bin/python manage.py runserver

@@ -69,6 +69,9 @@ environ['db_port']="$db_port"
 
 EOT
 
+# For some reason if I remove this echo, the appending to
+echo $PLAYGROUND/OnToology/.venv/bin/activate
+
 # This will not be used, but is kept for testing purposes but not for automated tests
 cat <<EOT >> $PLAYGROUND/OnToology/.venv/bin/activate
 export github_username=OnToologyTestUser

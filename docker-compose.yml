@@ -23,6 +23,8 @@ services:
       - db
     ports:
       - "8000:8000"
+    stdin_open: true
+    tty: true
     #: .venv/bin/coverage run manage.py test OnToology;  .venv/bin/coverage report
 
 

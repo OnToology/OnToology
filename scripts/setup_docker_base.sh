@@ -14,8 +14,9 @@ apk add --update \
   && rm -rf /var/cache/apk/*
 
 
-virtualenv -p /usr/bin/python2.7 .venv
-.venv/bin/pip install -r requirements.txt
+export PLAYGROUND=/playground
+echo "playground: "
+echo $PLAYGROUND
 
 
 mkdir $PLAYGROUND/publish
@@ -26,6 +27,8 @@ mkdir $PLAYGROUND/repos
 mkdir $PLAYGROUND/repos/log
 
 
+virtualenv -p /usr/bin/python2.7 .venv
+.venv/bin/pip install -r requirements.txt
 
 
 
