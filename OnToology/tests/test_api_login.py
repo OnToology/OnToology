@@ -35,3 +35,6 @@ class TestLoginAPIs(TestCase):
         self.assertIn('token', jresponse, msg='token is not returned')
         self.assertEqual(jresponse['token'], self.token)
 
+    def test_false(self):
+        self.assertTrue(False)
+    
