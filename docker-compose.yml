@@ -3,8 +3,8 @@ version: '3'
 services:
   db:
     image: mongo:4.0.9-xenial
-    ports:
-      - "27017:27017"
+#    ports:
+#      - "27017:27017"
   web:
 #    environment:
 #    - db_host=db
