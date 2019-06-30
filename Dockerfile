@@ -42,6 +42,6 @@ COPY ssh/id_rsa /root/.ssh/
 COPY ssh/id_rsa.pub /root/.ssh/
 RUN chmod 400 /root/.ssh/*
 
-RUN echo "This is web"
-CMD .venv/bin/python manage.py test OnToology
+#RUN echo "This is web"
+#CMD .venv/bin/python manage.py test OnToology
 #CMD .venv/bin/python manage.py runserver
