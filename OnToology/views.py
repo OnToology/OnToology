@@ -435,13 +435,11 @@ def login_get_access(request):
     try:
         user = OUser.objects.get(email=email)
         user.username = username
-        #user.backend = 'mongoengine.django.auth.MongoEngineBackend'
         user.save()
     except:
         try:
             user = OUser.objects.get(username=username)
             user.email = email
-            #user.backend = 'mongoengine.django.auth.MongoEngineBackend'
             user.save()
         except:
             print '<%s,%s>' % (email, username)
@@ -449,7 +447,6 @@ def login_get_access(request):
             sys.stderr.flush()
             # The password is never important but we set it here because it is required by User class
             user = OUser.create_user(username=username, password=request.session['state'], email=email)
-            #user.backend = 'mongoengine.django.auth.MongoEngineBackend'
             user.save()
     django_login(request, user)
     print 'The used access_token: ' + access_token
