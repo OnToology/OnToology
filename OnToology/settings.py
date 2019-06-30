@@ -57,7 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',  # From django 1.7
+    # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',  # From django 1.7
 ]
 
 ROOT_URLCONF = 'OnToology.urls'
