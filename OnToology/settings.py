@@ -166,6 +166,10 @@ if 'db_host' in environ:
         host_db+=":"+str(environ['db_port'])
     MONGODB_DATABASES['default']['host'] = host_db
     print("updated with host: "+str(MONGODB_DATABASES['default']['host']))
+    if 'db_name' in environ:
+        MONGODB_DATABASES['default']['name'] = environ['db_name']
+        print("updated with host: " + str(MONGODB_DATABASES['default']['name']))
+
 else:
     print("db_host is not in environ")
 
