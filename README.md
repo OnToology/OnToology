@@ -12,40 +12,31 @@ Team: Ahmad Alobaid, Daniel Garijo, Maria Poveda, Idafen Santa, Oscar Corcho, Al
 License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 
 
+# To run automated tests
+1. You should have [docker](https://docs.docker.com/) and [docker-compose](https://docs.docker.com/compose/) installed
+2. You need to have a GitHub user to act as "OnToologyUser" (you can choose any username you like).
+3. Add the details as in the *secret setup* section below.
+4. Run the automated tests script `sh scripts/run_tests.sh` 
+
+
+
+## Secret setup
+This file should be added in `scripts/secret_setup.sh`
+```
+#!/bin/sh
+export github_password=""
+export client_id_login=""
+export client_id_public=""
+export client_id_private=""
+export client_secret_login=""
+export client_secret_public=""
+export client_secret_private=""
+export test_user_token=""
+export test_user_email=""
+
+```
+
 <!--
-
-
-### Project Plan
-* Provide a better solution for handling private and public repos.
-* Add new features (e.g. integrate with GitLab and Bitbucket)
-* Deploy on the live server (now on a testing server)
-* Prepare automated testing (in progress)
-* Automated tests for pull requests.
-* Use decorators for input validation.
-* Use profilers.
-
-
-### What the system does now:
-* Draw two kinds of diagrams from rdf files using ar2dtool (https://github.com/idafensp/ar2dtool).
-* Create a documentation of the ontology using Widoco tool (https://github.com/dgarijo/Widoco).
-* Validate the ontology using OOPS tool and generate a summary of the issues found by OOPS (http://oops-ws.oeg-upm.net/).
-* Generate a landing page using vocabLite (https://github.com/dgarijo/vocabLite).
-* Publish the ontology (content negotiation)
-
-
-### How to use it 
-1. From the website, you only have to put the repo as user/repo i.e. myuser/myrepo (now it doesnot work with organization, for more technical info please refere to the issues section).
-2. Update/create OnToology.cfg (will use default configurations otherwise)
-3. Update your repo and push.
-4. Go to your repo setting -> webhooks and service and you will see the webhook. you can also click on the webhook link to see the request sent and the server replies.
-5. If pull requests are created successfully you can find them in the pull requests pool.
-
--->
-
-
-### Install with vagrant
-see boostrap sample file and everything is completly automated, including the JARs and all prerequisites. 
-
 
 ## Tests (under refactoring)
 ID | Test Case | Expected Result  | Status
@@ -173,7 +164,7 @@ environ['email_username'] = ""
 environ['email_password'] = ""
 ```
 
-
+-->
 
 ## How to contribute
 There are two workflows:
