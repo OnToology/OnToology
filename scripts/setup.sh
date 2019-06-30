@@ -87,6 +87,115 @@ mkdir ~/.ssh
 ssh-keyscan github.com > ~/.ssh/known_hosts
 
 
+# Add default configuration files for ar2dtool
+# because for some reason the USER environment variable is not set
+export USER=`whoami`
+
+cat <<EOT >> $PLAYGROUND/config/ar2dtool-class.conf
+
+pathToDot=/usr/bin/dot;
+pathToTempDir=/home/$USER/temp;
+
+imageSize=1501;
+rankdir=LR;
+
+########
+#shapes#
+########
+
+#classShape=diamond;
+#individualShape=diamond;
+#literalShape=box;
+#arrowhead=normal;
+#arrowtail=normal;
+#arrowdir=forward;
+
+########
+#colors#
+########
+
+classColor=orange;
+#individualColor=orange;
+#literalColor=blue;
+#arrowColor=blue;
+
+#############
+#RDF options#
+#############
+
+nodeNameMode=prefix;
+ignoreLiterals=true;
+ignoreRdfType=true;
+synthesizeObjectProperties=true;
+
+#######
+#lists#
+#######
+
+#ignoreElementsList=[];
+
+ignoreElementList=[<http://www.w3.org/2000/01/rdf-schema#subClassOf,http://www.w3.org/2000/01/rdf-schema#isDefinedBy,http://www.w3.org/2002/07/owl#inverseOf>];
+
+EOT
+
+
+
+cat <<EOT >> $PLAYGROUND/config/ar2dtool-taxonomy.conf
+pathToDot=/usr/bin/dot;
+pathToTempDir=/home/$USER/temp;
+
+imageSize=1000;
+rankdir=LR;
+
+########
+#shapes#
+########
+
+#classShape=diamond;
+#individualShape=diamond;
+#literalShape=box;
+#arrowhead=normal;
+#arrowtail=normal;
+#arrowdir=forward;
+
+########
+#colors#
+########
+
+#classColor=orange;
+#individualColor=orange;
+#literalColor=blue;
+#arrowColor=blue;
+
+#######
+#files#
+#######
+
+generateGvFile=true;
+generateGraphMLFile=false;
+
+#############
+#RDF options#
+#############
+
+nodeNameMode=prefix;
+ignoreLiterals=true;
+ignoreRdfType=false;
+synthesizeObjectProperties=false;
+
+#######
+#lists#
+#######
+
+includeOnlyElementList=[
+<
+http://www.w3.org/2000/01/rdf-schema#subClassOf
+>
+];
+
+EOT
+
+
 # Setup OnToology libs
 #virtualenv -p /usr/bin/python2.7 .venv
 #.venv/bin/pip install -r requirements.txt
