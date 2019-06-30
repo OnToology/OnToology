@@ -17,13 +17,14 @@
 #
 
 
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.contrib import admin
 from OnToology import views
 from django.conf import settings
 import api_urls
 
-urlpatterns = patterns('',
+
+urlpatterns = [
     url(r'^delete_repo', views.delete_repo, name="deleterepo"),
     url(r'^update_conf', views.update_conf, name='updateconf'),
     url(r'^add_hook', views.add_hook, name='addhook'),
@@ -53,12 +54,18 @@ urlpatterns = patterns('',
     # url(r'^error_test', views.error_test),
     # url(r'^admin', views.superadmin, name='superadmin'),
     url(r'', views.home, name='home'),
-)
+]
 
 handler500 = 'OnToology.views.handler500'
 
+# if settings.DEBUG:
+#     # static files (images, css, javascript, etc.)
+#     urlpatterns = ['',
+#         (r'^media/(?P<path>.*)$', 'django.views.static.serve', {
+#             'document_root': settings.MEDIA_ROOT})] + urlpatterns
+
+
 if settings.DEBUG:
+    from django.conf.urls.static import static
     # static files (images, css, javascript, etc.)
-    urlpatterns = patterns('',
-        (r'^media/(?P<path>.*)$', 'django.views.static.serve', {
-            'document_root': settings.MEDIA_ROOT})) + urlpatterns
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

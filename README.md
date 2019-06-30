@@ -1,5 +1,6 @@
 # ![alt text](https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/logoprop1_readme.png "OnToology")
-
+[![Build Status](https://semaphoreci.com/api/v1/ahmad88me/ontoology/branches/master/badge.svg)](https://semaphoreci.com/ahmad88me/ontoology)
+[![codecov](https://codecov.io/gh/OnToology/OnToology/branch/master/graph/badge.svg)](https://codecov.io/gh/OnToology/OnToology)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1317786.svg)](https://doi.org/10.5281/zenodo.1317786)
 
 A system for collaborative ontology development process. Given a repository with an owl file, **OnToology** will survey it and produce diagrams, a complete documentation and validation based on common pitfalls.

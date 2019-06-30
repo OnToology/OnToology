@@ -19,6 +19,8 @@
 
 from mongoengine import Document, StringField, DateTimeField, ListField, ReferenceField, BooleanField, FloatField
 # from mongoengine.django.auth import User
+
+
 from datetime import datetime, timedelta
 
 
@@ -90,8 +92,9 @@ class Repo(Document):
 
 # The below is to avoid the error occur when importing Repo from autoncore because of the User class which cases the
 # error
-try:    
-    from mongoengine.django.auth import User
+try:
+    # from mongo_auth import MongoUser as User
+    from django_mongoengine.mongo_auth.models import User
 
     class OUser(User):
         repos = ListField(ReferenceField(Repo))
@@ -125,8 +128,10 @@ try:
 
         def __unicode__(self):
             return self.name
-except:
-    pass
+except Exception as e:
+    print("error importing OUser")
+    print(e)
+    # pass
 
 
 
