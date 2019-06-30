@@ -5,5 +5,5 @@
 #codecov -t $CODECOV_TOKEN
 .venv/bin/coverage run manage.py test OnToology
 .venv/bin/coverage report
-.venv/bin/codecov -t $CODECOV_TOKEN -s .
+.venv/bin/codecov -t $CODECOV_TOKEN
 #bash <(curl -s https://codecov.io/bash)
