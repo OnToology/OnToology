@@ -23,6 +23,7 @@ from OnToology import views
 from django.conf import settings
 import api_urls
 
+
 urlpatterns = [
     url(r'^delete_repo', views.delete_repo, name="deleterepo"),
     url(r'^update_conf', views.update_conf, name='updateconf'),
@@ -57,8 +58,14 @@ urlpatterns = [
 
 handler500 = 'OnToology.views.handler500'
 
+# if settings.DEBUG:
+#     # static files (images, css, javascript, etc.)
+#     urlpatterns = ['',
+#         (r'^media/(?P<path>.*)$', 'django.views.static.serve', {
+#             'document_root': settings.MEDIA_ROOT})] + urlpatterns
+
+
 if settings.DEBUG:
+    from django.conf.urls.static import static
     # static files (images, css, javascript, etc.)
-    urlpatterns = ['',
-        (r'^media/(?P<path>.*)$', 'django.views.static.serve', {
-            'document_root': settings.MEDIA_ROOT})] + urlpatterns
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
