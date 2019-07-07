@@ -1,5 +1,6 @@
 certifi==2018.1.18
 chardet==3.0.4
+codecov==2.0.15
 coverage==3.7.1
 Django==1.11.21
 django-mongoengine==0.3.3
@@ -13,8 +14,7 @@ pymongo==2.7.2
 pyparsing==2.2.0
 pytz==2019.1
 rdflib==4.2.2
-requests==2.18.4
+requests==2.22.0
 selenium==2.52.0
 six==1.9.0
-urllib3==1.22
-codecov==2.0.15
+urllib3==1.25.3
