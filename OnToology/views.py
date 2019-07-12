@@ -28,7 +28,7 @@ from subprocess import call
 
 from django.http import HttpResponse
 from django.core.urlresolvers import reverse
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib.auth import login as django_login, logout as django_logout
 from django.template import RequestContext
@@ -113,7 +113,7 @@ def home(request):
 
 
 def grant_update(request):
-    return render_to_response('msg.html', {'msg': 'Magic is done'}, context_instance=RequestContext(request))
+    return render(request, 'msg.html', {'msg': 'Magic is done'})
 
 
 def get_access_token(request):
@@ -174,7 +174,7 @@ def get_access_token(request):
         elif '404' in error_msg:  # so no enough access according to Github troubleshooting guide
             error_msg = """You don\'t have permission to add collaborators and create webhooks to this repo or this
             repo does not exist. Note that if you can fork this repo, you can add it here"""
-            return render_to_response('msg.html', {'msg': error_msg}, context_instance=RequestContext(request))
+            return render(request, 'msg.html', {'msg': error_msg})
         else:
             print "error message not hook and not 404: " + error_msg
             print "target repo: " + request.session['target_repo']
@@ -196,8 +196,7 @@ def get_access_token(request):
             ouser.repos.append(repo)
             ouser.save()
             generateforall(repo.url, ouser.email)
-    return render_to_response('msg.html', {'msg': msg},
-                              context_instance=RequestContext(request))
+    return render(request, 'msg.html',  {'msg': msg})
 
 
 def get_changed_files_from_payload(payload):
@@ -255,7 +254,7 @@ def add_hook(request):
                 print msg
                 return
             else:
-                return render_to_response('msg.html', {'msg': msg}, context_instance=RequestContext(request))
+                return render(request, 'msg.html', {'msg': msg})
     except Exception as e:
         print "add hook exception: " + str(e)
         msg = 'This request should be a webhook ping'
@@ -263,7 +262,7 @@ def add_hook(request):
             print msg
             return
         else:
-            return render_to_response('msg.html', {'msg': msg}, context_instance=RequestContext(request))
+            return render(request, 'msg.html', {'msg': msg},)
     print '##################################################'
     print 'changed_files: ' + str(changed_files)
     # cloning_repo should look like 'git@github.com:AutonUser/target.git'
@@ -305,7 +304,7 @@ def add_hook(request):
                 error_msg = 'generic error, please report the problem to us ontoology@delicias.dia.fi.upm.es'
             s = error_msg
         # subprocess.Popen(comm, shell=True)
-        return render_to_response('msg.html', {'msg': '' + s}, context_instance=RequestContext(request))
+        return render('msg.html', {'msg': '' + s}, )
 
 
 @login_required
@@ -331,9 +330,8 @@ def generateforall_view(request):
                       {'msg': 'You need to register/watch this repository while you are logged in'})
     res = generateforall(target_repo, request.user.email)
     if res['status'] is True:
-        return render_to_response('msg.html', {
-            'msg': 'Soon you will find generated files included in a pull request in your repository'},
-                                  context_instance=RequestContext(request))
+        return render(request, 'msg.html',  {
+            'msg': 'Soon you will find generated files included in a pull request in your repository'},)
     else:
         return render(request, 'msg.html', {'msg': res['error']})
 
