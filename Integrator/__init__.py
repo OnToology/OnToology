@@ -20,7 +20,8 @@ tools_conf = {
     'ar2dtool': {'folder_name': 'diagrams', 'type': 'png'},
     'widoco': {'folder_name': 'documentation'},
     'oops': {'folder_name': 'evaluation'},
-    'owl2jsonld': {'folder_name': 'context'}
+    'owl2jsonld': {'folder_name': 'context'},
+    'themis': {'folder_name': 'validation', 'tests_file_name': 'tests.txt', 'results_file_name': 'results.tsv'}
 }
 
 #
@@ -206,6 +207,11 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
         except Exception as e:
             dolog("Exception in running owl2jsonld.generate_owl2jsonld_file: "+str(e))
     repo.progress += progress_inc
+    if conf['themis']['enable']:
+        dolog('will call themis')
+        change_status(target_repo, 'generating validation for: '+changed_file)
+        repo.update_ontology_status(ontology=changed_file, status='validation')
+        repo.save()
     repo.update_ontology_status(ontology=changed_file, status='finished')
     repo.save()
 
@@ -223,6 +229,7 @@ def create_of_get_conf(ofile, base_dir):
     widoco_sec_name = 'widoco'
     oops_sec_name = 'oops'
     owl2jsonld_sec_name = 'owl2jsonld'
+    themis_sec_name = 'themis'
     config = ConfigParser.RawConfigParser()
     # import subprocess
     # subprocess.call('echo "terminal output: "', shell=True)
@@ -247,16 +254,20 @@ def create_of_get_conf(ofile, base_dir):
         },
         'owl2jsonld': {
             'enable': True
+        },
+        'themis': {
+            'enable': False
         }
     }
     if len(conf_file) == 1:
         dolog(ofile+' configuration file exists')
+        # ar2dtool
         try:
             config_result['ar2dtool']['enable'] = config.getboolean(ar2dtool_sec_name, 'enable')
             dolog('got ar2dtool enable value: ' + str(config_result['ar2dtool']['enable']))
         except:
             dolog('ar2dtool enable value doesnot exist')
-
+        # widoco
         try:
             config_result['widoco']['enable'] = config.getboolean(widoco_sec_name, 'enable')
             config_result['widoco']['languages'] = config.get(widoco_sec_name, 'languages').replace(' ','').replace('"','').replace("'", '').split(',')
@@ -264,18 +275,26 @@ def create_of_get_conf(ofile, base_dir):
             dolog('languages: ')
             dolog(config_result['widoco']['languages'])
         except:
-            dolog('widoco enable value doesnot exist')
-
+            dolog('widoco enable value does not exist')
+        # oops
         try:
             config_result['oops']['enable'] = config.getboolean(oops_sec_name, 'enable')
             dolog('got oops enable value: ' + str(config_result['oops']['enable']))
         except:
-            dolog('oops enable value doesnot exist')
+            dolog('oops enable value does not exist')
+        # jsonld
         try:
             config_result['owl2jsonld']['enable'] = config.getboolean(owl2jsonld_sec_name, 'enable')
             dolog('got owl2jsonld enable value: ' + str(config_result['owl2jsonld']['enable']))
         except:
-            dolog('owl2jsonld enable value doesnot exist')
+            dolog('owl2jsonld enable value does not exist')
+        # themis
+        try:
+            config_result['themis']['enable'] = config.getboolean(themis_sec_name, 'enable')
+            dolog('got themis enable value: ' + str(config_result['themis']['enable']))
+        except:
+            dolog('themis enable value does not exist')
+
     else:
         dolog(ofile+' configuration file does not exists (not an error)')
         dolog('full path is: '+ofile_config_file_abs)
