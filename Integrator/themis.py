@@ -107,7 +107,7 @@ def validate_ontologies(target_repo, changed_files, base_dir):
         validate_ontology(base_dir, target_repo, f)
 
 
-def validate_an_ontology(base_dir, target_repo, ontology_rel_dir):
+def validate_ontology(base_dir, target_repo, ontology_rel_dir):
     report_output_dir = os.path.join(base_dir, get_target_home(), ontology_rel_dir, tools_conf['themis']['folder_name'])
     dolog("report output dir: %s" % report_output_dir)
     build_path_all(report_output_dir)
