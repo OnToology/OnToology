@@ -216,7 +216,6 @@ function GetURLParameter(sParam)
 <p class="red">{{error}}</p>
 
 
-<div class="chart" data-percent="73"><span><font size="1">73</font></span></div>
 
 <!--<h4>You can see what is going on with your repositories <a href="/progress">here</a></h4>-->
 <span id="profiletables">
@@ -598,6 +597,10 @@ $( document ).ready(function() {
 		    //$("#slidertag").html(resp.sliderhtml);
 		    //initsliders();
 		    $('#box').click();
+
+            refresh_easy_pie_chart();
+
+
 		});
 	});//repo selector
 
@@ -795,15 +798,17 @@ $('#accordion').on('show.bs.collapse', toggleChevron);
 
 
 <script type="text/javascript">
-$(function() {
-    $('.chart').easyPieChart({
+function refresh_easy_pie_chart(){
+        $('.chart').easyPieChart({
         size: 35,
         barColor: "#2950ab", // blue
         //barColor: "#15cc0e", // green
         //your configuration goes here
     });
-});
+    }
 </script>
+
+
 
 <div class="modal fade " id="publish-modal-add" tabindex="-1" role="dialog">
     <div class="modal-dialog">
