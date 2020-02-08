@@ -31,6 +31,7 @@ class OntologyStatusPair(Document):
         ('documentation', 'documentation'),
         ('evaluation', 'evaluation'),
         ('jsonld', 'jsonld'),
+        ('validation', 'validation'),
         ('finished', 'finished')
     )
     name = StringField(max_length=120)
@@ -85,7 +86,6 @@ class Repo(Document):
             osp.delete()
         self.ontology_status_pairs = []
         self.save()
-
 
     def __unicode__(self):
         return self.url
