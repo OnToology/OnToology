@@ -114,7 +114,7 @@ def validate_ontology(base_dir, target_repo, ontology_rel_dir):
     dolog("path is built")
     tests_file_dir = os.path.join(report_output_dir, tools_conf['themis']['tests_file_name'])
     results_file_dir = os.path.join(report_output_dir, tools_conf['themis']['results_file_name'])
-    write_tests(tests_file_dir)
+    write_tests(os.path.join(base_dir, ontology_rel_dir), tests_file_dir)
     write_test_results(target_repo, ontology_rel_dir, tests_file_dir,results_file_dir)
 
 
