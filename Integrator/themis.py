@@ -114,7 +114,7 @@ def validate_ontology(base_dir, target_repo, ontology_rel_dir):
     dolog("path is built")
     tests_file_dir = os.path.join(report_output_dir, tools_conf['themis']['tests_file_name'])
     results_file_dir = os.path.join(report_output_dir, tools_conf['themis']['results_file_name'])
-    write_tests(os.path.join(base_dir, ontology_rel_dir), tests_file_dir, base_dir)
+    write_tests(os.path.join(base_dir, ontology_rel_dir), tests_file_dir)
     write_test_results(target_repo, ontology_rel_dir, tests_file_dir,results_file_dir)
 
 
@@ -132,7 +132,7 @@ def write_test_results(target_repo, ontology_rel_dir, tests_file_dir, results_fi
     f.close()
 
 
-def write_tests(ontology_dir, tests_file_dir, base_dir):
+def write_tests(ontology_dir, tests_file_dir):
     """
     Write tests file if it does not exist
     :param ontology_dir: the absolute directory of the ontology
@@ -143,7 +143,7 @@ def write_tests(ontology_dir, tests_file_dir, base_dir):
         dolog("the themis file exists <%s> for the ontology <%s>" % (tests_file_dir, ontology_dir))
     else:
         dolog("the themis does not exist <%s> for the ontology <%s>" % (tests_file_dir, ontology_dir))
-        tests = generate_tests(os.path.join(base_dir, ontology_rel_dir))
+        tests = generate_tests(ontology_dir)
         f = open(tests_file_dir, 'w')
         for t in tests:
             f.write(t)
