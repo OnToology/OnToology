@@ -30,7 +30,9 @@
 <!--});-->
 <!--</script>-->
 
+<link rel="stylesheet" href="http://rendro.github.io/easy-pie-chart/stylesheets/jquery.easy-pie-chart.css">
 <script src="http://rendro.github.io/easy-pie-chart/javascripts/jquery.easy-pie-chart.js"></script>
+
 <script src="https://ahmad88me.github.io/outlinejs/cdn/outline.js"></script>
 <!--<script src="media/js/outline.js"></script>-->
 
@@ -500,12 +502,12 @@ $( document ).ready(function() {
 		    	if(ontologies[o].hasOwnProperty('themis_results')){
 		    	    ontologies[o]['themis_div'] = '<div class="chart" data-percent="'+
 		    	        ontologies[o]["themis_results"]+
-		    	        '">'+
+		    	        '"><span><font size="1">'+
 		    	        ontologies[o]["themis_results"]+
-		    	        '%</div>'
+		    	        '%</font></span></div>';
 		    	}
 		    	else{
-		    	    ontologies[o]['themis_div'] = '<div class="chart" data-percent="0">0%</div>'
+		    	    ontologies[o]['themis_div'] = '';//'<div class="chart" data-percent="0">0%</div>'
 		    	}
 
 				temp += "<input type='hidden' name='ontology' value='"+ontologies[o].ontology+"'/>"
@@ -793,6 +795,9 @@ $('#accordion').on('show.bs.collapse', toggleChevron);
 <script type="text/javascript">
 $(function() {
     $('.chart').easyPieChart({
+        size: 35,
+        barColor: "#2950ab", // blue
+        //barColor: "#15cc0e", // green
         //your configuration goes here
     });
 });
