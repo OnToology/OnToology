@@ -141,6 +141,7 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
     import oops
     import owl2jsonld
     import syntaxchecker
+    import themis
     dolog("will call create or get conf")
     conf = create_of_get_conf(changed_file, base_dir)
     dolog("conf: "+str(conf))
@@ -212,6 +213,10 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
         change_status(target_repo, 'generating validation for: '+changed_file)
         repo.update_ontology_status(ontology=changed_file, status='validation')
         repo.save()
+        try:
+            themis.validate_ontologies(target_repo=target_repo, changed_files=[changed_file], base_dir=base_dir)
+        except Exception as e:
+            dolog("Exception in running themis: "+str(e))
     repo.update_ontology_status(ontology=changed_file, status='finished')
     repo.save()
 
