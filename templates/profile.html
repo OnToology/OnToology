@@ -214,6 +214,10 @@ function GetURLParameter(sParam)
 {%endif%}
 
 <p class="red">{{error}}</p>
+
+
+<div class="chart" data-percent="73"><span><font size="1">73</font></span></div>
+
 <!--<h4>You can see what is going on with your repositories <a href="/progress">here</a></h4>-->
 <span id="profiletables">
 	<h3>Choose one of the below repo by clicking on it</h3>
@@ -495,8 +499,6 @@ $( document ).ready(function() {
 		    	else{
 		    	    oops_checked = '';
 		    	}
-
-
 
 
 		    	if(ontologies[o].hasOwnProperty('themis_results')){
