@@ -493,6 +493,21 @@ $( document ).ready(function() {
 		    	else{
 		    	    oops_checked = '';
 		    	}
+
+
+
+
+		    	if(ontologies[o].hasOwnProperty('themis_results')){
+		    	    ontologies[o]['themis_div'] = '<div class="chart" data-percent="'+
+		    	        ontologies[o]["themis_results"]+
+		    	        '">'+
+		    	        ontologies[o]["themis_results"]+
+		    	        '%</div>'
+		    	}
+		    	else{
+		    	    ontologies[o]['themis_div'] = '<div class="chart" data-percent="0">0%</div>'
+		    	}
+
 				temp += "<input type='hidden' name='ontology' value='"+ontologies[o].ontology+"'/>"
 		    	//temp += '<div class="row">'
 		    	temp = temp +
@@ -511,7 +526,7 @@ $( document ).ready(function() {
                         '<div class="col-md-10 col-xs-10">'+
                                 '<div class="col-md-6 col-xs-6">'+
                                     "<a href='https://github.com/"+current_url+"/blob/master"+ontologies[o].ontology+"'>"+
-                                    ontologies[o].ontology.substr(1)+"</a>"+
+                                    ontologies[o].ontology.substr(1)+"</a>"+ ontologies[o].themis_div +
                                 '</div>'+
                                 '<div class="col-md-2 col-xs-2 ">'+
                                     '<input type="checkbox" class=" " name="'+ontologies[o].ontology+'-ar2dtool" '+ar2dtool_checked+'>'+
@@ -772,11 +787,15 @@ $('#accordion').on('show.bs.collapse', toggleChevron);
 	function show_error(error){
 		toastr.error(error);
 	}
+</script>
 
 
-
-
-
+<script type="text/javascript">
+$(function() {
+    $('.chart').easyPieChart({
+        //your configuration goes here
+    });
+});
 </script>
 
 <div class="modal fade " id="publish-modal-add" tabindex="-1" role="dialog">
