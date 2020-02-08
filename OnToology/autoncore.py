@@ -972,7 +972,7 @@ def add_themis_results(target_repo, ontologies):
                          Integrator.tools_conf['themis']['results_file_name']
     for f in files:
         if f.path[:10] == get_target_home()+"/" and f.path[-23:] == themis_results_dir:
-            ontology_results_d[f.path[10:-23]] = f.path
+            ontology_results_d["/"+f.path[10:-23]] = f.path
 
     for o in ontologies:
         if o['ontology'] in ontology_results_d:
