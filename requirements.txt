@@ -2,7 +2,7 @@ certifi==2018.1.18
 chardet==3.0.4
 codecov==2.0.15
 coverage==3.7.1
-Django==1.11.23
+Django==1.11.28
 django-mongoengine==0.3.3
 idna==2.6
 isodate==0.6.0
