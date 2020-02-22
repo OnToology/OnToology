@@ -954,8 +954,95 @@ def get_confs_from_repo(target_repo):
     return repo, conf_files
 
 
+def add_themis_results(target_repo, ontologies):
+    """
+      get all themis results from a given repo,
+      then, cross reference them with the ontologies list,
+      then, add the themis results to the ontologies list
+    :param target_repo:
+    :param ontologies: a list of dicts of ontologies and tools
+    :return: list of pairs of the form (ontology path in the repo, themis results path in the repo)
+    """
+    global g
+    repo = g.get_repo(target_repo)
+    sha = repo.get_commits()[0].sha
+    files = repo.get_git_tree(sha=sha, recursive=True).tree
+    ontology_results_d = dict()  # of [ontology_rel_path] = results_path
+    themis_results_dir = "/"+Integrator.tools_conf['themis']['folder_name'] + "/" + \
+                         Integrator.tools_conf['themis']['results_file_name']
+    for f in files:
+        if f.path[:10] == get_target_home()+"/" and f.path[-23:] == themis_results_dir:
+            ontology_results_d["/"+f.path[10:-23]] = f.path
+
+    for o in ontologies:
+        if o['ontology'] in ontology_results_d:
+            o['themis_results'] = compute_themis_results(repo, ontology_results_d[o['ontology']])
+    return ontologies
+
+
+def compute_themis_results(repo, path):
+    """
+    :param repo:
+    :param path:
+    :return: score (0-100)
+    """
+    p = quote(path)
+    print "get file content: %s" % (str(path))
+    print "after quote: %s" % p
+    print "now get the decoded content"
+    # file_content = repo.get_file_contents(cpath.path).decoded_content
+    file_content = repo.get_file_contents(p).decoded_content
+    passed = 0
+    failed = 0
+    for line in file_content.split('\n'):
+        line = line.strip()
+        if line == "":
+            continue
+        else:
+            comp = line.split('\t')
+            if comp[1].strip() == "passed":
+                passed += 1
+            else:
+                failed += 1
+    return round(passed * 100 / (passed+failed))
+
+# This seems correct but no longer needed at the moment
+# def get_themis_results(target_repo):
+#     """
+#       get all themis results from a given repo
+#     :param target_repo:
+#     :return: list of pairs of the form (ontology path in the repo, themis results path in the repo)
+#     """
+#     global g
+#     repo = g.get_repo(target_repo)
+#     sha = repo.get_commits()[0].sha
+#     files = repo.get_git_tree(sha=sha, recursive=True).tree
+#     pairs = []  # of ontology_rel_dir, results_path
+#     themis_results_dir = "/"+Integrator.tools_conf['themis']['folder_name'] + "/" + \
+#                          Integrator.tools_conf['themis']['results_file_name']
+#     for f in files:
+#         if f.path[:10] == get_target_home()+"/" and f.path[-23:] == themis_results_dir:
+#             p = (f.path[10:-23], f.path)
+#             pairs.append(p)
+#     return pairs
+
+
+# def get_themis_score(ontology_path):
+#     """
+#     get the score (from 0-100) of the passed tests
+#     :param ontology_path:
+#     :return:
+#     """
+#     themis_results_dir = "/"+Integrator.tools_conf['themis']['folder_name'] + "/" + \
+#                              Integrator.tools_conf['themis']['results_file_name']
+#     results_path = get_target_home()+"/"+ontology_path+"/"+themis_results_dir
+#     f.path[-23:] == themis_results_dir
+
+
+
 def parse_online_repo_for_ontologies(target_repo):
-    """ This is parse repositories for ontologies configuration files OnToology.cfg
+    """
+        This is parse repositories for ontologies configuration files OnToology.cfg
     """
     global g
     if g is None:
@@ -984,6 +1071,24 @@ def parse_online_repo_for_ontologies(target_repo):
             tool = c.replace('_enable', '')
             o[tool] = confs[c]
         ontologies.append(o)
+
+    # check for themis results
+    # themis_results_dir = "/" + Integrator.tools_conf['themis']['folder_name'] + "/" + \
+    #                      Integrator.tools_conf['themis']['results_file_name']
+    # # construct the paths for all ontologies
+    # themis_paths = []
+    # for o in ontologies:
+    #     results_path = get_target_home() + "/" + o["ontology"] + "/" + themis_results_dir
+    #     themis_paths.append(results_path)
+    # # search if any path
+    # for cpath in conf_paths:
+    #     p = quote(cpath.path)
+    #     for o in ontologies:
+    #         if o["ontology"] == get_parent_path(p)[len(get_target_home()):]:
+    #
+    #
+    # f.path[-23:] == themis_results_dir
+
     return ontologies
 
 

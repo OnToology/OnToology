@@ -1,5 +1,11 @@
 {% extends "base.html"%} {%block body%}
 
+
+
+
+
+
+
 <!--<META HTTP-EQUIV="refresh" CONTENT="20">-->
 
 <!--<script>-->
@@ -24,6 +30,9 @@
 <!--});-->
 <!--</script>-->
 
+<link rel="stylesheet" href="http://rendro.github.io/easy-pie-chart/stylesheets/jquery.easy-pie-chart.css">
+<script src="http://rendro.github.io/easy-pie-chart/javascripts/jquery.easy-pie-chart.js"></script>
+
 <script src="https://ahmad88me.github.io/outlinejs/cdn/outline.js"></script>
 <!--<script src="media/js/outline.js"></script>-->
 
@@ -46,6 +55,7 @@
                                     {"title": "Documentation", "items": []},
                                     {"title": "Evaluating", "items": []},
                                     {"title": "JSON-LD", "items": []},
+                                    {"title": "Validation", "items": []},
                                     {"title": "Finished", "items": []},
                                  ]});
         g.draw();
@@ -96,6 +106,7 @@ var outline_function = function(){
             {"title": "Documentation", "items": data["stages"]["documentation"]},
             {"title": "Evaluation", "items": data["stages"]["evaluation"]},
             {"title": "JSON-LD", "items": data["stages"]["jsonld"]},
+            {"title": "Validation", "items": data["stages"]["validation"]},
             {"title": "Finished", "items": data["stages"]["finished"]}
         ]
 
@@ -203,6 +214,9 @@ function GetURLParameter(sParam)
 {%endif%}
 
 <p class="red">{{error}}</p>
+
+
+
 <!--<h4>You can see what is going on with your repositories <a href="/progress">here</a></h4>-->
 <span id="profiletables">
 	<h3>Choose one of the below repo by clicking on it</h3>
@@ -484,25 +498,26 @@ $( document ).ready(function() {
 		    	else{
 		    	    oops_checked = '';
 		    	}
+
+
+		    	if(ontologies[o].hasOwnProperty('themis_results')){
+		    	    ontologies[o]['themis_div'] = '<div class="chart" data-percent="'+
+		    	        ontologies[o]["themis_results"]+
+		    	        '"><span><font size="1">'+
+		    	        ontologies[o]["themis_results"]+
+		    	        '%</font></span></div>';
+		    	}
+		    	else{
+		    	    ontologies[o]['themis_div'] = '';//'<div class="chart" data-percent="0">0%</div>'
+		    	}
+
 				temp += "<input type='hidden' name='ontology' value='"+ontologies[o].ontology+"'/>"
 		    	//temp += '<div class="row">'
 		    	temp = temp +
-		    	    /*"<div class='ontology col-md-3 col-xs-3'><a href='https://github.com/"+current_url+"/blob/master"+ontologies[o].ontology+"'>"+ontologies[o].ontology.substr(1)+"</a>"+"</div>"+
-                        '<div class="col-md-2 col-xs-2">'+
-		    			    '<input type="checkbox" class=" " name="'+ontologies[o].ontology+'-ar2dtool" '+ar2dtool_checked+'>'+
-		    			'</div>'+
-		    			'<div class="col-md-2 col-xs-2">'+
-    		    			'<input type="checkbox" class=" col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-oops" '+oops_checked+'>'+
-                        '</div>'+
-                        '<div class="col-md-2 col-xs-2">'+
-    		    			'<input type="checkbox" class=" col-md-2 col-xs-2" name="'+ontologies[o].ontology+'-widoco" '+widoco_checked+'>'+
-    		    		'</div>'+
-    		    		*/
-
-                        '<div class="col-md-10 col-xs-10">'+
+		    	        '<div class="col-md-10 col-xs-10">'+
                                 '<div class="col-md-6 col-xs-6">'+
                                     "<a href='https://github.com/"+current_url+"/blob/master"+ontologies[o].ontology+"'>"+
-                                    ontologies[o].ontology.substr(1)+"</a>"+
+                                    ontologies[o].ontology.substr(1)+"</a>"+ ontologies[o].themis_div +
                                 '</div>'+
                                 '<div class="col-md-2 col-xs-2 ">'+
                                     '<input type="checkbox" class=" " name="'+ontologies[o].ontology+'-ar2dtool" '+ar2dtool_checked+'>'+
@@ -570,6 +585,10 @@ $( document ).ready(function() {
 		    //$("#slidertag").html(resp.sliderhtml);
 		    //initsliders();
 		    $('#box').click();
+
+            refresh_easy_pie_chart();
+
+
 		});
 	});//repo selector
 
@@ -763,12 +782,21 @@ $('#accordion').on('show.bs.collapse', toggleChevron);
 	function show_error(error){
 		toastr.error(error);
 	}
-
-
-
-
-
 </script>
+
+
+<script type="text/javascript">
+function refresh_easy_pie_chart(){
+        $('.chart').easyPieChart({
+        size: 35,
+        barColor: "#2950ab", // blue
+        //barColor: "#15cc0e", // green
+        //your configuration goes here
+    });
+    }
+</script>
+
+
 
 <div class="modal fade " id="publish-modal-add" tabindex="-1" role="dialog">
     <div class="modal-dialog">
