@@ -19,6 +19,12 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 4. Run the automated tests script `sh scripts/run_tests.sh` 
 
 
+# Run Locally
+1. `cp -Rf ~/.ssh/ ssh` (assuming you have a *nix and that you already have an ssh key)
+2. `mkdir -p .git`
+3. `docker-compose run -p 8000:8000 web .venv/bin/python manage.py runserver 0.0.0.0:8000`
+
+
 
 ## Secret setup
 This file should be added in `scripts/secret_setup.sh`
