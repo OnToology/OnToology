@@ -170,7 +170,7 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
         repo.update_ontology_status(ontology=changed_file, status='documentation')
         repo.save()
         try:
-            r = widoco.generate_widoco_docs([changed_file], base_dir, languages=conf['widoco']['languages'])
+            r = widoco.generate_widoco_docs([changed_file], base_dir, languages=conf['widoco']['languages'], webVowl=conf['widoco']['webVowl'])
             # if r != "":
             #     print 'in init documentation detected an error for ontology file: %s' % changed_file
             #     # repo.notes += 'Error generating documentation for %s. ' % changed_file
@@ -250,6 +250,7 @@ def create_of_get_conf(ofile, base_dir):
         'widoco': {
             'enable': True,
             'languages': ['en'],
+            'webVowl': False,
         },
         'ar2dtool': {
             'enable': True
@@ -276,7 +277,9 @@ def create_of_get_conf(ofile, base_dir):
         try:
             config_result['widoco']['enable'] = config.getboolean(widoco_sec_name, 'enable')
             config_result['widoco']['languages'] = config.get(widoco_sec_name, 'languages').replace(' ','').replace('"','').replace("'", '').split(',')
+            config_result['widoco']['webVowl'] = config.getboolean(widoco_sec_name, 'webVowl')
             dolog('got widoco enable value: ' + str(config_result['widoco']['enable']))
+            dolog('includes webVowl: ' + str(config_result['widoco']['webVowl']))
             dolog('languages: ')
             dolog(config_result['widoco']['languages'])
         except:
