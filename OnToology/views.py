@@ -98,7 +98,7 @@ def home(request):
             is_private = True
             client_id = client_id_private
             client_secret = client_secret_private
-            msg = """ Private repos are disabled at the moment. Please send us an email for further questions."""
+            msg = """ Private repos are not currently supported. You can make your private repos public and enjoy the functionalities of OnToology """
             return render(request, 'msg.html',  {'msg': msg})
         webhook_access_url, state = webhook_access(client_id, host + '/get_access_token', isprivate=is_private)
         request.session['target_repo'] = target_repo
