@@ -65,7 +65,7 @@ def create_widoco_doc(rdf_file, base_dir, languages):
         comm += " -getOntologyMetadata "
         comm += " -licensius "  # Only works if the -getOntologyMetadata flag is enabled.
         comm += " -saveConfig " + config_file_abs
-    comm += " -htaccess "
+    comm += " -htaccess -webVowl "
     comm += '-lang %s' % ('-'.join(languages))
     # if not settings.TEST:
     dolog("languages: ")
