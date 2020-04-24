@@ -98,15 +98,14 @@ def update_stats():
 {%%block body%%}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
     
-    generation date: %d - %d - %d </br></br>
+    generation date: <u>%d-%d-%d<\u></br></br>
     The average number of ontologies per repository: %d</br>
     The median number of ontologies per repository: %d</br>
     The total number of ontologies: %d</br>
     The total number of repositories: %d</br>
     The total number of published ontologies: %d</br>
     The total number of registered users: %d</br>
-    
-        
+            
     <div class="container-fluid ">
         <div class="row">
             <div class="col-lg-4 col-md-6 col-sm-7 col-xs-10">
