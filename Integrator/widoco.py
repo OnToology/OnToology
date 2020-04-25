@@ -68,7 +68,7 @@ def create_widoco_doc(rdf_file, base_dir, languages, webVowl):
     if webVowl:
         comm += " -webVowl "
     comm += '-lang %s' % ('-'.join(languages))
-    comm += ' -uniteAllSections'
+    comm += ' -uniteSections'
     # if not settings.TEST:
     dolog("languages: ")
     dolog(languages)
