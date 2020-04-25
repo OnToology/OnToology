@@ -55,7 +55,6 @@ def create_widoco_doc(rdf_file, base_dir, languages, webVowl):
     comm += timeout_comm + "java -jar "
     comm += ' -Dfile.encoding=utf-8 '
     comm += widoco_dir + "widoco.jar  -rewriteAll "
-    #comm += widoco_dir + "widoco-0.0.1-jar-with-dependencies.jar  "
     comm += " -ontFile '" + rdf_file_abs
     comm += "' -outFolder '" + out_abs_dir + "'"
     if use_conf_file:
@@ -69,13 +68,14 @@ def create_widoco_doc(rdf_file, base_dir, languages, webVowl):
     if webVowl:
         comm += " -webVowl "
     comm += '-lang %s' % ('-'.join(languages))
+    comm += ' -uniteAllSections'
     # if not settings.TEST:
     dolog("languages: ")
     dolog(languages)
     dolog("merged: ")
     dolog('-'.join(languages))
-    if True:
-        comm += ' >> "' + log_file_dir + '" '
+
+    comm += ' >> "' + log_file_dir + '" '
     #comm += " ; echo 'widoco' >> " + os.path.join(get_parent_path(out_abs_dir), verification_log_fname)
     dolog(comm)
     #return_code = call(comm, shell=True)
@@ -84,3 +84,5 @@ def create_widoco_doc(rdf_file, base_dir, languages, webVowl):
     if error_msg != "":
         return "Error while generating the documentation"
     return ""
+
+
