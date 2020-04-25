@@ -60,6 +60,7 @@ enable = True
 [widoco]
 enable = False
 languages = en,es,it
+webVowl = False
 
 [oops]
 enable = True
@@ -79,6 +80,7 @@ enable = False
 [widoco]
 enable = False
 languages = en,es,it
+webVowl = False
 
 [oops]
 enable = False
@@ -195,6 +197,7 @@ enable = False
 [widoco]
 enable = True
 languages = en,es,it
+webVowl = False
 
 [oops]
 enable = False
@@ -214,6 +217,7 @@ enable = False
 [widoco]
 enable = True
 languages = en,es,it
+webVowl = False
 
 [oops]
 enable = False
