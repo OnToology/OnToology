@@ -46,7 +46,7 @@
 
 //          ctx.canvas.width = base_area_component.clientWidth;
 //        ctx.canvas.width = base_area_component.offsetWidth;
-          ctx.canvas.width = base_area_component.clientWidth - (base_area_component.offsetWidth - base_area_component.clientWidth)
+          ctx.canvas.width = 0.95 * (base_area_component.clientWidth - (base_area_component.offsetWidth - base_area_component.clientWidth))
         var g = new OutlineGraph(ctx, {"title_color": "black",
                                  "items_color": "blue",
                                  "inner_color": "#3498DB",
