@@ -18,8 +18,6 @@
 #
 
 
-
-
 from github import Github
 from datetime import datetime
 from subprocess import call
@@ -34,24 +32,18 @@ from __init__ import *
 
 import Integrator
 
-
 import shutil
 import logging
 
 from mongoengine import *
 
-
 from urllib import quote
-
 
 use_database = True
 
 ToolUser = 'OnToologyUser'
 
-
 parent_folder = None
-
-
 
 publish_dir = os.environ['publish_dir']
 home = os.environ['github_repos_dir']  # e.g. home = 'blahblah/temp/'
@@ -116,7 +108,8 @@ def git_magic(target_repo, user, changed_filesss):
         delete_repo(local_repo)
         time.sleep(refresh_sleeping_secs)
     dolog('repo deleted')
-    if not settings.test_conf['local'] or settings.test_conf['fork'] or settings.test_conf['clone']:  # in case it is not test or test with fork option
+    if not settings.test_conf['local'] or settings.test_conf['fork'] or settings.test_conf[
+        'clone']:  # in case it is not test or test with fork option
         dolog('will fork the repo')
         change_status(target_repo, 'forking repo')
         forked_repo = fork_repo(target_repo)
@@ -145,14 +138,14 @@ def git_magic(target_repo, user, changed_filesss):
     files_to_verify = [c for c in changed_filesss if c[-4:] in ontology_formats]
     for c in changed_filesss:
         if c[:-4] in ontology_formats:
-            print "file to verify: "+c
+            print "file to verify: " + c
         else:
             print "c: %s c-4: %s" % (c, c[-4:])
 
     # After the loop
     dolog("number of files to verify %d" % (len(files_to_verify)))
     if len(files_to_verify) == 0:
-        print "files: "+str(files_to_verify)
+        print "files: " + str(files_to_verify)
         change_status(target_repo, 'Ready')
         drepo.progress = 100
         drepo.save()
@@ -204,7 +197,7 @@ def git_magic(target_repo, user, changed_filesss):
             change_status(target_repo, 'Ready')
         except Exception as e:
             exception_if_exists += str(e)
-            dolog('failed to create pull request: '+exception_if_exists)
+            dolog('failed to create pull request: ' + exception_if_exists)
             change_status(target_repo, 'failed to create a pull request')
     else:
         print 'No pull for testing'
@@ -217,7 +210,8 @@ def verify_tools_generation_when_ready(ver_file_comp, repo=None):
     ver_file = os.path.join(get_target_home(), ver_file_comp['file'], verification_log_fname)
     ver_file = get_abs_path(ver_file)
     dolog('ver file: ' + ver_file)
-    if ver_file_comp['ar2dtool_enable'] == ver_file_comp['widoco_enable'] == ver_file_comp['oops_enable'] == ver_file_comp['owl2jsonld_enable'] == False:
+    if ver_file_comp['ar2dtool_enable'] == ver_file_comp['widoco_enable'] == ver_file_comp['oops_enable'] == \
+            ver_file_comp['owl2jsonld_enable'] == False:
         return
     for i in range(20):
         time.sleep(15)
@@ -236,7 +230,7 @@ def verify_tools_generation_when_ready(ver_file_comp, repo=None):
         dolog('The removed file is: ' + ver_file)
         return verify_tools_generation(ver_file_comp, repo)
     repo.state = ver_file_comp['file'] + \
-        ' is talking too much time to generate output'
+                 ' is talking too much time to generate output'
     if settings.test_conf['local']:
         assert False, 'Taking too much time for verification'
     else:  # I want to see the file in case of testing
@@ -291,7 +285,7 @@ def verify_tools_generation(ver_file_comp, repo=None):
         file_exists = os.path.isfile(target_file)
         if repo is not None and not file_exists:
             repo.state += ' The Diagram of the file %s is not generated ' % \
-                (ver_file_comp['file'])
+                          (ver_file_comp['file'])
             repo.save()
         if settings.test_conf['local']:
             assert file_exists, 'the file %s is not generated' % (target_file)
@@ -377,7 +371,7 @@ def get_ontologies_from_a_submodule(path, url):
                             ontologies.append(os.path.join(path, f.path))
                             break
     except Exception as e:
-        print "get_ontologies_from_a_submodule exception: "+str(e)
+        print "get_ontologies_from_a_submodule exception: " + str(e)
     return ontologies
 
 
@@ -425,7 +419,7 @@ def get_ontologies_in_online_repo(target_repo):
                             break
         ontologies += get_ontologies_from_submodules_tree(files, repo)
     except Exception as e:
-        print "get_ontologies_in_online_repo exception: "+str(e)
+        print "get_ontologies_in_online_repo exception: " + str(e)
     return ontologies
 
 
@@ -490,7 +484,7 @@ def fork_repo(target_repo):
     repo = gg.get_repo(target_repo)
     user = gg.get_user()
     forked_repo = user.create_fork(repo)
-    dolog('forked to: '+forked_repo.name)
+    dolog('forked to: ' + forked_repo.name)
     return forked_repo
 
 
@@ -500,7 +494,7 @@ def clone_repo(cloning_url, parent_folder, dosleep=True):
         init_g()
     dolog('home: %s' % (home))
     dolog('parent_folder: %s' % (parent_folder))
-    #dolog('logfile: %s' % (log_file_dir))
+    # dolog('logfile: %s' % (log_file_dir))
     if dosleep:
         # the wait time to give github sometime so the repo can be cloned
         time.sleep(sleeping_time)
@@ -539,7 +533,7 @@ def commit_changes():
     global g
     if g is None:
         init_g()
-    gu = 'git config  user.email "ontoology'+'@delicias.dia.fi.upm.es";'
+    gu = 'git config  user.email "ontoology' + '@delicias.dia.fi.upm.es";'
     gu += 'git config  user.name "%s" ;' % (ToolUser)
     # comm = "cd " + home + parent_folder + ";" + gu + " git add . "
     comm = "cd " + os.path.join(home, parent_folder) + ";" + gu + " git add . "
@@ -583,8 +577,8 @@ def remove_old_pull_requests(target_repo):
             if p.title == title:
                 p.edit(state="closed")
         except Exception as e:
-            print "Exception removing an old pull request: "+str(e)
-            dolog("Exception removing an old pull request: "+str(e))
+            print "Exception removing an old pull request: " + str(e)
+            dolog("Exception removing an old pull request: " + str(e))
 
 
 def send_pull_request(target_repo, username):
@@ -616,7 +610,7 @@ def webhook_access(client_id, redirect_url, isprivate):
     # repo,public_repo,user,admin:public_key'
     sec = ''.join([random.choice(string.ascii_letters + string.digits)
                    for _ in range(9)])
-    return "https://github.com/login/oauth/authorize?client_id=" + client_id + "&redirect_uri=" +\
+    return "https://github.com/login/oauth/authorize?client_id=" + client_id + "&redirect_uri=" + \
            redirect_url + "&scope=" + scope + "&state=" + sec, sec
 
 
@@ -632,15 +626,15 @@ def remove_webhook(target_repo, notification_url):
     if g is None:
         init_g()
     # for some reason adding the below two prints solves the problem for removing the webhook, strange but true
-    print "target_repo: "+str(target_repo)
-    print "notification url: "+str(notification_url)
+    print "target_repo: " + str(target_repo)
+    print "notification url: " + str(notification_url)
     for hook in g.get_repo(target_repo).get_hooks():
         try:
             if hook.config["url"] == notification_url:
                 hook.delete()
                 break
         except Exception as e:
-            print "error removing the webhook: %s" %(str(e))
+            print "error removing the webhook: %s" % (str(e))
             time.sleep(2)
     sys.stdout.flush()
     sys.stderr.flush()
@@ -689,11 +683,11 @@ def add_collaborator(target_repo, user, newg=None):
                     password = os.environ['github_password']
                     g_ontoology_user = Github(username, password)
                     g_ontoology_user.get_user().accept_invitation(invitation)
-                    print "invitation accepted: "+str(invitation)
+                    print "invitation accepted: " + str(invitation)
                     return {'status': True, 'msg': 'added as a new collaborator'}
                 except Exception as e:
-                    print "exception: "+str(e)
-                    print "invitation not accepted or invalid: "+str(invitation)
+                    print "exception: " + str(e)
+                    print "invitation not accepted or invalid: " + str(invitation)
                     return {'status': False, 'error': 'Could not accept the invitation for becoming a collaborator'}
     except Exception as e:
         return {'status': False, 'error': str(e)}  # e.data}
@@ -710,7 +704,7 @@ def previsual(useremail, target_repo):
     if len(user) != 1:
         error_msg = "%s is invalid email %s" % useremail
         print(error_msg)
-        dolog("previsual> "+error_msg)
+        dolog("previsual> " + error_msg)
         return error_msg
     user = user[0]
     found = False
@@ -721,12 +715,12 @@ def previsual(useremail, target_repo):
             repo = r
             break
     if found:
-        dolog("previsual> "+"repo is found and now generating previsualization")
+        dolog("previsual> " + "repo is found and now generating previsualization")
         repo.state = 'Generating Previsualization'
         repo.notes = ''
         repo.previsual_page_available = True
         repo.save()
-        #prepare_log(user.email)
+        # prepare_log(user.email)
         # cloning_repo should look like 'git@github.com:AutonUser/target.git'
         cloning_repo = 'git@github.com:%s.git' % target_repo
         sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
@@ -750,7 +744,7 @@ def previsual(useremail, target_repo):
         repo.state = 'Ready'
         repo.save()
         error_msg = 'You should add the repo while you are logged in before the revisual renewal'
-        dolog("previsual> "+error_msg)
+        dolog("previsual> " + error_msg)
         return error_msg
 
 
@@ -765,7 +759,7 @@ def get_file_content(target_repo, path, branch=None):
     password = os.environ['github_password']
     g = Github(username, password)
     repo = g.get_repo(target_repo)
-    #sha = repo.get_file_contents(path).sha
+    # sha = repo.get_file_contents(path).sha
     if branch is None:
         return repo.get_file_contents(path).decoded_content
     else:
@@ -783,17 +777,17 @@ def generate_bundle(base_dir, target_repo, ontology_bundle):
     if g is None:
         init_g()
     try:
-        print 'ontology bundle: '+ontology_bundle
+        print 'ontology bundle: ' + ontology_bundle
         repo = g.get_repo(target_repo)
         sha = repo.get_commits()[0].sha
         files = repo.get_git_tree(sha=sha, recursive=True).tree
-        print 'num of files: '+str(len(files))
+        print 'num of files: ' + str(len(files))
         for f in files:
             try:
                 for i in range(3):
                     try:
-                        print 'f: '+str(f)
-                        print 'next: '+str(f.path)
+                        print 'f: ' + str(f)
+                        print 'next: ' + str(f.path)
                         p = f.path
                         break
                     except:
@@ -803,12 +797,12 @@ def generate_bundle(base_dir, target_repo, ontology_bundle):
                     p = p[1:]
                 abs_path = os.path.join(base_dir, p)
                 if p[:len(ontology_bundle)] == ontology_bundle:
-                    print 'true: '+str(p)
+                    print 'true: ' + str(p)
                     if f.type == 'tree':
                         os.makedirs(abs_path)
                     elif f.type == 'blob':
                         parent_folder = os.path.join(*abs_path.split('/')[:-1])
-                        if parent_folder != base_dir: # not in the top level of the repo
+                        if parent_folder != base_dir:  # not in the top level of the repo
                             try:
                                 os.makedirs(parent_folder)
                             except:
@@ -820,17 +814,17 @@ def generate_bundle(base_dir, target_repo, ontology_bundle):
                     else:
                         print 'unknown type in generate bundle'
                 else:
-                    print 'not: '+p
+                    print 'not: ' + p
             except Exception as e:
-                print 'exception: '+str(e)
+                print 'exception: ' + str(e)
         zip_file = os.path.join(base_dir, '%s.zip' % ontology_bundle.split('/')[-1])
         comm = "cd %s; zip -r '%s' OnToology" % (base_dir, zip_file)
         print 'comm: %s' % comm
         call(comm, shell=True)
         return os.path.join(base_dir, zip_file)
-        #return None
+        # return None
     except Exception as e:
-        print 'error in generate_bundle: '+str(e)
+        print 'error in generate_bundle: ' + str(e)
         return None
 
 
@@ -866,47 +860,48 @@ def publish(name, target_repo, ontology_rel_path, useremail):
         ontology_rel_path = ontology_rel_path[1:]
     if ontology_rel_path[-1] == '/':
         ontology_rel_path = ontology_rel_path[:-1]
-    ontology_rel_path_with_slash = "/"+ontology_rel_path
+    ontology_rel_path_with_slash = "/" + ontology_rel_path
     name = ''.join(ch for ch in name if ch.isalnum() or ch == '_')
     if found:  # if the repo belongs to the user
         if len(PublishName.objects.filter(name=name)) > 1:
             error_msg = 'a duplicate published names, please contact us ASAP to fix it'
-            dolog("publish> "+error_msg)
+            dolog("publish> " + error_msg)
             return error_msg
 
         if (len(PublishName.objects.filter(name=name)) == 0 and
                 len(PublishName.objects.filter(user=user, ontology=ontology_rel_path_with_slash, repo=repo)) > 0):
             error_msg = 'can not reserve multiple names for the same ontology'
-            dolog("publish> "+error_msg)
+            dolog("publish> " + error_msg)
             return error_msg
 
         if len(PublishName.objects.filter(name=name)) == 1 and len(
                 PublishName.objects.filter(user=user, ontology=ontology_rel_path_with_slash, repo=repo)) == 0:
             error_msg = "This name is already taken, please choose a different one"
-            dolog("publish> "+error_msg)
+            dolog("publish> " + error_msg)
             return error_msg
 
         # new name and ontology is not published or old name and ontology published with the same name
         if (len(PublishName.objects.filter(name=name)) == 0 and
             len(PublishName.objects.filter(user=user, ontology=ontology_rel_path_with_slash, repo=repo)) == 0) or (
-                len(PublishName.objects.filter(user=user, ontology=ontology_rel_path_with_slash, repo=repo, name=name)) == 1):
+                len(PublishName.objects.filter(user=user, ontology=ontology_rel_path_with_slash, repo=repo,
+                                               name=name)) == 1):
             try:
                 htaccess = get_file_content(target_repo=target_repo,
-                                                      path=os.path.join('OnToology', ontology_rel_path,
-                                                                        'documentation/.htaccess'), branch='gh-pages')
-                dolog("publish> "+"gotten the htaccess successfully")
+                                            path=os.path.join('OnToology', ontology_rel_path,
+                                                              'documentation/.htaccess'), branch='gh-pages')
+                dolog("publish> " + "gotten the htaccess successfully")
             except Exception as e:
                 if '404' in str(e):
                     # return "documentation of the ontology has to be generated first."
-                    error_msg= """documentation of the ontology has to be generated first. 
+                    error_msg = """documentation of the ontology has to be generated first. 
                     %s""" % os.path.join('OnToology', ontology_rel_path, 'documentation/.htaccess')
-                    dolog("publish> "+error_msg)
+                    dolog("publish> " + error_msg)
                     return error_msg
                 else:
                     error_msg = "github error: %s" % str(e)
-                    dolog("publish> "+error_msg)
+                    dolog("publish> " + error_msg)
                     return error_msg
-            dolog("publish> "+"htaccess content: ")
+            dolog("publish> " + "htaccess content: ")
             dolog(htaccess)
             new_htaccess = htaccess_github_rewrite(target_repo=target_repo, htaccess_content=htaccess,
                                                    ontology_rel_path=ontology_rel_path)
@@ -916,7 +911,7 @@ def publish(name, target_repo, ontology_rel_path, useremail):
                                                                    '.htaccess'),
                         content=new_htaccess, branch='gh-pages', message='OnToology Publish')
             comm = 'mkdir "%s"' % os.path.join(publish_dir, name)
-            dolog("publish> "+comm)
+            dolog("publish> " + comm)
             call(comm, shell=True)
             f = open(os.path.join(publish_dir, name, '.htaccess'), 'w')
             f.write(new_htaccess)
@@ -924,13 +919,14 @@ def publish(name, target_repo, ontology_rel_path, useremail):
             if len(PublishName.objects.filter(name=name)) == 0:
                 p = PublishName(name=name, user=user, repo=repo, ontology=ontology_rel_path_with_slash)
                 p.save()
-            dolog("publish> "+"published correctly")
+            dolog("publish> " + "published correctly")
             return ""  # means it is published correctly
     else:
-        error_msg =  """This repository is not register under your account. If you are the owner, you can add it to OnToology,
+        error_msg = """This repository is not register under your account. If you are the owner, you can add it to OnToology,
          Or you can fork it to your GitHub account and register the fork to OnToology"""
-        dolog("publish> "+error_msg)
+        dolog("publish> " + error_msg)
         return error_msg
+
 
 ########################################################################
 ########################################################################
@@ -968,11 +964,11 @@ def add_themis_results(target_repo, ontologies):
     sha = repo.get_commits()[0].sha
     files = repo.get_git_tree(sha=sha, recursive=True).tree
     ontology_results_d = dict()  # of [ontology_rel_path] = results_path
-    themis_results_dir = "/"+Integrator.tools_conf['themis']['folder_name'] + "/" + \
+    themis_results_dir = "/" + Integrator.tools_conf['themis']['folder_name'] + "/" + \
                          Integrator.tools_conf['themis']['results_file_name']
     for f in files:
-        if f.path[:10] == get_target_home()+"/" and f.path[-23:] == themis_results_dir:
-            ontology_results_d["/"+f.path[10:-23]] = f.path
+        if f.path[:10] == get_target_home() + "/" and f.path[-23:] == themis_results_dir:
+            ontology_results_d["/" + f.path[10:-23]] = f.path
 
     for o in ontologies:
         if o['ontology'] in ontology_results_d:
@@ -1004,7 +1000,8 @@ def compute_themis_results(repo, path):
                 passed += 1
             else:
                 failed += 1
-    return round(passed * 100 / (passed+failed))
+    return round(passed * 100 / (passed + failed))
+
 
 # This seems correct but no longer needed at the moment
 # def get_themis_results(target_repo):
@@ -1039,7 +1036,6 @@ def compute_themis_results(repo, path):
 #     f.path[-23:] == themis_results_dir
 
 
-
 def parse_online_repo_for_ontologies(target_repo):
     """
         This is parse repositories for ontologies configuration files OnToology.cfg
@@ -1059,11 +1055,11 @@ def parse_online_repo_for_ontologies(target_repo):
         print "now get the decoded content"
         # file_content = repo.get_file_contents(cpath.path).decoded_content
         file_content = repo.get_file_contents(p).decoded_content
-        print "file_content: "+str(file_content)
+        print "file_content: " + str(file_content)
         buffile = StringIO.StringIO(file_content)
         print "will get the config"
         confs = get_auton_config(buffile)
-        print "gotten confs: "+str(confs)
+        print "gotten confs: " + str(confs)
         o = {}
         # o['ontology'] = get_parent_path(cpath.path)[len(get_target_home()):]
         o['ontology'] = get_parent_path(p)[len(get_target_home()):]
@@ -1340,11 +1336,12 @@ def is_busy(repo_name):
     repo = repos[0]
     return repo.busy
 
+
 def clear_busy():
     from models import Repo
     repos = Repo.objects.all()
     for r in repos:
-        r.busy=False
+        r.busy = False
         r.save()
 
 
@@ -1357,9 +1354,9 @@ def clear_busy():
 
 def generate_user_log(log_file_name):
     # comm = 'cp ' + home + 'log/' + log_file_name + '  ' + \
-    comm = 'cp ' + os.path.join(home,'log',log_file_name) + '  ' + \
+    comm = 'cp ' + os.path.join(home, 'log', log_file_name) + '  ' + \
            os.path.join(settings.MEDIA_ROOT,
-                     'logs')  # ' /home/ubuntu/auton/media/logs/'
+                        'logs')  # ' /home/ubuntu/auton/media/logs/'
     print comm
     sys.stdout.flush()
     if sys.stdout == default_stdout:
@@ -1409,8 +1406,9 @@ if __name__ == "__main__":
     django_setup_script()
     from OnToology.models import *
     import argparse
+
     parser = argparse.ArgumentParser(description='')
-    #parser.add_argument('task', type=str)
+    # parser.add_argument('task', type=str)
 
     parser.add_argument('--ontology_rel_path', default="")
     parser.add_argument('--publishname', default="")
@@ -1445,5 +1443,3 @@ if __name__ == "__main__":
         clear_busy()
     else:
         print 'autoncore> invalid user email: <%s>' % args.useremail
-
-
