@@ -50,6 +50,7 @@ import autoncore
 from settings import host
 # from settings import client_id_login, client_id_public, client_id_private, client_secret_login, client_secret_public, client_secret_private
 import Integrator.previsual as previsual
+import rabbit
 
 client_id_login = os.environ['client_id_login']  # 'e2ea731b481438fd1675'
 client_id_public = os.environ['client_id_public']  # '878434ff1065b7fa5b92'
@@ -289,12 +290,30 @@ def add_hook(request):
         print 'will call git_magic with target=%s, user=%s, cloning_repo=%s, changed_files=%s' % (target_repo, user,
                                                                                                   cloning_repo,
                                                                                                   str(changed_files))
-        git_magic(target_repo, user, changed_files)
+        # git_magic(target_repo, user, changed_files)
+        j = {
+            'action': 'magic',
+            'repo': target_repo,
+            'useremail': user,
+            'changedfiles': changed_files,
+            'created': str(datetime.now()),
+        }
+        rabbit.send(j)
         return
     else:
         print 'running autoncore code as: ' + comm
         try:
-            subprocess.Popen(comm, shell=True)
+            j = {
+                'action': 'magic',
+                'repo': target_repo,
+                'useremail': user,
+                'changedfiles': changed_files,
+                'created': str(datetime.now()),
+            }
+            rabbit.send(j)
+            # if j['action'] == 'magic':
+            #     autoncore.git_magic(j['repo_name'], j['useremail'], j['changedfiles'])
+            # subprocess.Popen(comm, shell=True)
         except Exception as e:
             error_msg = str(e)
             print 'error running generall all subprocess: ' + error_msg
@@ -357,12 +376,28 @@ def generateforall(target_repo, user_email):
         comm += '"' + c.strip() + '" '
     if settings.test_conf['local']:
         print "running autoncode in the same thread"
-        git_magic(target_repo, user, changed_files)
+        # git_magic(target_repo, user, changed_files)
+        j = {
+            'action': 'magic',
+            'repo': target_repo,
+            'useremail': user,
+            'changedfiles': changed_files,
+            'created': str(datetime.now()),
+        }
+        rabbit.send(j)
     else:
         print 'running autoncore code as: ' + comm
 
         try:
-            subprocess.Popen(comm, shell=True)
+            j = {
+                'action': 'magic',
+                'repo': target_repo,
+                'useremail': user,
+                'changedfiles': changed_files,
+                'created': str(datetime.now()),
+            }
+            rabbit.send(j)
+            # subprocess.Popen(comm, shell=True)
         except Exception as e:
             sys.stdout.flush()
             sys.stderr.flush()

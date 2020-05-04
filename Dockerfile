@@ -14,8 +14,9 @@ COPY .coveragerc ./
 #COPY ssh/id_rsa ~/.ssh/
 #COPY ssh/id_rsa.pub ~/.ssh/
 
-ARG db_host=db
-ARG db_port=27017
+#ARG db_host=db
+#ARG db_port=27017
+#ARG rabbit_host=rabbitmq
 ARG github_password
 ARG client_id_login
 ARG client_id_public
@@ -25,6 +26,14 @@ ARG client_secret_public
 ARG client_secret_private
 ARG test_user_token
 ARG test_user_email
+
+
+ENV db_host db
+ENV db_port 27017
+ENV rabbit_host rabbitmq
+ENV rabbit_host rabbitmq
+ENV rabbit_log_dir /playground/rabbit.log
+
 
 #RUN nohup bash -c "mongod --config /etc/mongod.conf &" && sleep 4 && echo "Mongo should be running"
 #RUN bash -c "mongod --config /etc/mongod.conf & sleep 4 && echo 'Mongo should be running' && tail -F /dev/null"

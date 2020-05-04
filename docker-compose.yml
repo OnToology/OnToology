@@ -1,6 +1,11 @@
 version: '3'
 
 services:
+  rabbitmq:
+    image: rabbitmq:3.8-alpine
+    ports:
+    # The standard AMQP protocol port
+    - '5672:5672'
   db:
     image: mongo:4.0.9-xenial
 #    ports:
@@ -21,6 +26,7 @@ services:
     build: .
     depends_on:
       - db
+      - rabbitmq
     ports:
       - "8000:8000"
     stdin_open: true
