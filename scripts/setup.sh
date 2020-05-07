@@ -66,6 +66,7 @@ environ['test_user_token']="$test_user_token"
 environ['test_user_email']="$test_user_email"
 environ['db_host']="$db_host"
 environ['db_port']="$db_port"
+environ['debug']="true"
 
 EOT
 
@@ -196,27 +197,10 @@ http://www.w3.org/2000/01/rdf-schema#subClassOf
 EOT
 
 
-# Setup OnToology libs
-#virtualenv -p /usr/bin/python2.7 .venv
-#.venv/bin/pip install -r requirements.txt
-#mongod --config /etc/mongod.conf &
-#systemctl enable mongod.service
-#mongod &
-
-
-
-#echo "Will run mongo"
-#mongod --config /etc/mongod.conf
-#nohup sh -c mongod --config /etc/mongod.conf &
-#nohup bash -c " mongod --config /etc/mongod.conf 2>&1 &" && sleep 4
-#cat nohup.out
-
-
 #Run tests
 #echo "Will run the tests"
 #.venv/bin/python manage.py test OnToology
 
 
 # This should be moved to the base
-#.venv/bin/pip install https://github.com/MongoEngine/django-mongoengine/archive/master.zip
 #.venv/bin/pip install -r requirements.txt

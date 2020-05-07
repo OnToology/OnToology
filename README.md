@@ -21,14 +21,15 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 
 # Run Locally
 1. `cp -Rf ~/.ssh/ ssh` (assuming you have a *nix and that you already have an ssh key)
-2. `mkdir -p .git`
-3. `docker-compose run -p 8000:8000 web .venv/bin/python manage.py runserver 0.0.0.0:8000`
-4. Run the RabbitMQ server (consumers).
+1. `mkdir -p .git`
+1. `docker-compose build --no-cache`
+1. `docker-compose run -p 8000:8000 web .venv/bin/python manage.py runserver 0.0.0.0:8000`
+1. Run the RabbitMQ server (consumers).
     - Locally: `python OnToology/rabbit.py` 
     - For a linux server: 
 `nohup .venv/bin/python OnToology/rabbit.py &`
-5. (Optional) you can run it multiple times (multiple consumers) to speed it up.
-
+1. (Optional) you can run it multiple times (multiple consumers) to speed it up.
+1. `.venv/bin/python OnToology/rabbit.py NUMOFPROC`
 
 # Recover from a failure/crash or a server restart
 1. Release all busy locks from the DB `.venv/bin/python OnToology/autoncore.py --busyclear` 

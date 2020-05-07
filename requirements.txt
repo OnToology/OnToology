@@ -19,3 +19,4 @@ selenium==2.52.0
 six==1.9.0
 urllib3==1.25.3
 pika==1.1.0
+TPool==1.2

@@ -27,7 +27,7 @@ ARG client_secret_private
 ARG test_user_token
 ARG test_user_email
 
-
+ENV debug "True"
 ENV db_host db
 ENV db_port 27017
 ENV rabbit_host rabbitmq

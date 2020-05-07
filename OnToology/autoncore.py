@@ -515,9 +515,9 @@ def clone_repo(cloning_url, parent_folder, dosleep=True):
     print "comm: %s" % comm
     call(comm, shell=True)
     # Change ownership to solve the problem of permission denied to create OnToology.cfg file
-    comm = 'chown $USER  "%s"' % os.path.join(home, parent_folder)
-    print "chown command: "
-    print comm
+    # comm = 'chown $USER  "%s"' % os.path.join(home, parent_folder)
+    # print "chown command: "
+    # print comm
     dolog(comm)
     call(comm, shell=True)
     # comm = "chmod -R 777 " + home + parent_folder
@@ -1323,26 +1323,57 @@ def get_proper_loggedin_scope(ouser, target_repo):
         return True
 
 
-def is_busy(repo_name):
-    """
-    Whether the repo is busy or not
-    :param repo_name:
-    :return: True, False, None (if the repo do not exists)
-    """
-    from models import Repo
-    repos = Repo.objects.filter(url=repo_name.strip())
-    if len(repos) == 0:
-        return None
-    repo = repos[0]
-    return repo.busy
+# def is_busy(repo_name):
+#     """
+#     Whether the repo is busy or not
+#     :param repo_name:
+#     :return: True, False, None (if the repo do not exists)
+#     """
+#     from models import Repo
+#     repos = Repo.objects.filter(url=repo_name.strip())
+#     if len(repos) == 0:
+#         return None
+#     repo = repos[0]
+#     return repo.busy
 
-
-def clear_busy():
-    from models import Repo
-    repos = Repo.objects.all()
-    for r in repos:
-        r.busy = False
-        r.save()
+# def busy_lock(repo_name):
+#     """
+#     Whether the repo is busy or not and set it to busy
+#     :param repo_name:
+#     :return: True, False, None (if the repo do not exists)
+#     """
+#     from models import Repo
+#     repos = Repo.objects.filter(url=repo_name.strip())
+#     if len(repos) == 0:
+#         return None
+#     repo = repos[0]
+#     ret = repo.busy
+#     repo.busy = True
+#     repo.save()
+#     return ret
+#
+#
+# def busy_unlock(repo_name):
+#     """
+#     Whether unlock
+#     :param repo_name:
+#     :return:
+#     """
+#     from models import Repo
+#     repos = Repo.objects.filter(url=repo_name.strip())
+#     if len(repos) == 0:
+#         return None
+#     repo = repos[0]
+#     repo.busy = False
+#     repo.save()
+#
+#
+# def clear_busy():
+#     from models import Repo
+#     repos = Repo.objects.all()
+#     for r in repos:
+#         r.busy = False
+#         r.save()
 
 
 ##########################################################################
@@ -1418,7 +1449,7 @@ if __name__ == "__main__":
     parser.add_argument('--useremail')
     parser.add_argument('--magic', action='store_true', default=False)
     parser.add_argument('--changedfiles', action='append', nargs='*')
-    parser.add_argument('--busyclear', action='store_true', default=False)
+    # parser.add_argument('--busyclear', action='store_true', default=False)
     # parser.add_argument('runid', type=int, metavar='Annotation_Run_ID', help='the id of the Annotation Run ')
     # parser.add_argument('--csvfiles', action='append', nargs='+', help='the list of csv files to be annotated')
     # parser.add_argument('--dotype', action='store_true', help='To conclude the type/class of the given csv file')
@@ -1439,8 +1470,8 @@ if __name__ == "__main__":
                 pass
         else:
             print 'autoncore> invalid target repo: <%s>' % args.target_repo
-    elif args.busyclear:
-        clear_busy()
+    # elif args.busyclear:
+    #     clear_busy()
     else:
         print 'autoncore> invalid user email: <%s>' % args.useremail
 
