@@ -28,8 +28,7 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
     - Locally: `python OnToology/rabbit.py` 
     - For a linux server: 
 `nohup .venv/bin/python OnToology/rabbit.py &`
-1. (Optional) you can run it multiple times (multiple consumers) to speed it up.
-1. `.venv/bin/python OnToology/rabbit.py NUMOFPROC`
+1. (Optional) you can run it with multiple threads `nohup .venv/bin/python OnToology/rabbit.py 3 &`
 
 # Recover from a failure/crash or a server restart
 1. Release all busy locks from the DB `.venv/bin/python OnToology/autoncore.py --busyclear` 

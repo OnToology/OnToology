@@ -938,6 +938,20 @@ def publish(name, target_repo, ontology_rel_path, useremail):
 import ConfigParser
 
 
+def get_conf(ar2dtool, widoco, oops):
+    conf = """
+[ar2dtool]
+enable = %s
+
+[widoco]
+enable = %s
+
+[oops]
+enable = %s
+    """ % (str(ar2dtool), str(widoco), str(oops))
+    return conf
+
+
 def get_confs_from_repo(target_repo):
     global g
     repo = g.get_repo(target_repo)

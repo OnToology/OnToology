@@ -16,6 +16,11 @@ connection = None
 
 
 def set_config(logger, logdir=""):
+    """
+    :param logger: logger
+    :param logdir: the directory log
+    :return:
+    """
     if logdir != "":
         handler = logging.FileHandler(logdir)
     else:
@@ -46,35 +51,18 @@ else:
     set_config(logger)
 
 
-# def get_logger():
-#     """
-#     To be used by the different threads
-#     :return:
-#     """
-#     if 'rabbit_log_dir' in os.environ:
-#         log_dir = os.environ['rabbit_log_dir']
-#         logger = logging.getLogger(__name__)
-#         set_config(logger, log_dir)
-#     else:
-#         logger = logging.getLogger(__name__)
-#         set_config(logger)
-#     return logger
-
-
 def send(message_json):
     """
     :param message:
     :return:
     """
-    # logger = get_logger()
-    # from autoncore import prepare_logger
-    # prepare_logger()
+    global logger
     connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
     channel = connection.channel()
     queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=True)
     logger.debug("send> number of messages in the queue is: "+str(queue.method.message_count))
     message = json.dumps(message_json)
-    logger.debug("sending message")
+    logger.debug("send> sending message")
     logger.debug(message)
     channel.basic_publish(exchange='',
                           routing_key=queue_name,
@@ -83,22 +71,6 @@ def send(message_json):
                               delivery_mode=2,  # make message persistent
                           ))
     connection.close()
-
-
-# def callback(ch, method, properties, body, args):
-#     """
-#     Spawn a thread to consume it
-#     :param ch:
-#     :param method:
-#     :param properties:
-#     :param body:
-#     :return:
-#     """
-#     connection_ = args[0]
-#     delivery_tag = method.delivery_tag
-#     th = threading.Thread(target=callback_handler, args=(ch, method, properties, body, delivery_tag, connection_))
-#     th.start()
-#     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 
 def callback(ch, method, properties, body):
@@ -111,9 +83,69 @@ def callback(ch, method, properties, body):
     :return:
     """
     global lock
+    global logger
     try:
+        # j = json.loads(body)
+        # if j['action'] == 'magic':
+        #     repo_name = j['repo']
+        #     logger.debug('callback repo: '+repo_name)
+        #     lock.acquire()
+        #     busy = repo_name in locked_repos
+        #     if not busy:
+        #         logger.debug('not busy repo: ' + repo_name)
+        #         locked_repos.append(repo_name)
+        #     else:
+        #         logger.debug('is busy repo: ' + repo_name)
+        #     lock.release()
+        #
+        #     if busy:
+        #         logger.debug(repo_name+" is busy --- ")
+        #         time.sleep(5)
+        #         ch.basic_nack(delivery_tag=method.delivery_tag)
+        #     else:
+        #         logger.debug(" ---  Consuming: " + repo_name)
+        #         logger.debug(body)
+        #         handle_action(j)
+        #         logger.debug(repo_name+" Completed!")
+        #         lock.acquire()
+        #         logger.debug(repo_name+" to remove it from locked repos")
+        #         locked_repos.remove(repo_name)
+        #         logger.debug(repo_name+" is removed")
+        #         lock.release()
+        #         logger.debug(repo_name+" is sending the ack")
+        #         ch.basic_ack(delivery_tag=method.delivery_tag)
+        # elif j['action'] == "change_conf":
+        #     # j = {
+        #     #     'action': 'change_conf',
+        #     #     'repo': target_repo,
+        #     #     'useremail': request.user.email,
+        #     #     'ontologies': ontologies,
+        #     #     'created': str(datetime.now()),
+        #     # }
+        #     # rabbit.send(j)
+        #     for onto in j['ontologies']:
+        #         print 'inside the loop'
+        #         ar2dtool = onto + '-ar2dtool' in data
+        #         print 'ar2dtool: ' + str(ar2dtool)
+        #         widoco = onto + '-widoco' in data
+        #         print 'widoco: ' + str(widoco)
+        #         oops = onto + '-oops' in data
+        #         print 'oops: ' + str(oops)
+        #         print 'will call get_conf'
+        #         new_conf = get_conf(ar2dtool, widoco, oops)
+        #         print 'will call update_file'
+        #         o = 'OnToology' + onto + '/OnToology.cfg'
+        #         try:
+        #             print "target_repo <%s> ,  path <%s> ,  message <%s> ,   content <%s>" % (
+        #                 data['repo'], o, 'OnToology Configuration', new_conf)
+        #             update_file(data['repo'], o, 'OnToology Configuration', new_conf)
+        #         except Exception as e:
+        #             print 'Error in updating the configuration: ' + str(e)
+        #             return render(request, 'msg.html', {'msg': str(e)})
+        #         print 'returned from update_file'
+        #     print 'will return msg html'
         j = json.loads(body)
-        if j['action'] == 'magic':
+        if j['action'] in ['magic', 'change_conf']:
             repo_name = j['repo']
             logger.debug('callback repo: '+repo_name)
             lock.acquire()
@@ -132,7 +164,10 @@ def callback(ch, method, properties, body):
             else:
                 logger.debug(" ---  Consuming: " + repo_name)
                 logger.debug(body)
-                handle_action(j)
+                if j['action'] == 'magic':
+                    handle_action(j)
+                elif j['action'] == 'change_conf':
+                    handle_conf_change(j)
                 logger.debug(repo_name+" Completed!")
                 lock.acquire()
                 logger.debug(repo_name+" to remove it from locked repos")
@@ -143,7 +178,9 @@ def callback(ch, method, properties, body):
                 ch.basic_ack(delivery_tag=method.delivery_tag)
     except Exception as e:
         print("ERROR: "+str(e))
+        print("Message: "+str(body))
         logger.error("ERROR: "+str(e))
+        logger.error("Message: "+str(body))
 
 
 def handle_action(j):
@@ -151,6 +188,7 @@ def handle_action(j):
     :param j:
     :return:
     """
+    global logger
     import autoncore
     if j['action'] == 'magic':
         logger.debug("going for magic")
@@ -158,10 +196,45 @@ def handle_action(j):
         logger.debug("magic is done")
 
 
+def handle_conf_change(j):
+    """
+    :param j:
+    :return:
+    """
+    global logger
+    import autoncore
+    data = j['data']
+    if j['action'] == 'change_conf':
+        for onto in j['ontologies']:
+            logger.debug('inside the loop')
+            ar2dtool = onto + '-ar2dtool' in data
+            # logger.debug('ar2dtool: ' + str(ar2dtool))
+            widoco = onto + '-widoco' in data
+            # print 'widoco: ' + str(widoco)
+            oops = onto + '-oops' in data
+            # logger.debug('oops: ' + str(oops)
+            logger.debug('will call get_conf')
+            new_conf = autoncore.get_conf(ar2dtool, widoco, oops)
+            logger.debug('will call update_file')
+            o = 'OnToology' + onto + '/OnToology.cfg'
+            try:
+                logger.debug("target_repo <%s> ,  path <%s> ,  message <%s> ,   content <%s>" % (
+                    j['repo'], o, 'OnToology Configuration', new_conf))
+                autoncore.update_file(j['repo'], o, 'OnToology Configuration', new_conf)
+                logger.debug('configuration is changed for file for ontology: '+onto)
+            except Exception as e:
+                logger.error('Error in updating the configuration: ' + str(e))
+                # return render(request, 'msg.html', {'msg': str(e)})
+                return
+
+        logger.debug('Configuration changed')
+
+
 def ack_message(channel, delivery_tag):
     """Note that `channel` must be the same pika channel instance via which
     the message being ACKed was retrieved (AMQP protocol constraint).
     """
+    global logger
     if channel.is_open:
         channel.basic_ack(delivery_tag)
         logger.debug("Channel is acked!")
@@ -171,60 +244,12 @@ def ack_message(channel, delivery_tag):
         logger.debug("Channel is closed!")
 
 
-# def callback_handler(ch, method, properties, body, delivery_tag, connection_):
-#     """
-#     :param body:
-#     :return:
-#     """
-#     global lock
-#
-#     # connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
-#     # ch = connection.channel()
-#     # queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=True)
-#
-#     try:
-#         import autoncore
-#         autoncore.django_setup_script()
-#         j = json.loads(body)
-#         repo_name = j['repo']
-#         logger.debug('callback repo: '+repo_name)
-#         lock.acquire()
-#         busy = repo_name in locked_repos
-#         if not busy:
-#             logger.debug('not busy repo: ' + repo_name)
-#             locked_repos.append(repo_name)
-#         else:
-#             logger.debug('is busy repo: ' + repo_name)
-#         lock.release()
-#         if busy:
-#             logger.debug(repo_name+" is busy --- ")
-#             time.sleep(5)
-#         else:
-#             logger.debug(" ---  Consuming: " + repo_name)
-#             logger.debug(body)
-#             handle_action(j)
-#             logger.debug(repo_name+" Completed!")
-#             lock.acquire()
-#             logger.debug(repo_name+" to remove it from locked repos")
-#             locked_repos.remove(repo_name)
-#             logger.debug(repo_name+" is removed")
-#             lock.release()
-#             logger.debug(repo_name+" is sending the ack")
-#             ch.basic_ack(delivery_tag=delivery_tag)
-#             # cb = functools.partial(ack_message, channel, delivery_tag)
-#             # connection_.add_callback_threadsafe(cb)
-#     except Exception as e:
-#             logger.error("ERROR: "+str(e))
-
-
 def start_pool(num_of_thread=1):
-    # logger = get_logger()
-    # params = []
-    # for i in range(num_of_thread):
-    #     params.append((i,))
-    # pool = Pool(max_num_of_threads=num_of_thread, func=single_worker, params_list=params, logger=logger)
-    # logger.info("spawned %d threads" % num_of_thread)
-    # pool.run()
+    """
+    :param num_of_thread:
+    :return:
+    """
+    global logger
     threads = []
     for i in range(num_of_thread):
         th = threading.Thread(target=single_worker, args=(i,))
@@ -237,8 +262,12 @@ def start_pool(num_of_thread=1):
 
 
 def single_worker(worker_id):
+    """
+    :param worker_id:
+    :return:
+    """
     global lock
-    # logger = get_logger()
+    global logger
     logger.debug('worker_id: '+str(worker_id))
     connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
     channel = connection.channel()

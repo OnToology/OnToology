@@ -593,27 +593,38 @@ def update_conf(request):
         return render(request, "msg.html", {"msg": "This method expects POST only"})
     ontologies = request.POST.getlist('ontology')
     data = request.POST
-    for onto in ontologies:
-        print 'inside the loop'
-        ar2dtool = onto + '-ar2dtool' in data
-        print 'ar2dtool: ' + str(ar2dtool)
-        widoco = onto + '-widoco' in data
-        print 'widoco: ' + str(widoco)
-        oops = onto + '-oops' in data
-        print 'oops: ' + str(oops)
-        print 'will call get_conf'
-        new_conf = get_conf(ar2dtool, widoco, oops)
-        print 'will call update_file'
-        o = 'OnToology' + onto + '/OnToology.cfg'
-        try:
-            print "target_repo <%s> ,  path <%s> ,  message <%s> ,   content <%s>" % (
-                data['repo'], o, 'OnToology Configuration', new_conf)
-            update_file(data['repo'], o, 'OnToology Configuration', new_conf)
-        except Exception as e:
-            print 'Error in updating the configuration: ' + str(e)
-            return render(request, 'msg.html', {'msg': str(e)})
-        print 'returned from update_file'
-    print 'will return msg html'
+    target_repo = data['repo'].strip()
+    # data = request.POST
+    j = {
+        'action': 'change_conf',
+        'repo': target_repo,
+        'useremail': request.user.email,
+        'ontologies': ontologies,
+        'data': data,
+        'created': str(datetime.now()),
+    }
+    rabbit.send(j)
+    # for onto in ontologies:
+    #     print 'inside the loop'
+    #     ar2dtool = onto + '-ar2dtool' in data
+    #     print 'ar2dtool: ' + str(ar2dtool)
+    #     widoco = onto + '-widoco' in data
+    #     print 'widoco: ' + str(widoco)
+    #     oops = onto + '-oops' in data
+    #     print 'oops: ' + str(oops)
+    #     print 'will call get_conf'
+    #     new_conf = get_conf(ar2dtool, widoco, oops)
+    #     print 'will call update_file'
+    #     o = 'OnToology' + onto + '/OnToology.cfg'
+    #     try:
+    #         print "target_repo <%s> ,  path <%s> ,  message <%s> ,   content <%s>" % (
+    #             data['repo'], o, 'OnToology Configuration', new_conf)
+    #         update_file(data['repo'], o, 'OnToology Configuration', new_conf)
+    #     except Exception as e:
+    #         print 'Error in updating the configuration: ' + str(e)
+    #         return render(request, 'msg.html', {'msg': str(e)})
+    #     print 'returned from update_file'
+    # print 'will return msg html'
     return HttpResponseRedirect('/profile')
 
 
