@@ -85,67 +85,8 @@ def callback(ch, method, properties, body):
     global lock
     global logger
     try:
-        # j = json.loads(body)
-        # if j['action'] == 'magic':
-        #     repo_name = j['repo']
-        #     logger.debug('callback repo: '+repo_name)
-        #     lock.acquire()
-        #     busy = repo_name in locked_repos
-        #     if not busy:
-        #         logger.debug('not busy repo: ' + repo_name)
-        #         locked_repos.append(repo_name)
-        #     else:
-        #         logger.debug('is busy repo: ' + repo_name)
-        #     lock.release()
-        #
-        #     if busy:
-        #         logger.debug(repo_name+" is busy --- ")
-        #         time.sleep(5)
-        #         ch.basic_nack(delivery_tag=method.delivery_tag)
-        #     else:
-        #         logger.debug(" ---  Consuming: " + repo_name)
-        #         logger.debug(body)
-        #         handle_action(j)
-        #         logger.debug(repo_name+" Completed!")
-        #         lock.acquire()
-        #         logger.debug(repo_name+" to remove it from locked repos")
-        #         locked_repos.remove(repo_name)
-        #         logger.debug(repo_name+" is removed")
-        #         lock.release()
-        #         logger.debug(repo_name+" is sending the ack")
-        #         ch.basic_ack(delivery_tag=method.delivery_tag)
-        # elif j['action'] == "change_conf":
-        #     # j = {
-        #     #     'action': 'change_conf',
-        #     #     'repo': target_repo,
-        #     #     'useremail': request.user.email,
-        #     #     'ontologies': ontologies,
-        #     #     'created': str(datetime.now()),
-        #     # }
-        #     # rabbit.send(j)
-        #     for onto in j['ontologies']:
-        #         print 'inside the loop'
-        #         ar2dtool = onto + '-ar2dtool' in data
-        #         print 'ar2dtool: ' + str(ar2dtool)
-        #         widoco = onto + '-widoco' in data
-        #         print 'widoco: ' + str(widoco)
-        #         oops = onto + '-oops' in data
-        #         print 'oops: ' + str(oops)
-        #         print 'will call get_conf'
-        #         new_conf = get_conf(ar2dtool, widoco, oops)
-        #         print 'will call update_file'
-        #         o = 'OnToology' + onto + '/OnToology.cfg'
-        #         try:
-        #             print "target_repo <%s> ,  path <%s> ,  message <%s> ,   content <%s>" % (
-        #                 data['repo'], o, 'OnToology Configuration', new_conf)
-        #             update_file(data['repo'], o, 'OnToology Configuration', new_conf)
-        #         except Exception as e:
-        #             print 'Error in updating the configuration: ' + str(e)
-        #             return render(request, 'msg.html', {'msg': str(e)})
-        #         print 'returned from update_file'
-        #     print 'will return msg html'
         j = json.loads(body)
-        if j['action'] in ['magic', 'change_conf']:
+        if j['action'] in ['magic', 'change_conf', 'publish']:
             repo_name = j['repo']
             logger.debug('callback repo: '+repo_name)
             lock.acquire()
@@ -156,7 +97,6 @@ def callback(ch, method, properties, body):
             else:
                 logger.debug('is busy repo: ' + repo_name)
             lock.release()
-
             if busy:
                 logger.debug(repo_name+" is busy --- ")
                 time.sleep(5)
@@ -168,6 +108,8 @@ def callback(ch, method, properties, body):
                     handle_action(j)
                 elif j['action'] == 'change_conf':
                     handle_conf_change(j)
+                elif j['action'] == 'publish':
+                    handle_publish(j)
                 logger.debug(repo_name+" Completed!")
                 lock.acquire()
                 logger.debug(repo_name+" to remove it from locked repos")
@@ -176,11 +118,26 @@ def callback(ch, method, properties, body):
                 lock.release()
                 logger.debug(repo_name+" is sending the ack")
                 ch.basic_ack(delivery_tag=method.delivery_tag)
+
     except Exception as e:
         print("ERROR: "+str(e))
         print("Message: "+str(body))
         logger.error("ERROR: "+str(e))
         logger.error("Message: "+str(body))
+
+
+def handle_publish(j):
+    """
+    :param j:
+    :return:
+    """
+    global logger
+    logger.debug('handle_publish> going for previsual')
+    autoncore.previsual(useremail=j['useremail'], target_repo=j['repo'])
+    logger.debug('handle_publish> going for publish')
+    autoncore.publish(name=j['name'], target_repo=j['repo'], ontology_rel_path=j['ontology_rel_path'],
+                      useremail=j['useremail'])
+    logger.debug('handle_publish> done')
 
 
 def handle_action(j):

@@ -859,19 +859,31 @@ def publish_view(request):
     name = request.GET['name']
     target_repo = request.GET['repo']
     ontology_rel_path = request.GET['ontology']
-    if 'virtual_env_dir' in os.environ:
-        comm = "%s %s " % \
-               (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
-                (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py')))
-    else:
-        comm = "python %s " % \
-               (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
-    comm += ' --target_repo "' + target_repo + '" --useremail "' + request.user.email + '" --ontology_rel_path "'
-    comm += ontology_rel_path + '" ' + '--publish --publishname "' + name + '" --previsual'
-    print "comm: "+comm
+    # if 'virtual_env_dir' in os.environ:
+    #     comm = "%s %s " % \
+    #            (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
+    #             (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py')))
+    # else:
+    #     comm = "python %s " % \
+    #            (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
+    # comm += ' --target_repo "' + target_repo + '" --useremail "' + request.user.email + '" --ontology_rel_path "'
+    # comm += ontology_rel_path + '" ' + '--publish --publishname "' + name + '" --previsual'
+    # print "comm: "+comm
     try:
-        subprocess.Popen(comm, shell=True)
-        msg = '''<i>%s</i> is published successfully. This might take a few minutes for the published ontology to be
+        j = {
+            'action': 'publish',
+            'repo': target_repo,
+            'useremail': request.user.email,
+            'ontology_rel_path': ontology_rel_path,
+            'name': name,
+            'created': str(datetime.now()),
+        }
+        rabbit.send(j)
+        # subprocess.Popen(comm, shell=True)
+        # msg = '''<i>%s</i> is published successfully. This might take a few minutes for the published ontology to be
+        #     available for GitHub pages. In the image below we show how to enable it for the first time.
+        #     If you re-published it, do you not need to do anything.''' % ontology_rel_path[1:]
+        msg = '''<i>%s</i> will be published soon. This might take a few minutes for the published ontology to be
             available for GitHub pages. In the image below we show how to enable it for the first time. 
             If you re-published it, do you not need to do anything.''' % ontology_rel_path[1:]
         return render(request, 'msg.html', {'msg': msg, 'img': 'https://github.com/OnToology/OnToology/raw/master/media/misc/gh-pages.png'})
