@@ -96,7 +96,8 @@ def home(request):
             is_private = True
             client_id = client_id_private
             client_secret = client_secret_private
-            msg = """ Private repos are not currently supported. You can make your private repos public and enjoy the functionalities of OnToology """
+            msg = """ Private repos are not currently supported. You can make your private repos public and enjoy
+            the functionalities of OnToology """
             return render(request, 'msg.html',  {'msg': msg})
         webhook_access_url, state = webhook_access(client_id, host + '/get_access_token', isprivate=is_private)
         request.session['target_repo'] = target_repo
@@ -176,7 +177,9 @@ def get_access_token(request):
             print "ToolUser: " + ToolUser
         msg = error_msg
     else:
-        msg = 'webhook attached and user added as collaborator, Note that generating the documentation, diagrams and evaluation report takes sometime to be generated. In "My repositories" page, you can see the status of each repo.'
+        msg = '''webhook attached and user added as collaborator, Note that generating the documentation,
+         diagrams and evaluation report takes sometime to be generated. In "My repositories" page, you can see the
+          status of each repo.'''
     target_repo = request.session['target_repo']
     try:
         repo = Repo.objects.get(url=target_repo)
@@ -372,7 +375,6 @@ def generateforall(target_repo, user_email):
         rabbit.send(j)
     else:
         print 'running autoncore code as: ' + comm
-
         try:
             j = {
                 'action': 'magic',
@@ -406,7 +408,8 @@ def login(request):
     scope = 'user:email'  # get_proper_scope_to_login(username)
     # scope = 'admin:org_hook'
     # scope+=',admin:org,admin:public_key,admin:repo_hook,gist,notifications,delete_repo,repo_deployment,repo,public_repo,user,admin:public_key'
-    redirect_url = "https://github.com/login/oauth/authorize?client_id=" + client_id_login + "&redirect_uri=" + redirect_url + "&scope=" + scope + "&state=" + sec
+    redirect_url = "https://github.com/login/oauth/authorize?client_id=" + client_id_login + "&redirect_uri=" +\
+                   redirect_url + "&scope=" + scope + "&state=" + sec
     return HttpResponseRedirect(redirect_url)
 
 
