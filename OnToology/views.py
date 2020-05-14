@@ -399,7 +399,7 @@ def generateforall(target_repo, user_email):
 
 
 def login(request):
-    print '******* login ********* testing'
+    print '******* login *********'
     redirect_url = host + '/login_get_access'
     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
     request.session['state'] = sec
@@ -694,7 +694,6 @@ def superadmin(request):
             r.state = new_status
             r.save()
         return render(request, 'superadmin.html', {'msg': 'statuses of all repos are changed to: ' + new_status})
-
     return render(request, 'superadmin.html')
 
 
