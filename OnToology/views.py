@@ -78,12 +78,10 @@ sys.stdout = sys.stderr
 
 def home(request):
     global client_id, client_secret, is_private
-    # sys.stdout = sys.stderr
-    # print "******* output to stderror ********"
     sys.stdout.flush()
     sys.stderr.flush()
     if 'target_repo' in request.GET:
-        print "we are inside"
+        print("we are inside")
         target_repo = request.GET['target_repo']
         if target_repo.strip() == "" or len(target_repo.split('/')) != 2:
             return render(request, 'msg.html', {'msg': 'please enter a valid repo'})
@@ -109,8 +107,6 @@ def home(request):
     repos = Repo.objects.order_by('-last_used')[:10]
     num_of_users = len(User.objects.all())
     num_of_repos = len(Repo.objects.all())
-    # print "returning the request"
-    # print("The user: %s" % str(request.user))
     return render(request, 'home.html', {'repos': repos, 'user': request.user, 'num_of_users': num_of_users,
                                          'num_of_repos': num_of_repos})
 
@@ -153,9 +149,6 @@ def get_access_token(request):
 
     if request.user.is_authenticated() and request.session['access_token_time'] == '1':
         request.session['access_token_time'] = '2'  # so we do not loop
-        # isprivate = get_proper_loggedin_scope(OUser.objects.get(username=request.user.username),
-        #                                      request.session['target_repo'])
-        # print 'isprivate is: ' + str(isprivate)
         webhook_access_url, state = webhook_access(client_id, host + '/get_access_token', is_private)
         request.session['state'] = state
         return HttpResponseRedirect(webhook_access_url)
@@ -282,7 +275,6 @@ def add_hook(request):
     print 'in addhook'
     print "target repo: %s" % target_repo
     print "user: %s" % user
-    # comm += ' "' + target_repo + '" "' + user + '" '
     comm += '--magic --target_repo "' + target_repo + '" --useremail "' + user + '" --changedfiles '
     for c in changed_files:
         comm += '"' + c + '" '
@@ -290,7 +282,6 @@ def add_hook(request):
         print 'will call git_magic with target=%s, user=%s, cloning_repo=%s, changed_files=%s' % (target_repo, user,
                                                                                                   cloning_repo,
                                                                                                   str(changed_files))
-        # git_magic(target_repo, user, changed_files)
         j = {
             'action': 'magic',
             'repo': target_repo,
@@ -311,9 +302,6 @@ def add_hook(request):
                 'created': str(datetime.now()),
             }
             rabbit.send(j)
-            # if j['action'] == 'magic':
-            #     autoncore.git_magic(j['repo_name'], j['useremail'], j['changedfiles'])
-            # subprocess.Popen(comm, shell=True)
         except Exception as e:
             error_msg = str(e)
             print 'error running generall all subprocess: ' + error_msg
@@ -324,7 +312,6 @@ def add_hook(request):
             else:
                 error_msg = 'generic error, please report the problem to us ontoology@delicias.dia.fi.upm.es'
             s = error_msg
-        # subprocess.Popen(comm, shell=True)
         return render('msg.html', {'msg': '' + s}, )
 
 
