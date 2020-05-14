@@ -48,7 +48,6 @@ from autoncore import get_proper_loggedin_scope, get_ontologies_in_online_repo, 
 from models import *
 import autoncore
 from settings import host
-# from settings import client_id_login, client_id_public, client_id_private, client_secret_login, client_secret_public, client_secret_private
 import Integrator.previsual as previsual
 import rabbit
 
@@ -363,7 +362,6 @@ def generateforall(target_repo, user_email):
         comm += '"' + c.strip() + '" '
     if settings.test_conf['local']:
         print "running autoncode in the same thread"
-        # git_magic(target_repo, user, changed_files)
         j = {
             'action': 'magic',
             'repo': target_repo,
@@ -384,7 +382,6 @@ def generateforall(target_repo, user_email):
                 'created': str(datetime.now()),
             }
             rabbit.send(j)
-            # subprocess.Popen(comm, shell=True)
         except Exception as e:
             sys.stdout.flush()
             sys.stderr.flush()
@@ -548,7 +545,6 @@ def profile(request):
             pp = p[0]
             pp.delete()
             pp.save()
-            # comm = 'rm -Rf /home/ubuntu/publish/%s' % name
             comm = 'rm -Rf ' + os.path.join(publish_dir, name)
             call(comm, shell=True)
         else:
@@ -581,7 +577,6 @@ def update_conf(request):
     ontologies = request.POST.getlist('ontology')
     data = request.POST
     target_repo = data['repo'].strip()
-    # data = request.POST
     j = {
         'action': 'change_conf',
         'repo': target_repo,
@@ -591,27 +586,6 @@ def update_conf(request):
         'created': str(datetime.now()),
     }
     rabbit.send(j)
-    # for onto in ontologies:
-    #     print 'inside the loop'
-    #     ar2dtool = onto + '-ar2dtool' in data
-    #     print 'ar2dtool: ' + str(ar2dtool)
-    #     widoco = onto + '-widoco' in data
-    #     print 'widoco: ' + str(widoco)
-    #     oops = onto + '-oops' in data
-    #     print 'oops: ' + str(oops)
-    #     print 'will call get_conf'
-    #     new_conf = get_conf(ar2dtool, widoco, oops)
-    #     print 'will call update_file'
-    #     o = 'OnToology' + onto + '/OnToology.cfg'
-    #     try:
-    #         print "target_repo <%s> ,  path <%s> ,  message <%s> ,   content <%s>" % (
-    #             data['repo'], o, 'OnToology Configuration', new_conf)
-    #         update_file(data['repo'], o, 'OnToology Configuration', new_conf)
-    #     except Exception as e:
-    #         print 'Error in updating the configuration: ' + str(e)
-    #         return render(request, 'msg.html', {'msg': str(e)})
-    #     print 'returned from update_file'
-    # print 'will return msg html'
     return HttpResponseRedirect('/profile')
 
 
@@ -638,7 +612,7 @@ def delete_repo(request):
             try:
                 user.update(pull__repos=r)
                 user.save()
-                # for now we do not remove teh webhook for the sake of students
+                # for now we do not remove the webhook for the sake of students
                 # remove_webhook(repo, host + "/add_hook")
                 return JsonResponse({'status': True})
             except Exception as e:
@@ -846,16 +820,6 @@ def publish_view(request):
     name = request.GET['name']
     target_repo = request.GET['repo']
     ontology_rel_path = request.GET['ontology']
-    # if 'virtual_env_dir' in os.environ:
-    #     comm = "%s %s " % \
-    #            (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
-    #             (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py')))
-    # else:
-    #     comm = "python %s " % \
-    #            (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
-    # comm += ' --target_repo "' + target_repo + '" --useremail "' + request.user.email + '" --ontology_rel_path "'
-    # comm += ontology_rel_path + '" ' + '--publish --publishname "' + name + '" --previsual'
-    # print "comm: "+comm
     try:
         j = {
             'action': 'publish',
@@ -866,10 +830,6 @@ def publish_view(request):
             'created': str(datetime.now()),
         }
         rabbit.send(j)
-        # subprocess.Popen(comm, shell=True)
-        # msg = '''<i>%s</i> is published successfully. This might take a few minutes for the published ontology to be
-        #     available for GitHub pages. In the image below we show how to enable it for the first time.
-        #     If you re-published it, do you not need to do anything.''' % ontology_rel_path[1:]
         msg = '''<i>%s</i> will be published soon. This might take a few minutes for the published ontology to be
             available for GitHub pages. In the image below we show how to enable it for the first time. 
             If you re-published it, do you not need to do anything.''' % ontology_rel_path[1:]
