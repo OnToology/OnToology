@@ -83,12 +83,13 @@ def init_g():
 
 def git_magic(target_repo, user, changed_filesss):
     logger_fname = prepare_logger(user)
+    prepare_logger(args.useremail, ext='.new_core')
     global g
     global parent_folder
     global log_file_dir
     parent_folder = user
     if not settings.test_conf['local']:
-        prepare_log(user, ext='.new_core')
+        prepare_log(user)
     dolog('############################### magic #############################')
     dolog('target_repo: ' + target_repo)
     change_status(target_repo, 'Preparing')
@@ -1469,7 +1470,7 @@ if __name__ == "__main__":
     # parser.add_argument('--dotype', action='store_true', help='To conclude the type/class of the given csv file')
     args = parser.parse_args()
     if args.useremail and '@' in args.useremail:
-        prepare_logger(args.useremail, ext='.core')
+        prepare_logger(args.useremail)
         if args.target_repo and len(args.target_repo.split('/')) == 2:
             if args.magic:
                 print "changed files: "
