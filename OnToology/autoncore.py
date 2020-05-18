@@ -88,7 +88,7 @@ def git_magic(target_repo, user, changed_filesss):
     global log_file_dir
     parent_folder = user
     if not settings.test_conf['local']:
-        prepare_log(user)
+        prepare_log(user, ext='.new_core')
     dolog('############################### magic #############################')
     dolog('target_repo: ' + target_repo)
     change_status(target_repo, 'Preparing')
