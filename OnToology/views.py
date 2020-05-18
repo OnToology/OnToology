@@ -48,8 +48,8 @@ from autoncore import get_proper_loggedin_scope, get_ontologies_in_online_repo, 
 from models import *
 import autoncore
 from settings import host
-# from settings import client_id_login, client_id_public, client_id_private, client_secret_login, client_secret_public, client_secret_private
 import Integrator.previsual as previsual
+import rabbit
 
 client_id_login = os.environ['client_id_login']  # 'e2ea731b481438fd1675'
 client_id_public = os.environ['client_id_public']  # '878434ff1065b7fa5b92'
@@ -77,12 +77,10 @@ sys.stdout = sys.stderr
 
 def home(request):
     global client_id, client_secret, is_private
-    # sys.stdout = sys.stderr
-    # print "******* output to stderror ********"
     sys.stdout.flush()
     sys.stderr.flush()
     if 'target_repo' in request.GET:
-        print "we are inside"
+        print("we are inside")
         target_repo = request.GET['target_repo']
         if target_repo.strip() == "" or len(target_repo.split('/')) != 2:
             return render(request, 'msg.html', {'msg': 'please enter a valid repo'})
@@ -98,7 +96,8 @@ def home(request):
             is_private = True
             client_id = client_id_private
             client_secret = client_secret_private
-            msg = """ Private repos are not currently supported. You can make your private repos public and enjoy the functionalities of OnToology """
+            msg = """ Private repos are not currently supported. You can make your private repos public and enjoy
+            the functionalities of OnToology """
             return render(request, 'msg.html',  {'msg': msg})
         webhook_access_url, state = webhook_access(client_id, host + '/get_access_token', isprivate=is_private)
         request.session['target_repo'] = target_repo
@@ -108,8 +107,6 @@ def home(request):
     repos = Repo.objects.order_by('-last_used')[:10]
     num_of_users = len(User.objects.all())
     num_of_repos = len(Repo.objects.all())
-    print "returning the request"
-    print("The user: %s" % str(request.user) )
     return render(request, 'home.html', {'repos': repos, 'user': request.user, 'num_of_users': num_of_users,
                                          'num_of_repos': num_of_repos})
 
@@ -152,9 +149,6 @@ def get_access_token(request):
 
     if request.user.is_authenticated() and request.session['access_token_time'] == '1':
         request.session['access_token_time'] = '2'  # so we do not loop
-        # isprivate = get_proper_loggedin_scope(OUser.objects.get(username=request.user.username),
-        #                                      request.session['target_repo'])
-        # print 'isprivate is: ' + str(isprivate)
         webhook_access_url, state = webhook_access(client_id, host + '/get_access_token', is_private)
         request.session['state'] = state
         return HttpResponseRedirect(webhook_access_url)
@@ -183,7 +177,9 @@ def get_access_token(request):
             print "ToolUser: " + ToolUser
         msg = error_msg
     else:
-        msg = 'webhook attached and user added as collaborator, Note that generating the documentation, diagrams and evaluation report takes sometime to be generated. In "My repositories" page, you can see the status of each repo.'
+        msg = '''webhook attached and user added as collaborator, Note that generating the documentation,
+         diagrams and evaluation report takes sometime to be generated. In "My repositories" page, you can see the
+          status of each repo.'''
     target_repo = request.session['target_repo']
     try:
         repo = Repo.objects.get(url=target_repo)
@@ -281,7 +277,6 @@ def add_hook(request):
     print 'in addhook'
     print "target repo: %s" % target_repo
     print "user: %s" % user
-    # comm += ' "' + target_repo + '" "' + user + '" '
     comm += '--magic --target_repo "' + target_repo + '" --useremail "' + user + '" --changedfiles '
     for c in changed_files:
         comm += '"' + c + '" '
@@ -289,12 +284,26 @@ def add_hook(request):
         print 'will call git_magic with target=%s, user=%s, cloning_repo=%s, changed_files=%s' % (target_repo, user,
                                                                                                   cloning_repo,
                                                                                                   str(changed_files))
-        git_magic(target_repo, user, changed_files)
+        j = {
+            'action': 'magic',
+            'repo': target_repo,
+            'useremail': user,
+            'changedfiles': changed_files,
+            'created': str(datetime.now()),
+        }
+        rabbit.send(j)
         return
     else:
         print 'running autoncore code as: ' + comm
         try:
-            subprocess.Popen(comm, shell=True)
+            j = {
+                'action': 'magic',
+                'repo': target_repo,
+                'useremail': user,
+                'changedfiles': changed_files,
+                'created': str(datetime.now()),
+            }
+            rabbit.send(j)
         except Exception as e:
             error_msg = str(e)
             print 'error running generall all subprocess: ' + error_msg
@@ -305,7 +314,6 @@ def add_hook(request):
             else:
                 error_msg = 'generic error, please report the problem to us ontoology@delicias.dia.fi.upm.es'
             s = error_msg
-        # subprocess.Popen(comm, shell=True)
         return render('msg.html', {'msg': '' + s}, )
 
 
@@ -357,12 +365,25 @@ def generateforall(target_repo, user_email):
         comm += '"' + c.strip() + '" '
     if settings.test_conf['local']:
         print "running autoncode in the same thread"
-        git_magic(target_repo, user, changed_files)
+        j = {
+            'action': 'magic',
+            'repo': target_repo,
+            'useremail': user,
+            'changedfiles': changed_files,
+            'created': str(datetime.now()),
+        }
+        rabbit.send(j)
     else:
         print 'running autoncore code as: ' + comm
-
         try:
-            subprocess.Popen(comm, shell=True)
+            j = {
+                'action': 'magic',
+                'repo': target_repo,
+                'useremail': user,
+                'changedfiles': changed_files,
+                'created': str(datetime.now()),
+            }
+            rabbit.send(j)
         except Exception as e:
             sys.stdout.flush()
             sys.stderr.flush()
@@ -380,14 +401,15 @@ def generateforall(target_repo, user_email):
 
 
 def login(request):
-    print '******* login ********* testing'
+    print '******* login *********'
     redirect_url = host + '/login_get_access'
     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
     request.session['state'] = sec
     scope = 'user:email'  # get_proper_scope_to_login(username)
     # scope = 'admin:org_hook'
     # scope+=',admin:org,admin:public_key,admin:repo_hook,gist,notifications,delete_repo,repo_deployment,repo,public_repo,user,admin:public_key'
-    redirect_url = "https://github.com/login/oauth/authorize?client_id=" + client_id_login + "&redirect_uri=" + redirect_url + "&scope=" + scope + "&state=" + sec
+    redirect_url = "https://github.com/login/oauth/authorize?client_id=" + client_id_login + "&redirect_uri=" +\
+                   redirect_url + "&scope=" + scope + "&state=" + sec
     return HttpResponseRedirect(redirect_url)
 
 
@@ -526,7 +548,6 @@ def profile(request):
             pp = p[0]
             pp.delete()
             pp.save()
-            # comm = 'rm -Rf /home/ubuntu/publish/%s' % name
             comm = 'rm -Rf ' + os.path.join(publish_dir, name)
             call(comm, shell=True)
         else:
@@ -558,27 +579,16 @@ def update_conf(request):
         return render(request, "msg.html", {"msg": "This method expects POST only"})
     ontologies = request.POST.getlist('ontology')
     data = request.POST
-    for onto in ontologies:
-        print 'inside the loop'
-        ar2dtool = onto + '-ar2dtool' in data
-        print 'ar2dtool: ' + str(ar2dtool)
-        widoco = onto + '-widoco' in data
-        print 'widoco: ' + str(widoco)
-        oops = onto + '-oops' in data
-        print 'oops: ' + str(oops)
-        print 'will call get_conf'
-        new_conf = get_conf(ar2dtool, widoco, oops)
-        print 'will call update_file'
-        o = 'OnToology' + onto + '/OnToology.cfg'
-        try:
-            print "target_repo <%s> ,  path <%s> ,  message <%s> ,   content <%s>" % (
-                data['repo'], o, 'OnToology Configuration', new_conf)
-            update_file(data['repo'], o, 'OnToology Configuration', new_conf)
-        except Exception as e:
-            print 'Error in updating the configuration: ' + str(e)
-            return render(request, 'msg.html', {'msg': str(e)})
-        print 'returned from update_file'
-    print 'will return msg html'
+    target_repo = data['repo'].strip()
+    j = {
+        'action': 'change_conf',
+        'repo': target_repo,
+        'useremail': request.user.email,
+        'ontologies': ontologies,
+        'data': data,
+        'created': str(datetime.now()),
+    }
+    rabbit.send(j)
     return HttpResponseRedirect('/profile')
 
 
@@ -605,7 +615,7 @@ def delete_repo(request):
             try:
                 user.update(pull__repos=r)
                 user.save()
-                # for now we do not remove teh webhook for the sake of students
+                # for now we do not remove the webhook for the sake of students
                 # remove_webhook(repo, host + "/add_hook")
                 return JsonResponse({'status': True})
             except Exception as e:
@@ -687,7 +697,6 @@ def superadmin(request):
             r.state = new_status
             r.save()
         return render(request, 'superadmin.html', {'msg': 'statuses of all repos are changed to: ' + new_status})
-
     return render(request, 'superadmin.html')
 
 
@@ -813,19 +822,17 @@ def publish_view(request):
     name = request.GET['name']
     target_repo = request.GET['repo']
     ontology_rel_path = request.GET['ontology']
-    if 'virtual_env_dir' in os.environ:
-        comm = "%s %s " % \
-               (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
-                (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py')))
-    else:
-        comm = "python %s " % \
-               (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
-    comm += ' --target_repo "' + target_repo + '" --useremail "' + request.user.email + '" --ontology_rel_path "'
-    comm += ontology_rel_path + '" ' + '--publish --publishname "' + name + '" --previsual'
-    print "comm: "+comm
     try:
-        subprocess.Popen(comm, shell=True)
-        msg = '''<i>%s</i> is published successfully. This might take a few minutes for the published ontology to be
+        j = {
+            'action': 'publish',
+            'repo': target_repo,
+            'useremail': request.user.email,
+            'ontology_rel_path': ontology_rel_path,
+            'name': name,
+            'created': str(datetime.now()),
+        }
+        rabbit.send(j)
+        msg = '''<i>%s</i> will be published soon. This might take a few minutes for the published ontology to be
             available for GitHub pages. In the image below we show how to enable it for the first time. 
             If you re-published it, do you not need to do anything.''' % ontology_rel_path[1:]
         return render(request, 'msg.html', {'msg': msg, 'img': 'https://github.com/OnToology/OnToology/raw/master/media/misc/gh-pages.png'})
@@ -842,3 +849,8 @@ def publications(request):
 def error_test(request):
     raise Exception("error")
     return render(request, 'msg.html',  {'msg': 'expecting an exception'})
+
+
+
+
+

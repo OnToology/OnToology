@@ -367,16 +367,11 @@ $( document ).ready(function() {
 		$('#screen').css({	"display": "block", opacity: 0.7, "width":$(document).width(),"height":$(document).height()});
 	}
 
-
 	var cc = false;
 	$(".nonrepo").click(function(){
-		//alert();
 		cc = true;
 	});
 	$(document).on('click', '.closee', function(){
-	//$(".closee").click(function() {
-		//alert("close");
-		//cc = true;
 		if (confirm("Are you sure you want to unwatch this repo?")==false){
 			return
 		}
@@ -408,9 +403,6 @@ $( document ).ready(function() {
 			return;
 		}
 		var targetpanel = $(this);
-		//var bodypanel = $(this).parent().find(".ontologiesspace");
-		//var bodypanel = $(this).parent().parent().parent().parent().parent().parent().find(".ontologiesspace");
-		//var bodypanel = $(this).parent().parent().parent().parent().parent().find(".ontologiesspace");
         var bodypanel = $(this).parent().parent().parent().parent().parent().parent().find(".ontologiesspace");
 		current_url = $(this).attr('url');
 		//greyout();
@@ -420,8 +412,6 @@ $( document ).ready(function() {
 		  beforeSend: function(){view_progress(); $('#loading').attr('style', "width: 10%")} ,
 			xhr: function(){
 				/*source: http://stackoverflow.com/questions/15668339/can-onprogress-functionality-be-added-to-jquery-ajax-by-using-xhrfields*/
-				// get the native XmlHttpRequest object
-				//alert($(location).attr('protocol')+"//"+$(location).attr('host')+"/profile?repo="+targetpanel.attr('url'));
 				var xhr = $.ajaxSettings.xhr() ;
 				// set the onprogress event handler
 				xhr.onprogress = function(evt){ console.log(Math.round(evt.loaded/evt.total * 100)); $('#loading').attr('style', "width: "+Math.round(evt.loaded/evt.total * 100)+"%") } ;
@@ -448,7 +438,6 @@ $( document ).ready(function() {
             var oops_checked='';
             var republish_control_class;
             if(ontologies.length>0){
-		    	//bodypanel.html('<div class="col-md-3 col-xs-3" >Ontology</div><div class="col-md-2 col-xs-2" >Diagrams</div><div class="col-md-2 col-xs-2" >Evaluation</div><div class="col-md-2 col-xs-2" >Documentation</div><div class="col-md-2 col-xs-2" >Publish</div><div class="col-md-1 col-xs-1">Bundle</div></br><hr>');
 		        bodypanel.html('<div class="col-md-10 col-xs-10">'+
 		                '<div class="col-md-6 col-xs-6">Ontology</div>' +
 		                '<div class="col-md-2 col-xs-2" >Diagrams</div>'+
@@ -460,10 +449,7 @@ $( document ).ready(function() {
 		    }
 		    temp=bodypanel.html();
 		    temp += '<form action="/update_conf" method="POST">' + "{% csrf_token %}"
-		    //bodypanel.html(temp + '<form action="/update_conf" method="POST">');
 		    for(o=0;o<ontologies.length;o++){
-		    	//temp=bodypanel.html();
-		    	//alert(ontologies[o].published);
 		    	if(ontologies[o].published==true){
 		    		republish_img = 'https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/republish.png';
 		    		republish_control_class = 'republish-class';
@@ -499,7 +485,6 @@ $( document ).ready(function() {
 		    	    oops_checked = '';
 		    	}
 
-
 		    	if(ontologies[o].hasOwnProperty('themis_results')){
 		    	    ontologies[o]['themis_div'] = '<div class="chart" data-percent="'+
 		    	        ontologies[o]["themis_results"]+
@@ -512,7 +497,6 @@ $( document ).ready(function() {
 		    	}
 
 				temp += "<input type='hidden' name='ontology' value='"+ontologies[o].ontology+"'/>"
-		    	//temp += '<div class="row">'
 		    	temp = temp +
 		    	        '<div class="col-md-10 col-xs-10">'+
                                 '<div class="col-md-6 col-xs-6">'+
@@ -545,20 +529,12 @@ $( document ).ready(function() {
 		    					'" repo="'+current_url+'" > </span></div>'+
 		    				'<div class="col-md-1 col-xs-1"><span title="Download documentation, diagrams, evaluation and .htaccess" class="bundle-btn btn btn-default" repo="'+current_url+'" ontology="'+ontologies[o].ontology+'"><img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/bundle_download.png" height="20px"/></span></div>'+
 		    			"<br><br>"
-		    			//);
 		    }//end for
-		    //temp= bodypanel.html();
 		    if(ontologies.length>0){
             	temp += '<input type="hidden" name="repo" value="'+current_url+'"/>';
             	temp += '<input type="hidden" name="csrfmiddlewaretoken" value="'+'{{csrf_token}}'+'"/>';
 
-
-
-                //temp += '<div class="col-md-9 col-xs-9">'
-
 		    	temp += '<input type="submit" class="btn color7back color0 col-md-10 col-xs-10" value="Update Configuration">';
-
-                //temp += '</div>'
 
                 temp += '<div class="col-md-2 col-xs-2 ">'
 
@@ -566,13 +542,7 @@ $( document ).ready(function() {
 
 		    	temp += '</div>'
 
-
 		    	console.log(current_url)
-
-
-
-
-
 
 
 		    }
@@ -582,13 +552,8 @@ $( document ).ready(function() {
 		    }
 		    console.log('now appending to the panel: '+temp)
 		    bodypanel.html(temp + '</form>');
-		    //$("#slidertag").html(resp.sliderhtml);
-		    //initsliders();
 		    $('#box').click();
-
             refresh_easy_pie_chart();
-
-
 		});
 	});//repo selector
 
@@ -630,8 +595,7 @@ $( document ).ready(function() {
 		}).done(function( resp ) {
 		    v = resp;
 		});
-
-		    */
+*/
 
 
 </script>

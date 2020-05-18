@@ -21,9 +21,19 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 
 # Run Locally
 1. `cp -Rf ~/.ssh/ ssh` (assuming you have a *nix and that you already have an ssh key)
-2. `mkdir -p .git`
-3. `docker-compose run -p 8000:8000 web .venv/bin/python manage.py runserver 0.0.0.0:8000`
+1. `mkdir -p .git`
+1. `docker-compose build --no-cache`
+1. `docker-compose run -p 8000:8000 web .venv/bin/python manage.py runserver 0.0.0.0:8000`
+1. Run the RabbitMQ server (consumers).
+    - Locally: `python OnToology/rabbit.py` 
+    - For a linux server: 
+`nohup .venv/bin/python OnToology/rabbit.py &`
+1. (Optional) you can run it with multiple threads `nohup .venv/bin/python OnToology/rabbit.py 3 &`
 
+# Recover from a failure/crash or a server restart
+1. Release all busy locks from the DB `.venv/bin/python OnToology/autoncore.py --busyclear` 
+2. Run the rabbitMQ server `nohup .venv/bin/python OnToology/rabbit.py &`
+3. (Optional) repeat point 2 (to have multiple consumer processes to handle requests)
 
 
 ## Secret setup
@@ -39,138 +49,9 @@ export client_secret_public=""
 export client_secret_private=""
 export test_user_token=""
 export test_user_email=""
-
+export rabbit_host=""
 ```
 
-<!--
-
-## Tests (under refactoring)
-ID | Test Case | Expected Result  | Status
-:--|:---------:|:---------------: | :----:
-1  | Adding non-existing repo | shouldn't add the non-existing repo and should add an error page | :heavy_check_mark:
-2  | Very large ontology | To show error message | :warning: (takes literally days to perform the test, we are going to ignore this)
-3  | Ontology with syntax error | To show error message | :heavy_minus_sign:
-4  | If a tool is not able to generate an output | should not stop, should proceed with the other tools | :heavy_minus_sign:  
-5  | Add a new repo | should be added | :heavy_minus_sign:
-6  | Adding a repo that already added | should be accepted | :heavy_minus_sign:
-7  | Add a new repo, then delete this repo from github and try to do some actions e.g. generate previsualization | should run the action without problems | :heavy_minus_sign:
-8  | Generate previsualization | should be regenerated | :heavy_minus_sign: 
-
-
-Sign | Meaning
-:---:| :-----:
-:heavy_minus_sign: | Test automation is not implemented
-:heavy_check_mark: | Test automation is completed
-:warning:          | Warning
-
-
-
-
-## Auto deployment script
-
-1. Before you run the script check the below variables that most probably you need to change to adapt to your
-
-Things that you might want to change the username and email of git
-```
-git config --global user.name
-git config --global user.email
-```
-
-And maybe you want to use the https url instead of git url
-```
-git clone https://github.com/OnToology/OnToology.git
-```
-
-and in the case of git keys, make sure to generate one and add it to OnToologyUser
-
-2. Install git if not installed
-```
-sudo apt-get install git
-```
-
-3. Using the deployment script
-```
-sudo sh OnToology/deploy.sh
-```
-
-4. You may need to fix the permission for www-data (or another user).
-This one is kinda trick and there are different ways to do it.
-    * Ubuntu and www-data to have the same group number and user number (e.g. /etc/passwd and you can set it there)
-    but this might not be the best, but the easiest.
-    * Configure a separate user for the application and provide it with the permission of all necessary directories
-    things like logs folder, temp folder, ssh key for GitHub.
-
-
-5. Append environment variables (Below) to virtual environment venv/bin/activate (note: this won't work with apache)
-
-#### Environment variables that you need to set
-
-```
-export github_username=OnToologyUser
-export github_password=
-export github_repos_dir=/home/ubuntu/temp/
-export ar2dtool_dir=/home/ubuntu/ar2dtool/bin/
-export ar2dtool_config=/home/ubuntu/config/
-export widoco_dir=/home/ubuntu/widoco/
-export owl2jsonld_dir=/home/ubuntu/owl2jsonld
-export SECRET_KEY=
-export tools_config_dir=/home/ubuntu/config
-export previsual_dir=/home/ubuntu/vocabLite/jar
-export wget_dir /home/ubuntu/wget_dir
-export client_id_login=
-export client_secret_login=
-export client_id_public=
-export client_secret_public=
-export client_id_private=
-export client_secret_private=
-export publish_dir=/home/ubuntu/publish/
-
-export db_username=
-export db_password=
-export db_host=
-export db_port=
-
-export email_server=""
-export email_from=""
-export email_username=""
-export email_password=""
-```
-
-or in the local WSGI file `localwsgi.py`
-```
-import os
-environ = os.environ
-environ['github_username']="OnToologyUser"
-environ['github_password']=""
-environ['github_repos_dir']="/home/ubuntu/temp/"
-environ['ar2dtool_dir']="/home/ubuntu/ar2dtool/bin/"
-environ['ar2dtool_config']="/home/ubuntu/config/"
-environ['widoco_dir']="/home/ubuntu/widoco/"
-environ['owl2jsonld_dir']="/home/ubuntu/owl2jsonld"
-environ['SECRET_KEY']=""
-environ['tools_config_dir']="/home/ubuntu/config"
-environ['previsual_dir']="/home/ubuntu/vocabLite/jar"
-environ['wget_dir']="/home/ubuntu/temp/wget_dir"
-environ['client_id_login']=""
-environ['client_secret_login']=""
-environ['client_id_public']=""
-environ['client_secret_public']=""
-environ['client_id_private']=""
-environ['client_secret_private']=""
-environ['publish_dir']="/home/ubuntu/publish/"
-
-environ['db_username']=""
-environ['db_password']=""
-environ['db_host']=""
-environ['db_port']=""
-
-environ['email_server'] = ""
-environ['email_from'] = ""
-environ['email_username'] = ""
-environ['email_password'] = ""
-```
-
--->
 
 ## How to contribute
 There are two workflows:

@@ -57,6 +57,7 @@ class Repo(Document):
     notes = StringField(default='')
     progress = FloatField(default=0.0)
     ontology_status_pairs = ListField(ReferenceField(OntologyStatusPair), default=[])
+    busy = BooleanField(default=False)  # backward compatibility
 
     def json(self):
         return {
@@ -67,7 +68,8 @@ class Repo(Document):
             "owner": self.owner,
             "previsual": self.previsual,
             "previsual_page_available": self.previsual_page_available,
-            "notes": self.notes
+            "notes": self.notes,
+            # "busy": str(self.busy)
         }
 
     def update_ontology_status(self, ontology, status):
