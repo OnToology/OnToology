@@ -9,6 +9,8 @@ import threading
 import functools
 from TPool.TPool import Pool
 from threading import Lock
+from multiprocessing import Process
+
 
 lock = Lock()
 locked_repos = []
@@ -105,11 +107,20 @@ def callback(ch, method, properties, body):
                 logger.debug(" ---  Consuming: " + repo_name)
                 logger.debug(body)
                 if j['action'] == 'magic':
-                    handle_action(j)
+                    p = Process(target=handle_action, args=(j,))
+                    p.start()
+                    p.join()
+                    # handle_action(j)
                 elif j['action'] == 'change_conf':
-                    handle_conf_change(j)
+                    p = Process(target=handle_conf_change, args=(j,))
+                    p.start()
+                    p.join()
+                    # handle_conf_change(j)
                 elif j['action'] == 'publish':
-                    handle_publish(j)
+                    p = Process(target=handle_publish, args=(j,))
+                    p.start()
+                    p.join()
+                    # handle_publish(j)
                 logger.debug(repo_name+" Completed!")
                 lock.acquire()
                 logger.debug(repo_name+" to remove it from locked repos")
