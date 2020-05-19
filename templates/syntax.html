@@ -1,0 +1,31 @@
+{% extends "base.html"%}
+{%block body%}
+</br></br>
+<h2>Ontology Syntax Checker</h2>
+<p>The ontology syntax is checked using <a href="https://github.com/RDFLib/rdflib">RDFLib</a></p>
+{%if error%}
+<div class="alert alert-danger" role="alert">
+  {{error}}
+</div>
+{%endif%}
+{%if msg%}
+<div class="alert alert-primary" role="alert">
+  {{msg}}
+</div>
+{%endif%}
+
+<form method="GET" id="syntax-form">
+	<div class="form-group">
+    <label for="exampleInputEmail1">Ontology URL</label>
+    <input type="url" name="url" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+    <small id="emailHelp" class="form-text text-muted">The URL of the ontology</small>
+		<label for="oformat">Choose the ontology format:</label>
+<select id="oformat" name="format" form="syntax-form" required>
+	{%for format in formats%}
+	  <option value="{{format}}">{{format}}</option>
+	{%endfor%}
+</select>
+  </div>
+</form>
+
+{% endblock %}
