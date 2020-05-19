@@ -844,6 +844,7 @@ def publish_view(request):
 
 @login_required
 def syntax_check_view(request):
+    import rdflib
     valid_formats = ["xml", "n3", "turtle", "nt", "pretty-xml", "trix", "trig", "nquads"]
     if 'url' not in request.GET:
         return render(request, 'syntax.html', {'formats': valid_formats})
