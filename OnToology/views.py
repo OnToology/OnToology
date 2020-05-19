@@ -853,6 +853,7 @@ def syntax_check_view(request):
     # if 'url' not in request.GET:
     #     return render(request, 'msg.html', {'msg': 'url is expected'})
     format = request.GET['format']
+    url = request.GET['url']
     if format not in valid_formats:
         return render(request, 'syntax.html', {'error': '<%s> format is not supported'%format, 'formats': valid_formats})
         # return render(request, 'msg.html', {'msg': '<%s> format is not supported'})
