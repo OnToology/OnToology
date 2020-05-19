@@ -83,7 +83,6 @@ def init_g():
 
 def git_magic(target_repo, user, changed_filesss):
     logger_fname = prepare_logger(user)
-    prepare_logger(user, ext='.new_core')
     global g
     global parent_folder
     global log_file_dir
