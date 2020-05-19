@@ -19,13 +19,19 @@
     <label for="exampleInputEmail1">Ontology URL</label>
     <input type="url" name="url" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
     <small id="emailHelp" class="form-text text-muted">The URL of the ontology</small>
+
+  </div>
+	<div class="form-group">
 		<label for="oformat">Choose the ontology format:</label>
-<select id="oformat" name="format" form="syntax-form" required>
+		<select id="oformat" name="format" form="syntax-form" required>
 	{%for format in formats%}
 	  <option value="{{format}}">{{format}}</option>
 	{%endfor%}
 </select>
-  </div>
+	</div>
+		<button type="submit" class="btn btn-primary">Check syntax</button>
 </form>
+
+<p>Note that this page might timeout for large ontologies. In such cases, please refer to <a href="https://rdflib.readthedocs.io/en/stable/intro_to_parsing.html">RDFLib homepage</a></p>
 
 {% endblock %}
