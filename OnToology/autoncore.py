@@ -1469,7 +1469,7 @@ if __name__ == "__main__":
     # parser.add_argument('--dotype', action='store_true', help='To conclude the type/class of the given csv file')
     args = parser.parse_args()
     if args.useremail and '@' in args.useremail:
-        prepare_logger(args.useremail, ext='.core')
+        prepare_logger(args.useremail)
         if args.target_repo and len(args.target_repo.split('/')) == 2:
             if args.magic:
                 print "changed files: "

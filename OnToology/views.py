@@ -842,6 +842,39 @@ def publish_view(request):
         return render(request, 'msg.html', {'msg': msg})
 
 
+@login_required
+def syntax_check_view(request):
+    import rdflib
+    valid_formats = ["xml", "n3", "turtle", "nt", "pretty-xml", "trix", "trig", "nquads"]
+    if 'url' not in request.GET:
+        return render(request, 'syntax.html', {'formats': valid_formats})
+    if 'format' not in request.GET:
+        return render(request, 'syntax.html', {'error': 'Format is expected','formats': valid_formats})
+        # return render(request, 'msg.html', {'msg': 'Format is expected'})
+    # if 'url' not in request.GET:
+    #     return render(request, 'msg.html', {'msg': 'url is expected'})
+    format = request.GET['format']
+    url = request.GET['url']
+    if format not in valid_formats:
+        return render(request, 'syntax.html', {'error': '<%s> format is not supported'%format, 'formats': valid_formats})
+        # return render(request, 'msg.html', {'msg': '<%s> format is not supported'})
+    if 'https://' not in url[:8] and 'http://' not in url[:7]:
+        return render(request, 'syntax.html', {'error': 'Invalid URL', 'formats': valid_formats})
+        # return render(request, 'msg.html', {'msg': 'Invalid URL'})
+    g = rdflib.Graph()
+    try:
+        g.parse(url, format=format)
+        return render(request, 'syntax.html', {'msg': 'The syntax of the ontology is correct', 'formats': valid_formats})
+    except Exception as e:
+        return render(request, 'syntax.html',
+                      {'formats': valid_formats,
+                        'error': 'The syntax of the ontology is incorrect. The error message is: '+str(e)})
+        # print "syntax error for the file %s format %s" % (str(file_abs_dir), a_format)
+        # print str(e)
+        # dolog("syntax error for the file %s format %s" % (str(file_abs_dir), a_format))
+        # dolog("syntax error: "+str(e))
+
+
 def publications(request):
     return render(request, 'publications.html')
 
