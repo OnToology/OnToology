@@ -19,3 +19,5 @@ blocks:
             - echo "Hello from my 'main' container"
             - docker-compose build
             - echo "Done"
+      secrets:
+        - name: OnToology Secret Configuration
