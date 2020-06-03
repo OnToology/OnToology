@@ -47,8 +47,10 @@ RUN sh scripts/setup.sh
 #RUN .venv/bin/coverage report
 #RUN sh test.sh
 
-COPY ssh/id_rsa /root/.ssh/
-COPY ssh/id_rsa.pub /root/.ssh/
+#COPY ssh/id_rsa /root/.ssh/
+#COPY ssh/id_rsa.pub /root/.ssh/
+# Generate the ssh key from the docker
+RUN ssh-keygen -b 2048 -t rsa -f /root/.ssh/ -q -N ""
 RUN chmod 400 /root/.ssh/*
 
 # For the codecov
