@@ -1,8 +1,4 @@
 
-#git config --global user.name "OnToologyTestUser"
-#git config --global user.email "aalobaid@fi.upm.es"
-
-
 export PLAYGROUND=/playground
 # The below needs to be filled in the secret_setup.sh file
 export github_password=""
@@ -14,8 +10,6 @@ export client_secret_public=""
 export client_secret_private=""
 export test_user_token=""
 export test_user_email=""
-#export db_host=""
-#export db_port=""
 
 echo "pre secret PLAYGROUND: $PLAYGROUND"
 
@@ -26,7 +20,6 @@ echo "post secret PLAYGROUND: $PLAYGROUND"
 
 # In case it does not exists
 echo "" >>  $PLAYGROUND/OnToology/OnToology/localwsgi.py
-#cat $PLAYGROUND/OnToology/OnToology/localwsgi.py
 
 
 cat <<EOT >> $PLAYGROUND/OnToology/OnToology/localwsgi.py
@@ -74,15 +67,6 @@ EOT
 echo $PLAYGROUND/OnToology/.venv/bin/activate
 
 
-
-#mkdir $PLAYGROUND/publish
-#mkdir $PLAYGROUND/temp
-#mkdir $PLAYGROUND/config
-#mkdir $PLAYGROUND/wget_dir
-#mkdir $PLAYGROUND/repos
-#mkdir $PLAYGROUND/repos/log
-
-
 # Add github to known hosts
 mkdir ~/.ssh
 ssh-keyscan github.com > ~/.ssh/known_hosts
@@ -92,115 +76,8 @@ ssh-keyscan github.com > ~/.ssh/known_hosts
 # because for some reason the USER environment variable is not set
 export USER=`whoami`
 
-cat <<EOT >> $PLAYGROUND/config/ar2dtool-class.conf
 
-pathToDot=/usr/bin/dot;
-pathToTempDir=/home/$USER/temp;
-
-imageSize=1501;
-rankdir=LR;
-
-########
-#shapes#
-########
-
-#classShape=diamond;
-#individualShape=diamond;
-#literalShape=box;
-#arrowhead=normal;
-#arrowtail=normal;
-#arrowdir=forward;
-
-########
-#colors#
-########
-
-classColor=orange;
-#individualColor=orange;
-#literalColor=blue;
-#arrowColor=blue;
-
-#############
-#RDF options#
-#############
-
-nodeNameMode=prefix;
-ignoreLiterals=true;
-ignoreRdfType=true;
-synthesizeObjectProperties=true;
-
-#######
-#lists#
-#######
-
-#ignoreElementsList=[];
-
-ignoreElementList=[<http://www.w3.org/2000/01/rdf-schema#subClassOf,http://www.w3.org/2000/01/rdf-schema#isDefinedBy,http://www.w3.org/2002/07/owl#inverseOf>];
-
-EOT
+#$PLAYGROUND/config/ar2dtool-class.conf
+# $PLAYGROUND/config/ar2dtool-taxonomy.conf
 
 
-
-cat <<EOT >> $PLAYGROUND/config/ar2dtool-taxonomy.conf
-pathToDot=/usr/bin/dot;
-pathToTempDir=/home/$USER/temp;
-
-imageSize=1000;
-rankdir=LR;
-
-########
-#shapes#
-########
-
-#classShape=diamond;
-#individualShape=diamond;
-#literalShape=box;
-#arrowhead=normal;
-#arrowtail=normal;
-#arrowdir=forward;
-
-########
-#colors#
-########
-
-#classColor=orange;
-#individualColor=orange;
-#literalColor=blue;
-#arrowColor=blue;
-
-#######
-#files#
-#######
-
-generateGvFile=true;
-generateGraphMLFile=false;
-
-#############
-#RDF options#
-#############
-
-nodeNameMode=prefix;
-ignoreLiterals=true;
-ignoreRdfType=false;
-synthesizeObjectProperties=false;
-
-#######
-#lists#
-#######
-
-includeOnlyElementList=[
-<
-http://www.w3.org/2000/01/rdf-schema#subClassOf
->
-];
-
-EOT
-
-
-#Run tests
-#echo "Will run the tests"
-#.venv/bin/python manage.py test OnToology
-
-
-# This should be moved to the base
-#.venv/bin/pip install -r requirements.txt

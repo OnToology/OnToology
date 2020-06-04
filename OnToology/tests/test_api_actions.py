@@ -44,7 +44,14 @@ set_config(logger)
 
 
 def get_pending_messages():
-    connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
+    try:
+        connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
+    except:
+        print("exception 1 in connecting")
+        sleep(3)
+        connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
+
+
     channel = connection.channel()
     queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=True)
     num = queue.method.message_count
