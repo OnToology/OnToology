@@ -1,4 +1,4 @@
-.venv/bin/pip install codecov  # should be added later to the base docker
+.venv/bin/pip install codecov coverage # should be added later to the base docker
 export PATH=.venv/bin/:$PATH
 coverage run manage.py test OnToology
 coverage report
