@@ -41,4 +41,5 @@ blocks:
       jobs:
         - name: Run tests
           commands:
+            - 'ls '
             - docker-compose run web .venv/bin/python manage.py test OnToology
