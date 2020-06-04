@@ -20,7 +20,7 @@ blocks:
             - rm -Rf OnToology
             - checkout
             - echo "Hello from my 'main' container"
-            - docker-compose build
+            - cd OnToology;docker-compose build
             - echo "Done"
       secrets:
         - name: OnToology Secret Configuration
