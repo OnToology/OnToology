@@ -200,7 +200,9 @@ def git_magic(target_repo, user, changed_filesss):
             dolog('failed to create pull request: ' + exception_if_exists)
             change_status(target_repo, 'failed to create a pull request')
     else:
+        dolog("No pull for testing")
         print 'No pull for testing'
+        change_status(target_repo, 'Ready')
     drepo.progress = 100
     drepo.save()
     # change_status(target_repo, 'Ready')

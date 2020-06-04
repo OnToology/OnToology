@@ -141,6 +141,7 @@ class PublishView(View):
 #                         Action Level                            #
 ###################################################################
 
+
 @token_required
 def generate_all(request):
     if request.method != 'POST':
@@ -149,18 +150,30 @@ def generate_all(request):
         user = request.user
         if 'url' not in request.POST:
             return JsonResponse({'message': 'url is missing'}, status=400)
+        print("url: 1")
         url =request.POST['url'].strip()
+        print("url: 2")
         if url[-1] == '/':
             url = url[:-1]
         found = False
+        print("user.repos: ")
+        print(user.repos)
         for r in user.repos:
+            print("url for user")
+            print(r.json())
             if r.url == url:
+                print("url in")
                 found = True
                 break
+            else:
+                print("url not in")
         if found:
+            print("generate for all url")
             res = generateforall(url, user.email)
+            print("res from renerate all")
             return JsonResponse({'message': 'generation is in process'}, status=202)
         else:
+            print("generate for all url Not found")
             return JsonResponse({'message': 'Invalid repo'}, status=404)
 
     except Exception as e:

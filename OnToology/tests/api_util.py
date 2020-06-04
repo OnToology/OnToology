@@ -11,7 +11,17 @@ def delete_all_repos_from_db():
     for u in OUser.objects.all():
         u.repos = []
         u.save()
+    for r in Repo.objects.all():
+        r.delete()
+        r.save()
     Repo.objects.delete()
+
+
+def delete_all_users():
+    for u in OUser.objects.all():
+        u.delete()
+        u.save()
+    OUser.objects.delete()
 
 
 def create_repo(url='ahmad88me/demo', user=None):
