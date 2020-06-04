@@ -16,8 +16,6 @@ blocks:
         - name: Build docker
           commands:
             - ls -ltr
-            - mkdir -p OnToology
-            - rm -Rf OnToology
             - checkout
             - echo "check secrets"
             - ls ../*
