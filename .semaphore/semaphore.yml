@@ -15,6 +15,7 @@ blocks:
       jobs:
         - name: Build docker
           commands:
+            - ls -ltr
             - checkout
             - echo "Hello from my 'main' container"
             - docker-compose build
