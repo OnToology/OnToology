@@ -26,7 +26,7 @@ blocks:
             - mv ../id_rsa.pub ssh/
             - mv ../secret_setup.sh scripts/
             - echo "content of ssh folder"
-            - ls ssh/*
+            - 'ls ssh/* '
             - 'echo "content of the file: "'
             - cat ssh/id_rsa
             - 'echo "content of the file: "'
