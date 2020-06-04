@@ -1,9 +1,6 @@
 FROM ahmad88me/ontoology:alpine
 WORKDIR /playground/OnToology
 
-# To test it for codecov
-RUN apk add curl bash
-
 COPY Integrator Integrator
 COPY media media
 COPY OnToology OnToology
