@@ -1,5 +1,7 @@
 # ![alt text](https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/logoprop1_readme.png "OnToology")
-[![Build Status](https://semaphoreci.com/api/v1/ahmad88me/ontoology/branches/master/badge.svg)](https://semaphoreci.com/ahmad88me/ontoology)
+<!--[![Build Status](https://semaphoreci.com/api/v1/ahmad88me/ontoology/branches/master/badge.svg)](https://semaphoreci.com/ahmad88me/ontoology)
+-->
+[![Build Status](https://ahmad88me.semaphoreci.com/badges/OnToology.svg)](https://ahmad88me.semaphoreci.com/projects/OnToology) 
 [![codecov](https://codecov.io/gh/OnToology/OnToology/branch/master/graph/badge.svg)](https://codecov.io/gh/OnToology/OnToology)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1317786.svg)](https://doi.org/10.5281/zenodo.1317786)
 
@@ -30,10 +32,6 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 `nohup .venv/bin/python OnToology/rabbit.py &`
 1. (Optional) you can run it with multiple threads `nohup .venv/bin/python OnToology/rabbit.py 3 &`
 
-# Recover from a failure/crash or a server restart
-1. Release all busy locks from the DB `.venv/bin/python OnToology/autoncore.py --busyclear` 
-2. Run the rabbitMQ server `nohup .venv/bin/python OnToology/rabbit.py &`
-3. (Optional) repeat point 2 (to have multiple consumer processes to handle requests)
 
 
 ## Secret setup

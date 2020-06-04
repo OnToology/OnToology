@@ -11,6 +11,8 @@ COPY *.py ./
 COPY *.sh ./
 COPY *.txt ./
 COPY .coveragerc ./
+COPY config/ar2dtool-class.conf $PLAYGROUND/config/ar2dtool-class.conf
+COPY config/ar2dtool-taxonomy.conf $PLAYGROUND/config/ar2dtool-taxonomy.conf
 #COPY ssh/id_rsa ~/.ssh/
 #COPY ssh/id_rsa.pub ~/.ssh/
 
