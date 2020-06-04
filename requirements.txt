@@ -1,6 +1,6 @@
 certifi==2018.1.18
 chardet==3.0.4
-codecov==2.0.15
+codecov==2.1.4
 coverage==3.7.1
 Django==1.11.28
 django-mongoengine==0.3.3
