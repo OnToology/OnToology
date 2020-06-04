@@ -1,0 +1,40 @@
+version: v1.0
+name: Run in Docker
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+  containers:
+    - name: main
+      image: 'semaphoreci/node:10'
+    - name: database
+      image: 'postgres:11'
+blocks:
+  - name: Build and Run tests
+    task:
+      jobs:
+        - name: Built docker and run tests
+          commands:
+            - ls -ltr
+            - checkout
+            - echo "check secrets"
+            - ls ../*
+            - echo "check OnToology content"
+            - ls
+            - echo "moving secrets"
+            - mv ../id_rsa ssh/
+            - mv ../id_rsa.pub ssh/
+            - mv ../secret_setup.sh scripts/
+            - echo "content of ssh folder"
+            - ls ssh/*
+            - 'echo "content of the file: "'
+            - cat ssh/id_rsa
+            - 'echo "content of the file: "'
+            - cat ssh/id_rsa.pub
+            - echo "running docker compose"
+            - docker-compose build
+            - echo "Images are built"
+            - echo "Running the tests"
+            - docker-compose run web .venv/bin/python manage.py test OnToology
+      secrets:
+        - name: OnToology Secret Configuration
