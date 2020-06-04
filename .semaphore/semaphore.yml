@@ -19,8 +19,14 @@ blocks:
             - mkdir -p OnToology
             - rm -Rf OnToology
             - checkout
-            - echo "Hello from my 'main' container"
+            - echo "check secrets"
+            - ls ../*
+            - echo "check OnToology content"
             - ls
+            - echo "moving secrets"
+            - mv ../id_rsa ssh/
+            - mv ../id_rsa.pub ssh/
+            - mv ../secret_setup.sh scripts/
             - echo "content of ssh folder"
             - ls ssh/*
             - echo "running docker compose"
