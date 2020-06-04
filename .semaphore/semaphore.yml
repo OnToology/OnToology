@@ -10,10 +10,10 @@ agent:
     - name: database
       image: 'postgres:11'
 blocks:
-  - name: Build
+  - name: Build and Run tests
     task:
       jobs:
-        - name: Build docker
+        - name: Built docker and run tests
           commands:
             - ls -ltr
             - checkout
@@ -33,13 +33,8 @@ blocks:
             - cat ssh/id_rsa.pub
             - echo "running docker compose"
             - docker-compose build
-            - echo "Done"
+            - echo "Images are built"
+            - echo "Running the tests"
+            - docker-compose run web .venv/bin/python manage.py test OnToology
       secrets:
         - name: OnToology Secret Configuration
-  - name: Run tests
-    task:
-      jobs:
-        - name: Run tests
-          commands:
-            - 'ls '
-            - docker-compose run web .venv/bin/python manage.py test OnToology
