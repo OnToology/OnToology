@@ -16,6 +16,8 @@ blocks:
         - name: Build docker
           commands:
             - ls -ltr
+            - mkdir -p OnToology
+            - rm -Rf OnToology
             - checkout
             - echo "Hello from my 'main' container"
             - docker-compose build
