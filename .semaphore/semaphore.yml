@@ -36,3 +36,9 @@ blocks:
             - echo "Done"
       secrets:
         - name: OnToology Secret Configuration
+  - name: Run tests
+    task:
+      jobs:
+        - name: Run tests
+          commands:
+            - docker-compose run web .venv/bin/python manage.py test OnToology
