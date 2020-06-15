@@ -569,7 +569,12 @@ def profile(request):
     request.GET = []
     sys.stdout.flush()
     sys.stderr.flush()
+    if request.user.email in get_managers():
+        num_pending_msgs = rabbit.get_pending_messages()
+    else:
+        num_pending_msgs = -2
     return render(request, 'profile.html', {'repos': repos, 'pnames': PublishName.objects.filter(user=user),
+                                            'num_pending_msgs': num_pending_msgs,
                                             'error': error_msg, 'manager': request.user.email in get_managers()})
 
 

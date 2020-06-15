@@ -75,6 +75,31 @@ def send(message_json):
     connection.close()
 
 
+def get_pending_messages():
+    """
+    get number of pending messages
+    :return:
+    """
+    global logger
+    try:
+        connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
+    except:
+        msg = "exception 1 in connecting"
+        logger.debug(msg)
+        # print(msg)
+        sleep(3)
+        try:
+            connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
+        except:
+            logger.debug(msg+" for the second time")
+            return -1
+    channel = connection.channel()
+    queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=True)
+    num = queue.method.message_count
+    connection.close()
+    return num
+
+
 def callback(ch, method, properties, body):
     """
     Consume messages from the ready queue
