@@ -185,7 +185,14 @@ def handle_action(j):
     import autoncore
     if j['action'] == 'magic':
         logger.debug("going for magic")
-        autoncore.git_magic(j['repo'], j['useremail'], j['changedfiles'])
+        try:
+            autoncore.git_magic(j['repo'], j['useremail'], j['changedfiles'])
+            logger.debug("magic success")
+        except Exception as e:
+            logger.error("Exception in magic for repo: "+j['repo'])
+            logger.error(str(e))
+            print("Exception in magic for repo: "+j['repo'])
+            print(str(e))
         logger.debug("magic is done")
 
 
@@ -252,6 +259,7 @@ def start_pool(num_of_thread=1):
     logger.debug("total spawned: "+str(threads))
     for th in threads:
         th.join()
+    logger.error("ALL ARE CONSUMED ..")
 
 
 def single_worker(worker_id):
