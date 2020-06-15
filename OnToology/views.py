@@ -569,13 +569,44 @@ def profile(request):
     request.GET = []
     sys.stdout.flush()
     sys.stderr.flush()
+
     if request.user.email in get_managers():
         num_pending_msgs = rabbit.get_pending_messages()
+        num_of_rabbit_processes = get_num_of_processes_of_rabbit()
     else:
         num_pending_msgs = -2
+        num_of_rabbit_processes = -2
+
     return render(request, 'profile.html', {'repos': repos, 'pnames': PublishName.objects.filter(user=user),
                                             'num_pending_msgs': num_pending_msgs,
+                                            'num_of_rabbit_processes': num_of_rabbit_processes,
                                             'error': error_msg, 'manager': request.user.email in get_managers()})
+
+
+def get_num_of_processes_of_rabbit():
+    import os
+    out = os.popen('ps -ef | grep rabbit.py').read()
+    lines = out.split('\n')
+    one = False
+    for line in lines:
+        if 'python' in line and 'rabbit.py' in line:
+            print("line: ")
+            print(line)
+            p_tokens = line.split('rabbit.py')
+            if len(p_tokens) > 1:
+                tokens = p_tokens[1].strip().split(' ')
+                if tokens[0].strip().isdigit():
+                    return int(tokens[0].strip())
+                else:
+                    print("ptokens: ")
+                    print(p_tokens)
+                    print("tokens: ")
+                    print(tokens)
+                    # return 1
+                    one = True
+    if one:
+        return 1
+    return -1
 
 
 def update_conf(request):
