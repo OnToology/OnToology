@@ -73,6 +73,7 @@ def run_rabbit():
     else:
         comm = "nohup python %s " % (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rabbit.py', str(num),
                                                   ' &'))
+    logger.debug("comm: " + comm)
     subprocess.Popen(comm, shell=True)
 
 
