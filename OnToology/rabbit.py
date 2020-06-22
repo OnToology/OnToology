@@ -68,11 +68,11 @@ def run_rabbit():
         num = default_proc
 
     if 'virtual_env_dir' in os.environ:
-        comm = "nohup %s %s " % (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
+        comm = "nohup %s %s %s %s" % (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
                 (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rabbit.py'), str(num), ' &'))
     else:
-        comm = "nohup python %s " % (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rabbit.py'), str(num),
-                                                  ' &')
+        comm = "nohup python %s %s %s" % (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rabbit.py'), str(num),
+                                                  '&')
     logger.debug("comm: " + comm)
     subprocess.Popen(comm, shell=True)
 
