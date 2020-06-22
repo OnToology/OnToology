@@ -1,6 +1,7 @@
 import json
 import pika
 import os
+import subprocess
 import sys
 import hashlib
 import time
@@ -53,6 +54,28 @@ else:
     set_config(logger)
 
 
+def run_rabbit():
+    """
+    :return:
+    """
+    default_proc = 5
+    if 'rabbit_processes' in os.environ:
+        try:
+            num = int(os.environ['rabbit_processes'])
+        except:
+            num = default_proc
+    else:
+        num = default_proc
+
+    if 'virtual_env_dir' in os.environ:
+        comm = "nohup %s %s " % (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
+                (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rabbit.py', str(num), ' &')))
+    else:
+        comm = "nohup python %s " % (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rabbit.py', str(num),
+                                                  ' &'))
+    subprocess.Popen(comm, shell=True)
+
+
 def send(message_json):
     """
     :param message:
@@ -73,6 +96,10 @@ def send(message_json):
                               delivery_mode=2,  # make message persistent
                           ))
     connection.close()
+    num = get_num_of_processes_of_rabbit()
+    if num < 1:
+        logger.warning("send> RESTART -- number of processes were: "+str(num))
+        run_rabbit()
 
 
 def get_pending_messages():
@@ -98,6 +125,35 @@ def get_pending_messages():
     num = queue.method.message_count
     connection.close()
     return num
+
+
+def get_num_of_processes_of_rabbit():
+    """
+    :return:
+    """
+    import os
+    out = os.popen('ps -ef | grep rabbit.py').read()
+    lines = out.split('\n')
+    one = False
+    for line in lines:
+        if 'python' in line and 'rabbit.py' in line:
+            print("line: ")
+            print(line)
+            p_tokens = line.split('rabbit.py')
+            if len(p_tokens) > 1:
+                tokens = p_tokens[1].strip().split(' ')
+                if tokens[0].strip().isdigit():
+                    return int(tokens[0].strip())
+                else:
+                    print("ptokens: ")
+                    print(p_tokens)
+                    print("tokens: ")
+                    print(tokens)
+                    # return 1
+                    one = True
+    if one:
+        return 1
+    return -1
 
 
 def callback(ch, method, properties, body):
