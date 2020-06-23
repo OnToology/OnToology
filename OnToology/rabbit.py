@@ -56,25 +56,26 @@ else:
 
 def run_rabbit():
     """
+    Run the rabbit consumer
     :return:
     """
-    default_proc = 5
     if 'rabbit_processes' in os.environ:
         try:
             num = int(os.environ['rabbit_processes'])
+            if 'virtual_env_dir' in os.environ:
+                comm = "nohup %s %s %s %s" % (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
+                                              os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rabbit.py'),
+                                              str(num), ' &')
+            else:
+                comm = "nohup python %s %s %s" % (
+                os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rabbit.py'), str(num),
+                '&')
+            logger.debug("run_rabbit> comm: " + comm)
+            subprocess.Popen(comm, shell=True)
         except:
-            num = default_proc
+            logger.error('run_rabbit> The rabbit_processes is: <%s>' % str(os.environ['rabbit_processes']))
     else:
-        num = default_proc
-
-    if 'virtual_env_dir' in os.environ:
-        comm = "nohup %s %s %s %s" % (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
-                os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rabbit.py'), str(num), ' &')
-    else:
-        comm = "nohup python %s %s %s" % (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rabbit.py'), str(num),
-                                                  '&')
-    logger.debug("comm: " + comm)
-    subprocess.Popen(comm, shell=True)
+        logger.debug('run_rabbit> rabbit_processes is not in environ')
 
 
 def send(message_json):
