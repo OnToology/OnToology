@@ -85,7 +85,7 @@ def send(message_json):
     global logger
     connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
     channel = connection.channel()
-    queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=True)
+    queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
     logger.debug("send> number of messages in the queue is: "+str(queue.method.message_count))
     message = json.dumps(message_json)
     logger.debug("send> sending message")
@@ -122,7 +122,7 @@ def get_pending_messages():
             logger.debug(msg+" for the second time")
             return -1
     channel = connection.channel()
-    queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=True)
+    queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
     num = queue.method.message_count
     connection.close()
     return num
@@ -226,10 +226,18 @@ def handle_publish(j):
     """
     global logger
     logger.debug('handle_publish> going for previsual')
-    autoncore.previsual(useremail=j['useremail'], target_repo=j['repo'])
+    try:
+        autoncore.previsual(useremail=j['useremail'], target_repo=j['repo'])
+    except Exception as e:
+        logger.error('handle_publish> ERROR in previsualisation: '+str(e))
+        return
     logger.debug('handle_publish> going for publish')
-    autoncore.publish(name=j['name'], target_repo=j['repo'], ontology_rel_path=j['ontology_rel_path'],
-                      useremail=j['useremail'])
+    try:
+        autoncore.publish(name=j['name'], target_repo=j['repo'], ontology_rel_path=j['ontology_rel_path'],
+                          useremail=j['useremail'])
+    except Exception as e:
+        logger.error('handle_publish> ERROR in publication: '+str(e))
+        return
     logger.debug('handle_publish> done')
 
 
@@ -329,7 +337,7 @@ def single_worker(worker_id):
     logger.debug('worker_id: '+str(worker_id))
     connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
     channel = connection.channel()
-    queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=True)
+    queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
     channel.basic_qos(prefetch_count=1)
     channel.basic_consume(queue=queue_name, on_message_callback=callback)
     print("Rabbit consuming is started ... "+str(worker_id))
