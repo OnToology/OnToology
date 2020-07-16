@@ -116,7 +116,7 @@ def get_pending_messages():
         msg = "exception 1 in connecting"
         logger.debug(msg)
         # print(msg)
-        sleep(3)
+        time.sleep(3)
         try:
             connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
         except:
