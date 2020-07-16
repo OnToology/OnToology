@@ -1,6 +1,7 @@
 import json
 import pika
 import os
+import subprocess
 import sys
 import hashlib
 import time
@@ -53,6 +54,30 @@ else:
     set_config(logger)
 
 
+def run_rabbit():
+    """
+    Run the rabbit consumer
+    :return:
+    """
+    if 'rabbit_processes' in os.environ:
+        try:
+            num = int(os.environ['rabbit_processes'])
+            if 'virtual_env_dir' in os.environ:
+                comm = "nohup %s %s %s %s" % (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
+                                              os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rabbit.py'),
+                                              str(num), ' &')
+            else:
+                comm = "nohup python %s %s %s" % (
+                os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rabbit.py'), str(num),
+                '&')
+            logger.debug("run_rabbit> comm: " + comm)
+            subprocess.Popen(comm, shell=True)
+        except:
+            logger.error('run_rabbit> The rabbit_processes is: <%s>' % str(os.environ['rabbit_processes']))
+    else:
+        logger.debug('run_rabbit> rabbit_processes is not in environ')
+
+
 def send(message_json):
     """
     :param message:
@@ -61,7 +86,7 @@ def send(message_json):
     global logger
     connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
     channel = connection.channel()
-    queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=True)
+    queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
     logger.debug("send> number of messages in the queue is: "+str(queue.method.message_count))
     message = json.dumps(message_json)
     logger.debug("send> sending message")
@@ -73,6 +98,64 @@ def send(message_json):
                               delivery_mode=2,  # make message persistent
                           ))
     connection.close()
+    num = get_num_of_processes_of_rabbit()
+    if num < 1:
+        logger.warning("send> RESTART -- number of processes were: "+str(num))
+        run_rabbit()
+
+
+def get_pending_messages():
+    """
+    get number of pending messages
+    :return:
+    """
+    global logger
+    try:
+        connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
+    except:
+        msg = "exception 1 in connecting"
+        logger.debug(msg)
+        # print(msg)
+        time.sleep(3)
+        try:
+            connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
+        except:
+            logger.debug(msg+" for the second time")
+            return -1
+    channel = connection.channel()
+    queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
+    num = queue.method.message_count
+    connection.close()
+    return num
+
+
+def get_num_of_processes_of_rabbit():
+    """
+    :return:
+    """
+    import os
+    out = os.popen('ps -ef | grep rabbit.py').read()
+    lines = out.split('\n')
+    one = False
+    for line in lines:
+        if 'python' in line and 'rabbit.py' in line:
+            print("line: ")
+            print(line)
+            p_tokens = line.split('rabbit.py')
+            if len(p_tokens) > 1:
+                tokens = p_tokens[1].strip().split(' ')
+                if tokens[0].strip().isdigit():
+                    return int(tokens[0].strip())
+                else:
+                    print("ptokens: ")
+                    print(p_tokens)
+                    print("tokens: ")
+                    print(tokens)
+                    # return 1
+                    one = True
+    if one:
+        return 1
+    return -1
 
 
 def callback(ch, method, properties, body):
@@ -144,10 +227,18 @@ def handle_publish(j):
     """
     global logger
     logger.debug('handle_publish> going for previsual')
-    autoncore.previsual(useremail=j['useremail'], target_repo=j['repo'])
+    try:
+        autoncore.previsual(useremail=j['useremail'], target_repo=j['repo'])
+    except Exception as e:
+        logger.error('handle_publish> ERROR in previsualisation: '+str(e))
+        return
     logger.debug('handle_publish> going for publish')
-    autoncore.publish(name=j['name'], target_repo=j['repo'], ontology_rel_path=j['ontology_rel_path'],
-                      useremail=j['useremail'])
+    try:
+        autoncore.publish(name=j['name'], target_repo=j['repo'], ontology_rel_path=j['ontology_rel_path'],
+                          useremail=j['useremail'])
+    except Exception as e:
+        logger.error('handle_publish> ERROR in publication: '+str(e))
+        return
     logger.debug('handle_publish> done')
 
 
@@ -160,7 +251,14 @@ def handle_action(j):
     import autoncore
     if j['action'] == 'magic':
         logger.debug("going for magic")
-        autoncore.git_magic(j['repo'], j['useremail'], j['changedfiles'])
+        try:
+            autoncore.git_magic(j['repo'], j['useremail'], j['changedfiles'])
+            logger.debug("magic success")
+        except Exception as e:
+            logger.error("Exception in magic for repo: "+j['repo'])
+            logger.error(str(e))
+            print("Exception in magic for repo: "+j['repo'])
+            print(str(e))
         logger.debug("magic is done")
 
 
@@ -227,6 +325,7 @@ def start_pool(num_of_thread=1):
     logger.debug("total spawned: "+str(threads))
     for th in threads:
         th.join()
+    logger.error("ALL ARE CONSUMED ..")
 
 
 def single_worker(worker_id):
@@ -239,7 +338,7 @@ def single_worker(worker_id):
     logger.debug('worker_id: '+str(worker_id))
     connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
     channel = connection.channel()
-    queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=True)
+    queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
     channel.basic_qos(prefetch_count=1)
     channel.basic_consume(queue=queue_name, on_message_callback=callback)
     print("Rabbit consuming is started ... "+str(worker_id))

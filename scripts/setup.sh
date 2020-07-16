@@ -60,6 +60,7 @@ environ['test_user_email']="$test_user_email"
 environ['db_host']="$db_host"
 environ['db_port']="$db_port"
 environ['debug']="true"
+environ['rabbit_processes']=3
 
 EOT
 

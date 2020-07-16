@@ -26,11 +26,11 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 1. `mkdir -p .git`
 1. `docker-compose build --no-cache`
 1. `docker-compose run -p 8000:8000 web .venv/bin/python manage.py runserver 0.0.0.0:8000`
-1. Run the RabbitMQ server (consumers).
-    - Locally: `python OnToology/rabbit.py` 
-    - For a linux server: 
-`nohup .venv/bin/python OnToology/rabbit.py &`
-1. (Optional) you can run it with multiple threads `nohup .venv/bin/python OnToology/rabbit.py 3 &`
+1. ~~Run the RabbitMQ server (consumers).~~
+    - ~~Locally: `python OnToology/rabbit.py`~~
+    - ~~For a linux server: `nohup .venv/bin/python OnToology/rabbit.py &`~~
+1. ~~(Optional) you can run it with multiple threads `nohup .venv/bin/python OnToology/rabbit.py 3 &`~~
+1. Now, this is run automatically. But, make sure that the environment variable `rabbit_processes` is set to a value > 0
 
 
 
@@ -49,6 +49,10 @@ export test_user_token=""
 export test_user_email=""
 export rabbit_host=""
 ```
+
+## Environment variables
+Here we describe some of the main ones
+* `rabbit_processes` : The number of rabbit processes to automatically run (0 means do not run it automatically).
 
 
 ## How to contribute
