@@ -53,7 +53,7 @@ def get_pending_messages():
 
 
     channel = connection.channel()
-    queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=True)
+    queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
     num = queue.method.message_count
     connection.close()
     sleep(0.1)
