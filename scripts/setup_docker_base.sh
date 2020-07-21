@@ -34,7 +34,7 @@ virtualenv -p /usr/bin/python2.7 .venv
 
 # setup widoco
 echo "Widoco setup ..."
-cd $PLAYGROUND;mkdir widoco;cd widoco; wget --progress=bar:force https://github.com/dgarijo/Widoco/releases/download/v1.4.11/widoco-1.4.11-jar-with-dependencies.jar ; mv widoco-* widoco.jar ; chmod 777 widoco*
+cd $PLAYGROUND;mkdir widoco;cd widoco; wget --progress=bar:force https://github.com/dgarijo/Widoco/releases/download/v1.4.15_0/widoco-1.4.15-jar-with-dependencies.jar ; mv widoco-* widoco.jar ; chmod 777 widoco*
 
 # setup ar2dtool
 echo "ar2dtool ..."
