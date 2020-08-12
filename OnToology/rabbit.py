@@ -252,7 +252,7 @@ def handle_action(j):
     try:
         repo = j['repo']
         if j['action'] == 'magic':
-            logger.debug("going for magic")
+            logger.debug("going for magic: "+str(j))
             try:
                 autoncore.git_magic(j['repo'], j['useremail'], j['changedfiles'])
                 logger.debug("magic success")
