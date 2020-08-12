@@ -249,17 +249,22 @@ def handle_action(j):
     """
     global logger
     import autoncore
-    if j['action'] == 'magic':
-        logger.debug("going for magic")
-        try:
-            autoncore.git_magic(j['repo'], j['useremail'], j['changedfiles'])
-            logger.debug("magic success")
-        except Exception as e:
-            logger.error("Exception in magic for repo: "+j['repo'])
-            logger.error(str(e))
-            print("Exception in magic for repo: "+j['repo'])
-            print(str(e))
-        logger.debug("magic is done")
+    try:
+        repo = j['repo']
+        if j['action'] == 'magic':
+            logger.debug("going for magic")
+            try:
+                autoncore.git_magic(j['repo'], j['useremail'], j['changedfiles'])
+                logger.debug("magic success")
+            except Exception as e:
+                logger.error("Exception in magic for repo: "+j['repo'])
+                logger.error(str(e))
+                print("Exception in magic for repo: "+j['repo'])
+                print(str(e))
+            logger.debug("magic is done")
+    except Exception as e:
+        logger.error("Exception 2 for magic: "+str(e))
+        logger.error("Exception for j: "+str(j))
 
 
 def handle_conf_change(j):
