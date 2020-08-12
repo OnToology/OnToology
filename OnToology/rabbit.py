@@ -190,6 +190,7 @@ def callback(ch, method, properties, body):
                 logger.debug(" ---  Consuming: " + repo_name)
                 logger.debug(body)
                 if j['action'] == 'magic':
+                    logger.debug('starting a magic process')
                     p = Process(target=handle_action, args=(j,))
                     p.start()
                     p.join()
@@ -216,6 +217,8 @@ def callback(ch, method, properties, body):
     except Exception as e:
         print("ERROR: "+str(e))
         print("Message: "+str(body))
+        logger.debug("dERROR: "+str(e))
+        logger.debug("dMessage: "+str(body))
         logger.error("ERROR: "+str(e))
         logger.error("Message: "+str(body))
 
@@ -257,15 +260,22 @@ def handle_action(j):
                 autoncore.git_magic(j['repo'], j['useremail'], j['changedfiles'])
                 logger.debug("magic success")
             except Exception as e:
+                logger.debug("dException in magic for repo: "+j['repo'])
+                logger.debug(str(e))
                 logger.error("Exception in magic for repo: "+j['repo'])
                 logger.error(str(e))
                 print("Exception in magic for repo: "+j['repo'])
                 print(str(e))
             logger.debug("magic is done")
         else:
+            logger.debug("dInvalid magic redirect: ")
+            logger.debug("dInvalid magic redirect with j: "+str(j))
             logger.error("Invalid magic redirect: ")
             logger.error("Invalid magic redirect with j: "+str(j))
     except Exception as e:
+        logger.debug("dException 2 ")
+        logger.debug("dException 2 for magic: "+str(e))
+        logger.debug("dException for j: "+str(j))
         logger.error("Exception 2 ")
         logger.error("Exception 2 for magic: "+str(e))
         logger.error("Exception for j: "+str(j))
