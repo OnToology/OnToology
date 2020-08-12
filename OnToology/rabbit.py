@@ -262,7 +262,11 @@ def handle_action(j):
                 print("Exception in magic for repo: "+j['repo'])
                 print(str(e))
             logger.debug("magic is done")
+        else:
+            logger.error("Invalid magic redirect: ")
+            logger.error("Invalid magic redirect with j: "+str(j))
     except Exception as e:
+        logger.error("Exception 2 ")
         logger.error("Exception 2 for magic: "+str(e))
         logger.error("Exception for j: "+str(j))
 
