@@ -204,19 +204,19 @@ def callback(ch, method, properties, body):
                 logger.debug(body)
                 if j['action'] == 'magic':
                     logger.debug('starting a magic process')
-                    p = Process(target=handle_action, args=(j,))
+                    p = Process(target=handle_action, args=(j,logger))
                     p.start()
                     p.join()
                     # handle_action(j)
                 elif j['action'] == 'change_conf':
                     logger.debug('starting a config change process')
-                    p = Process(target=handle_conf_change, args=(j,))
+                    p = Process(target=handle_conf_change, args=(j,logger))
                     p.start()
                     p.join()
                     # handle_conf_change(j)
                 elif j['action'] == 'publish':
                     logger.debug('starting a publish process')
-                    p = Process(target=handle_publish, args=(j,))
+                    p = Process(target=handle_publish, args=(j,logger))
                     p.start()
                     p.join()
                     # handle_publish(j)
@@ -242,12 +242,12 @@ def callback(ch, method, properties, body):
         logger.error("Message: "+str(body))
 
 
-def handle_publish(j):
+def handle_publish(j, logger):
     """
     :param j:
     :return:
     """
-    global logger
+    logger = set_logger()
     logger.debug('handle_publish> going for previsual')
     try:
         autoncore.previsual(useremail=j['useremail'], target_repo=j['repo'])
@@ -264,12 +264,11 @@ def handle_publish(j):
     logger.debug('handle_publish> done')
 
 
-def handle_action(j):
+def handle_action(j, logger):
     """
     :param j:
     :return:
     """
-    global logger
     import autoncore
     try:
         logger.debug("handle_action> ")
@@ -304,12 +303,11 @@ def handle_action(j):
     logger.debug("finished handle_action: "+str(j))
 
 
-def handle_conf_change(j):
+def handle_conf_change(j, logger):
     """
     :param j:
     :return:
     """
-    global logger
     import autoncore
     try:
         print("set logger")
