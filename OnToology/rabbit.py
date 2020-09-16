@@ -54,6 +54,17 @@ else:
     set_config(logger)
 
 
+def set_logger():
+    if 'rabbit_log_dir' in os.environ:
+        log_dir = os.environ['rabbit_log_dir']
+        logger = logging.getLogger(__name__)
+        set_config(logger, log_dir)
+    else:
+        logger = logging.getLogger(__name__)
+        set_config(logger)
+
+
+
 def run_rabbit():
     """
     Run the rabbit consumer
@@ -301,6 +312,8 @@ def handle_conf_change(j):
     global logger
     import autoncore
     try:
+        print("set logger")
+        logger = set_logger()
         logger.debug("handle_conf_change> ")
         data = j['data']
         if j['action'] == 'change_conf':
