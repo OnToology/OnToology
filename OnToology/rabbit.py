@@ -260,6 +260,7 @@ def handle_action(j):
                 autoncore.git_magic(j['repo'], j['useremail'], j['changedfiles'])
                 logger.debug("magic success")
             except Exception as e:
+                logger.debug("dException in magic")
                 logger.debug("dException in magic for repo: "+j['repo'])
                 logger.debug(str(e))
                 logger.error("Exception in magic for repo: "+j['repo'])
@@ -355,7 +356,8 @@ def single_worker(worker_id):
     global lock
     global logger
     logger.debug('worker_id: '+str(worker_id))
-    connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
+    # heartbeat=0 disable timeout
+    connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host, heartbeat=0))
     channel = connection.channel()
     queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
     channel.basic_qos(prefetch_count=1)
