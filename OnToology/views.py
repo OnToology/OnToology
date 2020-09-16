@@ -75,6 +75,26 @@ sys.setdefaultencoding("UTF-8")
 sys.stdout = sys.stderr
 
 
+def get_repo_name_from_url(url):
+    """
+    :param url:
+    :return: user/repo (or None if invalid)
+    """
+    url = url.replace(' ','')
+    url = url.lower().strip()
+    if url[:19] == "https://github.com/":
+        name = url[19:]
+    else:
+        name = url
+    print("name: "+name)
+    if name[-1] == "/":
+        name = name[:-1]
+    print(len(name.split('/')))
+    if len(name.split('/')) == 2:
+        return name
+    return None
+
+
 def home(request):
     global client_id, client_secret, is_private
     sys.stdout.flush()
@@ -82,7 +102,8 @@ def home(request):
     if 'target_repo' in request.GET:
         print("we are inside")
         target_repo = request.GET['target_repo']
-        if target_repo.strip() == "" or len(target_repo.split('/')) != 2:
+        repo_name = get_repo_name_from_url(target_repo)
+        if repo_name is None:
             return render(request, 'msg.html', {'msg': 'please enter a valid repo'})
         init_g()
         # if not has_access_to_repo(target_repo):# this for the organization

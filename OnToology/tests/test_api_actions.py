@@ -17,7 +17,6 @@ from OnToology.rabbit import start_pool
 from time import sleep
 
 
-
 rabbit_host = os.environ['rabbit_host']
 queue_name = 'ontoology'
 
@@ -50,7 +49,6 @@ def get_pending_messages():
         print("exception 1 in connecting")
         sleep(3)
         connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
-
 
     channel = connection.channel()
     queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)

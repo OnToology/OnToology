@@ -22,6 +22,9 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 
 
 # Run Locally
+## via script
+1. `sh scripts/run_web.sh`
+## manual
 1. `cp -Rf ~/.ssh/ ssh` (assuming you have a *nix and that you already have an ssh key)
 1. `mkdir -p .git`
 1. `docker-compose build --no-cache`
@@ -31,6 +34,15 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
     - ~~For a linux server: `nohup .venv/bin/python OnToology/rabbit.py &`~~
 1. ~~(Optional) you can run it with multiple threads `nohup .venv/bin/python OnToology/rabbit.py 3 &`~~
 1. Now, this is run automatically. But, make sure that the environment variable `rabbit_processes` is set to a value > 0
+
+
+# Development
+For development, you can run the db `sh scripts/run_db.sh`. And then locally, 
+you can access that db. Or you can install mongo db locally on your machine.
+
+
+# To access the command line
+`sh scripts/run_docker.sh`
 
 
 
