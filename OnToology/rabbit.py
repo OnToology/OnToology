@@ -188,35 +188,35 @@ def callback(ch, method, properties, body):
             lock.acquire()
             busy = repo_name in locked_repos
             if not busy:
-                logger.debug('not busy repo: ' + repo_name)
+                logger.debug('not busy repo: ' + repo_name + " (" + str(method.delivery_tag) + ")")
                 locked_repos.append(repo_name)
                 logger.debug("locked repos: ")
                 logger.debug(str(locked_repos))
             else:
-                logger.debug('is busy repo: ' + repo_name)
+                logger.debug('is busy repo: ' + repo_name + " (" + str(method.delivery_tag) + ")")
             lock.release()
             if busy:
                 #logger.debug(repo_name+" is busy --- ")
                 time.sleep(5)
-                ch.basic_nack(delivery_tag=method.delivery_tag)
+                ch.basic_nack(delivery_tag=method.delivery_tag, multiple=False, requeue=True)
             else:
                 logger.debug(" ---  Consuming: " + repo_name)
                 logger.debug(body)
                 if j['action'] == 'magic':
                     logger.debug('starting a magic process')
-                    p = Process(target=handle_action, args=(j,logger))
+                    p = Process(target=handle_action, args=(j, logger))
                     p.start()
                     p.join()
                     # handle_action(j)
                 elif j['action'] == 'change_conf':
                     logger.debug('starting a config change process')
-                    p = Process(target=handle_conf_change, args=(j,logger))
+                    p = Process(target=handle_conf_change, args=(j, logger))
                     p.start()
                     p.join()
                     # handle_conf_change(j)
                 elif j['action'] == 'publish':
                     logger.debug('starting a publish process')
-                    p = Process(target=handle_publish, args=(j,logger))
+                    p = Process(target=handle_publish, args=(j, logger))
                     p.start()
                     p.join()
                     # handle_publish(j)
@@ -396,8 +396,8 @@ def single_worker(worker_id):
     # heartbeat=0 disable timeout
     # heartbeat= 60 * 60 * 3 (3 hours)
     # connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host, heartbeat=0))
-    connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
-    channel = connection.channel()
+    worker_connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
+    channel = worker_connection.channel()
     queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
     channel.basic_qos(prefetch_count=1)
     channel.basic_consume(queue=queue_name, on_message_callback=callback)
