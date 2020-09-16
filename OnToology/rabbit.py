@@ -15,7 +15,7 @@ from multiprocessing import Process
 
 lock = Lock()
 locked_repos = []
-connection = None
+# connection = None
 
 
 def set_config(logger, logdir=""):
@@ -380,8 +380,9 @@ def start_pool(num_of_thread=1):
         logger.debug("spawn: "+str(i))
         threads.append(th)
     logger.debug("total spawned: "+str(threads))
-    for th in threads:
+    for idx, th in enumerate(threads):
         th.join()
+        logger.info("Thread is closed: "+str(idx))
     logger.error("ALL ARE CONSUMED ..")
 
 
