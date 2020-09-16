@@ -247,6 +247,7 @@ def handle_publish(j, logger):
     :param j:
     :return:
     """
+    print("set logger")
     logger = set_logger()
     logger.debug('handle_publish> going for previsual')
     try:
@@ -271,6 +272,7 @@ def handle_action(j, logger):
     """
     import autoncore
     try:
+        print("set logger")
         logger.debug("handle_action> ")
         repo = j['repo']
         if j['action'] == 'magic':
