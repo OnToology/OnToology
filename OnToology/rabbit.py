@@ -196,20 +196,26 @@ def callback(ch, method, properties, body):
                     p.join()
                     # handle_action(j)
                 elif j['action'] == 'change_conf':
+                    logger.debug('starting a config change process')
                     p = Process(target=handle_conf_change, args=(j,))
                     p.start()
                     p.join()
                     # handle_conf_change(j)
                 elif j['action'] == 'publish':
+                    logger.debug('starting a publish process')
                     p = Process(target=handle_publish, args=(j,))
                     p.start()
                     p.join()
                     # handle_publish(j)
+                else:
+                    logger.debug("starting nothing")
                 logger.debug(repo_name+" Completed!")
                 lock.acquire()
                 logger.debug(repo_name+" to remove it from locked repos")
                 locked_repos.remove(repo_name)
                 logger.debug(repo_name+" is removed")
+                logger.debug("locker repos: ")
+                logger.debug(str(locked_repos))
                 lock.release()
                 logger.debug(repo_name+" is sending the ack")
                 ch.basic_ack(delivery_tag=method.delivery_tag)
@@ -253,6 +259,7 @@ def handle_action(j):
     global logger
     import autoncore
     try:
+        logger.debug("handle_action> ")
         repo = j['repo']
         if j['action'] == 'magic':
             logger.debug("going for magic: "+str(j))
@@ -281,6 +288,8 @@ def handle_action(j):
         logger.error("Exception 2 for magic: "+str(e))
         logger.error("Exception for j: "+str(j))
 
+    logger.debug("finished handle_action: "+str(j))
+
 
 def handle_conf_change(j):
     """
@@ -289,31 +298,44 @@ def handle_conf_change(j):
     """
     global logger
     import autoncore
-    data = j['data']
-    if j['action'] == 'change_conf':
-        for onto in j['ontologies']:
-            logger.debug('inside the loop')
-            ar2dtool = onto + '-ar2dtool' in data
-            # logger.debug('ar2dtool: ' + str(ar2dtool))
-            widoco = onto + '-widoco' in data
-            # print 'widoco: ' + str(widoco)
-            oops = onto + '-oops' in data
-            # logger.debug('oops: ' + str(oops)
-            logger.debug('will call get_conf')
-            new_conf = autoncore.get_conf(ar2dtool, widoco, oops)
-            logger.debug('will call update_file')
-            o = 'OnToology' + onto + '/OnToology.cfg'
-            try:
-                logger.debug("target_repo <%s> ,  path <%s> ,  message <%s> ,   content <%s>" % (
-                    j['repo'], o, 'OnToology Configuration', new_conf))
-                autoncore.update_file(j['repo'], o, 'OnToology Configuration', new_conf)
-                logger.debug('configuration is changed for file for ontology: '+onto)
-            except Exception as e:
-                logger.error('Error in updating the configuration: ' + str(e))
-                # return render(request, 'msg.html', {'msg': str(e)})
-                return
+    try:
+        logger.debug("handle_conf_change> ")
+        data = j['data']
+        if j['action'] == 'change_conf':
+            for onto in j['ontologies']:
+                logger.debug('inside the loop')
+                ar2dtool = onto + '-ar2dtool' in data
+                # logger.debug('ar2dtool: ' + str(ar2dtool))
+                widoco = onto + '-widoco' in data
+                # print 'widoco: ' + str(widoco)
+                oops = onto + '-oops' in data
+                # logger.debug('oops: ' + str(oops)
+                logger.debug('will call get_conf')
+                new_conf = autoncore.get_conf(ar2dtool, widoco, oops)
+                logger.debug('will call update_file')
+                o = 'OnToology' + onto + '/OnToology.cfg'
+                try:
+                    logger.debug("target_repo <%s> ,  path <%s> ,  message <%s> ,   content <%s>" % (
+                        j['repo'], o, 'OnToology Configuration', new_conf))
+                    autoncore.update_file(j['repo'], o, 'OnToology Configuration', new_conf)
+                    logger.debug('configuration is changed for file for ontology: '+onto)
+                except Exception as e:
+                    logger.error('Error in updating the configuration: ' + str(e))
+                    # return render(request, 'msg.html', {'msg': str(e)})
+                    return
 
-        logger.debug('Configuration changed')
+            logger.debug('Configuration changed')
+    except Exception as e:
+        err = "Error in handle_conf_change"
+        print(err)
+        logger.debug(err)
+        logger.error(err)
+        err = str(r)
+        print(err)
+        logger.debug(err)
+        logger.error(err)
+
+    logger.debug("finished handle_conf_change: "+str(j))
 
 
 def ack_message(channel, delivery_tag):
@@ -358,7 +380,8 @@ def single_worker(worker_id):
     logger.debug('worker_id: '+str(worker_id))
     # heartbeat=0 disable timeout
     # heartbeat= 60 * 60 * 3 (3 hours)
-    connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host, heartbeat=0))
+    # connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host, heartbeat=0))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
     channel = connection.channel()
     queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
     channel.basic_qos(prefetch_count=1)
