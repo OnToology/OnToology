@@ -358,7 +358,7 @@ def single_worker(worker_id):
     logger.debug('worker_id: '+str(worker_id))
     # heartbeat=0 disable timeout
     # heartbeat= 60 * 60 * 3 (3 hours)
-    connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host, heartbeat=10800))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host, heartbeat=0))
     channel = connection.channel()
     queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
     channel.basic_qos(prefetch_count=1)
