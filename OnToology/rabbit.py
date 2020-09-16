@@ -179,6 +179,8 @@ def callback(ch, method, properties, body):
             if not busy:
                 logger.debug('not busy repo: ' + repo_name)
                 locked_repos.append(repo_name)
+                logger.debug("locked repos: ")
+                logger.debug(str(locked_repos))
             else:
                 logger.debug('is busy repo: ' + repo_name)
             lock.release()
@@ -214,7 +216,7 @@ def callback(ch, method, properties, body):
                 logger.debug(repo_name+" to remove it from locked repos")
                 locked_repos.remove(repo_name)
                 logger.debug(repo_name+" is removed")
-                logger.debug("locker repos: ")
+                logger.debug("locked repos: ")
                 logger.debug(str(locked_repos))
                 lock.release()
                 logger.debug(repo_name+" is sending the ack")
