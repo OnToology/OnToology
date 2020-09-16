@@ -245,10 +245,10 @@ def callback(ch, method, properties, body):
 def handle_publish(j, logger):
     """
     :param j:
+    :param logger: logger
     :return:
     """
     print("set logger")
-    logger = set_logger()
     logger.debug('handle_publish> going for previsual')
     try:
         autoncore.previsual(useremail=j['useremail'], target_repo=j['repo'])
@@ -308,12 +308,12 @@ def handle_action(j, logger):
 def handle_conf_change(j, logger):
     """
     :param j:
+    :param logger: logger
     :return:
     """
     import autoncore
     try:
         print("set logger")
-        logger = set_logger()
         logger.debug("handle_conf_change> ")
         data = j['data']
         if j['action'] == 'change_conf':
