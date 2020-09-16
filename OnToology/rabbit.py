@@ -64,7 +64,6 @@ def set_logger():
         set_config(logger)
 
 
-
 def run_rabbit():
     """
     Run the rabbit consumer
@@ -190,10 +189,11 @@ def callback(ch, method, properties, body):
             if not busy:
                 logger.debug('not busy repo: ' + repo_name + " (" + str(method.delivery_tag) + ")")
                 locked_repos.append(repo_name)
-                logger.debug("locked repos: ")
+                logger.debug("start locked repos: ")
                 logger.debug(str(locked_repos))
             else:
                 logger.debug('is busy repo: ' + repo_name + " (" + str(method.delivery_tag) + ")")
+                logger.debug("busy ones: "+str(locked_repos))
             lock.release()
             if busy:
                 #logger.debug(repo_name+" is busy --- ")
