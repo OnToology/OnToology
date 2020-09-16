@@ -184,7 +184,7 @@ def callback(ch, method, properties, body):
         j = json.loads(body)
         if j['action'] in ['magic', 'change_conf', 'publish']:
             repo_name = j['repo']
-            logger.debug('callback repo: '+repo_name)
+            #logger.debug('callback repo: '+repo_name)
             lock.acquire()
             busy = repo_name in locked_repos
             if not busy:
@@ -196,7 +196,7 @@ def callback(ch, method, properties, body):
                 logger.debug('is busy repo: ' + repo_name)
             lock.release()
             if busy:
-                logger.debug(repo_name+" is busy --- ")
+                #logger.debug(repo_name+" is busy --- ")
                 time.sleep(5)
                 ch.basic_nack(delivery_tag=method.delivery_tag)
             else:
