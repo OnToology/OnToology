@@ -191,8 +191,7 @@ def callback(ch, method, properties, body):
             if not busy:
                 logger.debug('not busy repo: ' + repo_name + " (" + str(method.delivery_tag) + ")")
                 locked_repos.append(repo_name)
-                logger.debug("start locked repos: ")
-                logger.debug(str(locked_repos))
+                logger.debug("start locked repos: "+str(locked_repos))
             else:
                 logger.debug('is busy repo: ' + repo_name + " (" + str(method.delivery_tag) + ")")
                 #logger.debug("busy ones: "+str(locked_repos))
@@ -202,8 +201,8 @@ def callback(ch, method, properties, body):
                 time.sleep(5)
                 ch.basic_nack(delivery_tag=method.delivery_tag, multiple=False, requeue=True)
             else:
-                logger.debug(" ---  Consuming: " + repo_name)
-                logger.debug(body)
+                logger.debug(" ---  Consuming: " + repo_name + "\n" + str(body))
+                # logger.debug(body)
                 if j['action'] == 'magic':
                     logger.debug('starting a magic process')
                     p = Process(target=handle_action, args=(j, logger))
