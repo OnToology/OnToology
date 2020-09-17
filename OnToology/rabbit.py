@@ -250,21 +250,33 @@ def handle_publish(j, logger):
     :param logger: logger
     :return:
     """
-    print("set logger")
-    logger.debug('handle_publish> going for previsual')
     try:
-        autoncore.previsual(useremail=j['useremail'], target_repo=j['repo'])
+        logger.debug("try publish")
+        import autoncore
+        print("set logger")
+        logger.debug('handle_publish> going for previsual')
+        try:
+            autoncore.previsual(useremail=j['useremail'], target_repo=j['repo'])
+        except Exception as e:
+            logger.error('handle_publish> ERROR in previsualisation: '+str(e))
+            return
+        logger.debug('handle_publish> going for publish')
+        try:
+            autoncore.publish(name=j['name'], target_repo=j['repo'], ontology_rel_path=j['ontology_rel_path'],
+                              useremail=j['useremail'])
+        except Exception as e:
+            logger.error('handle_publish> ERROR in publication: '+str(e))
+            return
+        logger.debug('handle_publish> done')
     except Exception as e:
-        logger.error('handle_publish> ERROR in previsualisation: '+str(e))
-        return
-    logger.debug('handle_publish> going for publish')
-    try:
-        autoncore.publish(name=j['name'], target_repo=j['repo'], ontology_rel_path=j['ontology_rel_path'],
-                          useremail=j['useremail'])
-    except Exception as e:
-        logger.error('handle_publish> ERROR in publication: '+str(e))
-        return
-    logger.debug('handle_publish> done')
+        err = "Error in handle_publish"
+        print(err)
+        logger.debug(err)
+        logger.error(err)
+        err = str(e)
+        print(err)
+        logger.debug(err)
+        logger.error(err)
 
 
 def handle_action(j, logger):
@@ -272,8 +284,9 @@ def handle_action(j, logger):
     :param j:
     :return:
     """
-    import autoncore
     try:
+        logger.debug("try action")
+        import autoncore
         print("set logger")
         logger.debug("handle_action> ")
         repo = j['repo']
@@ -313,8 +326,9 @@ def handle_conf_change(j, logger):
     :param logger: logger
     :return:
     """
-    import autoncore
     try:
+        logger.debug("try change")
+        import autoncore
         print("set logger")
         logger.debug("handle_conf_change> ")
         data = j['data']
@@ -347,7 +361,7 @@ def handle_conf_change(j, logger):
         print(err)
         logger.debug(err)
         logger.error(err)
-        err = str(r)
+        err = str(e)
         print(err)
         logger.debug(err)
         logger.error(err)
