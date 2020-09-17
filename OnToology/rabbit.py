@@ -7,15 +7,12 @@ import hashlib
 import time
 import logging
 import threading
+from functools import partial
 import functools
 from TPool.TPool import Pool
-from threading import Lock
-from multiprocessing import Process
+# from threading import Lock
+from multiprocessing import Process, Pipe, Lock
 import multiprocessing
-
-lock = Lock()
-locked_repos = []
-# connection = None
 
 
 def set_config(logger, logdir=""):
@@ -56,16 +53,6 @@ else:
     set_config(logger)
 
 
-def set_logger():
-    if 'rabbit_log_dir' in os.environ:
-        log_dir = os.environ['rabbit_log_dir']
-        logger = logging.getLogger(__name__)
-        set_config(logger, log_dir)
-    else:
-        logger = logging.getLogger(__name__)
-        set_config(logger)
-
-
 def run_rabbit():
     """
     Run the rabbit consumer
@@ -83,6 +70,7 @@ def run_rabbit():
                 os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rabbit.py'), str(num),
                 '&')
             logger.debug("run_rabbit> comm: " + comm)
+            print("run_rabbit> comm: " + comm)
             subprocess.Popen(comm, shell=True)
         except:
             logger.error('run_rabbit> The rabbit_processes is: <%s>' % str(os.environ['rabbit_processes']))
@@ -170,23 +158,29 @@ def get_num_of_processes_of_rabbit():
     return -1
 
 
-def callback(ch, method, properties, body):
+def callback2(extra, ch, method, properties, body):
     """
     Consume messages from the ready queue
+    :param extra:
     :param ch:
     :param method:
     :param properties:
     :param body:
     :return:
     """
-    global lock
-    global logger
+
+    lock = extra['lock']
+    logger = extra['logger']
+    receiver = extra['receiver']
+    sender = extra['sender']
+
     try:
         j = json.loads(body)
         if j['action'] in ['magic', 'change_conf', 'publish']:
             repo_name = j['repo']
             #logger.debug('callback repo: '+repo_name)
             lock.acquire()
+            locked_repos = receiver.recv()
             busy = repo_name in locked_repos
             if not busy:
                 logger.debug('not busy repo: ' + repo_name + " (" + str(method.delivery_tag) + ")")
@@ -195,6 +189,7 @@ def callback(ch, method, properties, body):
             else:
                 logger.debug('is busy repo: ' + repo_name + " (" + str(method.delivery_tag) + ")")
                 #logger.debug("busy ones: "+str(locked_repos))
+            sender.send(locked_repos)
             lock.release()
             if busy:
                 #logger.debug(repo_name+" is busy --- ")
@@ -205,31 +200,33 @@ def callback(ch, method, properties, body):
                 # logger.debug(body)
                 if j['action'] == 'magic':
                     logger.debug('starting a magic process')
-                    p = Process(target=handle_action, args=(j, logger))
-                    p.start()
-                    p.join()
-                    # handle_action(j)
+                    # p = Process(target=handle_action, args=(j, logger))
+                    # p.start()
+                    # p.join()
+                    handle_action(j, logger)
                 elif j['action'] == 'change_conf':
                     logger.debug('starting a config change process')
-                    p = Process(target=handle_conf_change, args=(j, logger))
-                    p.start()
-                    p.join()
-                    # handle_conf_change(j)
+                    # p = Process(target=handle_conf_change, args=(j, logger))
+                    # p.start()
+                    # p.join()
+                    handle_conf_change(j, logger)
                 elif j['action'] == 'publish':
                     logger.debug('starting a publish process')
-                    p = Process(target=handle_publish, args=(j, logger))
-                    p.start()
-                    p.join()
-                    # handle_publish(j)
+                    # p = Process(target=handle_publish, args=(j, logger))
+                    # p.start()
+                    # p.join()
+                    handle_publish(j, logger)
                 else:
                     logger.debug("starting nothing")
                 logger.debug(repo_name+" Completed!")
                 lock.acquire()
+                locked_repos = receiver.recv()
                 logger.debug(repo_name+" to remove it from locked repos")
                 locked_repos.remove(repo_name)
                 logger.debug(repo_name+" is removed")
                 logger.debug("locked repos: ")
                 logger.debug(str(locked_repos))
+                sender.send(locked_repos)
                 lock.release()
                 logger.debug(repo_name+" is sending the ack")
                 ch.basic_ack(delivery_tag=method.delivery_tag)
@@ -241,6 +238,90 @@ def callback(ch, method, properties, body):
         logger.debug("dMessage: "+str(body))
         logger.error("ERROR: "+str(e))
         logger.error("Message: "+str(body))
+
+# def callback(ch, method, properties, body):
+#     """
+#     Consume messages from the ready queue
+#     :param ch:
+#     :param method:
+#     :param properties:
+#     :param body:
+#     :return:
+#     """
+#     print("properties: ")
+#     print(properties)
+#     print("body: ")
+#     print(body)
+#     lock = properties['lock']
+#     logger = properties['logger']
+#     receiver = properties['receiver']
+#     sender = properties['sender']
+#
+#     try:
+#         print("properties: "+str(properties))
+#         j = json.loads(body)
+#         if j['action'] in ['magic', 'change_conf', 'publish']:
+#             repo_name = j['repo']
+#             #logger.debug('callback repo: '+repo_name)
+#             lock.acquire()
+#             locked_repos = receiver.recv()
+#             busy = repo_name in locked_repos
+#             if not busy:
+#                 logger.debug('not busy repo: ' + repo_name + " (" + str(method.delivery_tag) + ")")
+#                 locked_repos.append(repo_name)
+#                 logger.debug("start locked repos: "+str(locked_repos))
+#             else:
+#                 logger.debug('is busy repo: ' + repo_name + " (" + str(method.delivery_tag) + ")")
+#                 #logger.debug("busy ones: "+str(locked_repos))
+#             sender.send(locked_repos)
+#             lock.release()
+#             if busy:
+#                 #logger.debug(repo_name+" is busy --- ")
+#                 time.sleep(5)
+#                 ch.basic_nack(delivery_tag=method.delivery_tag, multiple=False, requeue=True)
+#             else:
+#                 logger.debug(" ---  Consuming: " + repo_name + "\n" + str(body))
+#                 # logger.debug(body)
+#                 if j['action'] == 'magic':
+#                     logger.debug('starting a magic process')
+#                     # p = Process(target=handle_action, args=(j, logger))
+#                     # p.start()
+#                     # p.join()
+#                     handle_action(j, logger)
+#                 elif j['action'] == 'change_conf':
+#                     logger.debug('starting a config change process')
+#                     # p = Process(target=handle_conf_change, args=(j, logger))
+#                     # p.start()
+#                     # p.join()
+#                     handle_conf_change(j, logger)
+#                 elif j['action'] == 'publish':
+#                     logger.debug('starting a publish process')
+#                     # p = Process(target=handle_publish, args=(j, logger))
+#                     # p.start()
+#                     # p.join()
+#                     handle_publish(j, logger)
+#                 else:
+#                     logger.debug("starting nothing")
+#                 logger.debug(repo_name+" Completed!")
+#                 lock.acquire()
+#                 locked_repos = receiver.recv()
+#                 logger.debug(repo_name+" to remove it from locked repos")
+#                 locked_repos.remove(repo_name)
+#                 logger.debug(repo_name+" is removed")
+#                 logger.debug("locked repos: ")
+#                 logger.debug(str(locked_repos))
+#                 sender.send(locked_repos)
+#                 lock.release()
+#                 logger.debug(repo_name+" is sending the ack")
+#                 ch.basic_ack(delivery_tag=method.delivery_tag)
+#
+#     except Exception as e:
+#         print("ERROR: "+str(e))
+#         print("Message: "+str(body))
+#         logger.debug("dERROR: "+str(e))
+#         logger.debug("dMessage: "+str(body))
+#         logger.error("ERROR: "+str(e))
+#         logger.error("Message: "+str(body))
 
 
 def handle_publish(j, logger):
@@ -382,32 +463,33 @@ def ack_message(channel, delivery_tag):
         logger.debug("Channel is closed!")
 
 
-def start_pool(num_of_thread=1):
+def start_pool(num_of_processes=1):
     """
-    :param num_of_thread:
+    :param num_of_processes:
     :return:
     """
     global logger
-    threads = []
-    for i in range(num_of_thread):
-        th = threading.Thread(target=single_worker, args=(i,))
+    processes = []
+    lock = Lock()
+    sender, receiver = Pipe()
+    sender.send([])
+    for i in range(num_of_processes):
+        th = Process(target=single_worker, args=(i, lock, sender, receiver, logger))
         th.start()
         logger.debug("spawn: "+str(i))
-        threads.append(th)
-    logger.debug("total spawned: "+str(threads))
-    for idx, th in enumerate(threads):
+        processes.append(th)
+    logger.debug("total spawned: "+str(processes))
+    for idx, th in enumerate(processes):
         th.join()
-        logger.info("Thread is closed: "+str(idx))
+        logger.info("Process is closed: "+str(idx))
     logger.error("ALL ARE CONSUMED ..")
 
 
-def single_worker(worker_id):
+def single_worker(worker_id, lock, sender, receiver, logger):
     """
     :param worker_id:
     :return:
     """
-    global lock
-    global logger
     logger.debug('worker_id: '+str(worker_id))
     # heartbeat=0 disable timeout
     # heartbeat= 60 * 60 * 3 (3 hours)
@@ -416,7 +498,25 @@ def single_worker(worker_id):
     channel = worker_connection.channel()
     queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
     channel.basic_qos(prefetch_count=1)
-    channel.basic_consume(queue=queue_name, on_message_callback=callback)
+
+    # while True:
+    # channel.basic_get(queue=queue_name, auto_ack=False)
+    # time.sleep(5)
+    # channel.basic_consume(queue=queue_name, on_message_callback=callback, arguments={
+    #     # 'lock': lock,
+    #     # 'sender': sender,
+    #     # 'reciever': reciever,
+    #     # 'logger': logger
+    # })
+
+    abc = {
+            'lock': lock,
+            'sender': sender,
+            'receiver': receiver,
+            'logger': logger
+    }
+    abc_callback = partial(callback2, abc)
+    channel.basic_consume(queue=queue_name, on_message_callback=abc_callback)
     print("Rabbit consuming is started ... "+str(worker_id))
     logger.debug("Setting the logger ..."+str(worker_id))
     logger.debug("test connection ..."+str(channel.is_open))
