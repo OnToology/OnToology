@@ -195,7 +195,7 @@ def callback(ch, method, properties, body):
                 logger.debug(str(locked_repos))
             else:
                 logger.debug('is busy repo: ' + repo_name + " (" + str(method.delivery_tag) + ")")
-                logger.debug("busy ones: "+str(locked_repos))
+                #logger.debug("busy ones: "+str(locked_repos))
             lock.release()
             if busy:
                 #logger.debug(repo_name+" is busy --- ")
