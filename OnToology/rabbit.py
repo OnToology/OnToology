@@ -101,8 +101,8 @@ def send(message_json):
     queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
     logger.debug("send> number of messages in the queue is: "+str(queue.method.message_count))
     message = json.dumps(message_json)
-    logger.debug("send> sending message")
-    logger.debug(message)
+    logger.debug("send> sending message: "+str(message))
+    # logger.debug(message)
     channel.basic_publish(exchange='',
                           routing_key=queue_name,
                           body=message,
