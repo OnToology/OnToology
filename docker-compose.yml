@@ -4,8 +4,8 @@ services:
   rabbitmq:
     image: rabbitmq:3.8-alpine
     ports:
-    # The standard AMQP protocol port
-    - '5672:5672'
+      # The standard AMQP protocol port
+      - '5672:5672'
   db:
     image: mongo:4.0.9-xenial
     ports:
