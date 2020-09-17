@@ -11,7 +11,7 @@ import functools
 from TPool.TPool import Pool
 from threading import Lock
 from multiprocessing import Process
-
+import multiprocessing
 
 lock = Lock()
 locked_repos = []
@@ -47,10 +47,12 @@ else:
 
 if 'rabbit_log_dir' in os.environ:
     log_dir = os.environ['rabbit_log_dir']
-    logger = logging.getLogger(__name__)
+    logger = multiprocessing.get_logger()
+    # logger = logging.getLogger(__name__)
     set_config(logger, log_dir)
 else:
-    logger = logging.getLogger(__name__)
+    # logger = logging.getLogger(__name__)
+    logger = multiprocessing.get_logger()
     set_config(logger)
 
 
