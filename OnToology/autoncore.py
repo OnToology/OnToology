@@ -16,7 +16,13 @@
 #
 # @author Ahmad Alobaid
 #
-
+try:
+    from OnToology.models import *
+    # from models import *
+except:
+    from djangoperpmod import *
+    # from models import *
+    from OnToology.models import *
 
 from github import Github
 from datetime import datetime
@@ -82,29 +88,40 @@ def init_g():
 
 
 def git_magic(target_repo, user, changed_filesss):
-    logger_fname = prepare_logger(user)
     global g
     global parent_folder
     global log_file_dir
+
+    print("\n\n\n In gitmagic print")
+    try:
+        from OnToology.models import Repo, OUser, ORun
+    except Exception as e:
+        print("\n\n\n\n\n\n\n*******EXCEPTION: "+str(e))
+    logger_fname = prepare_logger(user)
     parent_folder = user
     if not settings.test_conf['local']:
         prepare_log(user)
     dolog('############################### magic #############################')
     dolog('target_repo: ' + target_repo)
     change_status(target_repo, 'Preparing')
-    from models import Repo
     drepo = Repo.objects.get(url=target_repo)
     drepo.clear_ontology_status_pairs()
+    orun = ORun(user=user, repo=drepo, task='Prepare')
+    orun.save()
     for ftov in changed_filesss:
         if ftov[-4:] in ontology_formats:
             if ftov[:len('OnToology/')] != 'OnToology/':  # This is to solve bug #265
                 drepo.update_ontology_status(ontology=ftov, status='pending')
+    orun.description = 'Getting all changed files: ' + str(changed_filesss)
+    orun.save()
     # so the tool user can takeover and do stuff
     username = os.environ['github_username']
     password = os.environ['github_password']
     g = Github(username, password)
     local_repo = target_repo.replace(target_repo.split('/')[-2], ToolUser)
     if not settings.test_conf['local']:
+        orun.description += '. remove repo from Tool user'
+        orun.save()
         delete_repo(local_repo)
         time.sleep(refresh_sleeping_secs)
     dolog('repo deleted')
@@ -112,6 +129,8 @@ def git_magic(target_repo, user, changed_filesss):
         'clone']:  # in case it is not test or test with fork option
         dolog('will fork the repo')
         change_status(target_repo, 'forking repo')
+        orun.description += '. fork the repo'
+        orun.save()
         forked_repo = fork_repo(target_repo)
         cloning_url = forked_repo.ssh_url
         time.sleep(refresh_sleeping_secs)
@@ -122,6 +141,8 @@ def git_magic(target_repo, user, changed_filesss):
         print "no fork"
     if not settings.test_conf['local'] or settings.test_conf['clone']:
         change_status(target_repo, 'cloning repo')
+        orun.description += '. Clone the repo'
+        orun.save()
         clone_repo(cloning_url, user)
         dolog('repo cloned')
         drepo.progress = 20.0
@@ -928,6 +949,73 @@ def publish(name, target_repo, ontology_rel_path, useremail):
          Or you can fork it to your GitHub account and register the fork to OnToology"""
         dolog("publish> " + error_msg)
         return error_msg
+
+
+def change_configuration(user_email, target_repo, data, ontologies):
+    """
+    :param user_email:
+    :param target_repo:
+    :param data:
+    :param ontologies:
+    :return:
+    """
+    # try:
+    #     OUser.objects.all()
+    # except:
+    #     django_setup_script()
+    from OnToology.models import OUser, Repo, ORun
+    try:
+        users = OUser.objects.filter(email=user_email)
+        repos = Repo.objects.filter(url=target_repo)
+        if len(repos) == 1:
+            repo = repos[0]
+        else:
+            dolog("change_configuration> Invalid repo: "+target_repo)
+            raise Exception("Invalid repo: "+target_repo)
+        if len(users) == 1:
+            user = users[0]
+        else:
+            dolog("change_configuration> Invalid email: "+user_email)
+            raise Exception("Invalid email: "+user_email)
+
+        orun = ORun(task='Change Configuration', user=user, repo=repo, description='Change configuration')
+        orun.save()
+        for onto in ontologies:
+            dolog('inside the loop')
+            ar2dtool = onto + '-ar2dtool' in data
+            # logger.debug('ar2dtool: ' + str(ar2dtool))
+            widoco = onto + '-widoco' in data
+            # print 'widoco: ' + str(widoco)
+            oops = onto + '-oops' in data
+            # logger.debug('oops: ' + str(oops)
+            dolog('will call get_conf')
+            orun.description += '. Get new configuration for the ontology: '+onto
+            orun.save()
+            new_conf = get_conf(ar2dtool, widoco, oops)
+            dolog('will call update_file')
+            o = 'OnToology' + onto + '/OnToology.cfg'
+            try:
+                dolog("target_repo <%s> ,  path <%s> ,  message <%s> ,   content <%s>" % (
+                    target_repo, o, 'OnToology Configuration', new_conf))
+                orun.description += '. Update the configuration for the ontology: ' + onto
+                orun.save()
+                update_file(target_repo, o, 'OnToology Configuration', new_conf)
+                dolog('configuration is changed for file for ontology: '+onto)
+                orun.description += '. The task is completed successfully'
+                orun.save()
+            except Exception as e:
+                dolog('Error in updating the configuration: ' + str(e))
+                # return render(request, 'msg.html', {'msg': str(e)})
+                orun.description += '. Error in updating the configuration: ' + str(e)
+                orun.save()
+                return
+    except Exception as e:
+        err = "Error in change_configuration"
+        print(err)
+        dolog(err)
+        err = str(e)
+        print(err)
+        dolog(err)
 
 
 ########################################################################

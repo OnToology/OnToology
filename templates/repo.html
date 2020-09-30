@@ -1,0 +1,28 @@
+{% extends "base.html"%}
+{%block body%}
+
+
+
+<table class="table table-borderless">
+  <thead>
+    <tr>
+      <th scope="col">Repository</th>
+      <th scope="col">Timestamp</th>
+      <th scope="col">Task</th>
+      <th scope="col">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+
+
+{%for r in oruns%}
+	    <tr>
+      <th scope="row">{{r.repo.url}}</th>
+      <td>{{r.timestamp}}</td>
+      <td>{{r.task}}</td>
+      <td>{{r.description}}</td>
+    </tr>
+{%endfor%}
+  </tbody>
+</table>
+{% endblock %}

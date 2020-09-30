@@ -367,6 +367,8 @@ def handle_action(j, logger):
     try:
         logger.debug("try action")
         import autoncore
+        # autoncore.django_setup_script()
+
         print("set logger")
         logger.debug("handle_action> ")
         repo = j['repo']
@@ -413,29 +415,11 @@ def handle_conf_change(j, logger):
         logger.debug("handle_conf_change> ")
         data = j['data']
         if j['action'] == 'change_conf':
-            for onto in j['ontologies']:
-                logger.debug('inside the loop')
-                ar2dtool = onto + '-ar2dtool' in data
-                # logger.debug('ar2dtool: ' + str(ar2dtool))
-                widoco = onto + '-widoco' in data
-                # print 'widoco: ' + str(widoco)
-                oops = onto + '-oops' in data
-                # logger.debug('oops: ' + str(oops)
-                logger.debug('will call get_conf')
-                new_conf = autoncore.get_conf(ar2dtool, widoco, oops)
-                logger.debug('will call update_file')
-                o = 'OnToology' + onto + '/OnToology.cfg'
-                try:
-                    logger.debug("target_repo <%s> ,  path <%s> ,  message <%s> ,   content <%s>" % (
-                        j['repo'], o, 'OnToology Configuration', new_conf))
-                    autoncore.update_file(j['repo'], o, 'OnToology Configuration', new_conf)
-                    logger.debug('configuration is changed for file for ontology: '+onto)
-                except Exception as e:
-                    logger.error('Error in updating the configuration: ' + str(e))
-                    # return render(request, 'msg.html', {'msg': str(e)})
-                    return
-
-            logger.debug('Configuration changed')
+            autoncore.change_configuration(user_email=j['useremail'],
+                                           target_repo=j['repo'], data=data, ontologies=j['ontologies'])
+            logger.debug("handle_conf_change> configuration is changed: "+str(j))
+        else:
+            logger.debug("handle_conf_change> invalid action: "+str(j))
     except Exception as e:
         err = "Error in handle_conf_change"
         print(err)
@@ -447,6 +431,76 @@ def handle_conf_change(j, logger):
         logger.error(err)
 
     logger.debug("finished handle_conf_change: "+str(j))
+
+# def handle_conf_change(j, logger):
+#     """
+#     :param j:
+#     :param logger: logger
+#     :return:
+#     """
+#     try:
+#         logger.debug("try change")
+#         import autoncore
+#         from models import *
+#         print("set logger")
+#         logger.debug("handle_conf_change> ")
+#         data = j['data']
+#         if j['action'] == 'change_conf':
+#             repo_name = j['repo'].strip()
+#             repos = Repo.objects.filter(url=repo_name)
+#             users = OUser.objects.filter(email=j['useremail'])
+#             if len(repos) == 1:
+#                 repo = repos[0]
+#             else:
+#                 logger.debug("handle_conf_change> Invalid repo: "+repo_name)
+#                 raise Exception("Invalid repo: "+repo_name)
+#             if len(users) == 1:
+#                 user = users[0]
+#             else:
+#                 logger.debug("handle_conf_change> Invalid email: "+j['useremail'])
+#                 raise Exception("Invalid email: "+j['useremail'])
+#
+#             orun = ORun(task='Change Configuration', user=user, repo=repo, description='Change configuration')
+#             orun.save()
+#             for onto in j['ontologies']:
+#                 logger.debug('inside the loop')
+#                 ar2dtool = onto + '-ar2dtool' in data
+#                 # logger.debug('ar2dtool: ' + str(ar2dtool))
+#                 widoco = onto + '-widoco' in data
+#                 # print 'widoco: ' + str(widoco)
+#                 oops = onto + '-oops' in data
+#                 # logger.debug('oops: ' + str(oops)
+#                 logger.debug('will call get_conf')
+#                 orun.description += '. Get new configuration for the ontology: '+onto
+#                 orun.save()
+#                 new_conf = autoncore.get_conf(ar2dtool, widoco, oops)
+#                 logger.debug('will call update_file')
+#                 o = 'OnToology' + onto + '/OnToology.cfg'
+#                 try:
+#                     logger.debug("target_repo <%s> ,  path <%s> ,  message <%s> ,   content <%s>" % (
+#                         j['repo'], o, 'OnToology Configuration', new_conf))
+#                     orun.description += '. Update the configuration for the ontology: ' + onto
+#                     orun.save()
+#                     autoncore.update_file(j['repo'], o, 'OnToology Configuration', new_conf)
+#                     logger.debug('configuration is changed for file for ontology: '+onto)
+#                 except Exception as e:
+#                     logger.error('Error in updating the configuration: ' + str(e))
+#                     # return render(request, 'msg.html', {'msg': str(e)})
+#                     return
+#             orun.description += '. The task is completed successfully'
+#             orun.save()
+#             logger.debug('Configuration changed')
+#     except Exception as e:
+#         err = "Error in handle_conf_change"
+#         print(err)
+#         logger.debug(err)
+#         logger.error(err)
+#         err = str(e)
+#         print(err)
+#         logger.debug(err)
+#         logger.error(err)
+#
+#     logger.debug("finished handle_conf_change: "+str(j))
 
 
 def ack_message(channel, delivery_tag):
@@ -526,7 +580,7 @@ def single_worker(worker_id, lock, sender, receiver, logger):
 
 if __name__ == '__main__':
     import autoncore
-    autoncore.django_setup_script()
+    # autoncore.django_setup_script()
 
     if len(sys.argv) > 1:
         start_pool(int(sys.argv[1]))

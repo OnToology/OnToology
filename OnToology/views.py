@@ -132,6 +132,32 @@ def home(request):
                                          'num_of_repos': num_of_repos})
 
 
+@login_required
+def repo_view(request):
+    try:
+        if 'repo' in request.GET:
+            user = request.user
+            repo_name = request.GET['repo'].strip()
+            repos = Repo.objects.filter(url=repo_name)
+            if len(repos) == 1:
+                repo = repos[0]
+                now_timestamp = datetime.now()
+                latest_oruns = []
+                for orun in ORun.objects.filter(user=user, repo=repo).order_by('-timestamp'):
+                    if (now_timestamp - timedelta(days=7)) > orun.timestamp:
+                        print("repo_view> delete orun: "+str(orun.id)+"  <"+str(orun.timestamp)+"> ")
+                        orun.delete()
+                    else:
+                        latest_oruns.append(orun)
+                return render(request, 'repo.html', {'oruns': latest_oruns})
+            else:
+                print("repo_view> repo <"+str(repo_name)+"> does not exist for user: "+str(user))
+
+    except Exception as e:
+        print("repo_view> exception: "+str(e))
+    return HttpResponseRedirect(reverse('profile'))
+
+
 def grant_update(request):
     return render(request, 'msg.html', {'msg': 'Magic is done'})
 

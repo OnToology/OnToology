@@ -15,8 +15,9 @@
 #
 # @author Ahmad Alobaid
 #
-
-
+from django_mongoengine.mongo_auth import MongoUser as User
+# from mongo_auth import MongoUser as User
+# from django_mongoengine.mongo_auth.models import User
 from mongoengine import Document, StringField, DateTimeField, ListField, ReferenceField, BooleanField, FloatField
 # from mongoengine.django.auth import User
 
@@ -94,46 +95,58 @@ class Repo(Document):
 
 # The below is to avoid the error occur when importing Repo from autoncore because of the User class which cases the
 # error
-try:
-    # from mongo_auth import MongoUser as User
-    from django_mongoengine.mongo_auth.models import User
-
-    class OUser(User):
-        repos = ListField(ReferenceField(Repo))
-        private = BooleanField(default=False)  # The permission access level to OnToology
-        token = StringField(default='no token')
-        token_expiry = DateTimeField(default=datetime.now()+timedelta(days=1))
-
-        def json(self):
-            return {'id': str(self.id),
-                    'private': self.private,
-                    'email': self.email}
-
-        def __unicode__(self):
-            return self.username
+# try:
 
 
-    class PublishName(Document):
-        name = StringField()
-        user = ReferenceField(OUser)
-        repo = ReferenceField(Repo)
-        ontology = StringField(default='')
+class OUser(User):
+    repos = ListField(ReferenceField(Repo), default=[])
+    private = BooleanField(default=False)  # The permission access level to OnToology
+    token = StringField(default='no token')
+    token_expiry = DateTimeField(default=datetime.now()+timedelta(days=1))
 
-        def json(self):
-            return {
-                    'id': str(self.id),
-                    'name': self.name,
-                    'user': self.user.json(),
-                    'repo': self.repo.json(),
-                    'ontology': self.ontology
-                    }
+    def json(self):
+        return {'id': str(self.id),
+                'private': self.private,
+                'email': self.email}
 
-        def __unicode__(self):
-            return self.name
-except Exception as e:
-    print("error importing OUser")
-    print(e)
-    # pass
+    def __unicode__(self):
+        return self.username
+
+
+class PublishName(Document):
+    name = StringField()
+    user = ReferenceField(OUser)
+    repo = ReferenceField(Repo)
+    ontology = StringField(default='')
+
+    def json(self):
+        return {
+                'id': str(self.id),
+                'name': self.name,
+                'user': self.user.json(),
+                'repo': self.repo.json(),
+                'ontology': self.ontology
+                }
+
+    def __unicode__(self):
+        return self.name
+
+
+class ORun(Document):
+    repo = ReferenceField(Repo)
+    user = ReferenceField(OUser)
+    timestamp = DateTimeField(default=datetime.now)
+    task = StringField()
+    description = StringField(default='')
+
+    def __unicode__(self):
+        return "run <"+str(self.id)+"> " + self.user.email + " - " + self.repo.url + " - " + str(self.timestamp)
+
+#
+# except Exception as e:
+#     print("error importing OUser")
+#     print(e)
+#     # pass
 
 
 
