@@ -145,10 +145,10 @@ test_conf = {'local': False,  # doing test
 
 try:
     from localwsgi import *
-    print "importing environ from local wsgi"
+    print("importing environ from local wsgi")
 except Exception as e:
-    print "no local wsgi"
-    print e
+    print("no local wsgi")
+    print(e)
 
 # MongoDB settings
 MONGODB_DATABASES = {
@@ -203,10 +203,10 @@ if 'OnToology_home' in os.environ and os.environ['OnToology_home'].lower() == "t
     host = 'http://127.0.0.1:8000'
     client_id = GITHUB_LOCAL_APP_ID
     client_secret = GITHUB_LOCAL_API_SECRET
-    print "Going local"
+    print("Going local")
 else:
-    print "Going remote"
-    print os.environ
+    print("Going remote")
+    print(os.environ)
 
 
 

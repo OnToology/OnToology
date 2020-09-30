@@ -163,7 +163,7 @@ def grant_update(request):
 
 
 def get_access_token(request):
-    print "get_access_token"
+    print("get_access_token")
     global is_private, client_id, client_secret
     if 'state' not in request.session or request.GET['state'] != request.session['state']:
         return HttpResponseRedirect('/')
@@ -181,18 +181,18 @@ def get_access_token(request):
             keyv = att.split('=')
             d[keyv[0]] = keyv[1]
     except Exception as e:
-        print "Exception: %s" % str(e)
-        print "response: %s" % str(res.text)
+        print("Exception: %s" % str(e))
+        print("response: %s" % str(res.text))
         return render(request, 'msg.html', {'Error getting the token from GitHub. please try again or contact us'})
     if 'access_token' not in d:
-        print 'access_token is not there'
-        print d
+        print('access_token is not there')
+        print(d)
         return HttpResponseRedirect('/')
 
     access_token = d['access_token']
     request.session['access_token'] = access_token
     update_g(access_token)
-    print 'access_token: ' + access_token
+    print('access_token: ' + access_token)
 
     if request.user.is_authenticated() and request.session['access_token_time'] == '1':
         request.session['access_token_time'] = '2'  # so we do not loop
@@ -205,12 +205,12 @@ def get_access_token(request):
     error_msg = ""
     if rpy_wh['status'] == False:
         error_msg += str(rpy_wh['error'])
-        print 'error adding webhook: ' + error_msg
+        print('error adding webhook: ' + error_msg)
     if rpy_coll['status'] == False:
         error_msg += str(rpy_coll['error'])
-        print 'error adding collaborator: ' + rpy_coll['error']
+        print('error adding collaborator: ' + rpy_coll['error'])
     else:
-        print 'adding collaborator: ' + rpy_coll['msg']
+        print('adding collaborator: ' + rpy_coll['msg'])
     if error_msg != "":
         if 'Hook already exists on this repository' in error_msg:
             error_msg = 'This repository already watched'
@@ -219,9 +219,9 @@ def get_access_token(request):
             repo does not exist. Note that if you can fork this repo, you can add it here"""
             return render(request, 'msg.html', {'msg': error_msg})
         else:
-            print "error message not hook and not 404: " + error_msg
-            print "target repo: " + request.session['target_repo']
-            print "ToolUser: " + ToolUser
+            print("error message not hook and not 404: " + error_msg)
+            print("target repo: " + request.session['target_repo'])
+            print("ToolUser: " + ToolUser)
         msg = error_msg
     else:
         msg = '''webhook attached and user added as collaborator, Note that generating the documentation,
@@ -231,7 +231,7 @@ def get_access_token(request):
     try:
         repo = Repo.objects.get(url=target_repo)
     except Exception as e:
-        print str(e)
+        print(str(e))
         repo = Repo()
         repo.url = target_repo
         repo.save()
@@ -254,62 +254,62 @@ def get_changed_files_from_payload(payload):
 
 @csrf_exempt
 def add_hook(request):
-    print "in add hook function"
+    print("in add hook function")
     if settings.test_conf['local']:
-        print 'We are in test mode'
+        print('We are in test mode')
     try:
-        print "\n\nPOST DATA\n\n: " + str(request.POST)
+        print("\n\nPOST DATA\n\n: " + str(request.POST))
         s = str(request.POST['payload'])
-        print "payload: " + s
+        print("payload: " + s)
         j = json.loads(s, strict=False)
-        print "json is loaded"
+        print("json is loaded")
         if "ref" in j and j["ref"] == "refs/heads/gh-pages":
-            print "it is just gh-pages"
+            print("it is just gh-pages")
             return render(request, 'msg.html', {'msg': 'it is gh-pages, so nothing'})
         s = j['repository']['url'] + 'updated files: ' + str(j['head_commit']['modified'])
-        print "just s: " + str(s)
+        print("just s: " + str(s))
         cloning_repo = j['repository']['git_url']
         target_repo = j['repository']['full_name']
         user = j['repository']['owner']['email']
-        print "cloning_repo: " + str(cloning_repo)
-        print "target_repo: " + str(target_repo)
-        print "user email: " + str(user)
+        print("cloning_repo: " + str(cloning_repo))
+        print("target_repo: " + str(target_repo))
+        print("user email: " + str(user))
         changed_files = get_changed_files_from_payload(j)
-        print "early changed files: " + str(changed_files)
+        print("early changed files: " + str(changed_files))
         if 'Merge pull request' in j['head_commit']['message'] or \
                 'OnToology Configuration' == j['head_commit']['message'] or \
                 'OnToology Publish' == j['head_commit']['message']:
-            print 'This is a merge request or Configuration push'
+            print('This is a merge request or Configuration push')
             try:
                 repo = Repo.objects.get(url=target_repo)
-                print 'got the repo'
+                print('got the repo')
                 repo.last_used = datetime.today()
                 repo.progress = 100.0
                 repo.save()
-                print 'repo saved'
+                print('repo saved')
             except DoesNotExist:
                 repo = Repo()
                 repo.url = target_repo
                 repo.save()
             except Exception as e:
-                print 'database_exception: ' + str(e)
+                print('database_exception: ' + str(e))
             msg = 'This indicate that this merge request will be ignored'
-            print msg
+            print(msg)
             if settings.test_conf['local']:
-                print msg
+                print(msg)
                 return
             else:
                 return render(request, 'msg.html', {'msg': msg})
     except Exception as e:
-        print "add hook exception: " + str(e)
+        print("add hook exception: " + str(e))
         msg = 'This request should be a webhook ping'
         if settings.test_conf['local']:
-            print msg
+            print(msg)
             return
         else:
             return render(request, 'msg.html', {'msg': msg},)
-    print '##################################################'
-    print 'changed_files: ' + str(changed_files)
+    print('##################################################')
+    print('changed_files: ' + str(changed_files))
     # cloning_repo should look like 'git@github.com:AutonUser/target.git'
     tar = cloning_repo.split('/')[-2]
     cloning_repo = cloning_repo.replace(tar, ToolUser)
@@ -321,16 +321,16 @@ def add_hook(request):
     else:
         comm = "python %s " % \
                (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
-    print 'in addhook'
-    print "target repo: %s" % target_repo
-    print "user: %s" % user
+    print('in addhook')
+    print("target repo: %s" % target_repo)
+    print("user: %s" % user)
     comm += '--magic --target_repo "' + target_repo + '" --useremail "' + user + '" --changedfiles '
     for c in changed_files:
         comm += '"' + c + '" '
     if settings.test_conf['local']:
-        print 'will call git_magic with target=%s, user=%s, cloning_repo=%s, changed_files=%s' % (target_repo, user,
+        print('will call git_magic with target=%s, user=%s, cloning_repo=%s, changed_files=%s' % (target_repo, user,
                                                                                                   cloning_repo,
-                                                                                                  str(changed_files))
+                                                                                                  str(changed_files)))
         j = {
             'action': 'magic',
             'repo': target_repo,
@@ -341,7 +341,7 @@ def add_hook(request):
         rabbit.send(j)
         return
     else:
-        print 'running autoncore code as: ' + comm
+        print('running autoncore code as: ' + comm)
         try:
             j = {
                 'action': 'magic',
@@ -353,7 +353,7 @@ def add_hook(request):
             rabbit.send(j)
         except Exception as e:
             error_msg = str(e)
-            print 'error running generall all subprocess: ' + error_msg
+            print('error running generall all subprocess: ' + error_msg)
             sys.stdout.flush()
             sys.stderr.flush()
             if 'execv() arg 2 must contain only strings' in error_msg:
@@ -372,7 +372,7 @@ def generateforall_view(request):
     found = False
     if target_repo[-1] == '/':
         target_repo = target_repo[:-1]
-    print 'target_repo is <%s>' % target_repo
+    print('target_repo is <%s>' % target_repo)
     # The below couple of lines are to check that the user currently have permission over the repository
     try:
         ouser = OUser.objects.get(email=request.user.email)
@@ -397,21 +397,21 @@ def generateforall(target_repo, user_email):
     user = user_email
     ontologies = get_ontologies_in_online_repo(target_repo)
     changed_files = ontologies
-    print 'current file dir: %s' % str(os.path.dirname(os.path.realpath(__file__)))
+    print('current file dir: %s' % str(os.path.dirname(os.path.realpath(__file__))))
     if 'virtual_env_dir' in os.environ:
-        print 'virtual_env_dir is in environ'
+        print('virtual_env_dir is in environ')
         comm = "%s %s " % \
                (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
                 (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py')))
     else:
-        print 'virtual_env_dir is NOT in environ'
+        print('virtual_env_dir is NOT in environ')
         comm = "python %s " % \
                (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
     comm += '--magic --target_repo "' + target_repo + '" --useremail "' + user + '" --changedfiles '
     for c in changed_files:
         comm += '"' + c.strip() + '" '
     if settings.test_conf['local']:
-        print "running autoncode in the same thread"
+        print("running autoncode in the same thread")
         j = {
             'action': 'magic',
             'repo': target_repo,
@@ -421,7 +421,7 @@ def generateforall(target_repo, user_email):
         }
         rabbit.send(j)
     else:
-        print 'running autoncore code as: ' + comm
+        print('running autoncore code as: ' + comm)
         try:
             j = {
                 'action': 'magic',
@@ -435,7 +435,7 @@ def generateforall(target_repo, user_email):
             sys.stdout.flush()
             sys.stderr.flush()
             error_msg = str(e)
-            print 'error running generall all subprocess: ' + error_msg
+            print('error running generall all subprocess: ' + error_msg)
             if 'execv() arg 2 must contain only strings' in error_msg:
                 return {'status': False,
                         'error': 'make sure that your repository filenames does not have accents or special characters'}
@@ -448,7 +448,7 @@ def generateforall(target_repo, user_email):
 
 
 def login(request):
-    print '******* login *********'
+    print('******* login *********')
     redirect_url = host + '/login_get_access'
     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
     request.session['state'] = sec
@@ -461,13 +461,13 @@ def login(request):
 
 
 def logout(request):
-    print '*** logout ***'
+    print('*** logout ***')
     django_logout(request)
     return HttpResponseRedirect('/')
 
 
 def login_get_access(request):
-    print '*********** login_get_access ************'
+    print('*********** login_get_access ************')
     if 'state' not in request.session:
         request.session['state'] = 'blah123'  # 'state'
     if request.GET['state'] != request.session['state']:
@@ -487,11 +487,11 @@ def login_get_access(request):
             d[keyv[0]] = keyv[1]
         access_token = d['access_token']
         request.session['access_token'] = access_token
-        print 'access_token: ' + access_token
+        print('access_token: ' + access_token)
     except Exception as e:
-        print "exception: " + str(e)
-        print "no access token"
-        print "response: %s" % res.text
+        print("exception: " + str(e))
+        print("no access token")
+        print("response: %s" % res.text)
         return HttpResponseRedirect('/')
 
     g = Github(access_token)
@@ -500,7 +500,7 @@ def login_get_access(request):
     if email == '' or type(email) == type(None):
         return render(request, 'msg.html', {'msg': 'You have to make you email public and try again'})
     request.session['avatar_url'] = g.get_user().avatar_url
-    print 'avatar_url: ' + request.session['avatar_url']
+    print('avatar_url: ' + request.session['avatar_url'])
     try:
         user = OUser.objects.get(email=email)
         user.username = username
@@ -511,14 +511,14 @@ def login_get_access(request):
             user.email = email
             user.save()
         except:
-            print '<%s,%s>' % (email, username)
+            print('<%s,%s>' % (email, username))
             sys.stdout.flush()
             sys.stderr.flush()
             # The password is never important but we set it here because it is required by User class
             user = OUser.create_user(username=username, password=request.session['state'], email=email)
             user.save()
     django_login(request, user)
-    print 'The used access_token: ' + access_token
+    print('The used access_token: ' + access_token)
     sys.stdout.flush()
     sys.stderr.flush()
     return HttpResponseRedirect('/')
@@ -526,16 +526,16 @@ def login_get_access(request):
 
 @login_required
 def profile(request):
-    print '************* profile ************'
-    print str(datetime.today())
+    print('************* profile ************')
+    print(str(datetime.today()))
     error_msg = ''
     user = request.user
     if 'repo' in request.GET and 'name' not in request.GET:  # asking for ontologies in a repo
         repo = request.GET['repo']
-        print 'repo :<%s>' % (repo)
-        print 'got the repo'
+        print('repo :<%s>' % (repo))
+        print('got the repo')
         try:
-            print 'trying to validate repo'
+            print('trying to validate repo')
             hackatt = True
             for repooo in user.repos:
                 if repooo.url == repo:
@@ -543,18 +543,18 @@ def profile(request):
                     break
             if hackatt:  # trying to access a repo that does not belong to the use currently logged in
                 return render(request, 'msg.html', {'msg': 'This repo is not added, please do so in the main page'})
-            print 'try to get abs folder'
+            print('try to get abs folder')
             if type(autoncore.g) == type(None):
-                print 'access token is: ' + request.session['access_token']
+                print('access token is: ' + request.session['access_token'])
                 update_g(request.session['access_token'])
             try:
                 ontologies = parse_online_repo_for_ontologies(repo)
                 ontologies = autoncore.add_themis_results(repo, ontologies)
-                print 'ontologies: ' + str(len(ontologies))
+                print('ontologies: ' + str(len(ontologies)))
                 arepo = Repo.objects.get(url=repo)
                 pnames = PublishName.objects.filter(user=user, repo=arepo)
                 for o in ontologies:
-                    print '--------\n%s\n' % o
+                    print('--------\n%s\n' % o)
                     o['published'] = False
                     o['pname'] = ''
                     for pn in pnames:
@@ -563,17 +563,17 @@ def profile(request):
                             o['pname'] = pn.name
                             break
                     for d in o:
-                        print '   ' + d + ': ' + str(o[d])
-                print 'testing redirect'
-                print 'will return the Json'
+                        print('   ' + d + ': ' + str(o[d]))
+                print('testing redirect')
+                print('will return the Json')
                 jresponse = JsonResponse({'ontologies': ontologies})
                 jresponse.__setitem__('Content-Length', len(jresponse.content))
                 sys.stdout.flush()
                 sys.stderr.flush()
                 return jresponse
             except Exception as e:
-                print "exception in getting the ontologies for the repo: " + str(repo)
-                print "exception:  " + str(e)
+                print("exception in getting the ontologies for the repo: " + str(repo))
+                print("exception:  " + str(e))
                 arepo = Repo.objects.get(url=repo)
                 arepo.state = 'Invalid repository'
                 arepo.save()
@@ -584,7 +584,7 @@ def profile(request):
                 sys.stderr.flush()
                 return jresponse
         except Exception as e:
-            print 'exception: ' + str(e)
+            print('exception: ' + str(e))
 
     elif 'delete-name' in request.GET:
         name = request.GET['delete-name']
@@ -599,7 +599,7 @@ def profile(request):
             call(comm, shell=True)
         else:
             error_msg += 'You are trying to delete a name that does not belong to you'
-    print 'testing redirect'
+    print('testing redirect')
     repos = user.repos
     for r in repos:
         try:
@@ -657,7 +657,7 @@ def get_num_of_processes_of_rabbit():
 
 
 def update_conf(request):
-    print 'inside update_conf'
+    print('inside update_conf')
     if request.method == "GET":
         return render(request, "msg.html", {"msg": "This method expects POST only"})
     ontologies = request.POST.getlist('ontology')
@@ -702,7 +702,7 @@ def delete_repo(request):
                 # remove_webhook(repo, host + "/add_hook")
                 return JsonResponse({'status': True})
             except Exception as e:
-                print "error deleting the webhook: " + str(e)
+                print("error deleting the webhook: " + str(e))
                 return JsonResponse({'status': False, 'error': str(e)})
     return JsonResponse({'status': False, 'error': 'You should add this repo first'})
 
@@ -803,7 +803,7 @@ def get_bundle(request):
     if ontology[0] == '/':
         ontology = ontology[1:]
     oo = os.path.join('OnToology', ontology)
-    print 'oo: %s' % oo
+    print('oo: %s' % oo)
     zip_dir = generate_bundle(base_dir=repo_dir, target_repo=repo, ontology_bundle=oo)
     if zip_dir is None:
         return render(request, 'msg.html', {'msg': 'error generating the bundle'})
@@ -920,7 +920,7 @@ def publish_view(request):
             If you re-published it, do you not need to do anything.''' % ontology_rel_path[1:]
         return render(request, 'msg.html', {'msg': msg, 'img': 'https://github.com/OnToology/OnToology/raw/master/media/misc/gh-pages.png'})
     except Exception as e:
-        print "publish_view> error : %s" % str(e)
+        print("publish_view> error : %s" % str(e))
         msg = "Error publishing your ontology. Please contact us to fix it."
         return render(request, 'msg.html', {'msg': msg})
 
@@ -952,11 +952,6 @@ def syntax_check_view(request):
         return render(request, 'syntax.html',
                       {'formats': valid_formats,
                         'error': 'The syntax of the ontology is incorrect. The error message is: '+str(e)})
-        # print "syntax error for the file %s format %s" % (str(file_abs_dir), a_format)
-        # print str(e)
-        # dolog("syntax error for the file %s format %s" % (str(file_abs_dir), a_format))
-        # dolog("syntax error: "+str(e))
-
 
 def publications(request):
     return render(request, 'publications.html')
