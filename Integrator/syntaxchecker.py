@@ -12,11 +12,8 @@ from Integrator import dolog
 #     g = rdflib.Graph()
 #     try:
 #         g.parse(file_abs_dir, format=format_extension_mapping[file_abs_dir[-3:].lower()])
-#         # print "correct syntax"
 #         return True
 #     except Exception as e:
-#         print "syntax error for the file %s" % str(file_abs_dir)
-#         print str(e)
 #         dolog("syntax error for the file %s" % str(file_abs_dir))
 #         dolog("syntax error: "+str(e))
 #     return False
@@ -29,11 +26,11 @@ def valid_syntax(file_abs_dir):
     for a_format in formats:
         try:
             g.parse(file_abs_dir, format=a_format)
-            print "correct syntax %s" % a_format
+            print("correct syntax %s" % a_format)
             return True
         except Exception as e:
-            print "syntax error for the file %s format %s" % (str(file_abs_dir), a_format)
-            print str(e)
+            print("syntax error for the file %s format %s" % (str(file_abs_dir), a_format))
+            print(str(e))
             dolog("syntax error for the file %s format %s" % (str(file_abs_dir), a_format))
             dolog("syntax error: "+str(e))
     return False

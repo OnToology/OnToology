@@ -157,7 +157,6 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
         try:
             r = ar2dtool.draw_diagrams([changed_file], base_dir)
             # if r != "":
-            #     print 'in init draw detected an error'
             #     # repo.notes += 'Error generating diagrams for %s. ' % changed_file
             #     repo.save()
         except Exception as e:
@@ -172,7 +171,6 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
         try:
             r = widoco.generate_widoco_docs([changed_file], base_dir, languages=conf['widoco']['languages'], webVowl=conf['widoco']['webVowl'])
             # if r != "":
-            #     print 'in init documentation detected an error for ontology file: %s' % changed_file
             #     # repo.notes += 'Error generating documentation for %s. ' % changed_file
             #     repo.save()
         except Exception as e:
@@ -187,7 +185,6 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
         try:
             r = oops.oops_ont_files(target_repo=target_repo, changed_files=[changed_file], base_dir=base_dir)
             # if r != "":
-            #     print 'in init evaluation detected an error'
             #     # repo.notes += 'Error generating evaluation for %s. ' % changed_file
             #     repo.save()
             if r != "":
@@ -239,11 +236,9 @@ def create_of_get_conf(ofile, base_dir):
     # import subprocess
     # subprocess.call('echo "terminal output: "', shell=True)
     # comm = 'cat %s'%ofile_config_file_abs
-    # print "comm: "+comm
     # subprocess.call(comm, shell=True)
     # par_file = "/".join(ofile_config_file_abs.split('/')[:-1])
     # comm = "ls %s" % par_file
-    # print "comm: "+comm
     # subprocess.call(comm, shell=True)
     conf_file = config.read(ofile_config_file_abs)
     config_result = {

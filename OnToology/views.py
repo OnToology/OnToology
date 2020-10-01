@@ -39,12 +39,12 @@ from mongoengine.queryset import DoesNotExist
 import requests
 from github import Github
 
-import settings
-from autoncore import git_magic, add_webhook, ToolUser, webhook_access, update_g, add_collaborator, \
+import OnToology.settings
+from OnToology.autoncore import git_magic, add_webhook, ToolUser, webhook_access, update_g, add_collaborator, \
     clone_repo
-from autoncore import parse_online_repo_for_ontologies, update_file, remove_webhook, \
+from OnToology.autoncore import parse_online_repo_for_ontologies, update_file, remove_webhook, \
     init_g
-from autoncore import get_proper_loggedin_scope, get_ontologies_in_online_repo, generate_bundle
+from OnToology.autoncore import get_proper_loggedin_scope, get_ontologies_in_online_repo, generate_bundle
 from models import *
 import autoncore
 from settings import host

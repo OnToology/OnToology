@@ -20,6 +20,12 @@ MEDIA_URL = '/media/'
 
 LOGIN_URL = '/login'
 
+ADMINS = (
+    ('Ahmad Alobaid', 'aalobaid@fi.upm.es'),
+)
+
+MANAGERS = ADMINS
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
@@ -48,7 +54,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_mongoengine',
-    'django_mongoengine.mongo_auth'
+    'django_mongoengine.mongo_auth',
+    'django_mongoengine.mongo_admin',
+    'OnToology'
 ]
 
 MIDDLEWARE = [
@@ -116,7 +124,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Madrid'
 
 USE_I18N = True
 
@@ -144,7 +152,7 @@ test_conf = {'local': False,  # doing test
              }
 
 try:
-    from localwsgi import *
+    from OnToology.localwsgi import *
     print("importing environ from local wsgi")
 except Exception as e:
     print("no local wsgi")
@@ -154,6 +162,8 @@ except Exception as e:
 MONGODB_DATABASES = {
     'default': {'name': 'OnToology'}
 }
+
+
 
 environ = os.environ
 print("environ: ")
@@ -186,6 +196,10 @@ GITHUB_LOCAL_APP_ID = '3995f5db01f035de44c6'
 GITHUB_LOCAL_API_SECRET = '141f896e53db4a4427db177f1ef2c9975e8a3c1f'
 
 
+SESSION_ENGINE = 'django_mongoengine.sessions'
+SESSION_SERIALIZER = 'django_mongoengine.sessions.BSONSerializer'
+
+
 AUTH_USER_MODEL = 'mongo_auth.MongoUser'
 AUTHENTICATION_BACKENDS = (
     'django_mongoengine.mongo_auth.backends.MongoEngineBackend',
@@ -209,20 +223,3 @@ else:
     print(os.environ)
 
 
-
-#
-# from mongoengine import connect
-# MONGO_DATABASE_NAME = "OnToology"
-# if "db_name" in os.environ:
-#     MONGO_DATABASE_NAME = os.environ["db_name"]
-#
-# if 'db_username' not in os.environ or os.environ['db_username'].strip() == '':
-#     print "no auth"
-#     connect(MONGO_DATABASE_NAME)
-# else:
-#     print "with auth"
-#     connect(MONGO_DATABASE_NAME, host=os.environ['db_host'], port=int(os.environ['db_port']),
-#             username=os.environ['db_username'], password=os.environ['db_password'],
-#             )
-#             #authentication_mechanism='MONGODB-CR')
-#             #authentication_mechanism='SCRAM-SHA-1')

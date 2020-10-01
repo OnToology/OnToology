@@ -15,7 +15,9 @@
 #
 # @author Ahmad Alobaid
 #
-from django_mongoengine.mongo_auth import MongoUser as User
+from django_mongoengine.mongo_auth import
+from django_mongoengine.mongo_auth.models import MongoUser as User
+# from django_mongoengine.mongo_auth import MongoUser as User
 # from mongo_auth import MongoUser as User
 # from django_mongoengine.mongo_auth.models import User
 from mongoengine import Document, StringField, DateTimeField, ListField, ReferenceField, BooleanField, FloatField
@@ -141,12 +143,6 @@ class ORun(Document):
 
     def __unicode__(self):
         return "run <"+str(self.id)+"> " + self.user.email + " - " + self.repo.url + " - " + str(self.timestamp)
-
-#
-# except Exception as e:
-#     print("error importing OUser")
-#     print(e)
-#     # pass
 
 
 
