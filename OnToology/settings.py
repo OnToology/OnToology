@@ -41,8 +41,6 @@ if 'debug' in os.environ:
 
 ALLOWED_HOSTS = ['*']
 
-# Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -156,7 +154,7 @@ except Exception as e:
 
 environ = os.environ
 print("environ: ")
-print(environ)
+# print(environ)
 
 print("type: " + str(type(environ)))
 # print("host in environ: "+environ['host_db'])
@@ -196,3 +194,6 @@ if 'OnToology_home' in os.environ and os.environ['OnToology_home'].lower() == "t
 else:
     print("Going remote")
     print(os.environ)
+
+
+AUTH_USER_MODEL = 'OnToology.OUser'

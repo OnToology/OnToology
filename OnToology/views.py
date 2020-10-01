@@ -117,7 +117,7 @@ def home(request):
         request.session['access_token_time'] = '1'
         return HttpResponseRedirect(webhook_access_url)
     repos = Repo.objects.order_by('-last_used')[:10]
-    num_of_users = len(User.objects.all())
+    num_of_users = len(OUser.objects.all())
     num_of_repos = len(Repo.objects.all())
     return render(request, 'home.html', {'repos': repos, 'user': request.user, 'num_of_users': num_of_users,
                                          'num_of_repos': num_of_repos})
@@ -496,18 +496,20 @@ def login_get_access(request):
         user = OUser.objects.get(email=email)
         user.username = username
         user.save()
-    except:
+    except Exception as e:
         try:
             user = OUser.objects.get(username=username)
             user.email = email
             user.save()
         except:
             print('<%s,%s>' % (email, username))
-            sys.stdout.flush()
-            sys.stderr.flush()
             # The password is never important but we set it here because it is required by User class
-            user = OUser.create_user(username=username, password=request.session['state'], email=email)
-            user.save()
+            print("Now will create the user: ")
+            print("username: "+username)
+            print("password: "+request.session['state'])
+            print("email: "+email)
+            user = OUser.objects.create_user(username=username, password=request.session['state'], email=email)
+            # user.save()
     django_login(request, user)
     print('The used access_token: ' + access_token)
     sys.stdout.flush()

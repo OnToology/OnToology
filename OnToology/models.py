@@ -15,21 +15,69 @@
 #
 # @author Ahmad Alobaid
 #
-
-from django.contrib.auth.models import User
+from django.utils import timezone
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, UserManager
+from django.contrib.auth.models import AbstractUser as User
 from djongo import models
-
-# from django_mongoengine.mongo_auth import
-# from django_mongoengine.mongo_auth.models import MongoUser as User
-# from django_mongoengine.mongo_auth import MongoUser as User
-# from mongo_auth import MongoUser as User
-# from django_mongoengine.mongo_auth.models import User
-# from mongoengine import Document, StringField, DateTimeField, ListField, ReferenceField, BooleanField, FloatField
-# from mongoengine.django.auth import User
-
 
 from datetime import datetime, timedelta
 
+
+class CustomUserManager(BaseUserManager):
+
+    def create_user(self, email, username, password=None, ):
+        """
+        Creates and saves a User with the given email and password.
+        """
+        if not email:
+            raise ValueError('Users must have an email address')
+
+        user = self.model(
+            email=self.normalize_email(email),
+            username=username,
+        )
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+#
+# class CustomUser(AbstractBaseUser):
+#     email = models.EmailField(verbose_name='email address', max_length=255, unique=True)
+#     username = models.CharField(verbose_name='user name', max_length=255, unique=True)
+#     is_active = models.BooleanField(default=True)
+#     is_staff = models.BooleanField(default=False)
+#     is_admin = models.BooleanField(default=False)
+#     is_superuser = models.BooleanField(default=False)
+#     objects = UserManager()
+#     # objects = CustomUserManager()
+#
+#     USERNAME_FIELD = 'username'
+#     # REQUIRED_FIELDS = ['date_of_birth']
+#
+#     def __str__(self):
+#         return self.email
+#
+#     # Maybe required?
+#     def get_group_permissions(self, obj=None):
+#         return set()
+#
+#     def get_all_permissions(self, obj=None):
+#         return set()
+#
+#     def has_perm(self, perm, obj=None):
+#         return True
+#
+#     def has_perms(self, perm_list, obj=None):
+#         return True
+#
+#     def has_module_perms(self, app_label):
+#         return True
+#
+#     # Admin required fields
+#     # @property
+#     # def is_staff(self):
+#     #     return self.is_admin
+#
 
 class OntologyStatusPair(models.Model):
     STATUSES = (
@@ -56,7 +104,7 @@ class OntologyStatusPair(models.Model):
 
 class Repo(models.Model):
     url = models.CharField(max_length=200, default='Not set yet')
-    last_used = models.DateTimeField(default=datetime.now())
+    last_used = models.DateTimeField(default=timezone.now)
     state = models.CharField(max_length=300, default='Ready')
     owner = models.CharField(max_length=100, default='no')
     previsual = models.BooleanField(default=False)
@@ -99,16 +147,50 @@ class Repo(models.Model):
     def __unicode__(self):
         return self.url
 
-# The below is to avoid the error occur when importing Repo from autoncore because of the User class which cases the
-# error
-# try:
+
+def tomorrow_exp():
+    d = timezone.now()
+    return d + timedelta(days=1)
 
 
-class OUser(User):
+class OUser(AbstractBaseUser):
     repos = models.ArrayReferenceField(Repo, default=[])
     private = models.BooleanField(default=False)  # The permission access level to OnToology
     token = models.TextField(default='no token')
-    token_expiry = models.DateTimeField(default=datetime.now()+timedelta(days=1))
+    token_expiry = models.DateTimeField(default=tomorrow_exp)
+
+
+    email = models.EmailField(verbose_name='email address', max_length=255, unique=True)
+    username = models.CharField(verbose_name='user name', max_length=255, unique=True)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+
+    # objects = UserManager()
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'username'
+    # REQUIRED_FIELDS = ['date_of_birth']
+
+    def __str__(self):
+        return self.username
+
+    # Maybe required?
+    def get_group_permissions(self, obj=None):
+        return set()
+
+    def get_all_permissions(self, obj=None):
+        return set()
+
+    def has_perm(self, perm, obj=None):
+        return True
+
+    def has_perms(self, perm_list, obj=None):
+        return True
+
+    def has_module_perms(self, app_label):
+        return True
 
     def json(self):
         return {'id': str(self.id),
@@ -141,7 +223,7 @@ class PublishName(models.Model):
 class ORun(models.Model):
     repo = models.ForeignKey(Repo, on_delete=models.CASCADE)
     user = models.ForeignKey(OUser, on_delete=models.CASCADE)
-    timestamp = models.DateTimeField(default=datetime.now)
+    timestamp = models.DateTimeField(default=timezone.now)
     task = models.TextField()
     description = models.TextField(default='')
 
