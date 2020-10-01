@@ -17,7 +17,7 @@
 #
 
 
-from django.conf.urls import  include, url
+from django.conf.urls import include, url
 from django.contrib import admin
 from OnToology import api_views as views
 from django.conf import settings

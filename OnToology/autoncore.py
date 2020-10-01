@@ -31,20 +31,20 @@ from subprocess import call
 import string
 import random
 import time
-import StringIO
-import settings
+from io import StringIO  ## for Python 3
+from OnToology import settings
+from OnToology.models import *
 import io
+import configparser as ConfigParser
 
-from __init__ import *
+from OnToology.__init__ import *
 
 import Integrator
 
 import shutil
 import logging
 
-from mongoengine import *
-
-from urllib import quote
+from urllib.parse import quote
 
 use_database = True
 
@@ -1017,8 +1017,6 @@ def change_configuration(user_email, target_repo, data, ontologies):
 ########################################################################
 ########################################################################
 
-
-import ConfigParser
 
 
 def get_conf(ar2dtool, widoco, oops):

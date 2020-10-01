@@ -21,7 +21,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from OnToology import views
 from django.conf import settings
-import api_urls
+from OnToology import api_urls
 
 
 urlpatterns = [

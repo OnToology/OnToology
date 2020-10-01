@@ -15,7 +15,7 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-MEDIA_ROOT = BASE_DIR+'/media/'
+MEDIA_ROOT = BASE_DIR + '/media/'
 MEDIA_URL = '/media/'
 
 LOGIN_URL = '/login'
@@ -30,9 +30,8 @@ MANAGERS = ADMINS
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = '!pt9$ocsv9m1@_$eiq(9=0&_=wg@-^&f$f0j#k57l&g71$av(n'
+# SECRET_KEY = '!pt9$ocsv9m1@_$eiq(9=0&_=wg@-^&f$f0j#k57l&g71$av(n'
 SECRET_KEY = 'xj1c6fel(z5@=%(br!j)u155a71j*^u_b+2'
-
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -41,8 +40,6 @@ if 'debug' in os.environ:
     DEBUG = os.environ['debug'].lower() == 'true'
 
 ALLOWED_HOSTS = ['*']
-
-
 
 # Application definition
 
@@ -53,9 +50,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_mongoengine',
-    'django_mongoengine.mongo_auth',
-    'django_mongoengine.mongo_admin',
     'OnToology'
 ]
 
@@ -63,7 +57,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -74,7 +68,7 @@ ROOT_URLCONF = 'OnToology.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR+'/templates',],
+        'DIRS': [BASE_DIR + '/templates', ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -89,16 +83,22 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'OnToology.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.dummy',
+        'ENGINE': 'djongo',
+        'name': 'OnToology',
+        'ENFORCE_SCHEMA': False,
+        'LOGGING': {
+            'version': 1,
+            'loggers': {
+                'djongo': {
+                    'level': 'DEBUG',
+                    'propagate': False,
+                }
+            },
+        },
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -118,7 +118,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
@@ -132,14 +131,10 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
-
-
-
 
 #### Mongo Engine configs #########
 
@@ -153,59 +148,39 @@ test_conf = {'local': False,  # doing test
 
 try:
     from OnToology.localwsgi import *
+
     print("importing environ from local wsgi")
 except Exception as e:
     print("no local wsgi")
     print(e)
 
-# MongoDB settings
-MONGODB_DATABASES = {
-    'default': {'name': 'OnToology'}
-}
-
-
-
 environ = os.environ
 print("environ: ")
 print(environ)
 
-print("type: "+str(type(environ)))
+print("type: " + str(type(environ)))
 # print("host in environ: "+environ['host_db'])
 
 if 'db_host' in environ:
     print("yes db_host in environ")
     host_db = environ['db_host']
+    DATABASES['default']['CLIENT'] = {}
+    DATABASES['default']['CLIENT']['host'] = host_db
     if 'db_port' in environ:
-        host_db+=":"+str(environ['db_port'])
-    MONGODB_DATABASES['default']['host'] = host_db
-    print("updated with host: "+str(MONGODB_DATABASES['default']['host']))
+        DATABASES['default']['CLIENT']['post'] = str(environ['db_port'])
+
+    print("updated with host: " + str(DATABASES['default']['host']))
     if 'db_name' in environ:
-        MONGODB_DATABASES['default']['name'] = environ['db_name']
-        print("updated with host: " + str(MONGODB_DATABASES['default']['name']))
+        DATABASES['default']['name'] = environ['db_name']
+        print("updated with host: " + str(DATABASES['default']['name']))
 
 else:
     print("db_host is not in environ")
 
-print("MONGODB: "+str(MONGODB_DATABASES))
-
-
-
-
+print("MONGODB: " + str(DATABASES))
 
 GITHUB_LOCAL_APP_ID = '3995f5db01f035de44c6'
 GITHUB_LOCAL_API_SECRET = '141f896e53db4a4427db177f1ef2c9975e8a3c1f'
-
-
-SESSION_ENGINE = 'django_mongoengine.sessions'
-SESSION_SERIALIZER = 'django_mongoengine.sessions.BSONSerializer'
-
-
-AUTH_USER_MODEL = 'mongo_auth.MongoUser'
-AUTHENTICATION_BACKENDS = (
-    'django_mongoengine.mongo_auth.backends.MongoEngineBackend',
-)
-
-SESSION_ENGINE = 'django_mongoengine.sessions'
 
 
 host = 'http://ontoology.linkeddata.es'
@@ -221,5 +196,3 @@ if 'OnToology_home' in os.environ and os.environ['OnToology_home'].lower() == "t
 else:
     print("Going remote")
     print(os.environ)
-
-

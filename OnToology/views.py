@@ -26,8 +26,9 @@ import subprocess
 import shutil
 from subprocess import call
 
+
 from django.http import HttpResponse
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib.auth import login as django_login, logout as django_logout
@@ -35,21 +36,19 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from mongoengine.queryset import DoesNotExist
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Model
 import requests
 from github import Github
 
-import OnToology.settings
-from OnToology.autoncore import git_magic, add_webhook, ToolUser, webhook_access, update_g, add_collaborator, \
-    clone_repo
-from OnToology.autoncore import parse_online_repo_for_ontologies, update_file, remove_webhook, \
-    init_g
-from OnToology.autoncore import get_proper_loggedin_scope, get_ontologies_in_online_repo, generate_bundle
-from models import *
-import autoncore
-from settings import host
-import Integrator.previsual as previsual
-import rabbit
+from OnToology import settings
+from OnToology.autoncore import *
+from OnToology.models import *
+from OnToology import autoncore
+from OnToology.settings import host
+from Integrator import previsual
+from OnToology import rabbit
+
 
 client_id_login = os.environ['client_id_login']  # 'e2ea731b481438fd1675'
 client_id_public = os.environ['client_id_public']  # '878434ff1065b7fa5b92'
@@ -66,21 +65,13 @@ is_private = None
 
 publish_dir = os.environ['publish_dir']
 
-import sys
-
-reload(sys)
-sys.setdefaultencoding("UTF-8")
-
-# So the prints shows in apache error log
-sys.stdout = sys.stderr
-
 
 def get_repo_name_from_url(url):
     """
     :param url:
     :return: user/repo (or None if invalid)
     """
-    url = url.replace(' ','')
+    url = url.replace(' ', '')
     url = url.lower().strip()
     if url[:19] == "https://github.com/":
         name = url[19:]
@@ -287,7 +278,7 @@ def add_hook(request):
                 repo.progress = 100.0
                 repo.save()
                 print('repo saved')
-            except DoesNotExist:
+            except Model.DoesNotExist:
                 repo = Repo()
                 repo.url = target_repo
                 repo.save()

@@ -15,19 +15,23 @@
 #
 # @author Ahmad Alobaid
 #
-from django_mongoengine.mongo_auth import
-from django_mongoengine.mongo_auth.models import MongoUser as User
+
+from django.contrib.auth.models import User
+from djongo import models
+
+# from django_mongoengine.mongo_auth import
+# from django_mongoengine.mongo_auth.models import MongoUser as User
 # from django_mongoengine.mongo_auth import MongoUser as User
 # from mongo_auth import MongoUser as User
 # from django_mongoengine.mongo_auth.models import User
-from mongoengine import Document, StringField, DateTimeField, ListField, ReferenceField, BooleanField, FloatField
+# from mongoengine import Document, StringField, DateTimeField, ListField, ReferenceField, BooleanField, FloatField
 # from mongoengine.django.auth import User
 
 
 from datetime import datetime, timedelta
 
 
-class OntologyStatusPair(Document):
+class OntologyStatusPair(models.Model):
     STATUSES = (
         ('pending', 'pending'),
         ('diagram', 'diagram'),
@@ -37,8 +41,8 @@ class OntologyStatusPair(Document):
         ('validation', 'validation'),
         ('finished', 'finished')
     )
-    name = StringField(max_length=120)
-    status = StringField(choices=STATUSES)
+    name = models.CharField(max_length=120)
+    status = models.CharField(max_length=25, choices=STATUSES)
 
     def json(self):
         return {
@@ -50,17 +54,17 @@ class OntologyStatusPair(Document):
         return self.name + ' - ' + self.status
 
 
-class Repo(Document):
-    url = StringField(max_length=200, default='Not set yet')
-    last_used = DateTimeField(default=datetime.now())
-    state = StringField(max_length=300, default='Ready')
-    owner = StringField(max_length=100, default='no')
-    previsual = BooleanField(default=False)
-    previsual_page_available = BooleanField(default=False)
-    notes = StringField(default='')
-    progress = FloatField(default=0.0)
-    ontology_status_pairs = ListField(ReferenceField(OntologyStatusPair), default=[])
-    busy = BooleanField(default=False)  # backward compatibility
+class Repo(models.Model):
+    url = models.CharField(max_length=200, default='Not set yet')
+    last_used = models.DateTimeField(default=datetime.now())
+    state = models.CharField(max_length=300, default='Ready')
+    owner = models.CharField(max_length=100, default='no')
+    previsual = models.BooleanField(default=False)
+    previsual_page_available = models.BooleanField(default=False)
+    notes = models.TextField(default='')
+    progress = models.FloatField(default=0.0)
+    ontology_status_pairs = models.ArrayReferenceField(OntologyStatusPair, default=[])
+    busy = models.BooleanField(default=False)  # backward compatibility
 
     def json(self):
         return {
@@ -101,10 +105,10 @@ class Repo(Document):
 
 
 class OUser(User):
-    repos = ListField(ReferenceField(Repo), default=[])
-    private = BooleanField(default=False)  # The permission access level to OnToology
-    token = StringField(default='no token')
-    token_expiry = DateTimeField(default=datetime.now()+timedelta(days=1))
+    repos = models.ArrayReferenceField(Repo, default=[])
+    private = models.BooleanField(default=False)  # The permission access level to OnToology
+    token = models.TextField(default='no token')
+    token_expiry = models.DateTimeField(default=datetime.now()+timedelta(days=1))
 
     def json(self):
         return {'id': str(self.id),
@@ -115,11 +119,11 @@ class OUser(User):
         return self.username
 
 
-class PublishName(Document):
-    name = StringField()
-    user = ReferenceField(OUser)
-    repo = ReferenceField(Repo)
-    ontology = StringField(default='')
+class PublishName(models.Model):
+    name = models.TextField()
+    user = models.ForeignKey(OUser, on_delete=models.CASCADE)
+    repo = models.ForeignKey(Repo, on_delete=models.CASCADE)
+    ontology = models.TextField(default='')
 
     def json(self):
         return {
@@ -134,12 +138,12 @@ class PublishName(Document):
         return self.name
 
 
-class ORun(Document):
-    repo = ReferenceField(Repo)
-    user = ReferenceField(OUser)
-    timestamp = DateTimeField(default=datetime.now)
-    task = StringField()
-    description = StringField(default='')
+class ORun(models.Model):
+    repo = models.ForeignKey(Repo, on_delete=models.CASCADE)
+    user = models.ForeignKey(OUser, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(default=datetime.now)
+    task = models.TextField()
+    description = models.TextField(default='')
 
     def __unicode__(self):
         return "run <"+str(self.id)+"> " + self.user.email + " - " + self.repo.url + " - " + str(self.timestamp)

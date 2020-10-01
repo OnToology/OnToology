@@ -14,8 +14,8 @@ from django.utils.decorators import method_decorator
 from OnToology.views import generateforall
 from OnToology.autoncore import publish, previsual, django_setup_script
 from OnToology import autoncore
-from models import *
-from views import publish_dir
+from OnToology.models import *
+from OnToology.views import publish_dir
 
 
 def token_required(func):
