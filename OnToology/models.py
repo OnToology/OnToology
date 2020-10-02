@@ -23,24 +23,24 @@ from djongo import models
 from datetime import datetime, timedelta
 
 
-class CustomUserManager(BaseUserManager):
-
-    def create_user(self, email, username, password=None, ):
-        """
-        Creates and saves a User with the given email and password.
-        """
-        if not email:
-            raise ValueError('Users must have an email address')
-
-        user = self.model(
-            email=self.normalize_email(email),
-            username=username,
-        )
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
+# class CustomUserManager(BaseUserManager):
 #
+#     def create_user(self, email, username, password=None, ):
+#         """
+#         Creates and saves a User with the given email and password.
+#         """
+#         if not email:
+#             raise ValueError('Users must have an email address')
+#
+#         user = self.model(
+#             email=self.normalize_email(email),
+#             username=username,
+#         )
+#         user.set_password(password)
+#         user.save(using=self._db)
+#         return user
+
+
 # class CustomUser(AbstractBaseUser):
 #     email = models.EmailField(verbose_name='email address', max_length=255, unique=True)
 #     username = models.CharField(verbose_name='user name', max_length=255, unique=True)
@@ -72,12 +72,12 @@ class CustomUserManager(BaseUserManager):
 #
 #     def has_module_perms(self, app_label):
 #         return True
-#
-#     # Admin required fields
-#     # @property
-#     # def is_staff(self):
-#     #     return self.is_admin
-#
+
+    # Admin required fields
+    # @property
+    # def is_staff(self):
+    #     return self.is_admin
+
 
 class OntologyStatusPair(models.Model):
     STATUSES = (
@@ -135,7 +135,7 @@ class Repo(models.Model):
                 return True
         osp = OntologyStatusPair(name=ontology, status=status)
         osp.save()
-        self.ontology_status_pairs.append(osp)
+        self.ontology_status_pairs.add(osp)
         self.save()
 
     def clear_ontology_status_pairs(self):
@@ -154,7 +154,7 @@ def tomorrow_exp():
 
 
 class OUser(AbstractBaseUser):
-    repos = models.ArrayReferenceField(Repo, default=[])
+    repos = models.ArrayReferenceField(to=Repo, on_delete=models.CASCADE)
     private = models.BooleanField(default=False)  # The permission access level to OnToology
     token = models.TextField(default='no token')
     token_expiry = models.DateTimeField(default=tomorrow_exp)
@@ -167,8 +167,8 @@ class OUser(AbstractBaseUser):
     is_admin = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 
-    # objects = UserManager()
-    objects = CustomUserManager()
+    objects = UserManager()
+    #objects = CustomUserManager()
 
     USERNAME_FIELD = 'username'
     # REQUIRED_FIELDS = ['date_of_birth']

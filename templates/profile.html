@@ -402,10 +402,13 @@ $( document ).ready(function() {
 	}
 
 	$(".repo").click(function() {
+	    console.log("In repo")
 		if (cc){
 			cc=false;
+			console.log("exit repo cc false")
 			return;
 		}
+		console.log("continue")
 		var targetpanel = $(this);
         var bodypanel = $(this).parent().parent().parent().parent().parent().parent().find(".ontologiesspace");
 		current_url = $(this).attr('url');
@@ -452,7 +455,7 @@ $( document ).ready(function() {
 		                '<div class="col-md-1 col-xs-1">Bundle</div></br><hr>');
 		    }
 		    temp=bodypanel.html();
-		    temp += '<form action="/update_conf" method="POST">' + "{% csrf_token %}"
+		    temp += '<form action="/update_conf" method="POST">' + '{% csrf_token %}'
 		    for(o=0;o<ontologies.length;o++){
 		    	if(ontologies[o].published==true){
 		    		republish_img = 'https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/republish.png';
@@ -731,7 +734,7 @@ function toggleChevron(e) {
 
 
 $(document).on('click', ".firsttime", function(){
-		//alert("This is the first time");
+		alert("This is the first time");
 		$(this).removeClass("firsttime");
 		$(this).find(".repo").click();
 		$(this).find(".glyphicon-chevron-right").click();

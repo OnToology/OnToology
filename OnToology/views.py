@@ -100,7 +100,7 @@ def home(request):
         # if not has_access_to_repo(target_repo):# this for the organization
         # return render(request,'msg.html',{'msg': 'repos under organizations are not supported at the moment'})
         wgets_dir = os.environ['wget_dir']
-        if call('cd %s; wget %s;' % (wgets_dir, 'http://github.com/' + target_repo.strip()), shell=True) == 0:
+        if call('cd %s; wget %s;' % (wgets_dir, 'http://github.com/' + repo_name.strip()), shell=True) == 0:
             is_private = False
             client_id = client_id_public
             client_secret = client_secret_public
@@ -112,7 +112,7 @@ def home(request):
             the functionalities of OnToology """
             return render(request, 'msg.html',  {'msg': msg})
         webhook_access_url, state = webhook_access(client_id, host + '/get_access_token', isprivate=is_private)
-        request.session['target_repo'] = target_repo
+        request.session['target_repo'] = repo_name
         request.session['state'] = state
         request.session['access_token_time'] = '1'
         return HttpResponseRedirect(webhook_access_url)
@@ -174,7 +174,7 @@ def get_access_token(request):
     except Exception as e:
         print("Exception: %s" % str(e))
         print("response: %s" % str(res.text))
-        return render(request, 'msg.html', {'Error getting the token from GitHub. please try again or contact us'})
+        return render(request, 'msg.html', {'msg':'Error getting the token from GitHub. please try again or contact us'})
     if 'access_token' not in d:
         print('access_token is not there')
         print(d)
@@ -185,7 +185,7 @@ def get_access_token(request):
     update_g(access_token)
     print('access_token: ' + access_token)
 
-    if request.user.is_authenticated() and request.session['access_token_time'] == '1':
+    if request.user.is_authenticated and request.session['access_token_time'] == '1':
         request.session['access_token_time'] = '2'  # so we do not loop
         webhook_access_url, state = webhook_access(client_id, host + '/get_access_token', is_private)
         request.session['state'] = state
@@ -226,10 +226,10 @@ def get_access_token(request):
         repo = Repo()
         repo.url = target_repo
         repo.save()
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         ouser = OUser.objects.get(email=request.user.email)
-        if repo not in ouser.repos:
-            ouser.repos.append(repo)
+        if repo not in ouser.repos.all():
+            ouser.repos.add(repo)
             ouser.save()
             generateforall(repo.url, ouser.email)
     return render(request, 'msg.html',  {'msg': msg})
@@ -367,7 +367,7 @@ def generateforall_view(request):
     # The below couple of lines are to check that the user currently have permission over the repository
     try:
         ouser = OUser.objects.get(email=request.user.email)
-        for r in ouser.repos:
+        for r in ouser.repos.all():
             if r.url == target_repo:
                 found = True
                 break
@@ -530,7 +530,7 @@ def profile(request):
         try:
             print('trying to validate repo')
             hackatt = True
-            for repooo in user.repos:
+            for repooo in user.repos.all():
                 if repooo.url == repo:
                     hackatt = False
                     break
@@ -593,18 +593,18 @@ def profile(request):
         else:
             error_msg += 'You are trying to delete a name that does not belong to you'
     print('testing redirect')
-    repos = user.repos
+    repos = user.repos.all()
     for r in repos:
         try:
             if len(r.url.split('/')) != 2:
-                user.update(pull__repos=r)
+                user.repos.remove(r)
                 r.delete()
                 user.save()
                 continue
             r.user = r.url.split('/')[0]
             r.rrepo = r.url.split('/')[1]
         except:
-            user.update(pull__repos=r)
+            user.repos.remove(r)
             user.save()
     request.GET = []
     sys.stdout.flush()
@@ -686,7 +686,7 @@ enable = %s
 def delete_repo(request):
     repo = request.GET['repo']
     user = OUser.objects.get(email=request.user.email)
-    for r in user.repos:
+    for r in user.repos.all():
         if r.url == repo:
             try:
                 user.update(pull__repos=r)
@@ -705,7 +705,7 @@ def previsual_toggle(request):
     user = OUser.objects.get(email=request.user.email)
     target_repo = request.GET['target_repo']
     found = False
-    for repo in user.repos:
+    for repo in user.repos.all():
         if target_repo == repo.url:
             found = True
             target_repo = repo
@@ -722,7 +722,7 @@ def renew_previsual(request):
     target_repo = request.GET['target_repo']
     found = False
     repo = None
-    for r in user.repos:
+    for r in user.repos.all():
         if target_repo == r.url:
             found = True
             repo = r
@@ -783,7 +783,7 @@ def get_bundle(request):
     r = Repo.objects.filter(url=repo)
     if len(r) == 0:
         return render(request, 'msg.html', {'msg': 'Invalid repo'})
-    elif r[0] not in request.user.repos:
+    elif r[0] not in request.user.repos.all():
         return render(request, 'msg.html', {'msg': 'Please add this repo first'})
     r[0].notes = ''
     r[0].save()
@@ -811,7 +811,7 @@ def get_bundle(request):
 def get_outline(request):
     repos = []
     o_pairs = []
-    for r in request.user.repos:
+    for r in request.user.repos.all():
         if r.progress != 100:
             repos.append(r)
     for r in repos:
@@ -835,7 +835,7 @@ def get_outline(request):
 
 @login_required
 def progress_page(request):
-    return render(request, 'progress.html', {'repos': request.user.repos})
+    return render(request, 'progress.html', {'repos': request.user.repos.all()})
 
 
 def handler500(request):

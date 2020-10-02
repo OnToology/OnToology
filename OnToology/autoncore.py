@@ -78,6 +78,7 @@ def prepare_logger(user, ext='.log_new'):
 
 
 def dolog(msg):
+    print("dolog> "+msg)
     logging.critical(msg)
 
 
@@ -1150,10 +1151,13 @@ def parse_online_repo_for_ontologies(target_repo):
         print("now get the decoded content")
         # file_content = repo.get_file_contents(cpath.path).decoded_content
         file_content = repo.get_file_contents(p).decoded_content
-        print("file_content: " + str(file_content))
-        buffile = StringIO.StringIO(file_content)
+        print("type: "+str(type(file_content)))
+        # file_content = str(file_content)
+        file_content = file_content.decode('utf-8')
+        print("file_content: " + file_content)
+        # buffile = StringIO(file_content)
         print("will get the config")
-        confs = get_auton_config(buffile)
+        confs = get_auton_config(file_content, from_string=True)
         print("gotten confs: " + str(confs))
         o = {}
         # o['ontology'] = get_parent_path(cpath.path)[len(get_target_home()):]
@@ -1205,9 +1209,10 @@ def get_auton_config(conf_file_abs, from_string=True):
     widoco_enable = True
     oops_enable = True
     owl2jsonld_enable = True
-    config = ConfigParser.RawConfigParser()
+    config = ConfigParser.ConfigParser()
+    print("config raw parser")
     if from_string:
-        opened_conf_files = config.readfp(conf_file_abs)
+        opened_conf_files = config.read_string(conf_file_abs)
     else:
         opened_conf_files = config.read(conf_file_abs)
     if from_string or len(opened_conf_files) == 1:
