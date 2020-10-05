@@ -23,7 +23,6 @@
 #     from djangoperpmod import *
 #     # from models import *
 #     from OnToology.models import *
-from OnToology.models import *
 
 from github import Github
 from datetime import datetime
@@ -31,7 +30,20 @@ from subprocess import call
 import string
 import random
 import time
+import sys
+
 from io import StringIO  ## for Python 3
+try:
+    print("importing OnToology...")
+    import OnToology
+    print("Success")
+except:
+    print("Importing djangoperpmode")
+    import djangoperpmod
+    print("Imported it")
+
+print("autonecore continue")
+
 from OnToology import settings
 from OnToology.models import *
 import io
@@ -1579,7 +1591,7 @@ def django_setup_script():
 
 
 if __name__ == "__main__":
-    django_setup_script()
+    # django_setup_script()
     from OnToology.models import *
     import argparse
 

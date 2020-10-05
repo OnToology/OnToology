@@ -333,6 +333,7 @@ def handle_publish(j, logger):
     try:
         logger.debug("try publish")
         import autoncore
+        autoncore.django_setup_script()
         print("set logger")
         logger.debug('handle_publish> going for previsual')
         try:
@@ -367,7 +368,7 @@ def handle_action(j, logger):
     try:
         logger.debug("try action")
         import autoncore
-        # autoncore.django_setup_script()
+        autoncore.django_setup_script()
 
         print("set logger")
         logger.debug("handle_action> ")
@@ -411,6 +412,7 @@ def handle_conf_change(j, logger):
     try:
         logger.debug("try change")
         import autoncore
+        autoncore.django_setup_script()
         print("set logger")
         logger.debug("handle_conf_change> ")
         data = j['data']
@@ -579,9 +581,8 @@ def single_worker(worker_id, lock, sender, receiver, logger):
 
 
 if __name__ == '__main__':
+    print("In rabbit\n\n")
     import autoncore
-    # autoncore.django_setup_script()
-
     if len(sys.argv) > 1:
         start_pool(int(sys.argv[1]))
     else:

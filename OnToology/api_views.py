@@ -16,6 +16,7 @@ from OnToology.autoncore import publish, previsual, django_setup_script
 from OnToology import autoncore
 from OnToology.models import *
 from OnToology.views import publish_dir
+from django.utils import timezone
 
 
 def token_required(func):
@@ -54,7 +55,7 @@ def login(request):
             g.get_user().login
             try:
                 user = OUser.objects.get(username=username)
-                if user.token_expiry <= datetime.now():
+                if user.token_expiry <= timezone.now():
                     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
                     while len(OUser.objects.filter(token=sec)) > 0:  # to ensure a unique token
                         sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
@@ -157,8 +158,8 @@ def generate_all(request):
             url = url[:-1]
         found = False
         print("user.repos: ")
-        print(user.repos)
-        for r in user.repos:
+        print(user.repos.all())
+        for r in user.repos.all():
             print("url for user")
             print(r.json())
             if r.url == url:

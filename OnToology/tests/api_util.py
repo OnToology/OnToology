@@ -14,14 +14,14 @@ def delete_all_repos_from_db():
     for r in Repo.objects.all():
         r.delete()
         r.save()
-    Repo.objects.delete()
+    Repo.objects.all().delete()
 
 
 def delete_all_users():
     for u in OUser.objects.all():
         u.delete()
         u.save()
-    OUser.objects.delete()
+    OUser.objects.all().delete()
 
 
 def create_repo(url='ahmad88me/demo', user=None):
@@ -29,7 +29,7 @@ def create_repo(url='ahmad88me/demo', user=None):
     r.save()
     if user is None:
         user = OUser.objects.all()[0]
-    user.repos.append(r)
+    user.repos.add(r)
     user.save()
 
 
@@ -49,7 +49,7 @@ def delete_all_publishnames():
 
 def create_publishname(name=None, user=None, repo=None, ontology=None):
     if name is None or user is None or repo is None or ontology is None:
-        print "Error, cannot create a publishname, missing parameters"
+        print("Error, cannot create a publishname, missing parameters")
         raise Exception('in create publishname, missing parameters')
     pn = PublishName(name=name, user=user, repo=repo, ontology=ontology)
     pn.save()
@@ -73,5 +73,5 @@ def clone_if_not(resources_dir, repo):
     if not os.path.isdir(repo_dir):
         cloning_url = "git@github.com:%s.git" % repo.strip()
         comm = "git clone --recurse-submodules  " + cloning_url + " " + repo_dir
-        print "comm: %s" % comm
+        print("comm: %s" % comm)
         call(comm, shell=True)
