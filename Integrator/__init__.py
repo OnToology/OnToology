@@ -398,9 +398,9 @@ timeout_comm = ""
 
 error_msg, output_msg = call_and_get_log(timeout_comm+" echo 'testing timeout command'")
 if error_msg.strip() != "":
-    timeout_comm = "gtimeout 300;" # for mac os
+    timeout_comm = "gtimeout 300;"  # for mac os
     error_msg, output_msg = call_and_get_log(timeout_comm+" echo 'testing gtimeout command'")
-    if error_msg.strip() != "": # incase timeout and gtimeout are not installed
+    if error_msg.strip() != "":  # incase timeout and gtimeout are not installed
         timeout_comm = "echo "
 
 

@@ -95,10 +95,6 @@ def git_magic(target_repo, user, changed_filesss):
     global log_file_dir
 
     print("\n\n\n In gitmagic print")
-    try:
-        from OnToology.models import Repo, OUser, ORun
-    except Exception as e:
-        print("\n\n\n\n\n\n\n*******EXCEPTION: "+str(e))
     logger_fname = prepare_logger(user)
     parent_folder = user
     if not settings.test_conf['local']:
@@ -108,126 +104,177 @@ def git_magic(target_repo, user, changed_filesss):
     change_status(target_repo, 'Preparing')
     drepo = Repo.objects.get(url=target_repo)
     drepo.clear_ontology_status_pairs()
-    orun = ORun(user=user, repo=drepo, task='Prepare')
+    orun = ORun(user=user, repo=drepo)
     orun.save()
-    for ftov in changed_filesss:
-        if ftov[-4:] in ontology_formats:
-            if ftov[:len('OnToology/')] != 'OnToology/':  # This is to solve bug #265
-                drepo.update_ontology_status(ontology=ftov, status='pending')
-    orun.description = 'Getting all changed files: ' + str(changed_filesss)
+    otask = OTask(name='Preparation', finished=False, success=False)
+    otask.description = 'Getting changed files'
+    otask.save()
+    orun.tasks.add(otask)
     orun.save()
-    # so the tool user can takeover and do stuff
-    username = os.environ['github_username']
-    password = os.environ['github_password']
-    g = Github(username, password)
-    local_repo = target_repo.replace(target_repo.split('/')[-2], ToolUser)
-    if not settings.test_conf['local']:
-        orun.description += '. remove repo from Tool user'
-        orun.save()
-        delete_repo(local_repo)
-        time.sleep(refresh_sleeping_secs)
-    dolog('repo deleted')
-    if not settings.test_conf['local'] or settings.test_conf['fork'] or settings.test_conf[
-        'clone']:  # in case it is not test or test with fork option
-        dolog('will fork the repo')
-        change_status(target_repo, 'forking repo')
-        orun.description += '. fork the repo'
-        orun.save()
-        forked_repo = fork_repo(target_repo)
-        cloning_url = forked_repo.ssh_url
-        time.sleep(refresh_sleeping_secs)
-        dolog('repo forked')
-        drepo.progress = 10.0
-        drepo.save()
-    else:
-        print("no fork")
-    if not settings.test_conf['local'] or settings.test_conf['clone']:
-        change_status(target_repo, 'cloning repo')
-        orun.description += '. Clone the repo'
-        orun.save()
-        clone_repo(cloning_url, user)
-        dolog('repo cloned')
-        drepo.progress = 20.0
-    files_to_verify = []
-    if log_file_dir is None:
-        prepare_log(user)
+
+    try:
+        for ftov in changed_filesss:
+            if ftov[-4:] in ontology_formats:
+                if ftov[:len('OnToology/')] != 'OnToology/':  # This is to solve bug #265
+                    drepo.update_ontology_status(ontology=ftov, status='pending')
+
+        # orun.description = 'Getting all changed files: ' + str(changed_filesss)
+        # orun.save()
+        # so the tool user can takeover and do stuff
+        username = os.environ['github_username']
+        password = os.environ['github_password']
+        g = Github(username, password)
+        local_repo = target_repo.replace(target_repo.split('/')[-2], ToolUser)
+        if not settings.test_conf['local']:
+            orun.description += '. remove repo from Tool user'
+            orun.save()
+            delete_repo(local_repo)
+            time.sleep(refresh_sleeping_secs)
+        dolog('repo deleted')
+        if not settings.test_conf['local'] or settings.test_conf['fork'] or settings.test_conf[
+            'clone']:  # in case it is not test or test with fork option
+            dolog('will fork the repo')
+            change_status(target_repo, 'forking repo')
+            orun.description += '. fork the repo'
+            orun.save()
+            forked_repo = fork_repo(target_repo)
+            cloning_url = forked_repo.ssh_url
+            time.sleep(refresh_sleeping_secs)
+            dolog('repo forked')
+            drepo.progress = 10.0
+            drepo.save()
+        else:
+            print("no fork")
+        if not settings.test_conf['local'] or settings.test_conf['clone']:
+            change_status(target_repo, 'cloning repo')
+            orun.description += '. Clone the repo'
+            orun.save()
+            clone_repo(cloning_url, user)
+            dolog('repo cloned')
+            drepo.progress = 20.0
+        files_to_verify = []
+        if log_file_dir is None:
+            prepare_log(user)
+        otask.success = True
+        otask.save()
+    except Exception as e:
+        otask.success = False
+        otask.save()
+
+    otask.finished = True
+    otask.save()
 
     Integrator.tools_execution(changed_files=changed_filesss, base_dir=os.path.join(home, user), logfile=log_file_dir,
                                target_repo=target_repo, g_local=g, dolog_fname=logger_fname,
                                change_status=change_status, repo=drepo)
 
-    exception_if_exists = ""
-    files_to_verify = [c for c in changed_filesss if c[-4:] in ontology_formats]
-    for c in changed_filesss:
-        if c[:-4] in ontology_formats:
-            print("file to verify: " + c)
+    otask = OTask(name="Postprocessing", description="trying", success=False, running=False)
+    otask.save()
+    orun.tasks.add(otask)
+    orun.save()
+    try:
+        otask.description = "verifying changed files"
+        otask.save()
+        exception_if_exists = ""
+        files_to_verify = [c for c in changed_filesss if c[-4:] in ontology_formats]
+        for c in changed_filesss:
+            if c[:-4] in ontology_formats:
+                print("file to verify: " + c)
+            else:
+                print("c: %s c-4: %s" % (c, c[-4:]))
+        otask.description = "preparing the repo after the processing"
+        otask.save()
+        # After the loop
+        dolog("number of files to verify %d" % (len(files_to_verify)))
+        if len(files_to_verify) == 0:
+            print("files: " + str(files_to_verify))
+            change_status(target_repo, 'Ready')
+            drepo.progress = 100
+            drepo.save()
+            return
+        # if not test or test with push
+        if not settings.test_conf['local'] or settings.test_conf['push']:
+            commit_changes()
+            dolog('changes committed')
         else:
-            print("c: %s c-4: %s" % (c, c[-4:]))
+            print('No push for testing')
+        otask.description = "Removing old pull requests"
+        otask.save()
+        remove_old_pull_requests(target_repo)
+        if exception_if_exists == "":  # no errors
+            change_status(target_repo, 'validating')
+        else:
+            change_status(target_repo, exception_if_exists)
+            otask.description = exception_if_exists
+            otask.finished = True
+            otask.success = False
+            otask.save()
+            raise Exception(exception_if_exists)
 
-    # After the loop
-    dolog("number of files to verify %d" % (len(files_to_verify)))
-    if len(files_to_verify) == 0:
-        print("files: " + str(files_to_verify))
-        change_status(target_repo, 'Ready')
-        drepo.progress = 100
-        drepo.save()
-        return
-    # if not test or test with push
-    if not settings.test_conf['local'] or settings.test_conf['push']:
-        commit_changes()
-        dolog('changes committed')
-    else:
-        print('No push for testing')
-    remove_old_pull_requests(target_repo)
-    if exception_if_exists == "":  # no errors
-        change_status(target_repo, 'validating')
-    else:
-        change_status(target_repo, exception_if_exists)
-        # in case there is an error, create the pull request as well
-    # Now to enabled
-    # This kind of verification is too naive and need to be eliminated
-    # for f in files_to_verify:
-    #     repo = None
-    #     if use_database:
-    #         from models import Repo
-    #         repo = Repo.objects.get(url=target_repo)
-    #     try:
-    #         verify_tools_generation_when_ready(f, repo)
-    #         dolog('verification is done successfully')
-    #     except Exception as e:
-    #         dolog('verification have an exception: ' + str(e))
+        otask.description = 'validating'
+        otask.save()
 
-    if use_database:
+            # in case there is an error, create the pull request as well
+        # Now to enabled
+        # This kind of verification is too naive and need to be eliminated
+        # for f in files_to_verify:
+        #     repo = None
+        #     if use_database:
+        #         from models import Repo
+        #         repo = Repo.objects.get(url=target_repo)
+        #     try:
+        #         verify_tools_generation_when_ready(f, repo)
+        #         dolog('verification is done successfully')
+        #     except Exception as e:
+        #         dolog('verification have an exception: ' + str(e))
+
         if Repo.objects.get(url=target_repo).state != 'validating':
             r = Repo.objects.get(url=target_repo)
             s = r.state
             s = s.replace('validating', '')
             r.state = s
             r.save()
-            # The below "return" is commented so pull request are created even if there are files that are not generated
-    # if not testing or testing with pull enabled
-    if settings.test_conf['pull']:
-        print("pull is true")
-    else:
-        print("pull is false")
-    if not settings.test_conf['local'] or settings.test_conf['pull']:
-        change_status(target_repo, 'creating a pull request')
-        try:
-            r = send_pull_request(target_repo, ToolUser)
-            dolog('pull request is sent')
-            change_status(target_repo, 'pull request is sent')
+                # The below "return" is commented so pull request are created even if there are files that are not generated
+        # if not testing or testing with pull enabled
+        otask.description = "Generating pull request"
+        otask.save()
+        if settings.test_conf['pull']:
+            print("pull is true")
+        else:
+            print("pull is false")
+        if not settings.test_conf['local'] or settings.test_conf['pull']:
+            change_status(target_repo, 'creating a pull request')
+            try:
+                r = send_pull_request(target_repo, ToolUser)
+                dolog('pull request is sent')
+                change_status(target_repo, 'pull request is sent')
+                change_status(target_repo, 'Ready')
+            except Exception as e:
+                exception_if_exists += str(e)
+                dolog('failed to create pull request: ' + exception_if_exists)
+                change_status(target_repo, 'failed to create a pull request')
+        else:
+            dolog("No pull for testing")
+            print('No pull for testing')
             change_status(target_repo, 'Ready')
-        except Exception as e:
-            exception_if_exists += str(e)
-            dolog('failed to create pull request: ' + exception_if_exists)
-            change_status(target_repo, 'failed to create a pull request')
-    else:
-        dolog("No pull for testing")
-        print('No pull for testing')
-        change_status(target_repo, 'Ready')
-    drepo.progress = 100
-    drepo.save()
-    # change_status(target_repo, 'Ready')
+        drepo.progress = 100
+        drepo.save()
+        # change_status(target_repo, 'Ready')
+        if exception_if_exists == "":
+            otask.success = True
+            otask.save()
+        else:
+            otask.success = False
+            otask.description = exception_if_exists
+            otask.save()
+
+    except Exception as e:
+        otask.success = False
+        otask.description = str(e)
+        otask.save()
+
+    otask.finished = True
+    otask.save()
 
 
 def verify_tools_generation_when_ready(ver_file_comp, repo=None):
@@ -302,7 +349,7 @@ def verify_tools_generation(ver_file_comp, repo=None):
         target_file = os.path.join(get_abs_path(get_target_home()),
                                    ver_file_comp['file'],
                                    tools_conf['ar2dtool']['folder_name'],
-                                   ar2dtool.ar2dtool_config_types[0][:-5],
+                                   Integrator.ar2dtool.ar2dtool_config_types[0][:-5],
                                    get_file_from_path(ver_file_comp['file']) +
                                    "." + tools_conf['ar2dtool']['type'] +
                                    '.graphml')
@@ -956,11 +1003,6 @@ def change_configuration(user_email, target_repo, data, ontologies):
     :param ontologies:
     :return:
     """
-    # try:
-    #     OUser.objects.all()
-    # except:
-    #     django_setup_script()
-    from OnToology.models import OUser, Repo, ORun
     try:
         users = OUser.objects.filter(email=user_email)
         repos = Repo.objects.filter(url=target_repo)
@@ -975,7 +1017,11 @@ def change_configuration(user_email, target_repo, data, ontologies):
             dolog("change_configuration> Invalid email: "+user_email)
             raise Exception("Invalid email: "+user_email)
 
-        orun = ORun(task='Change Configuration', user=user, repo=repo, description='Change configuration')
+        orun = ORun(user=user, repo=repo)
+        orun.save()
+        otask = OTask(name="Change Configuration", description="changing the configuration")
+        otask.save()
+        orun.tasks.add(otask)
         orun.save()
         for onto in ontologies:
             dolog('inside the loop')
@@ -983,26 +1029,32 @@ def change_configuration(user_email, target_repo, data, ontologies):
             widoco = onto + '-widoco' in data
             oops = onto + '-oops' in data
             dolog('will call get_conf')
-            orun.description += '. Get new configuration for the ontology: '+onto
-            orun.save()
+            otask.description = 'Get new configuration for the ontology: '+onto
+            otask.save()
             new_conf = get_conf(ar2dtool, widoco, oops)
             dolog('will call update_file')
             o = 'OnToology' + onto + '/OnToology.cfg'
             try:
                 dolog("target_repo <%s> ,  path <%s> ,  message <%s> ,   content <%s>" % (
                     target_repo, o, 'OnToology Configuration', new_conf))
-                orun.description += '. Update the configuration for the ontology: ' + onto
-                orun.save()
+                otask.description = 'Update the configuration for the ontology: ' + onto
+                otask.save()
                 update_file(target_repo, o, 'OnToology Configuration', new_conf)
                 dolog('configuration is changed for file for ontology: '+onto)
-                orun.description += '. The task is completed successfully'
-                orun.save()
+                otask.description = 'The task is completed successfully'
+                otask.success = True
+                otask.save()
             except Exception as e:
                 dolog('Error in updating the configuration: ' + str(e))
                 # return render(request, 'msg.html', {'msg': str(e)})
-                orun.description += '. Error in updating the configuration: ' + str(e)
-                orun.save()
-                return
+                otask.description = 'Error in updating the configuration: ' + str(e)
+                otask.success = False
+                # otask.finished = True
+                otask.save()
+                # return
+                break
+        otask.finished = True
+        otask.save()
     except Exception as e:
         err = "Error in change_configuration"
         print(err)
@@ -1010,7 +1062,10 @@ def change_configuration(user_email, target_repo, data, ontologies):
         err = str(e)
         print(err)
         dolog(err)
-
+        otask.finished = True
+        otask.success = False
+        otask.description = str(e)
+        otask.save()
 
 ########################################################################
 ########################################################################
@@ -1387,16 +1442,14 @@ def build_file_structure(file_with_rel_dir, category_folder='', abs_home=''):
 #    from Auton.models import Repo
 # import it for now
 def change_status(target_repo, state):
-    from models import Repo
-    if not use_database:
-        return ''
+    from OnToology.models import Repo, models
     try:
         repo = Repo.objects.get(url=target_repo)
         repo.last_used = datetime.today()
         repo.state = state
         repo.owner = parent_folder
         repo.save()
-    except DoesNotExist:
+    except models.DoesNotExist:
         repo = Repo()
         repo.url = target_repo
         repo.state = state

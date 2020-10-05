@@ -220,12 +220,21 @@ class PublishName(models.Model):
         return self.name
 
 
+class OTask(models.Model):
+    name = models.TextField()
+    description = models.TextField()
+    success = models.BooleanField(default=False)
+    finished = models.BooleanField(default=False)
+
+    class Meta:
+        abstract = True
+
+
 class ORun(models.Model):
     repo = models.ForeignKey(Repo, on_delete=models.CASCADE)
     user = models.ForeignKey(OUser, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(default=timezone.now)
-    task = models.TextField()
-    description = models.TextField(default='')
+    tasks = models.EmbeddedField(model_container=OTask)
 
     def __unicode__(self):
         return "run <"+str(self.id)+"> " + self.user.email + " - " + self.repo.url + " - " + str(self.timestamp)

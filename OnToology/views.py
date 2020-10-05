@@ -134,12 +134,13 @@ def repo_view(request):
                 repo = repos[0]
                 now_timestamp = datetime.now()
                 latest_oruns = []
-                for orun in ORun.objects.filter(user=user, repo=repo).order_by('-timestamp'):
-                    if (now_timestamp - timedelta(days=7)) > orun.timestamp:
-                        print("repo_view> delete orun: "+str(orun.id)+"  <"+str(orun.timestamp)+"> ")
-                        orun.delete()
-                    else:
-                        latest_oruns.append(orun)
+                # latest_oruns = []
+                # for orun in ORun.objects.filter(user=user, repo=repo).order_by('-timestamp'):
+                #     if (now_timestamp - timedelta(days=7)) > orun.timestamp:
+                #         print("repo_view> delete orun: "+str(orun.id)+"  <"+str(orun.timestamp)+"> ")
+                #         orun.delete()
+                #     else:
+                #         latest_oruns.append(orun)
                 return render(request, 'repo.html', {'oruns': latest_oruns})
             else:
                 print("repo_view> repo <"+str(repo_name)+"> does not exist for user: "+str(user))
