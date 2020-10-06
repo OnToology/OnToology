@@ -2,27 +2,35 @@
 {%block body%}
 
 
+Number of oruns = {{oruns| length}}
 
-<table class="table table-borderless">
-  <thead>
-    <tr>
-      <th scope="col">Repository</th>
-      <th scope="col">Timestamp</th>
-      <th scope="col">Task</th>
-      <th scope="col">Description</th>
-    </tr>
-  </thead>
-  <tbody>
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+   {%for orun in oruns%}
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingOne">
+      <h4 class="panel-title">
+        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          {{orun.timestamp}} ({{orun.repo.url}})
+        </a>
+      </h4>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+      <div class="panel-body">
+            {%for otask in orun.tasks.all%}
+           <li class="list-group-item">{{otask.name}} | finished: {{otask.finished}} | success: {{otask.success}} |
+               {{otask.description}}</li>
+            {%endfor%}
 
 
-{%for r in oruns%}
-	    <tr>
-      <th scope="row">{{r.repo.url}}</th>
-      <td>{{r.timestamp}}</td>
-      <td>{{r.task}}</td>
-      <td>{{r.description}}</td>
-    </tr>
-{%endfor%}
-  </tbody>
-</table>
+      </div>
+    </div>
+  </div>
+    {%endfor%}
+
+
+
+</div>
+
+
+
 {% endblock %}

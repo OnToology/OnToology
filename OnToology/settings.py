@@ -137,20 +137,27 @@ STATIC_URL = '/static/'
 #### Mongo Engine configs #########
 
 
-test_conf = {'local': False,  # doing test
-             'fork': False,  # perform fork
-             'clone': False,  # perform clone
-             'push': False,  # push the changes to GitHub
-             'pull': False,  # to create a pull request from the forked on
-             }
+
 
 try:
     from OnToology.localwsgi import *
-
+    test_conf = {
+        'local': environ['test_local'].strip().lower() =="true",  # doing test
+        'fork': environ['test_fork'].strip().lower() =="true",  # perform fork
+        'clone': environ['test_clone'].strip().lower() =="true",  # perform clone
+        'push': environ['test_push'].strip().lower() =="true",  # push the changes to GitHub
+        'pull': environ['test_pull'].strip().lower() =="true",  # to create a pull request from the forked on
+    }
     print("importing environ from local wsgi")
 except Exception as e:
     print("no local wsgi")
     print(e)
+    test_conf = {'local': False,  # doing test
+                 'fork': False,  # perform fork
+                 'clone': False,  # perform clone
+                 'push': False,  # push the changes to GitHub
+                 'pull': False,  # to create a pull request from the forked on
+    }
 
 environ = os.environ
 print("environ: ")

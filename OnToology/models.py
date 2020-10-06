@@ -111,7 +111,7 @@ class Repo(models.Model):
     previsual_page_available = models.BooleanField(default=False)
     notes = models.TextField(default='')
     progress = models.FloatField(default=0.0)
-    ontology_status_pairs = models.ArrayReferenceField(OntologyStatusPair, default=[])
+    ontology_status_pairs = models.ArrayReferenceField(OntologyStatusPair, on_delete=models.CASCADE)
     busy = models.BooleanField(default=False)  # backward compatibility
 
     def json(self):
@@ -128,20 +128,67 @@ class Repo(models.Model):
         }
 
     def update_ontology_status(self, ontology, status):
-        for osp in self.ontology_status_pairs:
+        print("in update ontology status all")
+        print(self.ontology_status_pairs)
+        print("stage 1")
+        print(self.ontology_status_pairs.all)
+        print("stage 2")
+        try:
+            print(self.ontology_status_pairs.all())
+            print("stage 3")
+        except Exception as e:
+            print("Exception: "+str(e))
+        print("ontology: <"+ontology+">"+" status: <"+status+">")
+        for osp in self.ontology_status_pairs.all():
+            print("in for: ")
+            print(osp)
+            print("name: "+osp.name)
             if osp.name == ontology:
                 osp.status = status
                 osp.save()
                 return True
+        print("stage 4")
         osp = OntologyStatusPair(name=ontology, status=status)
         osp.save()
+        print("stage 5")
         self.ontology_status_pairs.add(osp)
+        print("stage 6")
         self.save()
+        print("stage 7")
+        # print("in update ontology status all")
+        # r = Repo.objects.get(id=self.id)
+        # print(r.ontology_status_pairs)
+        # print("stage 1")
+        # print(r.ontology_status_pairs.all)
+        # print("stage 2")
+        # try:
+        #     print(r.ontology_status_pairs.all())
+        #     print("stage 3")
+        # except Exception as e:
+        #     print("Exception: "+str(e))
+        # print("ontology: <"+ontology+">"+" status: <"+status+">")
+        # for osp in r.ontology_status_pairs.all():
+        #     print("in for: ")
+        #     print(osp)
+        #     print("name: "+osp.name)
+        #     if osp.name == ontology:
+        #         osp.status = status
+        #         osp.save()
+        #         return True
+        # print("stage 4")
+        # osp = OntologyStatusPair(name=ontology, status=status)
+        # osp.save()
+        # print("stage 5")
+        # r.ontology_status_pairs.add(osp)
+        # print("stage 6")
+        # r.save()
+        # print("stage 7")
 
     def clear_ontology_status_pairs(self):
-        for osp in self.ontology_status_pairs:
+        print("clear ontology status pairs for repo: "+self.url)
+        for osp in self.ontology_status_pairs.all():
             osp.delete()
-        self.ontology_status_pairs = []
+        self.ontology_status_pairs.clear()
         self.save()
 
     def __unicode__(self):
@@ -226,15 +273,16 @@ class OTask(models.Model):
     success = models.BooleanField(default=False)
     finished = models.BooleanField(default=False)
 
-    class Meta:
-        abstract = True
+    # class Meta:
+    #     abstract = True
 
 
 class ORun(models.Model):
     repo = models.ForeignKey(Repo, on_delete=models.CASCADE)
     user = models.ForeignKey(OUser, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(default=timezone.now)
-    tasks = models.EmbeddedField(model_container=OTask)
+    # tasks = models.EmbeddedField(model_container=OTask)
+    tasks = models.ArrayReferenceField(OTask, on_delete=models.CASCADE)
 
     def __unicode__(self):
         return "run <"+str(self.id)+"> " + self.user.email + " - " + self.repo.url + " - " + str(self.timestamp)

@@ -126,14 +126,19 @@ def home(request):
 @login_required
 def repo_view(request):
     try:
+        print("in repo view")
         if 'repo' in request.GET:
+            print("in request GET")
             user = request.user
             repo_name = request.GET['repo'].strip()
             repos = Repo.objects.filter(url=repo_name)
+            for r in Repo.objects.all():
+                print("repo: <"+r.url+"> ")
             if len(repos) == 1:
+                print("single repo")
                 repo = repos[0]
-                now_timestamp = datetime.now()
-                latest_oruns = []
+                now_timestamp = timezone.now()
+                latest_oruns = ORun.objects.all()
                 # latest_oruns = []
                 # for orun in ORun.objects.filter(user=user, repo=repo).order_by('-timestamp'):
                 #     if (now_timestamp - timedelta(days=7)) > orun.timestamp:
@@ -141,6 +146,7 @@ def repo_view(request):
                 #         orun.delete()
                 #     else:
                 #         latest_oruns.append(orun)
+                print("going to render")
                 return render(request, 'repo.html', {'oruns': latest_oruns})
             else:
                 print("repo_view> repo <"+str(repo_name)+"> does not exist for user: "+str(user))
@@ -275,7 +281,7 @@ def add_hook(request):
             try:
                 repo = Repo.objects.get(url=target_repo)
                 print('got the repo')
-                repo.last_used = datetime.today()
+                repo.last_used = timezone.now()
                 repo.progress = 100.0
                 repo.save()
                 print('repo saved')
@@ -328,7 +334,7 @@ def add_hook(request):
             'repo': target_repo,
             'useremail': user,
             'changedfiles': changed_files,
-            'created': str(datetime.now()),
+            'created': str(timezone.now()),
         }
         rabbit.send(j)
         return
@@ -340,7 +346,7 @@ def add_hook(request):
                 'repo': target_repo,
                 'useremail': user,
                 'changedfiles': changed_files,
-                'created': str(datetime.now()),
+                'created': str(timezone.now()),
             }
             rabbit.send(j)
         except Exception as e:
@@ -409,7 +415,7 @@ def generateforall(target_repo, user_email):
             'repo': target_repo,
             'useremail': user,
             'changedfiles': changed_files,
-            'created': str(datetime.now()),
+            'created': str(timezone.now()),
         }
         rabbit.send(j)
     else:
@@ -420,7 +426,7 @@ def generateforall(target_repo, user_email):
                 'repo': target_repo,
                 'useremail': user,
                 'changedfiles': changed_files,
-                'created': str(datetime.now()),
+                'created': str(timezone.now()),
             }
             rabbit.send(j)
         except Exception as e:
@@ -521,7 +527,7 @@ def login_get_access(request):
 @login_required
 def profile(request):
     print('************* profile ************')
-    print(str(datetime.today()))
+    print(str(timezone.now()))
     error_msg = ''
     user = request.user
     if 'repo' in request.GET and 'name' not in request.GET:  # asking for ontologies in a repo
@@ -663,7 +669,7 @@ def update_conf(request):
         'useremail': request.user.email,
         'ontologies': ontologies,
         'data': data,
-        'created': str(datetime.now()),
+        'created': str(timezone.now()),
     }
     rabbit.send(j)
     return HttpResponseRedirect('/profile')
@@ -906,7 +912,7 @@ def publish_view(request):
             'useremail': request.user.email,
             'ontology_rel_path': ontology_rel_path,
             'name': name,
-            'created': str(datetime.now()),
+            'created': str(timezone.now()),
         }
         rabbit.send(j)
         msg = '''<i>%s</i> will be published soon. This might take a few minutes for the published ontology to be

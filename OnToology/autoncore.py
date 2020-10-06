@@ -46,6 +46,7 @@ print("autonecore continue")
 
 from OnToology import settings
 from OnToology.models import *
+from OnToology.models import *
 import io
 import configparser as ConfigParser
 
@@ -114,32 +115,46 @@ def git_magic(target_repo, user, changed_filesss):
     dolog('############################### magic #############################')
     dolog('target_repo: ' + target_repo)
     change_status(target_repo, 'Preparing')
+    dolog("looking for target repo <"+target_repo+">")
+
     drepo = Repo.objects.get(url=target_repo)
+    dolog("have the repo now")
     drepo.clear_ontology_status_pairs()
-    orun = ORun(user=user, repo=drepo)
+    dolog("cleared")
+    ouser = OUser.objects.get(email=user)
+    dolog("got the ouser")
+    orun = ORun(user=ouser, repo=drepo)
     orun.save()
-    otask = OTask(name='Preparation', finished=False, success=False)
-    otask.description = 'Getting changed files'
+    dolog("created the orun")
+    otask = OTask(name='Preparation', finished=False, success=False, description="")
+    dolog("otask is init")
     otask.save()
+    dolog("otask is saved")
+    otask.description = 'Getting changed files'
+    dolog("created the otask")
     orun.tasks.add(otask)
     orun.save()
-
+    dolog("added the task to run")
     try:
         for ftov in changed_filesss:
             if ftov[-4:] in ontology_formats:
                 if ftov[:len('OnToology/')] != 'OnToology/':  # This is to solve bug #265
+                    dolog("update ontology status")
+                    dolog("ontology: "+ftov)
                     drepo.update_ontology_status(ontology=ftov, status='pending')
-
+                    dolog("ontology status is updated")
         # orun.description = 'Getting all changed files: ' + str(changed_filesss)
         # orun.save()
         # so the tool user can takeover and do stuff
+        dolog("pre block")
         username = os.environ['github_username']
         password = os.environ['github_password']
         g = Github(username, password)
         local_repo = target_repo.replace(target_repo.split('/')[-2], ToolUser)
+        dolog("block 1")
         if not settings.test_conf['local']:
-            orun.description += '. remove repo from Tool user'
-            orun.save()
+            otask.description = 'remove repo from Tool user'
+            otask.save()
             delete_repo(local_repo)
             time.sleep(refresh_sleeping_secs)
         dolog('repo deleted')
@@ -147,8 +162,8 @@ def git_magic(target_repo, user, changed_filesss):
             'clone']:  # in case it is not test or test with fork option
             dolog('will fork the repo')
             change_status(target_repo, 'forking repo')
-            orun.description += '. fork the repo'
-            orun.save()
+            otask.description += 'fork the repo'
+            otask.save()
             forked_repo = fork_repo(target_repo)
             cloning_url = forked_repo.ssh_url
             time.sleep(refresh_sleeping_secs)
@@ -159,8 +174,8 @@ def git_magic(target_repo, user, changed_filesss):
             print("no fork")
         if not settings.test_conf['local'] or settings.test_conf['clone']:
             change_status(target_repo, 'cloning repo')
-            orun.description += '. Clone the repo'
-            orun.save()
+            otask.description = 'Clone the repo'
+            otask.save()
             clone_repo(cloning_url, user)
             dolog('repo cloned')
             drepo.progress = 20.0
