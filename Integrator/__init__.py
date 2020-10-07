@@ -136,12 +136,18 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
     :param progress_inc: how much to increment the progress after each
     :return:
     """
-    import ar2dtool
-    import widoco
-    import oops
-    import owl2jsonld
-    import syntaxchecker
-    import themis
+    from . import ar2dtool
+    from . import widoco
+    from . import oops
+    from . import owl2jsonld
+    from . import syntaxchecker
+    from . import themis
+    # import ar2dtool
+    # import widoco
+    # import oops
+    # import owl2jsonld
+    # import syntaxchecker
+    # import themis
     dolog("will call create or get conf")
     conf = create_of_get_conf(changed_file, base_dir)
     dolog("conf: "+str(conf))

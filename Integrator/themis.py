@@ -2,7 +2,7 @@ from collections import Counter
 import rdflib
 from rdflib.namespace import RDF, RDFS, OWL
 import requests
-from sets import Set
+from collections import Set
 import os
 
 from . import dolog, get_file_from_path, tools_conf, build_path_all, get_target_home, get_parent_path, log_file_dir, g

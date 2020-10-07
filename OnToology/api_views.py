@@ -87,7 +87,7 @@ class ReposView(View):
             owner = user.username
             repo = Repo()
             repo.url = url
-            repo.owner = owner
+            #repo.owner = owner
             repo.save()
             user.repos.append(repo)
             user.save()

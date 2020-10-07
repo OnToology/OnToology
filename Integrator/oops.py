@@ -4,7 +4,6 @@ import requests
 
 
 from . import dolog, get_file_from_path, tools_conf, build_path_all, get_target_home, get_parent_path, log_file_dir, g
-import rdfxml
 from . import call_and_get_log, timeout_comm
 
 from subprocess import call

@@ -114,10 +114,10 @@ def git_magic(target_repo, user, changed_filesss):
         prepare_log(user)
     dolog('############################### magic #############################')
     dolog('target_repo: ' + target_repo)
-    change_status(target_repo, 'Preparing')
     dolog("looking for target repo <"+target_repo+">")
-
     drepo = Repo.objects.get(url=target_repo)
+    drepo.state = 'Preparing'
+    drepo.save()
     dolog("have the repo now")
     drepo.clear_ontology_status_pairs()
     dolog("cleared")
@@ -161,7 +161,7 @@ def git_magic(target_repo, user, changed_filesss):
         if not settings.test_conf['local'] or settings.test_conf['fork'] or settings.test_conf[
             'clone']:  # in case it is not test or test with fork option
             dolog('will fork the repo')
-            change_status(target_repo, 'forking repo')
+            drepo.state = 'forking repo'
             otask.description += 'fork the repo'
             otask.save()
             forked_repo = fork_repo(target_repo)
@@ -173,7 +173,8 @@ def git_magic(target_repo, user, changed_filesss):
         else:
             print("no fork")
         if not settings.test_conf['local'] or settings.test_conf['clone']:
-            change_status(target_repo, 'cloning repo')
+            drepo.state = 'cloning repo'
+            drepo.save()
             otask.description = 'Clone the repo'
             otask.save()
             clone_repo(cloning_url, user)
@@ -195,7 +196,7 @@ def git_magic(target_repo, user, changed_filesss):
                                target_repo=target_repo, g_local=g, dolog_fname=logger_fname,
                                change_status=change_status, repo=drepo)
 
-    otask = OTask(name="Postprocessing", description="trying", success=False, running=False)
+    otask = OTask(name="Postprocessing", description="trying", success=False, finished=False)
     otask.save()
     orun.tasks.add(otask)
     orun.save()
@@ -215,7 +216,7 @@ def git_magic(target_repo, user, changed_filesss):
         dolog("number of files to verify %d" % (len(files_to_verify)))
         if len(files_to_verify) == 0:
             print("files: " + str(files_to_verify))
-            change_status(target_repo, 'Ready')
+            drepo.state = 'Ready'
             drepo.progress = 100
             drepo.save()
             return
@@ -229,9 +230,11 @@ def git_magic(target_repo, user, changed_filesss):
         otask.save()
         remove_old_pull_requests(target_repo)
         if exception_if_exists == "":  # no errors
-            change_status(target_repo, 'validating')
+            drepo.state = 'validating'
+            drepo.save()
         else:
-            change_status(target_repo, exception_if_exists)
+            drepo.state = exception_if_exists
+            drepo.save()
             otask.description = exception_if_exists
             otask.finished = True
             otask.success = False
@@ -270,20 +273,24 @@ def git_magic(target_repo, user, changed_filesss):
         else:
             print("pull is false")
         if not settings.test_conf['local'] or settings.test_conf['pull']:
-            change_status(target_repo, 'creating a pull request')
+            drepo.state = 'creating a pull request'
+            drepo.save()
             try:
                 r = send_pull_request(target_repo, ToolUser)
                 dolog('pull request is sent')
-                change_status(target_repo, 'pull request is sent')
-                change_status(target_repo, 'Ready')
+                # drepo.state = 'pull request is sent'
+                drepo.state = 'Ready'
+                drepo.save()
             except Exception as e:
                 exception_if_exists += str(e)
                 dolog('failed to create pull request: ' + exception_if_exists)
-                change_status(target_repo, 'failed to create a pull request')
+                drepo.state = 'failed to create a pull request'
+                drepo.save()
         else:
-            dolog("No pull for testing")
-            print('No pull for testing')
-            change_status(target_repo, 'Ready')
+            dolog("No pull for testing 11")
+            print('No pull for testing 11')
+            drepo.state = 'Ready'
+            drepo.save()
         drepo.progress = 100
         drepo.save()
         # change_status(target_repo, 'Ready')
@@ -1469,22 +1476,25 @@ def build_file_structure(file_with_rel_dir, category_folder='', abs_home=''):
 #    from Auton.models import Repo
 # import it for now
 def change_status(target_repo, state):
-    from OnToology.models import Repo, models
     try:
         repo = Repo.objects.get(url=target_repo)
-        repo.last_used = datetime.today()
+        repo.last_used = timezone.now()
         repo.state = state
-        repo.owner = parent_folder
+        # repo.owner = parent_folder
         repo.save()
+        print("change_status> "+repo.state)
+        return repo
     except models.DoesNotExist:
+        print("change_status> New repo")
         repo = Repo()
         repo.url = target_repo
         repo.state = state
-        repo.owner = parent_folder
+        # repo.owner = parent_folder
         repo.save()
+        return repo
     except Exception as e:
         print('database_exception: ' + str(e))
-
+    return None
 
 # Before calling this function, the g must belong to the user not OnToologyUser
 def get_proper_loggedin_scope(ouser, target_repo):

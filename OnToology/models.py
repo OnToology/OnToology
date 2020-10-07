@@ -106,7 +106,7 @@ class Repo(models.Model):
     url = models.CharField(max_length=200, default='Not set yet')
     last_used = models.DateTimeField(default=timezone.now)
     state = models.CharField(max_length=300, default='Ready')
-    owner = models.CharField(max_length=100, default='no')
+    # owner = models.CharField(max_length=100, default='no')
     previsual = models.BooleanField(default=False)
     previsual_page_available = models.BooleanField(default=False)
     notes = models.TextField(default='')
@@ -120,7 +120,7 @@ class Repo(models.Model):
             "url": self.url,
             "last_used": self.last_used.strftime('%Y-%m-%d %H:%M'),
             "state": self.state,
-            "owner": self.owner,
+            # "owner": self.owner,
             "previsual": self.previsual,
             "previsual_page_available": self.previsual_page_available,
             "notes": self.notes,
