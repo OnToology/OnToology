@@ -585,7 +585,13 @@ def fork_repo(target_repo):
     # call(comm, shell=True)
     username = os.environ['github_username']
     password = os.environ['github_password']
-    gg = Github(username, password)
+    if settings.DEBUG == True:
+        print("\n\n\n***************************Mock")
+        from OnToology.mock import mock_dict
+        gg = Github(username, password, mock=mock_dict)
+    else:
+        print("\n\n\n***************************No Mock")
+        gg = Github(username, password)
     repo = gg.get_repo(target_repo)
     user = gg.get_user()
     forked_repo = user.create_fork(repo)

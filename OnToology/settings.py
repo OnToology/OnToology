@@ -36,8 +36,21 @@ SECRET_KEY = 'xj1c6fel(z5@=%(br!j)u155a71j*^u_b+2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+
+print("environ: ")
+print(os.environ)
+
 if 'debug' in os.environ:
     DEBUG = os.environ['debug'].lower() == 'true'
+    print("DEBUG in ENVIRON")
+else:
+    print("DEBUG is not in ENVIRON")
+
+
+if DEBUG == True:
+    print("settings: DEBUG>>>>>>>>>>>>>>\n\n\n")
+else:
+    print("settings: Not DEBUG>>>>>>>>>>>>>>\n\n\n")
 
 ALLOWED_HOSTS = ['*']
 

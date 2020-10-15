@@ -3,6 +3,14 @@ import os
 import sys
 
 if __name__ == "__main__":
+    try:
+        import OnToology.localwsgi
+
+        print("manage: local wsgi is imported")
+    except Exception as e:
+        print("manage: local wsgi is not imported")
+        print("WSGI error is: <%s>" % str(e))
+
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "OnToology.settings")
     try:
         from django.core.management import execute_from_command_line

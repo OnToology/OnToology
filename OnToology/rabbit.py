@@ -581,6 +581,11 @@ def single_worker(worker_id, lock, sender, receiver, logger):
 
 
 if __name__ == '__main__':
+    from localwsgi import *
+    # from djangoperpmod import *
+    # from OnToology.localwsgi import environ
+    print("\n\nrabbit: .........................environ:")
+    print(environ)
     print("In rabbit\n\n")
     import autoncore
     if len(sys.argv) > 1:

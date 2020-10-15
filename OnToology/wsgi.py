@@ -1,4 +1,3 @@
-
 try:
     import OnToology.localwsgi
     print("local wsgi is imported")

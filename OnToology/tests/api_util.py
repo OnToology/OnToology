@@ -24,7 +24,7 @@ def delete_all_users():
     OUser.objects.all().delete()
 
 
-def create_repo(url='ahmad88me/demo', user=None):
+def create_repo(url=None, user=None):
     r = Repo(url=url)
     r.save()
     if user is None:
