@@ -99,8 +99,13 @@ def init_g():
     global g
     username = os.environ['github_username']
     password = os.environ['github_password']
-    g = Github(username, password)
-
+    if settings.DEBUG == True:
+        from OnToology.mock import mock_dict
+        mock_id = os.environ['mock_id']
+        g = Github(username, password, mock=mock_dict[mock_id])
+    else:
+        g = Github(username, password)
+    return g
 
 def git_magic(target_repo, user, changed_filesss):
     global g
@@ -147,9 +152,10 @@ def git_magic(target_repo, user, changed_filesss):
         # orun.save()
         # so the tool user can takeover and do stuff
         dolog("pre block")
-        username = os.environ['github_username']
-        password = os.environ['github_password']
-        g = Github(username, password)
+        g = init_g()
+        # username = os.environ['github_username']
+        # password = os.environ['github_password']
+        # g = Github(username, password)
         local_repo = target_repo.replace(target_repo.split('/')[-2], ToolUser)
         dolog("block 1")
         if not settings.test_conf['local']:
@@ -510,8 +516,11 @@ def get_ontologies_in_online_repo(target_repo):
     if type(g) == type(None):
         init_g()
     try:
+        print("asking for repo: <%s>" % target_repo)
         repo = g.get_repo(target_repo)
+        print("asking for commits")
         sha = repo.get_commits()[0].sha
+        print("asking for files")
         files = repo.get_git_tree(sha=sha, recursive=True).tree
         ontoology_home_name = 'OnToology'
 
@@ -583,15 +592,16 @@ def fork_repo(target_repo):
     #     comm += ' >> "' + log_file_dir + '"'
     # dolog(comm)
     # call(comm, shell=True)
-    username = os.environ['github_username']
-    password = os.environ['github_password']
-    if settings.DEBUG == True:
-        print("\n\n\n***************************Mock")
-        from OnToology.mock import mock_dict
-        gg = Github(username, password, mock=mock_dict)
-    else:
-        print("\n\n\n***************************No Mock")
-        gg = Github(username, password)
+    # username = os.environ['github_username']
+    # password = os.environ['github_password']
+    # if settings.DEBUG == True:
+    #     print("\n\n\n***************************Mock")
+    #     from OnToology.mock import mock_dict
+    #     gg = Github(username, password, mock=mock_dict)
+    # else:
+    #     print("\n\n\n***************************No Mock")
+    #     gg = Github(username, password)
+    gg = init_g()
     repo = gg.get_repo(target_repo)
     user = gg.get_user()
     forked_repo = user.create_fork(repo)

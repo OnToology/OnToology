@@ -35,12 +35,14 @@ def create_repo(url=None, user=None):
 
 def create_user():
     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
-    user = OUser()
-    user.email = os.environ['test_user_email']
-    user.username = user.email
-    user.password = os.environ['test_user_token']
-    user.token = sec
-    user.save()
+    user = OUser.objects.create_user(email=os.environ['test_user_email'], username=os.environ['test_user_email'],
+                             password=os.environ['test_user_token'], token=sec)
+    # user = OUser()
+    # user.email = os.environ['test_user_email']
+    # user.username = user.email
+    # user.password = os.environ['test_user_token']
+    # user.token = sec
+    # user.save()
 
 
 def delete_all_publishnames():
@@ -75,3 +77,5 @@ def clone_if_not(resources_dir, repo):
         comm = "git clone --recurse-submodules  " + cloning_url + " " + repo_dir
         print("comm: %s" % comm)
         call(comm, shell=True)
+
+

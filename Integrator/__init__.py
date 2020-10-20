@@ -167,6 +167,7 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
             #     repo.save()
         except Exception as e:
             dolog("Exception in running ar2dtool.draw_diagrams: "+str(e))
+            dolog("changed_file: <"+changed_file++">")
     repo.progress += progress_inc
     repo.save()
     if conf['widoco']['enable']:
@@ -352,8 +353,12 @@ def build_path_all(abs_dir):
 
 
 def delete_dir(target_directory):
+    dolog("target_directory: ")
+    dolog(target_directory)
+    # dolog("log_file_dir: ")
+    # dolog(log_file_dir)
     comm = "rm -Rf " + target_directory
-    comm += '  >> "' + log_file_dir + '" '
+    # comm += '  >> "' + log_file_dir + '" '
     dolog(comm)
     call(comm, shell=True)
 
