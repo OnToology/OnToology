@@ -396,18 +396,19 @@ def generateforall(target_repo, user_email):
     ontologies = get_ontologies_in_online_repo(target_repo)
     changed_files = ontologies
     print('current file dir: %s' % str(os.path.dirname(os.path.realpath(__file__))))
-    if 'virtual_env_dir' in os.environ:
-        print('virtual_env_dir is in environ')
-        comm = "%s %s " % \
-               (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
-                (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py')))
-    else:
-        print('virtual_env_dir is NOT in environ')
-        comm = "python %s " % \
-               (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
-    comm += '--magic --target_repo "' + target_repo + '" --useremail "' + user + '" --changedfiles '
-    for c in changed_files:
-        comm += '"' + c.strip() + '" '
+    # if 'virtual_env_dir' in os.environ:
+    #     print('virtual_env_dir is in environ')
+    #     comm = "%s %s " % \
+    #            (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
+    #             (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py')))
+    # else:
+    #     print('virtual_env_dir is NOT in environ')
+    #     comm = "python %s " % \
+    #            (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
+    # comm += '--magic --target_repo "' + target_repo + '" --useremail "' + user + '" --changedfiles '
+    # for c in changed_files:
+    #     comm += '"' + c.strip() + '" '
+
     if settings.test_conf['local']:
         print("running autoncode in the same thread")
         j = {

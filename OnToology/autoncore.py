@@ -31,6 +31,7 @@ import string
 import random
 import time
 import sys
+import traceback
 
 from io import StringIO  ## for Python 3
 try:
@@ -101,8 +102,19 @@ def init_g():
     password = os.environ['github_password']
     if settings.DEBUG == True:
         from OnToology.mock import mock_dict
-        mock_id = os.environ['mock_id']
-        g = Github(username, password, mock=mock_dict[mock_id])
+        if 'mock_id' in os.environ:
+            print("mock_id in environ: ")
+            mock_id = os.environ['mock_id']
+            m = mock_dict[mock_id]
+            print("mock: ")
+            # import pprint
+            # pp = pprint.PrettyPrinter(indent=1)
+            # pp.pprint(m)
+            print(m.keys())
+            g = Github(username, password, mock=m)
+        else:
+            print("mock_id is not in environ")
+            g = Github(username, password)
     else:
         g = Github(username, password)
     return g
@@ -192,8 +204,18 @@ def git_magic(target_repo, user, changed_filesss):
         otask.success = True
         otask.save()
     except Exception as e:
+        dolog("Exception: "+str(e))
+        traceback.print_exc()
         otask.success = False
+        otask.finished = True
+        otask.description = str(e)
         otask.save()
+        drepo.state = 'Ready'
+        drepo.notes+= str(e)
+        drepo.progress = 100
+        drepo.save()
+        return
+
 
     otask.finished = True
     otask.save()
@@ -516,6 +538,7 @@ def get_ontologies_in_online_repo(target_repo):
     if type(g) == type(None):
         init_g()
     try:
+        g = init_g()
         print("asking for repo: <%s>" % target_repo)
         repo = g.get_repo(target_repo)
         print("asking for commits")
@@ -534,6 +557,7 @@ def get_ontologies_in_online_repo(target_repo):
         ontologies += get_ontologies_from_submodules_tree(files, repo)
     except Exception as e:
         print("get_ontologies_in_online_repo exception: " + str(e))
+        traceback.print_exc()
     return ontologies
 
 
@@ -604,7 +628,9 @@ def fork_repo(target_repo):
     gg = init_g()
     repo = gg.get_repo(target_repo)
     user = gg.get_user()
+    dolog("To fork repo: "+target_repo)
     forked_repo = user.create_fork(repo)
+    dolog("forked repo")
     dolog('forked to: ' + forked_repo.name)
     return forked_repo
 

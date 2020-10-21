@@ -154,7 +154,7 @@ class Repo(models.Model):
         self.ontology_status_pairs.add(osp)
         print("stage 6")
         self.save()
-        print("stage 7")
+        print("stage final")
         # print("in update ontology status all")
         # r = Repo.objects.get(id=self.id)
         # print(r.ontology_status_pairs)

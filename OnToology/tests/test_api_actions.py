@@ -208,14 +208,16 @@ enable = False
                           HTTP_AUTHORIZATION='Token '+self.user.token)
         print("---------------\n\n\n\n\n--- IN THE MIDDLE --test_generate_all_check_generated_resources_slash###############\n\n")
         self.assertEqual(response.status_code, 202, msg=response.content)
-
+        print("post API> number of messages count: " + str(get_pending_messages()))
         logger.debug("post API> number of messages count: " + str(get_pending_messages()))
         # p = Process(target=start_pool)
         # p.start()
         logger.debug("process spawn> number of messages count: " + str(get_pending_messages()))
         while get_pending_messages()>0:
             logger.debug("while> number of messages count: "+str(get_pending_messages()))
+            print("while> number of messages count: "+str(get_pending_messages()))
         logger.debug("after while> should be executed "+str(get_pending_messages()))
+        print("after while> should be executed "+str(get_pending_messages()))
 
         self.assertEqual(1, len(Repo.objects.all()))
         repo = Repo.objects.all()[0]
@@ -223,6 +225,9 @@ enable = False
             sleep(2)
             logger.debug('wait> status: '+repo.state)
             logger.debug('notes: '+repo.notes)
+            print('wait> status: '+repo.state)
+            print('notes: '+repo.notes)
+
             repo = Repo.objects.all()[0]
 
         files_to_check = ['alo.owl/OnToology.cfg',]
