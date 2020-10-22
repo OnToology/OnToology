@@ -219,6 +219,9 @@ def git_magic(target_repo, user, changed_filesss):
 
     otask.finished = True
     otask.save()
+    drepo.state = 'Tools'
+    drepo.save()
+
 
     Integrator.tools_execution(changed_files=changed_filesss, base_dir=os.path.join(home, user), logfile=log_file_dir,
                                target_repo=target_repo, g_local=g, dolog_fname=logger_fname,
@@ -310,6 +313,8 @@ def git_magic(target_repo, user, changed_filesss):
                 drepo.state = 'Ready'
                 drepo.save()
             except Exception as e:
+                print("exception: " + str(e))
+                traceback.print_exc()
                 exception_if_exists += str(e)
                 dolog('failed to create pull request: ' + exception_if_exists)
                 drepo.state = 'failed to create a pull request'
@@ -331,6 +336,8 @@ def git_magic(target_repo, user, changed_filesss):
             otask.save()
 
     except Exception as e:
+        print("exception: "+str(e))
+        traceback.print_exc()
         otask.success = False
         otask.description = str(e)
         otask.save()
@@ -822,9 +829,10 @@ def add_collaborator(target_repo, user, newg=None):
                 return {'status': False, 'error': 'Invitation is not generated'}
             else:
                 try:
-                    username = os.environ['github_username']
-                    password = os.environ['github_password']
-                    g_ontoology_user = Github(username, password)
+                    init_g()
+                    # username = os.environ['github_username']
+                    # password = os.environ['github_password']
+                    # g_ontoology_user = Github(username, password)
                     g_ontoology_user.get_user().accept_invitation(invitation)
                     print("invitation accepted: " + str(invitation))
                     return {'status': True, 'msg': 'added as a new collaborator'}

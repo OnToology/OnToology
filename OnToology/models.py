@@ -129,21 +129,22 @@ class Repo(models.Model):
 
     def update_ontology_status(self, ontology, status):
         print("in update ontology status all")
-        print(self.ontology_status_pairs)
-        print("stage 1")
-        print(self.ontology_status_pairs.all)
-        print("stage 2")
-        try:
-            print(self.ontology_status_pairs.all())
-            print("stage 3")
-        except Exception as e:
-            print("Exception: "+str(e))
+        # print(self.ontology_status_pairs)
+        # print("stage 1")
+        # print(self.ontology_status_pairs.all)
+        # print("stage 2")
+        # try:
+        #     print(self.ontology_status_pairs.all())
+        #     print("stage 3")
+        # except Exception as e:
+        #     print("Exception: "+str(e))
         print("ontology: <"+ontology+">"+" status: <"+status+">")
         for osp in self.ontology_status_pairs.all():
             print("in for: ")
-            print(osp)
+            # print(osp)
             print("name: "+osp.name)
             if osp.name == ontology:
+                print("The status of %s is updated" % osp.name)
                 osp.status = status
                 osp.save()
                 return True
