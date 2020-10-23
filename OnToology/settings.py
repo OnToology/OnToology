@@ -97,7 +97,7 @@ WSGI_APPLICATION = 'OnToology.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'OnToology',
+        'NAME': 'OnToology123',
         'ENFORCE_SCHEMA': False,
         'LOGGING': {
             'version': 1,
@@ -185,15 +185,23 @@ if 'db_host' in environ:
     DATABASES['default']['CLIENT'] = {}
     DATABASES['default']['CLIENT']['host'] = host_db
     if 'db_port' in environ:
-        DATABASES['default']['CLIENT']['post'] = str(environ['db_port'])
+        DATABASES['default']['CLIENT']['port'] = str(environ['db_port'])
 
-    print("updated with host: " + str(DATABASES['default']['host']))
-    if 'db_name' in environ:
-        DATABASES['default']['NAME'] = environ['db_name']
-        print("updated with host: " + str(DATABASES['default']['NAME']))
+    print("updated with host: " + str(DATABASES['default']['CLIENT']['host']))
 
 else:
     print("db_host is not in environ")
+
+if 'db_name' in environ:
+    db_name = environ['db_name']
+    if DEBUG:
+        db_name += "test"
+    DATABASES['default']['NAME'] = db_name
+    print("updated with name: " + str(DATABASES['default']['NAME']))
+else:
+    print("db_name is not in environ")
+
+
 
 print("MONGODB: " + str(DATABASES))
 

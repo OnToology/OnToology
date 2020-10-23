@@ -1,2 +1,4 @@
-docker-compose build
-docker-compose run web .venv/bin/python manage.py test OnToology
+#!/bin/bash
+sh scripts/migrate.sh
+python manage.py test OnToology
+coverage report

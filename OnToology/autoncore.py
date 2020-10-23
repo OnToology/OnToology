@@ -616,22 +616,6 @@ def fork_repo(target_repo):
     # the wait time to give github sometime so the repo can be forked
     # successfully
     time.sleep(sleeping_time)
-    # this is a workaround and not a proper way to do a fork
-    # comm = "curl --user \"%s:%s\" --request POST --data \'{}\' https://api.github.com/repos/%s/forks" % (
-    #     username, password, target_repo)
-    # if not settings.test_conf['local']:
-    #     comm += ' >> "' + log_file_dir + '"'
-    # dolog(comm)
-    # call(comm, shell=True)
-    # username = os.environ['github_username']
-    # password = os.environ['github_password']
-    # if settings.DEBUG == True:
-    #     print("\n\n\n***************************Mock")
-    #     from OnToology.mock import mock_dict
-    #     gg = Github(username, password, mock=mock_dict)
-    # else:
-    #     print("\n\n\n***************************No Mock")
-    #     gg = Github(username, password)
     gg = init_g()
     repo = gg.get_repo(target_repo)
     user = gg.get_user()

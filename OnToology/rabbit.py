@@ -13,7 +13,7 @@ from TPool.TPool import Pool
 # from threading import Lock
 from multiprocessing import Process, Pipe, Lock
 import multiprocessing
-
+import traceback
 
 def set_config(logger, logdir=""):
     """
@@ -367,8 +367,12 @@ def handle_action(j, logger):
     """
     try:
         logger.debug("try action")
-        import autoncore
-        autoncore.django_setup_script()
+        try:
+            import autoncore
+            autoncore.django_setup_script()
+        except:
+            from OnToology import autoncore
+
 
         print("set logger")
         logger.debug("handle_action> ")
@@ -386,6 +390,7 @@ def handle_action(j, logger):
                 logger.error(str(e))
                 print("Exception in magic for repo: "+j['repo'])
                 print(str(e))
+                traceback.print_exc()
             logger.debug("magic is done")
         else:
             logger.debug("dInvalid magic redirect: ")
@@ -399,7 +404,7 @@ def handle_action(j, logger):
         logger.error("Exception 2 ")
         logger.error("Exception 2 for magic: "+str(e))
         logger.error("Exception for j: "+str(j))
-
+        traceback.print_exc()
     logger.debug("finished handle_action: "+str(j))
 
 
