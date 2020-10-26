@@ -164,6 +164,7 @@ enable = False
             "repo": self.url,
             "useremail": self.user.email,
             "changedfiles": ["alo.owl", ],
+            "branch": "master",
             "action": "magic"
         }
         print("going to rabbit: ")

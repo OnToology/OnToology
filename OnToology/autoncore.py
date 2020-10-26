@@ -102,7 +102,7 @@ def init_g():
     password = os.environ['github_password']
     if settings.DEBUG == True:
         from OnToology.mock import mock_dict
-        if 'mock_id' in os.environ:
+        if 'mock_id' in os.environ and os.environ['mock_id'].strip() != "":
             print("mock_id in environ: ")
             mock_id = os.environ['mock_id']
             m = mock_dict[mock_id]
@@ -119,7 +119,14 @@ def init_g():
         g = Github(username, password)
     return g
 
-def git_magic(target_repo, user, changed_filesss):
+def git_magic(target_repo, user, changed_filesss, branch):
+    """
+    :param target_repo: user/reponame
+    :param user: user email
+    :param changed_filesss: list of changed files
+    :param branch: the branch of the changed
+    :return:
+    """
     global g
     global parent_folder
     global log_file_dir
@@ -168,14 +175,14 @@ def git_magic(target_repo, user, changed_filesss):
         # username = os.environ['github_username']
         # password = os.environ['github_password']
         # g = Github(username, password)
-        local_repo = target_repo.replace(target_repo.split('/')[-2], ToolUser)
-        dolog("block 1")
-        if not settings.test_conf['local']:
-            otask.description = 'remove repo from Tool user'
-            otask.save()
-            delete_repo(local_repo)
-            time.sleep(refresh_sleeping_secs)
-        dolog('repo deleted')
+        # local_repo = target_repo.replace(target_repo.split('/')[-2], ToolUser)
+        # dolog("block 1")
+        # if not settings.test_conf['local']:
+        #     otask.description = 'remove repo from Tool user'
+        #     otask.save()
+        #     delete_repo(local_repo)
+        #     time.sleep(refresh_sleeping_secs)
+        # dolog('repo deleted')
         if not settings.test_conf['local'] or settings.test_conf['fork'] or settings.test_conf[
             'clone']:  # in case it is not test or test with fork option
             dolog('will fork the repo')
@@ -185,7 +192,7 @@ def git_magic(target_repo, user, changed_filesss):
             forked_repo = fork_repo(target_repo)
             cloning_url = forked_repo.ssh_url
             time.sleep(refresh_sleeping_secs)
-            dolog('repo forked')
+            dolog('repo forked: '+str(colning_url))
             drepo.progress = 10.0
             drepo.save()
         else:
@@ -615,11 +622,23 @@ def fork_repo(target_repo):
     """
     # the wait time to give github sometime so the repo can be forked
     # successfully
-    time.sleep(sleeping_time)
+    # time.sleep(sleeping_time)
     gg = init_g()
     repo = gg.get_repo(target_repo)
     user = gg.get_user()
     dolog("To fork repo: "+target_repo)
+    try:
+        user.delete_repo("%s/%s" % (user.name,repo.name))
+        dolog("deleted %s/%s" % (user.name,repo.name))
+    except:
+        dolog("did not delete %s/%s" % (user.name,repo.name))
+    for i in range(1,10):
+        try:
+            user.delete_repo("%s/%s-%d" % (user.name,repo.name,i))
+            dolog("deleted %s/%s-%d" % (user.name,repo.name,i))
+        except:
+            dolog("did not delete %s/%s-%d" % (user.name,repo.name,i))
+    time.sleep(sleeping_time)
     forked_repo = user.create_fork(repo)
     dolog("forked repo")
     dolog('forked to: ' + forked_repo.name)

@@ -183,6 +183,12 @@ def callback2(extra, ch, method, properties, body):
             locked_repos = receiver.recv()
             busy = repo_name in locked_repos
             if not busy:
+                repo_pure_name = repo_name.split('/')[1]
+                pure_locked = [r.split('/')[1] for r in locked_repos]
+                pure_busy = repo_pure_name in pure_locked
+            else:
+                pure_busy = busy
+            if not pure_busy:
                 logger.debug('not busy repo: ' + repo_name + " (" + str(method.delivery_tag) + ")")
                 locked_repos.append(repo_name)
                 logger.debug("start locked repos: "+str(locked_repos))
@@ -299,7 +305,7 @@ def handle_action(j, logger):
         if j['action'] == 'magic':
             logger.debug("going for magic: "+str(j))
             try:
-                autoncore.git_magic(j['repo'], j['useremail'], j['changedfiles'])
+                autoncore.git_magic(j['repo'], j['useremail'], j['changedfiles'], j['branch'])
                 logger.debug("magic success")
             except Exception as e:
                 logger.debug("dException in magic")

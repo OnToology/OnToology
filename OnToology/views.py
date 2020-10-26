@@ -261,43 +261,44 @@ def add_hook(request):
         print("payload: " + s)
         j = json.loads(s, strict=False)
         print("json is loaded")
-        if "ref" in j and j["ref"] == "refs/heads/gh-pages":
-            print("it is just gh-pages")
-            return render(request, 'msg.html', {'msg': 'it is gh-pages, so nothing'})
-        s = j['repository']['url'] + 'updated files: ' + str(j['head_commit']['modified'])
-        print("just s: " + str(s))
-        cloning_repo = j['repository']['git_url']
-        target_repo = j['repository']['full_name']
-        user = j['repository']['owner']['email']
-        print("cloning_repo: " + str(cloning_repo))
-        print("target_repo: " + str(target_repo))
-        print("user email: " + str(user))
-        changed_files = get_changed_files_from_payload(j)
-        print("early changed files: " + str(changed_files))
-        if 'Merge pull request' in j['head_commit']['message'] or \
-                'OnToology Configuration' == j['head_commit']['message'] or \
-                'OnToology Publish' == j['head_commit']['message']:
-            print('This is a merge request or Configuration push')
-            try:
-                repo = Repo.objects.get(url=target_repo)
-                print('got the repo')
-                repo.last_used = timezone.now()
-                repo.progress = 100.0
-                repo.save()
-                print('repo saved')
-            except Model.DoesNotExist:
-                repo = Repo()
-                repo.url = target_repo
-                repo.save()
-            except Exception as e:
-                print('database_exception: ' + str(e))
-            msg = 'This indicate that this merge request will be ignored'
-            print(msg)
-            if settings.test_conf['local']:
-                print(msg)
-                return
+        if "ref" in j:
+            branch = j["ref"].split("/")[-1]
+            if branch == "gh-pages":
+                print("it is just gh-pages")
+                return render(request, 'msg.html', {'msg': 'it is gh-pages, so nothing'})
             else:
-                return render(request, 'msg.html', {'msg': msg})
+                s = j['repository']['url'] + 'updated files: ' + str(j['head_commit']['modified'])
+                print("just s: " + str(s))
+                target_repo = j['repository']['full_name']
+                user = j['repository']['owner']['email']
+                print("target_repo: " + str(target_repo))
+                print("user email: " + str(user))
+                changed_files = get_changed_files_from_payload(j)
+                print("early changed files: " + str(changed_files))
+                if 'Merge pull request' in j['head_commit']['message'] or \
+                        'OnToology Configuration' == j['head_commit']['message'] or \
+                        'OnToology Publish' == j['head_commit']['message']:
+                    print('This is a merge request or Configuration push')
+                    try:
+                        repo = Repo.objects.get(url=target_repo)
+                        print('got the repo')
+                        repo.last_used = timezone.now()
+                        repo.progress = 100.0
+                        repo.save()
+                        print('repo saved')
+                    except Model.DoesNotExist:
+                        repo = Repo()
+                        repo.url = target_repo
+                        repo.save()
+                    except Exception as e:
+                        print('database_exception: ' + str(e))
+                    msg = 'This indicate that this merge request will be ignored'
+                    print(msg)
+                    if settings.test_conf['local']:
+                        print(msg)
+                        return
+                    else:
+                        return render(request, 'msg.html', {'msg': msg})
     except Exception as e:
         print("add hook exception: " + str(e))
         msg = 'This request should be a webhook ping'
@@ -306,60 +307,29 @@ def add_hook(request):
             return
         else:
             return render(request, 'msg.html', {'msg': msg},)
-    print('##################################################')
-    print('changed_files: ' + str(changed_files))
-    # cloning_repo should look like 'git@github.com:AutonUser/target.git'
-    tar = cloning_repo.split('/')[-2]
-    cloning_repo = cloning_repo.replace(tar, ToolUser)
-    cloning_repo = cloning_repo.replace('git://github.com/', 'git@github.com:')
-    if 'virtual_env_dir' in os.environ:
-        comm = "%s %s " % \
-               (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
-                (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py')))
-    else:
-        comm = "python %s " % \
-               (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'autoncore.py'))
-    print('in addhook')
-    print("target repo: %s" % target_repo)
-    print("user: %s" % user)
-    comm += '--magic --target_repo "' + target_repo + '" --useremail "' + user + '" --changedfiles '
-    for c in changed_files:
-        comm += '"' + c + '" '
-    if settings.test_conf['local']:
-        print('will call git_magic with target=%s, user=%s, cloning_repo=%s, changed_files=%s' % (target_repo, user,
-                                                                                                  cloning_repo,
-                                                                                                  str(changed_files)))
+    try:
+        print('##################################################')
+        print('changed_files: ' + str(changed_files))
         j = {
             'action': 'magic',
             'repo': target_repo,
+            'branch': branch,
             'useremail': user,
             'changedfiles': changed_files,
             'created': str(timezone.now()),
         }
         rabbit.send(j)
-        return
-    else:
-        print('running autoncore code as: ' + comm)
-        try:
-            j = {
-                'action': 'magic',
-                'repo': target_repo,
-                'useremail': user,
-                'changedfiles': changed_files,
-                'created': str(timezone.now()),
-            }
-            rabbit.send(j)
-        except Exception as e:
-            error_msg = str(e)
-            print('error running generall all subprocess: ' + error_msg)
-            sys.stdout.flush()
-            sys.stderr.flush()
-            if 'execv() arg 2 must contain only strings' in error_msg:
-                error_msg = 'make sure that your repository filenames does not have accents or special characters'
-            else:
-                error_msg = 'generic error, please report the problem to us ontoology@delicias.dia.fi.upm.es'
-            s = error_msg
-        return render('msg.html', {'msg': '' + s}, )
+    except Exception as e:
+        error_msg = str(e)
+        print('error running generall all subprocess: ' + error_msg)
+        sys.stdout.flush()
+        sys.stderr.flush()
+        if 'execv() arg 2 must contain only strings' in error_msg:
+            error_msg = 'make sure that your repository filenames does not have accents or special characters'
+        else:
+            error_msg = 'generic error, please report the problem to us ontoology@delicias.dia.fi.upm.es'
+        s = error_msg
+    return render('msg.html', {'msg': '' + s}, )
 
 
 @login_required
@@ -741,7 +711,7 @@ def renew_previsual(request):
         repo.previsual_page_available = True
         repo.save()
         autoncore.prepare_log(user.email)
-        # cloning_repo should look like 'git@github.com:AutonUser/target.git'
+        # cloning_repo should look like 'git@github.com:user/target.git'
         cloning_repo = 'git@github.com:%s.git' % target_repo
         sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
         folder_name = 'prevclone-' + sec

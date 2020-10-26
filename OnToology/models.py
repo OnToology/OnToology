@@ -102,11 +102,13 @@ class OntologyStatusPair(models.Model):
         return self.name + ' - ' + self.status
 
 
+
+
 class Repo(models.Model):
     url = models.CharField(max_length=200, default='Not set yet')
     last_used = models.DateTimeField(default=timezone.now)
     state = models.CharField(max_length=300, default='Ready')
-    # owner = models.CharField(max_length=100, default='no')
+    branch = models.TextField(default="master")
     previsual = models.BooleanField(default=False)
     previsual_page_available = models.BooleanField(default=False)
     notes = models.TextField(default='')
@@ -120,24 +122,13 @@ class Repo(models.Model):
             "url": self.url,
             "last_used": self.last_used.strftime('%Y-%m-%d %H:%M'),
             "state": self.state,
-            # "owner": self.owner,
             "previsual": self.previsual,
             "previsual_page_available": self.previsual_page_available,
             "notes": self.notes,
-            # "busy": str(self.busy)
         }
 
     def update_ontology_status(self, ontology, status):
         print("in update ontology status all")
-        # print(self.ontology_status_pairs)
-        # print("stage 1")
-        # print(self.ontology_status_pairs.all)
-        # print("stage 2")
-        # try:
-        #     print(self.ontology_status_pairs.all())
-        #     print("stage 3")
-        # except Exception as e:
-        #     print("Exception: "+str(e))
         print("ontology: <"+ontology+">"+" status: <"+status+">")
         for osp in self.ontology_status_pairs.all():
             print("in for: ")
@@ -156,34 +147,6 @@ class Repo(models.Model):
         print("stage 6")
         self.save()
         print("stage final")
-        # print("in update ontology status all")
-        # r = Repo.objects.get(id=self.id)
-        # print(r.ontology_status_pairs)
-        # print("stage 1")
-        # print(r.ontology_status_pairs.all)
-        # print("stage 2")
-        # try:
-        #     print(r.ontology_status_pairs.all())
-        #     print("stage 3")
-        # except Exception as e:
-        #     print("Exception: "+str(e))
-        # print("ontology: <"+ontology+">"+" status: <"+status+">")
-        # for osp in r.ontology_status_pairs.all():
-        #     print("in for: ")
-        #     print(osp)
-        #     print("name: "+osp.name)
-        #     if osp.name == ontology:
-        #         osp.status = status
-        #         osp.save()
-        #         return True
-        # print("stage 4")
-        # osp = OntologyStatusPair(name=ontology, status=status)
-        # osp.save()
-        # print("stage 5")
-        # r.ontology_status_pairs.add(osp)
-        # print("stage 6")
-        # r.save()
-        # print("stage 7")
 
     def clear_ontology_status_pairs(self):
         print("clear ontology status pairs for repo: "+self.url)
