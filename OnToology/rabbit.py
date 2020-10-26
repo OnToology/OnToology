@@ -239,90 +239,6 @@ def callback2(extra, ch, method, properties, body):
         logger.error("ERROR: "+str(e))
         logger.error("Message: "+str(body))
 
-# def callback(ch, method, properties, body):
-#     """
-#     Consume messages from the ready queue
-#     :param ch:
-#     :param method:
-#     :param properties:
-#     :param body:
-#     :return:
-#     """
-#     print("properties: ")
-#     print(properties)
-#     print("body: ")
-#     print(body)
-#     lock = properties['lock']
-#     logger = properties['logger']
-#     receiver = properties['receiver']
-#     sender = properties['sender']
-#
-#     try:
-#         print("properties: "+str(properties))
-#         j = json.loads(body)
-#         if j['action'] in ['magic', 'change_conf', 'publish']:
-#             repo_name = j['repo']
-#             #logger.debug('callback repo: '+repo_name)
-#             lock.acquire()
-#             locked_repos = receiver.recv()
-#             busy = repo_name in locked_repos
-#             if not busy:
-#                 logger.debug('not busy repo: ' + repo_name + " (" + str(method.delivery_tag) + ")")
-#                 locked_repos.append(repo_name)
-#                 logger.debug("start locked repos: "+str(locked_repos))
-#             else:
-#                 logger.debug('is busy repo: ' + repo_name + " (" + str(method.delivery_tag) + ")")
-#                 #logger.debug("busy ones: "+str(locked_repos))
-#             sender.send(locked_repos)
-#             lock.release()
-#             if busy:
-#                 #logger.debug(repo_name+" is busy --- ")
-#                 time.sleep(5)
-#                 ch.basic_nack(delivery_tag=method.delivery_tag, multiple=False, requeue=True)
-#             else:
-#                 logger.debug(" ---  Consuming: " + repo_name + "\n" + str(body))
-#                 # logger.debug(body)
-#                 if j['action'] == 'magic':
-#                     logger.debug('starting a magic process')
-#                     # p = Process(target=handle_action, args=(j, logger))
-#                     # p.start()
-#                     # p.join()
-#                     handle_action(j, logger)
-#                 elif j['action'] == 'change_conf':
-#                     logger.debug('starting a config change process')
-#                     # p = Process(target=handle_conf_change, args=(j, logger))
-#                     # p.start()
-#                     # p.join()
-#                     handle_conf_change(j, logger)
-#                 elif j['action'] == 'publish':
-#                     logger.debug('starting a publish process')
-#                     # p = Process(target=handle_publish, args=(j, logger))
-#                     # p.start()
-#                     # p.join()
-#                     handle_publish(j, logger)
-#                 else:
-#                     logger.debug("starting nothing")
-#                 logger.debug(repo_name+" Completed!")
-#                 lock.acquire()
-#                 locked_repos = receiver.recv()
-#                 logger.debug(repo_name+" to remove it from locked repos")
-#                 locked_repos.remove(repo_name)
-#                 logger.debug(repo_name+" is removed")
-#                 logger.debug("locked repos: ")
-#                 logger.debug(str(locked_repos))
-#                 sender.send(locked_repos)
-#                 lock.release()
-#                 logger.debug(repo_name+" is sending the ack")
-#                 ch.basic_ack(delivery_tag=method.delivery_tag)
-#
-#     except Exception as e:
-#         print("ERROR: "+str(e))
-#         print("Message: "+str(body))
-#         logger.debug("dERROR: "+str(e))
-#         logger.debug("dMessage: "+str(body))
-#         logger.error("ERROR: "+str(e))
-#         logger.error("Message: "+str(body))
-
 
 def handle_publish(j, logger):
     """
@@ -332,8 +248,11 @@ def handle_publish(j, logger):
     """
     try:
         logger.debug("try publish")
-        import autoncore
-        autoncore.django_setup_script()
+        try:
+            import autoncore
+            autoncore.django_setup_script()
+        except:
+            from OnToology import autoncore
         print("set logger")
         logger.debug('handle_publish> going for previsual')
         try:
@@ -416,8 +335,11 @@ def handle_conf_change(j, logger):
     """
     try:
         logger.debug("try change")
-        import autoncore
-        autoncore.django_setup_script()
+        try:
+            import autoncore
+            autoncore.django_setup_script()
+        except:
+            from OnToology import autoncore
         print("set logger")
         logger.debug("handle_conf_change> ")
         data = j['data']
@@ -438,76 +360,6 @@ def handle_conf_change(j, logger):
         logger.error(err)
 
     logger.debug("finished handle_conf_change: "+str(j))
-
-# def handle_conf_change(j, logger):
-#     """
-#     :param j:
-#     :param logger: logger
-#     :return:
-#     """
-#     try:
-#         logger.debug("try change")
-#         import autoncore
-#         from models import *
-#         print("set logger")
-#         logger.debug("handle_conf_change> ")
-#         data = j['data']
-#         if j['action'] == 'change_conf':
-#             repo_name = j['repo'].strip()
-#             repos = Repo.objects.filter(url=repo_name)
-#             users = OUser.objects.filter(email=j['useremail'])
-#             if len(repos) == 1:
-#                 repo = repos[0]
-#             else:
-#                 logger.debug("handle_conf_change> Invalid repo: "+repo_name)
-#                 raise Exception("Invalid repo: "+repo_name)
-#             if len(users) == 1:
-#                 user = users[0]
-#             else:
-#                 logger.debug("handle_conf_change> Invalid email: "+j['useremail'])
-#                 raise Exception("Invalid email: "+j['useremail'])
-#
-#             orun = ORun(task='Change Configuration', user=user, repo=repo, description='Change configuration')
-#             orun.save()
-#             for onto in j['ontologies']:
-#                 logger.debug('inside the loop')
-#                 ar2dtool = onto + '-ar2dtool' in data
-#                 # logger.debug('ar2dtool: ' + str(ar2dtool))
-#                 widoco = onto + '-widoco' in data
-#                 # print 'widoco: ' + str(widoco)
-#                 oops = onto + '-oops' in data
-#                 # logger.debug('oops: ' + str(oops)
-#                 logger.debug('will call get_conf')
-#                 orun.description += '. Get new configuration for the ontology: '+onto
-#                 orun.save()
-#                 new_conf = autoncore.get_conf(ar2dtool, widoco, oops)
-#                 logger.debug('will call update_file')
-#                 o = 'OnToology' + onto + '/OnToology.cfg'
-#                 try:
-#                     logger.debug("target_repo <%s> ,  path <%s> ,  message <%s> ,   content <%s>" % (
-#                         j['repo'], o, 'OnToology Configuration', new_conf))
-#                     orun.description += '. Update the configuration for the ontology: ' + onto
-#                     orun.save()
-#                     autoncore.update_file(j['repo'], o, 'OnToology Configuration', new_conf)
-#                     logger.debug('configuration is changed for file for ontology: '+onto)
-#                 except Exception as e:
-#                     logger.error('Error in updating the configuration: ' + str(e))
-#                     # return render(request, 'msg.html', {'msg': str(e)})
-#                     return
-#             orun.description += '. The task is completed successfully'
-#             orun.save()
-#             logger.debug('Configuration changed')
-#     except Exception as e:
-#         err = "Error in handle_conf_change"
-#         print(err)
-#         logger.debug(err)
-#         logger.error(err)
-#         err = str(e)
-#         print(err)
-#         logger.debug(err)
-#         logger.error(err)
-#
-#     logger.debug("finished handle_conf_change: "+str(j))
 
 
 def ack_message(channel, delivery_tag):
@@ -560,16 +412,6 @@ def single_worker(worker_id, lock, sender, receiver, logger):
     queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
     channel.basic_qos(prefetch_count=1)
 
-    # while True:
-    # channel.basic_get(queue=queue_name, auto_ack=False)
-    # time.sleep(5)
-    # channel.basic_consume(queue=queue_name, on_message_callback=callback, arguments={
-    #     # 'lock': lock,
-    #     # 'sender': sender,
-    #     # 'reciever': reciever,
-    #     # 'logger': logger
-    # })
-
     abc = {
             'lock': lock,
             'sender': sender,
@@ -587,8 +429,6 @@ def single_worker(worker_id, lock, sender, receiver, logger):
 
 if __name__ == '__main__':
     from localwsgi import *
-    # from djangoperpmod import *
-    # from OnToology.localwsgi import environ
     print("\n\nrabbit: .........................environ:")
     print(environ)
     print("In rabbit\n\n")
