@@ -185,7 +185,7 @@ if 'db_host' in environ:
     DATABASES['default']['CLIENT'] = {}
     DATABASES['default']['CLIENT']['host'] = host_db
     if 'db_port' in environ:
-        DATABASES['default']['CLIENT']['port'] = str(environ['db_port'])
+        DATABASES['default']['CLIENT']['port'] = int(environ['db_port'])
 
     print("updated with host: " + str(DATABASES['default']['CLIENT']['host']))
 
