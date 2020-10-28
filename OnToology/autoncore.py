@@ -391,10 +391,10 @@ def update_file(target_repo, path, message, content, branch=None):
     g = Github(username, password)
     repo = g.get_repo(target_repo)
     if branch is None:
-        sha = repo.get_file_contents(path).sha
+        sha = repo.get_contents(path).sha
         dolog('default branch with file sha: %s' % str(sha))
     else:
-        sha = repo.get_file_contents(path, branch).sha
+        sha = repo.get_contents(path, branch).sha
         dolog('branch %s with file %s sha: %s' % (branch, path, str(sha)))
     apath = path
     if apath[0] != "/":
@@ -532,7 +532,7 @@ def get_ontologies_from_submodules_tree(tree, repo):
     submodule_tree_elements = [f for f in tree if f.path == '.gitmodules']
     if len(submodule_tree_elements) == 1:
         config_parser = ConfigParser.RawConfigParser()
-        file_content = repo.get_file_contents(submodule_tree_elements[0].path).decoded_content
+        file_content = repo.get_contents(submodule_tree_elements[0].path).decoded_content
         print("file_content")
         print(file_content)
         file_content = file_content.replace('\t', '')  # because it was containing \t
@@ -913,11 +913,11 @@ def get_file_content(target_repo, path, branch=None):
     password = os.environ['github_password']
     g = Github(username, password)
     repo = g.get_repo(target_repo)
-    # sha = repo.get_file_contents(path).sha
+    # sha = repo.get_contents(path).sha
     if branch is None:
-        return repo.get_file_contents(path).decoded_content
+        return repo.get_contents(path).decoded_content
     else:
-        return repo.get_file_contents(path, branch).decoded_content
+        return repo.get_contents(path, branch).decoded_content
 
 
 def generate_bundle(base_dir, target_repo, ontology_bundle):
@@ -962,7 +962,7 @@ def generate_bundle(base_dir, target_repo, ontology_bundle):
                             except:
                                 pass
                         with open(abs_path, 'w') as fii:
-                            file_content = repo.get_file_contents(f.path).decoded_content
+                            file_content = repo.get_contents(f.path).decoded_content
                             fii.write(file_content)
                             print('file %s content: %s' % (f.path, file_content[:10]))
                     else:
@@ -1224,8 +1224,8 @@ def compute_themis_results(repo, path):
     print("get file content: %s" % (str(path)))
     print("after quote: %s" % p)
     print("now get the decoded content")
-    # file_content = repo.get_file_contents(cpath.path).decoded_content
-    file_content = repo.get_file_contents(p).decoded_content
+    # file_content = repo.get_contents(cpath.path).decoded_content
+    file_content = repo.get_contents(p).decoded_content
     passed = 0
     failed = 0
     for line in file_content.split('\n'):
@@ -1291,8 +1291,8 @@ def parse_online_repo_for_ontologies(target_repo):
         print("get file content: %s" % (str(cpath.path)))
         print("after quote: %s" % p)
         print("now get the decoded content")
-        # file_content = repo.get_file_contents(cpath.path).decoded_content
-        file_content = repo.get_file_contents(p).decoded_content
+        # file_content = repo.get_contents(cpath.path).decoded_content
+        file_content = repo.get_contents(p).decoded_content
         print("type: "+str(type(file_content)))
         # file_content = str(file_content)
         file_content = file_content.decode('utf-8')

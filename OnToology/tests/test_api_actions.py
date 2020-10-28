@@ -12,6 +12,7 @@ from multiprocessing import Process
 from django.test import Client
 from unittest import TestCase
 from django.test.testcases import SerializeMixin
+from  .serializer import Serializer
 from OnToology.models import OUser, Repo
 # from OnToology.rabbit import start_pool
 from time import sleep
@@ -81,26 +82,6 @@ def get_pending_messages():
     return num
 
 
-# This it to force the tests to run sequentially (while the default is to run them in parallel)
-# This is needed as the tests are executed using the same repo and user
-print("serializer")
-class Serializer(SerializeMixin):
-    lockfile = __file__
-
-    # def setUp(self):
-    #     if len(OUser.objects.all()) == 0:
-    #         create_user()
-    #     self.url = 'ahmad88me/ontoology-auto-test-no-res'
-    #     self.user = OUser.objects.all()[0]
-    #
-    #     logger.debug("rabbit host in test: "+rabbit_host)
-    #     num_of_msgs = get_pending_messages()
-    #     logger.debug("test> number of messages in the queue is: " + str(num_of_msgs))
-    #     delete_all_repos_from_db()
-
-    # def setUp(self):
-    #     pass
-
 
 class TestActionAPIs(Serializer, TestCase):
     def setUp(self):
@@ -133,7 +114,7 @@ class TestActionAPIs(Serializer, TestCase):
         settings.test_conf['push'] = False
         settings.test_conf['pull'] = False
         print("number of repos before deleting: "+str(len(Repo.objects.all())))
-        print("number of users: "+str(len(Repo.objects.all())))
+        print("number of users: "+str(len(OUser.objects.all())))
         print("user repos: ")
         print(OUser.objects.all()[0].repos)
         delete_all_repos_from_db()
@@ -264,46 +245,101 @@ enable = False
         # p.terminate()
         print("---------------\n\n\n\n\n----------test_generate_all_check_generated_resources_slash###############\n\n")
 
-    # def test_generate_all_check_generated_resources_hash(self):
-    #     import OnToology.settings as settings
-    #     resources_dir = get_repo_resource_dir(os.environ['test_user_email'])
-    #     # The below two assertion is to protect the deletion of important files
-    #     self.assertEqual(resources_dir.split('/')[-1], 'OnToology', msg='might be a wrong resources dir OnToology')
-    #     self.assertIn(os.environ['test_user_email'], resources_dir,
-    #                   msg='might be a wrong resources dir or wrong user')
-    #     # print "will delete %s" % resources_dir
-    #     # comm = "rm -Rf %s" % resources_dir
-    #     # print comm
-    #     settings.test_conf['local'] = True
-    #     settings.test_conf['fork'] = True
-    #     settings.test_conf['clone'] = True
-    #     settings.test_conf['push'] = False
-    #     settings.test_conf['pull'] = False
-    #     delete_all_repos_from_db()
-    #     create_repo()
-    #     c = Client()
-    #     response = c.post('/api/generate_all', {'url': Repo.objects.all()[0].url},
-    #                       HTTP_AUTHORIZATION='Token ' + self.user.token)
-    #     self.assertEqual(response.status_code, 202, msg=response.content)
-    #
-    #     files_to_check = ['geolinkeddata.owl/OnToology.cfg', ]
-    #     docs_files = ['doc/index-en.html', 'doc/ontology.xml', '.htaccess', 'geolinkeddata.owl.widoco.conf']
-    #     diagrams_files = ['ar2dtool-class/geolinkeddata.owl.png', 'ar2dtool-taxonomy/geolinkeddata.owl.png']
-    #     eval_files = ['oops.html']
-    #     for f in docs_files:
-    #         ff = os.path.join('geolinkeddata.owl/documentation', f)
-    #         files_to_check.append(ff)
-    #     for f in diagrams_files:
-    #         ff = os.path.join('geolinkeddata.owl/diagrams', f)
-    #         files_to_check.append(ff)
-    #     # Because oops APIs at the moment gives an error for this ontology
-    #     for f in eval_files:
-    #         ff = os.path.join('geolinkeddata.owl/evaluation', f)
-    #         files_to_check.append(ff)
-    #     for f in files_to_check:
-    #         print os.path.join(resources_dir, f)
-    #         self.assertTrue(os.path.exists(os.path.join(resources_dir, f)), msg=(f + " does not exists. This issue is from OOPS!"))
-    #     delete_all_repos_from_db()
+    def test_generate_all_check_generated_resources_hash(self):
+        import OnToology.settings as settings
+        resources_dir = get_repo_resource_dir(os.environ['test_user_email'])
+        # The below two assertion is to protect the deletion of important files
+        self.assertEqual(resources_dir.split('/')[-1], 'OnToology', msg='might be a wrong resources dir OnToology')
+        self.assertIn(os.environ['test_user_email'], resources_dir,
+                      msg='might be a wrong resources dir or wrong user')
+        # print "will delete %s" % resources_dir
+        # comm = "rm -Rf %s" % resources_dir
+        # print comm
+        settings.test_conf['local'] = True
+        settings.test_conf['fork'] = True
+        settings.test_conf['clone'] = False
+        settings.test_conf['push'] = False
+        settings.test_conf['pull'] = False
+        delete_all_repos_from_db()
+        create_repo(url=self.url, user=self.user)
+        c = Client()
+        # inject the configuration file with the multi-lang
+        f = open(os.path.join(resources_dir, 'geolinkeddata.owl/OnToology.cfg'), 'w')
+        conf_file_content = """
+[ar2dtool]
+enable = True
+
+[widoco]
+enable = False
+languages = en,es,it
+webVowl = False
+
+[oops]
+enable = False
+
+[owl2jsonld]
+enable = True
+                        """
+        f.write(conf_file_content)
+        f.close()
+
+        # inject the configuration file
+        f = open(os.path.join(resources_dir, 'alo.owl/OnToology.cfg'), 'w')
+        conf_file_content = """
+[ar2dtool]
+enable = False
+
+[widoco]
+enable = False
+languages = en,es,it
+webVowl = False
+
+[oops]
+enable = False
+
+[owl2jsonld]
+enable = False
+                """
+        f.write(conf_file_content)
+        f.close()
+
+        print("url repo ")
+        print("\n\n\n\nnum of repos %d" % len(Repo.objects.all()))
+        logger.debug("\n\n\n\nnum of repos %d" % len(Repo.objects.all()))
+        sleep(3)
+        print("url repo url: "+Repo.objects.all()[0].url)
+        response = c.post('/api/generate_all', {'url': Repo.objects.all()[0].url},
+                          HTTP_AUTHORIZATION='Token ' + self.user.token)
+        self.assertEqual(response.status_code, 202, msg=response.content)
+
+        repo = Repo.objects.all()[0]
+        while repo.state != 'Ready':
+            sleep(2)
+            logger.debug('wait> status: '+repo.state)
+            logger.debug('notes: '+repo.notes)
+            print('wait> status: '+repo.state)
+            print('notes: '+repo.notes)
+
+            repo = Repo.objects.all()[0]
+
+        files_to_check = ['geolinkeddata.owl/OnToology.cfg', ]
+        docs_files = ['doc/index-en.html', 'doc/ontology.xml', '.htaccess', 'geolinkeddata.owl.widoco.conf']
+        diagrams_files = ['ar2dtool-class/geolinkeddata.owl.png', 'ar2dtool-taxonomy/geolinkeddata.owl.png']
+        eval_files = ['oops.html']
+        # for f in docs_files:
+        #     ff = os.path.join('geolinkeddata.owl/documentation', f)
+        #     files_to_check.append(ff)
+        for f in diagrams_files:
+            ff = os.path.join('geolinkeddata.owl/diagrams', f)
+            files_to_check.append(ff)
+        # Because oops APIs at the moment gives an error for this ontology
+        # for f in eval_files:
+        #     ff = os.path.join('geolinkeddata.owl/evaluation', f)
+        #     files_to_check.append(ff)
+        for f in files_to_check:
+            print(os.path.join(resources_dir, f))
+            self.assertTrue(os.path.exists(os.path.join(resources_dir, f)), msg=(f + " does not exists. This issue is from OOPS!"))
+        delete_all_repos_from_db()
 
 #     def test_doc_multi_lang(self):
 #         return

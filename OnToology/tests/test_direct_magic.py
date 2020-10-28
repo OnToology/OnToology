@@ -15,6 +15,7 @@ from django.test.testcases import SerializeMixin
 from OnToology.models import OUser, Repo
 # from OnToology.rabbit import start_pool
 from time import sleep
+from  .serializer import Serializer
 
 
 rabbit_host = os.environ['rabbit_host']
@@ -68,13 +69,6 @@ def get_pending_messages():
     connection.close()
     sleep(0.1)
     return num
-
-
-# This it to force the tests to run sequentially (while the default is to run them in parallel)
-# This is needed as the tests are executed using the same repo and user
-print("serializer")
-class Serializer(SerializeMixin):
-    lockfile = __file__
 
 
 class TestDirectMagic(Serializer, TestCase):
