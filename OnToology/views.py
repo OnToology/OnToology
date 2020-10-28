@@ -125,11 +125,11 @@ def home(request):
 
 @login_required
 def repo_view(request):
+    user = request.user
     try:
         print("in repo view")
         if 'repo' in request.GET:
             print("in request GET")
-            user = request.user
             repo_name = request.GET['repo'].strip()
             repos = Repo.objects.filter(url=repo_name)
             for r in Repo.objects.all():
@@ -150,7 +150,8 @@ def repo_view(request):
                 return render(request, 'repo.html', {'oruns': latest_oruns})
             else:
                 print("repo_view> repo <"+str(repo_name)+"> does not exist for user: "+str(user))
-
+        else:
+            return render(request, 'user_repos.html', {'repos': user.repos.all()})
     except Exception as e:
         print("repo_view> exception: "+str(e))
     return HttpResponseRedirect(reverse('profile'))
@@ -379,11 +380,17 @@ def generateforall(target_repo, user_email):
     # for c in changed_files:
     #     comm += '"' + c.strip() + '" '
 
+    try:
+        r = Repo.objects.get(url=target_repo)
+    except Exception e:
+        print(str(e))
+        return {'status': False}
     if settings.test_conf['local']:
         print("running autoncode in the same thread")
         j = {
             'action': 'magic',
             'repo': target_repo,
+            'branch': r.branch,
             'useremail': user,
             'changedfiles': changed_files,
             'created': str(timezone.now()),
@@ -395,6 +402,7 @@ def generateforall(target_repo, user_email):
             j = {
                 'action': 'magic',
                 'repo': target_repo,
+                'branch': r.branch,
                 'useremail': user,
                 'changedfiles': changed_files,
                 'created': str(timezone.now()),
