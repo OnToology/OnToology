@@ -354,7 +354,11 @@ def generateforall_view(request):
     if not found:
         return render(request, 'msg.html',
                       {'msg': 'You need to register/watch this repository while you are logged in'})
-    res = generateforall(target_repo, request.user.email)
+    try:
+        res = generateforall(target_repo, request.user.email)
+    except Exception as e:
+        print("generateforall_view exception: "+str(e))
+        return render(request, 'msg.html', {'msg':  'Internal error in generating the resources'})
     if res['status'] is True:
         return render(request, 'msg.html',  {
             'msg': 'Soon you will find generated files included in a pull request in your repository'},)
