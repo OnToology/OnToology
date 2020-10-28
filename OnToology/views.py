@@ -382,7 +382,7 @@ def generateforall(target_repo, user_email):
 
     try:
         r = Repo.objects.get(url=target_repo)
-    except Exception e:
+    except Exception as e:
         print(str(e))
         return {'status': False}
     if settings.test_conf['local']:
