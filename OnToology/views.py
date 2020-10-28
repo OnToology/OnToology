@@ -39,6 +39,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Model
 import requests
+import traceback
 from github import Github
 
 from OnToology import settings
@@ -293,6 +294,7 @@ def add_hook(request):
                         repo.save()
                     except Exception as e:
                         print('database_exception: ' + str(e))
+                        traceback.print_exc()
                     msg = 'This indicate that this merge request will be ignored'
                     print(msg)
                     if settings.test_conf['local']:
@@ -302,6 +304,7 @@ def add_hook(request):
                         return render(request, 'msg.html', {'msg': msg})
     except Exception as e:
         print("add hook exception: " + str(e))
+        traceback.print_exc()
         msg = 'This request should be a webhook ping'
         if settings.test_conf['local']:
             print(msg)
@@ -323,6 +326,7 @@ def add_hook(request):
     except Exception as e:
         error_msg = str(e)
         print('error running generall all subprocess: ' + error_msg)
+        traceback.print_exc()
         sys.stdout.flush()
         sys.stderr.flush()
         if 'execv() arg 2 must contain only strings' in error_msg:
