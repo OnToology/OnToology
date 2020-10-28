@@ -192,7 +192,7 @@ def git_magic(target_repo, user, changed_filesss, branch):
             forked_repo = fork_repo(target_repo)
             cloning_url = forked_repo.ssh_url
             time.sleep(refresh_sleeping_secs)
-            dolog('repo forked: '+str(colning_url))
+            dolog('repo forked: '+str(cloning_url))
             drepo.progress = 10.0
             drepo.save()
         else:
