@@ -790,29 +790,37 @@ def get_bundle(request):
 
 @login_required
 def get_outline(request):
-    repos = []
-    o_pairs = []
-    for r in request.user.repos.all():
-        if r.progress != 100:
-            repos.append(r)
-    for r in repos:
-        o_pairs += r.ontology_status_pairs
-    stages = {}
-    stages_values = {}  # to draw the inner fill
-    for i, s in enumerate(OntologyStatusPair.STATUSES):
-        stages[s[0]] = []
-        stages_values[s[0]] = i + 1
+    try:
+        repos = []
+        o_pairs = []
+        for r in request.user.repos.all():
+            if r.progress != 100:
+                repos.append(r)
+        for r in repos:
+            for onto_pair in r.ontology_status_pairs.all():
+                o_pairs.append(onto_pair)
 
-    for sp in o_pairs:
-        if sp.status not in stages:
-            stages[sp.status] = []
-        stages[sp.status].append(sp.name)
+        stages = {}
+        stages_values = {}  # to draw the inner fill
+        for i, s in enumerate(OntologyStatusPair.STATUSES):
+            stages[s[0]] = []
+            stages_values[s[0]] = i + 1
 
-    inner = 0
-    if len(o_pairs) > 0:
-        inner = min([stages_values[sp.status] for sp in o_pairs])
-    return JsonResponse({"stages": stages, "inner": inner})
+        for sp in o_pairs:
+            if sp.status not in stages:
+                stages[sp.status] = []
+            stages[sp.status].append(sp.name)
 
+        inner = 0
+        if len(o_pairs) > 0:
+            inner = min([stages_values[sp.status] for sp in o_pairs])
+        return JsonResponse({"stages": stages, "inner": inner})
+    except Exception as e:
+        print("Getting exceptions")
+        print("get_outline exception: "+str(e))
+        traceback.print_exc()
+        # raise Exception(str(e))
+        return JsonResponse({'error': 'Internal error'}, status=500)
 
 @login_required
 def progress_page(request):

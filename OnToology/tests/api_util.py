@@ -31,6 +31,7 @@ def create_repo(url=None, user=None):
         user = OUser.objects.all()[0]
     user.repos.add(r)
     user.save()
+    return r
 
 
 def create_user():
