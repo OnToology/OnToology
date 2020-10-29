@@ -1,100 +1,150 @@
-{% extends "base.html"%}
+{% extends "base2.html"%}
 {%block body%}
+<table class="table">
+      <tbody>
+    {%for r in repos%}
+    <tr>
+        <td>{{r.url}}</td>
+        <td>{{r.state}}</td>
+        <td>{{r.notes}}</td>
+        <td>
+            <div class="progress-bar progress-bar-info" role="progressbar"
+                 aria-valuenow="{{r.progress|floatformat:1}}" aria-valuemin="0"
+                 aria-valuemax="100"
+                 style="width: {{r.progress}}%">
+                {{r.progress|floatformat:1}}%
+            </div>
+        </td>
+        <td>
+            <a href="http://www.github.com/{{r.url}}" target="_blank"
+                                       title="Go to repo in GitHub">
+                                        <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/GitHub-Mark-32px.png"
+                                             class="img-circle" height="25px"></a>
+        </td>
+        <td>
+            <span class="generateall-btn handpointer" repo="{{r.url}}"
+                                                  title="Generate documentation, diagrams and evaluation">
+                                                <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/regenerate_all.png"
+                                                     height="20px">
+                                            </span>
+        </td>
+    </tr>
+      </tbody>
+    {%endfor%}
+</table>
+
 
 <div class="panel-group " id="accordion">
-        <div class="container-fluid">
-            {%for r in repos%}
-                <div class="panel panel-info">
-                    <div class="panel-heading firsttime" >
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" class="accordion-toggle" data-parent="#accordion"
-                               href="#coll{{forloop.counter}}">
-                                <div class="row">
-                                    <div class="col-md-7 col-sm-7 " style="text-align: left">
+    <div class="container-fluid">
+        {%for r in repos%}
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" class="accordion-toggle" data-parent="#accordion"
+                       href="#coll{{forloop.counter}}">
+                        <div class="row">
+                            <div class="col-md-7 col-sm-7 " style="text-align: left">
 
-                                            <a class="col-md-4 col-sm-4 darktext" style="word-break: break-all" href="/repo?repo={{r.url}}">{{r.url}}</a>
-                                            <p class="col-md-3 col-sm-3" style="word-break: break-all">{{r.state}}</p>
-                                            <p class="col-md-3 col-sm-3" style="word-break: break-all">{{r.notes}}</p>
-                                            <div class="col-md-2 col-sm-2" style="word-break: break-all">
-                                                <div class="progress">
-                                                  {%if r.progress == 100 %}
-                                                <div class="progress-bar progress-bar-info" role="progressbar"
-                                                     aria-valuenow="{{r.progress|floatformat:1}}" aria-valuemin="0"
-                                                     aria-valuemax="100"
-                                                     style="width: {{r.progress}}%">
-                                                  {{r.progress|floatformat:1}}%
-                                                </div>
-                                                  {%else%}
-                                                  <div class="progress-bar progress-bar-info progress-bar-striped active"
-                                                       role="progressbar"
-                                                       aria-valuenow="{{r.progress|floatformat:1}}" aria-valuemin="0"
-                                                       aria-valuemax="100"
-                                                       style="width: {{r.progress}}%">
-                                                  {{r.progress|floatformat:1}}%
-                                                </div>
-
-                                                  {%endif%}
-                                              </div>
-                                            </div>
-
-                                    </div>
-
-
-                                    <div class="col-md-3 col-sm-3 ">
-
-                                        <div class="col-md-2 col-sm-2">
-                                            <a href="http://www.github.com/{{r.url}}" target="_blank"
-                                               title="Go to repo in GitHub">
-                                            <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/GitHub-Mark-32px.png"
-                                                 class="img-circle" height="25px"></a>
+                                <a class="col-md-4 col-sm-4 darktext" style="word-break: break-all"
+                                   href="/repo?repo={{r.url}}">{{r.url}}</a>
+                                <p class="col-md-3 col-sm-3" style="word-break: break-all">{{r.state}}</p>
+                                <p class="col-md-3 col-sm-3" style="word-break: break-all">{{r.notes}}</p>
+                                <div class="col-md-2 col-sm-2" style="word-break: break-all">
+                                    <div class="progress">
+                                        {%if r.progress == 100 %}
+                                        <div class="progress-bar progress-bar-info" role="progressbar"
+                                             aria-valuenow="{{r.progress|floatformat:1}}" aria-valuemin="0"
+                                             aria-valuemax="100"
+                                             style="width: {{r.progress}}%">
+                                            {{r.progress|floatformat:1}}%
                                         </div>
-                                        <div class="col-md-2 col-sm-2 handpointer" style="color: #000;" >
-                                            <span class="glyphicon glyphicon-refresh  repo" url="{{r.url}}" title="Get ontologies configuration in this repo"></span>
-                                        </div>
-                                        <div class="col-md-2 col-sm-2 ">
-                                            <span class="generateall-btn handpointer" repo="{{r.url}}" title="Generate documentation, diagrams and evaluation">
-                                                <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/regenerate_all.png" height="20px">
-                                            </span>
-                                        </div>
-                                        {%if r.previsual_page_available %}
-                                            <div class="col-md-2 col-sm-2 "> <a href="/renew_previsual?target_repo={{r.url}}" title="Renew previsualization">
-                                                <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/renew_previsual.png" height="20px"> </a>
-                                            </div>
                                         {%else%}
-                                            <div class="col-md-2 col-sm-2 "> <a href="/renew_previsual?target_repo={{r.url}}" title="Generate previsualization">
-                                                <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/renew_previsual.png" height="20px"> </a>
-                                            </div>
+                                        <div class="progress-bar progress-bar-info progress-bar-striped active"
+                                             role="progressbar"
+                                             aria-valuenow="{{r.progress|floatformat:1}}" aria-valuemin="0"
+                                             aria-valuemax="100"
+                                             style="width: {{r.progress}}%">
+                                            {{r.progress|floatformat:1}}%
+                                        </div>
+
                                         {%endif%}
-                                        <div class="col-md-2 col-sm-2 ">
-                                        {%if r.previsual_page_available %}
-                                            <a href="http://{{r.user}}.github.io/{{r.rrepo}}" title="Go to previsualization"><img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/go_to_previsual.png"
-                                                                            height="20px"></a>
-                                        {%endif%}
-                                            </div>
-
                                     </div>
-
-
-                                    <div class="col-md-2 col-sm-2 darktext  " align="right">
-                                        {{r.last_used| date:"d-M-Y"}}
-                                    </div>
-                                    </br>
                                 </div>
-                                <!-- end of row-->
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="coll{{forloop.counter}}" class="panel-collapse collapse ">
-                        <div class="panel-body ">
 
-                            <div class="ontologiesspace"> </div>
+                            </div>
+
+
+                            <div class="col-md-3 col-sm-3 ">
+
+                                <div class="col-md-2 col-sm-2">
+                                    <a href="http://www.github.com/{{r.url}}" target="_blank"
+                                       title="Go to repo in GitHub">
+                                        <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/GitHub-Mark-32px.png"
+                                             class="img-circle" height="25px"></a>
+                                </div>
+                                <div class="col-md-2 col-sm-2 handpointer" style="color: #000;">
+                                    <span class="glyphicon glyphicon-refresh  repo" url="{{r.url}}"
+                                          title="Get ontologies configuration in this repo"></span>
+                                </div>
+                                <div class="col-md-2 col-sm-2 ">
+                                            <span class="generateall-btn handpointer" repo="{{r.url}}"
+                                                  title="Generate documentation, diagrams and evaluation">
+                                                <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/regenerate_all.png"
+                                                     height="20px">
+                                            </span>
+                                </div>
+                                {%if r.previsual_page_available %}
+                                <div class="col-md-2 col-sm-2 "><a href="/renew_previsual?target_repo={{r.url}}"
+                                                                   title="Renew previsualization">
+                                    <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/renew_previsual.png"
+                                         height="20px"> </a>
+                                </div>
+                                {%else%}
+                                <div class="col-md-2 col-sm-2 "><a href="/renew_previsual?target_repo={{r.url}}"
+                                                                   title="Generate previsualization">
+                                    <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/renew_previsual.png"
+                                         height="20px"> </a>
+                                </div>
+                                {%endif%}
+                                <div class="col-md-2 col-sm-2 ">
+                                    {%if r.previsual_page_available %}
+                                    <a href="http://{{r.user}}.github.io/{{r.rrepo}}"
+                                       title="Go to previsualization"><img
+                                            src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/go_to_previsual.png"
+                                            height="20px"></a>
+                                    {%endif%}
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-2 col-sm-2 darktext  " align="right">
+                                {{r.last_used| date:"d-M-Y"}}
+                            </div>
                             </br>
                         </div>
-                    </div>
+                        <!-- end of row-->
+                    </a>
+                </h4>
+            </div>
+            <div id="coll{{forloop.counter}}" class="panel-collapse collapse ">
+                <div class="panel-body ">
+
+                    <div class="ontologiesspace"></div>
+                    </br>
                 </div>
-                {%endfor%}
             </div>
         </div>
+        {%endfor%}
+    </div>
+</div>
 
+<script>
+        $(document).on('click', '.generateall-btn', function(){
+        alert($(this).attr('repo'));
+        $.get("generateforall", {"repo": $(this).attr('repo')});
+    });
+
+</script>
 
 {% endblock %}

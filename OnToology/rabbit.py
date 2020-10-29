@@ -77,31 +77,37 @@ def run_rabbit():
     else:
         logger.debug('run_rabbit> rabbit_processes is not in environ')
 
-
 def send(message_json):
     """
     :param message:
     :return:
     """
-    global logger
-    connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
-    channel = connection.channel()
-    queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
-    logger.debug("send> number of messages in the queue is: "+str(queue.method.message_count))
-    message = json.dumps(message_json)
-    logger.debug("send> sending message: "+str(message))
-    # logger.debug(message)
-    channel.basic_publish(exchange='',
-                          routing_key=queue_name,
-                          body=message,
-                          properties=pika.BasicProperties(
-                              delivery_mode=2,  # make message persistent
-                          ))
-    connection.close()
-    num = get_num_of_processes_of_rabbit()
-    if num < 1:
-        logger.warning("send> RESTART -- number of processes were: "+str(num))
-        run_rabbit()
+    return direct_call(message_json)
+
+# def send(message_json):
+#     """
+#     :param message:
+#     :return:
+#     """
+#     global logger
+#     connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
+#     channel = connection.channel()
+#     queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
+#     logger.debug("send> number of messages in the queue is: "+str(queue.method.message_count))
+#     message = json.dumps(message_json)
+#     logger.debug("send> sending message: "+str(message))
+#     # logger.debug(message)
+#     channel.basic_publish(exchange='',
+#                           routing_key=queue_name,
+#                           body=message,
+#                           properties=pika.BasicProperties(
+#                               delivery_mode=2,  # make message persistent
+#                           ))
+#     connection.close()
+#     num = get_num_of_processes_of_rabbit()
+#     if num < 1:
+#         logger.warning("send> RESTART -- number of processes were: "+str(num))
+#         run_rabbit()
 
 
 def get_pending_messages():
@@ -156,6 +162,43 @@ def get_num_of_processes_of_rabbit():
     if one:
         return 1
     return -1
+
+
+
+def direct_call(j):
+    """
+    Consume messages from the ready queue
+    :param j:
+    :return:
+    """
+    global logger
+    try:
+        if j['action'] in ['magic', 'change_conf', 'publish']:
+            repo_name = j['repo']
+            logger.debug(" ---  Consuming: " + repo_name + "\n" + str(j))
+            if j['action'] == 'magic':
+                logger.debug('starting a magic process')
+                handle_action(j, logger)
+            elif j['action'] == 'change_conf':
+                logger.debug('starting a config change process')
+                handle_conf_change(j, logger)
+            elif j['action'] == 'publish':
+                logger.debug('starting a publish process')
+                handle_publish(j, logger)
+            else:
+                logger.debug("starting nothing")
+            logger.debug(repo_name+" Completed!")
+            return True
+
+    except Exception as e:
+        print("ERROR: "+str(e))
+        print("Message: "+str(j))
+        logger.debug("dERROR: "+str(e))
+        logger.debug("dMessage: "+str(j))
+        logger.error("ERROR: "+str(e))
+        logger.error("Message: "+str(j))
+        return False
+
 
 
 def callback2(extra, ch, method, properties, body):

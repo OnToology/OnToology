@@ -88,6 +88,7 @@ class TestDirectMagic(Serializer, TestCase):
 # For the jongo test
     def test_generate_all_slash_direct_but_doc(self):
         print("######################test_generate_all_slash_direct_but_doc###############\n\n")
+        delete_all_repos_from_db()
         import OnToology.settings as settings
         logger.error("testing the logger\n\n\n\n\n")
         resources_dir = get_repo_resource_dir(os.environ['test_user_email'])

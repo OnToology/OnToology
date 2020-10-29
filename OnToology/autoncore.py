@@ -137,6 +137,7 @@ def git_magic(target_repo, user, changed_filesss, branch):
     if not settings.test_conf['local']:
         prepare_log(user)
     dolog('############################### magic #############################')
+    dolog("1> number of users: %d" % len(OUser.objects.all()))
     dolog('target_repo: ' + target_repo)
     dolog("looking for target repo <"+target_repo+">")
     drepo = Repo.objects.get(url=target_repo)
@@ -145,6 +146,8 @@ def git_magic(target_repo, user, changed_filesss, branch):
     dolog("have the repo now")
     drepo.clear_ontology_status_pairs()
     dolog("cleared")
+    dolog("2> number of users: %d" % len(OUser.objects.all()))
+    dolog("looking for user: <%s> " % (str(user)))
     ouser = OUser.objects.get(email=user)
     dolog("got the ouser")
     orun = ORun(user=ouser, repo=drepo)
@@ -628,13 +631,13 @@ def fork_repo(target_repo):
     user = gg.get_user()
     dolog("To fork repo: "+target_repo)
     try:
-        user.delete_repo("%s/%s" % (user.name,repo.name))
+        gg.get_repo("%s/%s" % (user.name,repo.name)).delete()
         dolog("deleted %s/%s" % (user.name,repo.name))
     except:
         dolog("did not delete %s/%s" % (user.name,repo.name))
     for i in range(1,10):
         try:
-            user.delete_repo("%s/%s-%d" % (user.name,repo.name,i))
+            gg.get_repo("%s/%s-%d" % (user.name,repo.name,i)).delete()
             dolog("deleted %s/%s-%d" % (user.name,repo.name,i))
         except:
             dolog("did not delete %s/%s-%d" % (user.name,repo.name,i))
@@ -748,8 +751,9 @@ def send_pull_request(target_repo, username):
         dolog('pull request error: ' + err)
         if 'No commits between' in err:
             dolog('pull request detecting no commits')
-            repo.notes = 'No difference to generate the pull request, make a change in the repo so the pull request can be generated.'
-            repo.save()
+            r = Repo.objects.get(url=target_repo)
+            r.notes = 'No difference to generate the pull request, make a change in the repo so the pull request can be generated.'
+            r.save()
     return {'status': False, 'error': err}
 
 

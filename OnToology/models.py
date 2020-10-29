@@ -151,8 +151,8 @@ class Repo(models.Model):
     def clear_ontology_status_pairs(self):
         print("clear ontology status pairs for repo: "+self.url)
         for osp in self.ontology_status_pairs.all():
-            osp.delete()
-        self.ontology_status_pairs.clear()
+            self.ontology_status_pairs.remove(osp)
+        # self.ontology_status_pairs.clear()
         self.save()
 
     def __unicode__(self):

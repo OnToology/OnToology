@@ -443,7 +443,9 @@ def login_get_access(request):
     if 'state' not in request.session:
         request.session['state'] = 'blah123'  # 'state'
     if request.GET['state'] != request.session['state']:
-        return HttpResponseRedirect('/')
+        print("login_get_access> get state: <%s> and session <%s>" % (request.GET['state'], request.session['state']))
+        #return HttpResponseRedirect('/')
+        return render(request, 'msg.html', {'msg': 'session is expired. Try to login again.'})
     data = {
         'client_id': client_id_login,
         'client_secret': client_secret_login,
@@ -451,6 +453,8 @@ def login_get_access(request):
         'redirect_uri': host  # host+'/add_hook'
     }
     res = requests.post('https://github.com/login/oauth/access_token', data=data)
+    print("response: ")
+    print(res.text)
     atts = res.text.split('&')
     d = {}
     try:
@@ -464,7 +468,7 @@ def login_get_access(request):
         print("exception: " + str(e))
         print("no access token")
         print("response: %s" % res.text)
-        return HttpResponseRedirect('/')
+        return render(request, 'msg.html', {'msg': 'Missing token from Github API. Try to login again'})
 
     g = Github(access_token)
     email = g.get_user().email
@@ -474,15 +478,20 @@ def login_get_access(request):
     request.session['avatar_url'] = g.get_user().avatar_url
     print('avatar_url: ' + request.session['avatar_url'])
     try:
+        print("looking for email: <%s>" % (str(email)))
         user = OUser.objects.get(email=email)
         user.username = username
         user.save()
     except Exception as e:
         try:
+            print("number of users: %d" % (len(OUser.objects.all())))
+            print("Exception: %s" % (str(e)))
+            print("looking for username: <%s>" % (str(username)))
             user = OUser.objects.get(username=username)
             user.email = email
             user.save()
         except:
+            print("Exception: %s" % (str(e)))
             print('<%s,%s>' % (email, username))
             # The password is never important but we set it here because it is required by User class
             print("Now will create the user: ")
@@ -490,7 +499,7 @@ def login_get_access(request):
             print("password: "+request.session['state'])
             print("email: "+email)
             user = OUser.objects.create_user(username=username, password=request.session['state'], email=email)
-            # user.save()
+            user.save()
     django_login(request, user)
     print('The used access_token: ' + access_token)
     sys.stdout.flush()
