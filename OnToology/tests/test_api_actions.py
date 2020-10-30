@@ -5,7 +5,8 @@ import shutil
 import os
 import pika
 from subprocess import call
-from .api_util import create_user, create_repo, delete_all_repos_from_db, get_repo_resource_dir, clone_if_not, delete_all_users
+from .api_util import create_user, create_repo, delete_all_repos_from_db, get_repo_resource_dir, clone_if_not
+from .api_util import delete_all_users, prepare_resource_dir
 import logging
 
 from multiprocessing import Process
@@ -89,6 +90,9 @@ class TestActionAPIs(Serializer, TestCase):
         delete_all_users()
         if len(OUser.objects.all()) == 0:
             create_user()
+        else:
+            print("Not all users where deleted")
+            raise Exception("Error deleteing users")
         self.url = 'ahmad88me/ontoology-auto-test-no-res'
         self.user = OUser.objects.all()[0]
 
@@ -97,22 +101,19 @@ class TestActionAPIs(Serializer, TestCase):
         logger.debug("test> number of messages in the queue is: " + str(num_of_msgs))
         delete_all_repos_from_db()
 
-# For the jongo test
     def test_generate_all_check_generated_resources_slash(self):
         print("###############\n\n\n\n\n##########test_generate_all_check_generated_resources_slash###############\n\n")
-        import OnToology.settings as settings
         resources_dir = get_repo_resource_dir(os.environ['test_user_email'])
+        clone_if_not(resources_dir, self.url)
         # The below two assertion is to protect the deletion of important files
         self.assertEqual(resources_dir.split('/')[-1], 'OnToology', msg='might be a wrong resources dir OnToology')
         self.assertIn(os.environ['test_user_email'], resources_dir, msg='might be a wrong resources dir or wrong user')
-        # print "will delete %s" % resources_dir
-        # comm = "rm -Rf %s" % resources_dir
-        # print comm
-        settings.test_conf['local'] = True
-        settings.test_conf['fork'] = False
-        settings.test_conf['clone'] = False
-        settings.test_conf['push'] = False
-        settings.test_conf['pull'] = False
+        print("will delete %s" % resources_dir)
+        comm = "rm -Rf %s" % resources_dir
+        print(comm)
+        call(comm, shell=True)
+        prepare_resource_dir(resources_dir, 'alo.owl')
+        prepare_resource_dir(resources_dir, 'geolinkeddata.owl')
         print("number of repos before deleting: "+str(len(Repo.objects.all())))
         print("number of users: "+str(len(OUser.objects.all())))
         print("user repos: ")
@@ -125,21 +126,21 @@ class TestActionAPIs(Serializer, TestCase):
         print("number of repos after creating a new one: "+str(len(Repo.objects.all())))
         print("number of users: "+str(len(Repo.objects.all())))
         print(OUser.objects.all()[0].repos)
-        # If the setup is not to clone a fresh copy then check if it exists, if not then clone
-        if settings.test_conf['clone'] is False:
-            clone_if_not(resources_dir, self.url)
 
-        if not os.path.exists(resources_dir):
-            os.mkdir(resources_dir)
-        ontology_dir = os.path.join(resources_dir, 'alo.owl')
-        if os.path.exists(ontology_dir):
-            shutil.rmtree(ontology_dir)
-        os.mkdir(ontology_dir)
 
-        ontology_dir = os.path.join(resources_dir, 'geolinkeddata.owl')
-        if os.path.exists(ontology_dir):
-            shutil.rmtree(ontology_dir)
-        os.mkdir(ontology_dir)
+
+        # # If the setup is not to clone a fresh copy then check if it exists, if not then clone
+        # if not os.path.exists(resources_dir):
+        #     os.mkdir(resources_dir)
+        # ontology_dir = os.path.join(resources_dir, 'alo.owl')
+        # if os.path.exists(ontology_dir):
+        #     shutil.rmtree(ontology_dir)
+        # os.mkdir(ontology_dir)
+        #
+        # ontology_dir = os.path.join(resources_dir, 'geolinkeddata.owl')
+        # if os.path.exists(ontology_dir):
+        #     shutil.rmtree(ontology_dir)
+        # os.mkdir(ontology_dir)
 
         # inject the configuration file
         f = open(os.path.join(resources_dir, 'alo.owl/OnToology.cfg'), 'w')
@@ -246,20 +247,17 @@ enable = False
         print("---------------\n\n\n\n\n----------test_generate_all_check_generated_resources_slash###############\n\n")
 
     def test_generate_all_check_generated_resources_hash(self):
-        import OnToology.settings as settings
-        resources_dir = get_repo_resource_dir(os.environ['test_user_email'])
+        resources_dir = get_repo_resource_dir(self.user.email)
+        clone_if_not(resources_dir, self.url)
         # The below two assertion is to protect the deletion of important files
         self.assertEqual(resources_dir.split('/')[-1], 'OnToology', msg='might be a wrong resources dir OnToology')
-        self.assertIn(os.environ['test_user_email'], resources_dir,
-                      msg='might be a wrong resources dir or wrong user')
-        # print "will delete %s" % resources_dir
-        # comm = "rm -Rf %s" % resources_dir
-        # print comm
-        settings.test_conf['local'] = True
-        settings.test_conf['fork'] = True
-        settings.test_conf['clone'] = False
-        settings.test_conf['push'] = False
-        settings.test_conf['pull'] = False
+        self.assertIn(os.environ['test_user_email'], resources_dir, msg='might be a wrong resources dir or wrong user')
+        print("will delete %s" % resources_dir)
+        comm = "rm -Rf %s" % resources_dir
+        print(comm)
+        call(comm, shell=True)
+        prepare_resource_dir(resources_dir, 'alo.owl')
+        prepare_resource_dir(resources_dir, 'geolinkeddata.owl')
         delete_all_repos_from_db()
         create_repo(url=self.url, user=self.user)
         c = Client()
@@ -306,12 +304,11 @@ enable = False
         print("url repo ")
         print("\n\n\n\nnum of repos %d" % len(Repo.objects.all()))
         logger.debug("\n\n\n\nnum of repos %d" % len(Repo.objects.all()))
-        sleep(3)
         print("url repo url: "+Repo.objects.all()[0].url)
         response = c.post('/api/generate_all', {'url': Repo.objects.all()[0].url},
                           HTTP_AUTHORIZATION='Token ' + self.user.token)
         self.assertEqual(response.status_code, 202, msg=response.content)
-
+        sleep(3)
         repo = Repo.objects.all()[0]
         while repo.state != 'Ready':
             sleep(2)
@@ -338,7 +335,7 @@ enable = False
         #     files_to_check.append(ff)
         for f in files_to_check:
             print(os.path.join(resources_dir, f))
-            self.assertTrue(os.path.exists(os.path.join(resources_dir, f)), msg=(f + " does not exists. This issue is from OOPS!"))
+            self.assertTrue(os.path.exists(os.path.join(resources_dir, f)), msg=(str(f) + " does not exists. This issue is from OOPS!"))
         delete_all_repos_from_db()
 
 #     def test_doc_multi_lang(self):

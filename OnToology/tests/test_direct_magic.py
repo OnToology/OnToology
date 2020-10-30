@@ -6,6 +6,7 @@ import os
 import pika
 from subprocess import call
 from .api_util import create_user, create_repo, delete_all_repos_from_db, get_repo_resource_dir, clone_if_not, delete_all_users
+from .api_util import prepare_resource_dir
 import logging
 from OnToology import rabbit
 from multiprocessing import Process
@@ -89,30 +90,20 @@ class TestDirectMagic(Serializer, TestCase):
     def test_generate_all_slash_direct_but_doc(self):
         print("######################test_generate_all_slash_direct_but_doc###############\n\n")
         delete_all_repos_from_db()
-        import OnToology.settings as settings
         logger.error("testing the logger\n\n\n\n\n")
         resources_dir = get_repo_resource_dir(os.environ['test_user_email'])
+        clone_if_not(resources_dir, self.url)
         # The below two assertion is to protect the deletion of important files
         self.assertEqual(resources_dir.split('/')[-1], 'OnToology', msg='might be a wrong resources dir OnToology')
         self.assertIn(os.environ['test_user_email'], resources_dir, msg='might be a wrong resources dir or wrong user')
-        # print "will delete %s" % resources_dir
-        # comm = "rm -Rf %s" % resources_dir
-        # print comm
-        delete_all_repos_from_db()
+        print("will delete %s" % resources_dir)
+        comm = "rm -Rf %s" % resources_dir
+        print(comm)
+        call(comm, shell=True)
+        prepare_resource_dir(resources_dir, 'alo.owl')
+        prepare_resource_dir(resources_dir, 'geolinkeddata.owl')
+
         create_repo(url=self.url, user=self.user)
-        clone_if_not(resources_dir, self.url)
-
-        if not os.path.exists(resources_dir):
-            os.mkdir(resources_dir)
-        ontology_dir = os.path.join(resources_dir, 'alo.owl')
-        if os.path.exists(ontology_dir):
-            shutil.rmtree(ontology_dir)
-        os.mkdir(ontology_dir)
-
-        ontology_dir = os.path.join(resources_dir, 'geolinkeddata.owl')
-        if os.path.exists(ontology_dir):
-            shutil.rmtree(ontology_dir)
-        os.mkdir(ontology_dir)
 
         # inject the configuration file
         f = open(os.path.join(resources_dir, 'alo.owl/OnToology.cfg'), 'w')

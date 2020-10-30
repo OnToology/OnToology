@@ -79,3 +79,7 @@ There are two workflows:
 2. Create a pull request, we will review it and merge if it is ok.
 
 
+## Dependency notice
+* for the `djongo` library, make sure to install it from github, as the latest version which fixes an important bug is not yet in the release
+* To run the tests, we use the `mock` option for github api. It was rejected by the `PyGithub` maintainers, so make sure to use
+the version in `ahmad88me/PyGithub`. 

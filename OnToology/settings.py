@@ -171,6 +171,7 @@ except Exception as e:
                  'push': False,  # push the changes to GitHub
                  'pull': False,  # to create a pull request from the forked on
     }
+    raise Exception("Force local wsgi load")
 
 environ = os.environ
 print("environ: ")

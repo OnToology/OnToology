@@ -77,37 +77,37 @@ def run_rabbit():
     else:
         logger.debug('run_rabbit> rabbit_processes is not in environ')
 
-def send(message_json):
-    """
-    :param message:
-    :return:
-    """
-    return direct_call(message_json)
-
 # def send(message_json):
 #     """
 #     :param message:
 #     :return:
 #     """
-#     global logger
-#     connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
-#     channel = connection.channel()
-#     queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
-#     logger.debug("send> number of messages in the queue is: "+str(queue.method.message_count))
-#     message = json.dumps(message_json)
-#     logger.debug("send> sending message: "+str(message))
-#     # logger.debug(message)
-#     channel.basic_publish(exchange='',
-#                           routing_key=queue_name,
-#                           body=message,
-#                           properties=pika.BasicProperties(
-#                               delivery_mode=2,  # make message persistent
-#                           ))
-#     connection.close()
-#     num = get_num_of_processes_of_rabbit()
-#     if num < 1:
-#         logger.warning("send> RESTART -- number of processes were: "+str(num))
-#         run_rabbit()
+#     return direct_call(message_json)
+
+def send(message_json):
+    """
+    :param message:
+    :return:
+    """
+    global logger
+    connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
+    channel = connection.channel()
+    queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
+    logger.debug("send> number of messages in the queue is: "+str(queue.method.message_count))
+    message = json.dumps(message_json)
+    logger.debug("send> sending message: "+str(message))
+    # logger.debug(message)
+    channel.basic_publish(exchange='',
+                          routing_key=queue_name,
+                          body=message,
+                          properties=pika.BasicProperties(
+                              delivery_mode=2,  # make message persistent
+                          ))
+    connection.close()
+    num = get_num_of_processes_of_rabbit()
+    if num < 1:
+        logger.warning("send> RESTART -- number of processes were: "+str(num))
+        run_rabbit()
 
 
 def get_pending_messages():
@@ -201,6 +201,36 @@ def direct_call(j):
 
 
 
+def callback_consumer(lock, sender, receiver, logger, j):
+    # lock = extra['lock']
+    # logger = extra['logger']
+    # receiver = extra['receiver']
+    # sender = extra['sender']
+    repo_name = j['repo']
+    logger.debug(" ---  Consuming: " + repo_name + "\n" + str(j))
+    if j['action'] == 'magic':
+        logger.debug('starting a magic process')
+        handle_action(j, logger)
+    elif j['action'] == 'change_conf':
+        logger.debug('starting a config change process')
+        handle_conf_change(j, logger)
+    elif j['action'] == 'publish':
+        logger.debug('starting a publish process')
+        handle_publish(j, logger)
+    else:
+        logger.debug("starting nothing")
+    logger.debug(repo_name + " Completed!")
+    lock.acquire()
+    locked_repos = receiver.recv()
+    logger.debug(repo_name + " to remove it from locked repos")
+    locked_repos.remove(repo_name)
+    logger.debug(repo_name + " is removed")
+    logger.debug("locked repos: ")
+    logger.debug(str(locked_repos))
+    sender.send(locked_repos)
+    lock.release()
+    logger.debug("")
+
 def callback2(extra, ch, method, properties, body):
     """
     Consume messages from the ready queue
@@ -245,40 +275,44 @@ def callback2(extra, ch, method, properties, body):
                 time.sleep(5)
                 ch.basic_nack(delivery_tag=method.delivery_tag, multiple=False, requeue=True)
             else:
-                logger.debug(" ---  Consuming: " + repo_name + "\n" + str(body))
-                # logger.debug(body)
-                if j['action'] == 'magic':
-                    logger.debug('starting a magic process')
-                    # p = Process(target=handle_action, args=(j, logger))
-                    # p.start()
-                    # p.join()
-                    handle_action(j, logger)
-                elif j['action'] == 'change_conf':
-                    logger.debug('starting a config change process')
-                    # p = Process(target=handle_conf_change, args=(j, logger))
-                    # p.start()
-                    # p.join()
-                    handle_conf_change(j, logger)
-                elif j['action'] == 'publish':
-                    logger.debug('starting a publish process')
-                    # p = Process(target=handle_publish, args=(j, logger))
-                    # p.start()
-                    # p.join()
-                    handle_publish(j, logger)
-                else:
-                    logger.debug("starting nothing")
-                logger.debug(repo_name+" Completed!")
-                lock.acquire()
-                locked_repos = receiver.recv()
-                logger.debug(repo_name+" to remove it from locked repos")
-                locked_repos.remove(repo_name)
-                logger.debug(repo_name+" is removed")
-                logger.debug("locked repos: ")
-                logger.debug(str(locked_repos))
-                sender.send(locked_repos)
-                lock.release()
-                logger.debug(repo_name+" is sending the ack")
+                p = Process(target=callback_consumer, args=(lock, sender, receiver, logger, j))
+                p.start()
                 ch.basic_ack(delivery_tag=method.delivery_tag)
+
+                # logger.debug(" ---  Consuming: " + repo_name + "\n" + str(body))
+                # # logger.debug(body)
+                # if j['action'] == 'magic':
+                #     logger.debug('starting a magic process')
+                #     # p = Process(target=handle_action, args=(j, logger))
+                #     # p.start()
+                #     # p.join()
+                #     handle_action(j, logger)
+                # elif j['action'] == 'change_conf':
+                #     logger.debug('starting a config change process')
+                #     # p = Process(target=handle_conf_change, args=(j, logger))
+                #     # p.start()
+                #     # p.join()
+                #     handle_conf_change(j, logger)
+                # elif j['action'] == 'publish':
+                #     logger.debug('starting a publish process')
+                #     # p = Process(target=handle_publish, args=(j, logger))
+                #     # p.start()
+                #     # p.join()
+                #     handle_publish(j, logger)
+                # else:
+                #     logger.debug("starting nothing")
+                # logger.debug(repo_name+" Completed!")
+                # lock.acquire()
+                # locked_repos = receiver.recv()
+                # logger.debug(repo_name+" to remove it from locked repos")
+                # locked_repos.remove(repo_name)
+                # logger.debug(repo_name+" is removed")
+                # logger.debug("locked repos: ")
+                # logger.debug(str(locked_repos))
+                # sender.send(locked_repos)
+                # lock.release()
+                # logger.debug(repo_name+" is sending the ack")
+                # ch.basic_ack(delivery_tag=method.delivery_tag)
 
     except Exception as e:
         print("ERROR: "+str(e))
@@ -340,7 +374,6 @@ def handle_action(j, logger):
             autoncore.django_setup_script()
         except:
             from OnToology import autoncore
-
 
         print("set logger")
         logger.debug("handle_action> ")
@@ -474,11 +507,12 @@ def single_worker(worker_id, lock, sender, receiver, logger):
     logger.debug("test connection ..."+str(channel.is_open))
     logger.debug("single_worker> number of messages in the queue is: " + str(queue.method.message_count))
     channel.start_consuming()
+    logger.debug("single_worker> completed worker")
 
 
 if __name__ == '__main__':
     from localwsgi import *
-    print("\n\nrabbit: .........................environ:")
+    print("\n\nrabbit __main__: .........................environ:")
     print(environ)
     print("In rabbit\n\n")
     import autoncore

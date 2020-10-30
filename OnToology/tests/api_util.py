@@ -1,5 +1,6 @@
 import os
 import string
+import shutil
 import random
 from OnToology.models import *
 from subprocess import call
@@ -73,10 +74,23 @@ def get_repo_resource_dir(user_email):
 def clone_if_not(resources_dir, repo):
     repo_dir = os.path.join(resources_dir, os.pardir)
     repo_dir = os.sep.join(resources_dir.split(os.sep)[:-1])
-    if not os.path.isdir(repo_dir):
+    if not os.path.exists(resources_dir):
         cloning_url = "git@github.com:%s.git" % repo.strip()
         comm = "git clone --recurse-submodules  " + cloning_url + " " + repo_dir
         print("comm: %s" % comm)
         call(comm, shell=True)
 
+def prepare_resource_dir(resources_dir, fname):
+    """
+    If the setup is not to clone a fresh copy then check if it exists. If not, then create the necessary dir
+    :param resources_dir: <>/OnToology/fname
+    :param fname: e.g., alo.owl
+    :return:
+    """
+    if not os.path.exists(resources_dir):
+        os.mkdir(resources_dir)
+    ontology_dir = os.path.join(resources_dir, fname)
+    if os.path.exists(ontology_dir):
+        shutil.rmtree(ontology_dir)
+    os.mkdir(ontology_dir)
 
