@@ -163,7 +163,7 @@ try:
     }
     print("importing environ from local wsgi")
 except Exception as e:
-    print("no local wsgi")
+    print("settings> no OnToology.local wsgi")
     print(e)
     test_conf = {'local': False,  # doing test
                  'fork': False,  # perform fork
@@ -171,7 +171,11 @@ except Exception as e:
                  'push': False,  # push the changes to GitHub
                  'pull': False,  # to create a pull request from the forked on
     }
-    raise Exception("Force local wsgi load")
+    try:
+        from localwsgi import *
+    except Exception as e:
+        print("settings> no local_wsgi")
+        raise Exception("Force local wsgi load")
 
 environ = os.environ
 print("environ: ")
