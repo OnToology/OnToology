@@ -15,6 +15,11 @@ from multiprocessing import Process, Pipe, Lock
 import multiprocessing
 
 
+black_list = [
+'omare13/core-ontology'
+]
+
+
 def set_config(logger, logdir=""):
     """
     :param logger: logger
@@ -178,6 +183,9 @@ def callback2(extra, ch, method, properties, body):
         j = json.loads(body)
         if j['action'] in ['magic', 'change_conf', 'publish']:
             repo_name = j['repo']
+            if repo_name in black_list:
+            	logger.debug('black listed: '+repo_name)
+                ch.basic_ack(delivery_tag=method.delivery_tag)
             #logger.debug('callback repo: '+repo_name)
             lock.acquire()
             locked_repos = receiver.recv()
