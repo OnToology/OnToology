@@ -1,9 +1,6 @@
 {% extends "base.html"%}
 {%block body%}
 
-
-Number of oruns = {{oruns| length}}
-
 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
    {%for orun in oruns reversed%}
   <div class="panel panel-default">
