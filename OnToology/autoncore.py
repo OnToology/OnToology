@@ -235,7 +235,7 @@ def git_magic(target_repo, user, changed_filesss, branch):
 
     Integrator.tools_execution(changed_files=changed_filesss, base_dir=os.path.join(home, user), logfile=log_file_dir,
                                target_repo=target_repo, g_local=g, dolog_fname=logger_fname,
-                               change_status=change_status, repo=drepo)
+                               change_status=change_status, repo=drepo, orun=orun)
 
     otask = OTask(name="Postprocessing", description="trying", success=False, finished=False)
     otask.save()

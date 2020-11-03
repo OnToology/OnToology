@@ -4,7 +4,7 @@ import random
 import string
 import io
 from subprocess import call
-
+from OnToology.models import *
 import logging
 
 
@@ -92,7 +92,7 @@ def prepare_logger(log_fname):
 
 
 def tools_execution(changed_files, base_dir, logfile, dolog_fname=None, target_repo=None, g_local=None,
-                    change_status=None, repo=None):
+                    change_status=None, repo=None, orun=None):
     """
     :param changed_files:  changed files include relative path
             base_dir: abs dir to the repo file name, e.g. /home/user/myrepo/
@@ -122,10 +122,37 @@ def tools_execution(changed_files, base_dir, logfile, dolog_fname=None, target_r
                 continue
             dolog("tools_execution: "+f)
             handle_single_ofile(f, base_dir, target_repo=target_repo, change_status=change_status, repo=repo,
-                                progress_inc=progress_inc)
+                                progress_inc=progress_inc, orun=orun)
 
 
-def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo=None, progress_inc=0.0):
+def task_reporter(name=None, desc=None, success=None, finished=None, orun=None, otask=None):
+    # if name not in ["Documentation", "Diagam", "Evaluation", "Validation", "JSONLD", "Configuration"]:
+    #     raise Exception("Invalid task name")
+    dolog("taskreporter")
+    if orun is None:
+        raise Exception("orun cannot be Null")
+    if otask is None:
+        if name is None:
+            raise Exception("Expected name if otask is not passed")
+        t = OTask(name=name, description='')
+        t.save()
+        orun.tasks.add(t)
+        orun.save()
+    else:
+        t = otask
+    if desc is not None:
+        dolog("desc: "+desc)
+        t.description = desc
+    else:
+        dolog("desc None: "+str(desc))
+    if success is not None:
+        t.success = success
+    if finished is not None:
+        t.finished = finished
+    t.save()
+    return t
+
+def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo=None, progress_inc=0.0, orun=None):
     """
     assuming the change_file is an ontology file
     :param changed_file: relative directory of the file e.g. dir1/dir2/my.owl
@@ -148,49 +175,65 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
     # import owl2jsonld
     # import syntaxchecker
     # import themis
+
+    display_onto_name = changed_file[-15:]
+    dolog("changed_file <%s> = display <%s>" % (display_onto_name, changed_file))
+    otask = task_reporter("Configuration (%s)" % display_onto_name, desc="Loading configuration", orun=orun)
     dolog("will call create or get conf")
     conf = create_of_get_conf(changed_file, base_dir)
     dolog("conf: "+str(conf))
+    otask = task_reporter(otask=otask, desc="Configuration loaded successfully", finished=True, success=True, orun=orun)
+    otask = task_reporter("Syntax Check (%s)" % display_onto_name, desc="Check the syntax", orun=orun)
     if not syntaxchecker.valid_syntax(os.path.join(base_dir, changed_file)):
         repo.notes += "syntax error in %s\n" % changed_file
         repo.save()
+        otask = task_reporter(otask=otask, desc="Syntax error", finished=True, success=False,  orun=orun)
         return
+    otask = task_reporter(otask=otask, desc="Valid syntax", finished=True, success=True, orun=orun)
     if conf['ar2dtool']['enable']:
+        otask = task_reporter("Diagrams (%s)" % display_onto_name, desc="Drawing diagrams", orun=orun)
         dolog("will call draw diagrams")
         change_status(target_repo, 'drawing diagrams for: '+changed_file)
         repo.update_ontology_status(ontology=changed_file, status='diagram')
         repo.save()
         try:
             r = ar2dtool.draw_diagrams([changed_file], base_dir)
+            otask = task_reporter(otask=otask, desc="Diagrams are drawn",success=True, finished=True,  orun=orun)
             # if r != "":
             #     # repo.notes += 'Error generating diagrams for %s. ' % changed_file
             #     repo.save()
         except Exception as e:
             dolog("Exception in running ar2dtool.draw_diagrams: "+str(e))
             dolog("changed_file: <"+changed_file++">")
+            otask = task_reporter(otask=otask, desc="Error generating the diagrams: <%s>" % str(e), success=True, finished=True, orun=orun)
     repo.progress += progress_inc
     repo.save()
     if conf['widoco']['enable']:
+        otask = task_reporter("Documentation (%s)" % display_onto_name, desc="Generating HTML documentation", orun=orun)
         dolog('will call widoco')
         change_status(target_repo, 'generating docs for: '+changed_file)
         repo.update_ontology_status(ontology=changed_file, status='documentation')
         repo.save()
         try:
             r = widoco.generate_widoco_docs([changed_file], base_dir, languages=conf['widoco']['languages'], webVowl=conf['widoco']['webVowl'])
+            otask = task_reporter(otask=otask, desc="HTML documentation is generated", success=True, finished=True, orun=orun)
             # if r != "":
             #     # repo.notes += 'Error generating documentation for %s. ' % changed_file
             #     repo.save()
         except Exception as e:
             dolog("Exception in running widoco.generate_widoco_docs: "+str(e))
+            otask = task_reporter(otask=otask, desc="Error while generating the documentation", success=False, finished=True, orun=orun)
     repo.progress += progress_inc
     repo.save()
     if conf['oops']['enable']:
+        otask = task_reporter("Evaluation (%s)" % display_onto_name, desc="Generating OOPS! Evaluation", orun=orun)
         dolog('will call oops')
         change_status(target_repo, 'evaluating: '+changed_file)
         repo.update_ontology_status(ontology=changed_file, status='evaluation')
         repo.save()
         try:
             r = oops.oops_ont_files(target_repo=target_repo, changed_files=[changed_file], base_dir=base_dir)
+            otask = task_reporter(otask=otask, desc="OOPS! reported is generated", orun=orun)
             # if r != "":
             #     # repo.notes += 'Error generating evaluation for %s. ' % changed_file
             #     repo.save()
@@ -198,29 +241,43 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
                 dolog("Error in producing OOPS! report: "+str(r))
                 repo.notes += "Error in producing the evaluation report for: %s" % str(changed_file)
                 repo.save()
+                otask = task_reporter(otask=otask, desc="Error generating OOPS! report", finished=True, success=False, orun=orun)
+            else:
+                dolog("OOPS! report is generated successfully")
+                repo.notes += "Evaluation report is produced for: " % str(changed_file)
+                repo.save()
+                otask = task_reporter(otask=otask, desc="OOPS! reported is generated", finished=True, success=True, orun=orun)
+
         except Exception as e:
             dolog("Exception in running oops.oops.oops_ont_files: "+str(e))
+            otask = task_reporter(otask=otask, desc="Error generating OOPS! report: "+str(e), finished=True, success=False, orun=orun)
     repo.progress += progress_inc
     repo.save()
     if conf['owl2jsonld']['enable']:
+        otask = task_reporter("JSONLD (%s)" % display_onto_name, desc="Generating jsonld", orun=orun)
         dolog('will call owl2jsonld')
         change_status(target_repo, 'generating context for: '+changed_file)
         repo.update_ontology_status(ontology=changed_file, status='jsonld')
         repo.save()
         try:
             owl2jsonld.generate_owl2jsonld_file([changed_file], base_dir=base_dir)
+            otask = task_reporter(otask=otask, desc="jsonld is generated", finished=True, success=True,  orun=orun)
         except Exception as e:
             dolog("Exception in running owl2jsonld.generate_owl2jsonld_file: "+str(e))
+            otask = task_reporter(otask=otask, desc="jsonld is generated", finished=True, success=False,  orun=orun)
     repo.progress += progress_inc
     if conf['themis']['enable']:
+        otask = task_reporter("Validation (%s)" % display_onto_name, desc="Themis validation", orun=orun)
         dolog('will call themis')
         change_status(target_repo, 'generating validation for: '+changed_file)
         repo.update_ontology_status(ontology=changed_file, status='validation')
         repo.save()
         try:
             themis.validate_ontologies(target_repo=target_repo, changed_files=[changed_file], base_dir=base_dir)
+            otask = task_reporter(otask=otask, desc="Themis validation", success=True, finished=True, orun=orun)
         except Exception as e:
             dolog("Exception in running themis: "+str(e))
+            otask = task_reporter(otask=otask, desc="Themis validation", success=False, finished=True, orun=orun)
     repo.update_ontology_status(ontology=changed_file, status='finished')
     repo.save()
 
