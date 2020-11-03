@@ -138,8 +138,11 @@ def repo_view(request):
             if len(repos) == 1:
                 print("single repo")
                 repo = repos[0]
+                if repo not in user.repos.all():
+                    return render(request,'msg.html', {'msg': 'This repo does not belong to the loggedin user. Try to add it and try again.'})
                 now_timestamp = timezone.now()
-                latest_oruns = ORun.objects.all()
+                latest_oruns = ORun.objects.filter(repo=repo)
+                # latest_oruns = ORun.objects.all()
                 # latest_oruns = []
                 # for orun in ORun.objects.filter(user=user, repo=repo).order_by('-timestamp'):
                 #     if (now_timestamp - timedelta(days=7)) > orun.timestamp:
