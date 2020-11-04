@@ -170,22 +170,9 @@ def git_magic(target_repo, user, changed_filesss, branch):
                     dolog("ontology: "+ftov)
                     drepo.update_ontology_status(ontology=ftov, status='pending')
                     dolog("ontology status is updated")
-        # orun.description = 'Getting all changed files: ' + str(changed_filesss)
-        # orun.save()
         # so the tool user can takeover and do stuff
         dolog("pre block")
         g = init_g()
-        # username = os.environ['github_username']
-        # password = os.environ['github_password']
-        # g = Github(username, password)
-        # local_repo = target_repo.replace(target_repo.split('/')[-2], ToolUser)
-        # dolog("block 1")
-        # if not settings.test_conf['local']:
-        #     otask.description = 'remove repo from Tool user'
-        #     otask.save()
-        #     delete_repo(local_repo)
-        #     time.sleep(refresh_sleeping_secs)
-        # dolog('repo deleted')
         if not settings.test_conf['local'] or settings.test_conf['fork'] or settings.test_conf[
             'clone']:  # in case it is not test or test with fork option
             dolog('will fork the repo')
@@ -226,16 +213,27 @@ def git_magic(target_repo, user, changed_filesss, branch):
         drepo.save()
         return
 
-
     otask.finished = True
     otask.save()
     drepo.state = 'Tools'
     drepo.save()
 
-
-    Integrator.tools_execution(changed_files=changed_filesss, base_dir=os.path.join(home, user), logfile=log_file_dir,
-                               target_repo=target_repo, g_local=g, dolog_fname=logger_fname,
-                               change_status=change_status, repo=drepo, orun=orun)
+    try:
+        Integrator.tools_execution(changed_files=changed_filesss, base_dir=os.path.join(home, user), logfile=log_file_dir,
+                                   target_repo=target_repo, g_local=g, dolog_fname=logger_fname,
+                                   change_status=change_status, repo=drepo, orun=orun)
+    except Exception as e:
+        dolog("Exception: " + str(e))
+        traceback.print_exc()
+        # otask.success = False
+        # otask.finished = True
+        # otask.description = str(e)
+        # otask.save()
+        drepo.state = 'Ready'
+        drepo.notes += str(e)
+        drepo.progress = 100
+        drepo.save()
+        return
 
     otask = OTask(name="Postprocessing", description="trying", success=False, finished=False)
     otask.save()
@@ -244,7 +242,6 @@ def git_magic(target_repo, user, changed_filesss, branch):
     try:
         otask.description = "verifying changed files"
         otask.save()
-        exception_if_exists = ""
         files_to_verify = [c for c in changed_filesss if c[-4:] in ontology_formats]
         for c in changed_filesss:
             if c[:-4] in ontology_formats:
@@ -263,50 +260,15 @@ def git_magic(target_repo, user, changed_filesss, branch):
             return
         # if not test or test with push
         if not settings.test_conf['local'] or settings.test_conf['push']:
+            dolog("will commit the changed")
             commit_changes()
             dolog('changes committed')
         else:
-            print('No push for testing')
+            dolog('No push for testing')
         otask.description = "Removing old pull requests"
         otask.save()
-        remove_old_pull_requests(target_repo)
-        if exception_if_exists == "":  # no errors
-            drepo.state = 'validating'
-            drepo.save()
-        else:
-            drepo.state = exception_if_exists
-            drepo.save()
-            otask.description = exception_if_exists
-            otask.finished = True
-            otask.success = False
-            otask.save()
-            raise Exception(exception_if_exists)
+        # remove_old_pull_requests(target_repo)
 
-        otask.description = 'validating'
-        otask.save()
-
-            # in case there is an error, create the pull request as well
-        # Now to enabled
-        # This kind of verification is too naive and need to be eliminated
-        # for f in files_to_verify:
-        #     repo = None
-        #     if use_database:
-        #         from models import Repo
-        #         repo = Repo.objects.get(url=target_repo)
-        #     try:
-        #         verify_tools_generation_when_ready(f, repo)
-        #         dolog('verification is done successfully')
-        #     except Exception as e:
-        #         dolog('verification have an exception: ' + str(e))
-
-        if Repo.objects.get(url=target_repo).state != 'validating':
-            r = Repo.objects.get(url=target_repo)
-            s = r.state
-            s = s.replace('validating', '')
-            r.state = s
-            r.save()
-                # The below "return" is commented so pull request are created even if there are files that are not generated
-        # if not testing or testing with pull enabled
         otask.description = "Generating pull request"
         otask.save()
         if settings.test_conf['pull']:
@@ -317,10 +279,13 @@ def git_magic(target_repo, user, changed_filesss, branch):
             drepo.state = 'creating a pull request'
             drepo.save()
             try:
+                remove_old_pull_requests(target_repo)
+                time.sleep(5)
                 r = send_pull_request(target_repo, ToolUser)
                 dolog('pull request is sent')
                 # drepo.state = 'pull request is sent'
                 drepo.state = 'Ready'
+                drepo.notes = ''
                 drepo.save()
             except Exception as e:
                 print("exception: " + str(e))
@@ -336,14 +301,10 @@ def git_magic(target_repo, user, changed_filesss, branch):
             drepo.save()
         drepo.progress = 100
         drepo.save()
-        # change_status(target_repo, 'Ready')
-        if exception_if_exists == "":
-            otask.success = True
-            otask.save()
-        else:
-            otask.success = False
-            otask.description = exception_if_exists
-            otask.save()
+
+        otask.success = True
+        otask.save()
+
 
     except Exception as e:
         print("exception: "+str(e))
@@ -354,37 +315,6 @@ def git_magic(target_repo, user, changed_filesss, branch):
 
     otask.finished = True
     otask.save()
-
-
-def verify_tools_generation_when_ready(ver_file_comp, repo=None):
-    ver_file = os.path.join(get_target_home(), ver_file_comp['file'], verification_log_fname)
-    ver_file = get_abs_path(ver_file)
-    dolog('ver file: ' + ver_file)
-    if ver_file_comp['ar2dtool_enable'] == ver_file_comp['widoco_enable'] == ver_file_comp['oops_enable'] == \
-            ver_file_comp['owl2jsonld_enable'] == False:
-        return
-    for i in range(20):
-        time.sleep(15)
-        f = open(ver_file, "r")
-        s = f.read()
-        f.close()
-        if ver_file_comp['ar2dtool_enable'] and 'ar2dtool' not in s:
-            continue
-        if ver_file_comp['widoco_enable'] and 'widoco' not in s:
-            continue
-        if ver_file_comp['oops_enable'] and 'oops' not in s:
-            continue
-        if ver_file_comp['owl2jsonld_enable'] and 'owl2jsonld' not in s:
-            continue
-        os.remove(ver_file)  # the verification file is no longer needed
-        dolog('The removed file is: ' + ver_file)
-        return verify_tools_generation(ver_file_comp, repo)
-    repo.state = ver_file_comp['file'] + \
-                 ' is talking too much time to generate output'
-    if settings.test_conf['local']:
-        assert False, 'Taking too much time for verification'
-    else:  # I want to see the file in case of testing
-        os.remove(ver_file)  # the verification file is no longer needed
 
 
 def update_file(target_repo, path, message, content, branch=None):
@@ -635,7 +565,7 @@ def fork_repo(target_repo):
         dolog("deleted %s/%s" % (user.name,repo.name))
     except:
         dolog("did not delete %s/%s" % (user.name,repo.name))
-    for i in range(1,10):
+    for i in range(1,3):
         try:
             gg.get_repo("%s/%s-%d" % (user.name,repo.name,i)).delete()
             dolog("deleted %s/%s-%d" % (user.name,repo.name,i))

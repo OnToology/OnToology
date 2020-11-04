@@ -1,4 +1,4 @@
-import configparser as ConfigParser
+import configparser
 import os
 import random
 import string
@@ -180,9 +180,13 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
     dolog("changed_file <%s> = display <%s>" % (display_onto_name, changed_file))
     otask = task_reporter("Configuration (%s)" % display_onto_name, desc="Loading configuration", orun=orun)
     dolog("will call create or get conf")
-    conf = create_of_get_conf(changed_file, base_dir)
-    dolog("conf: "+str(conf))
-    otask = task_reporter(otask=otask, desc="Configuration loaded successfully", finished=True, success=True, orun=orun)
+    try:
+        conf = create_of_get_conf(changed_file, base_dir)
+        dolog("conf: "+str(conf))
+        otask = task_reporter(otask=otask, desc="Configuration loaded successfully", finished=True, success=True, orun=orun)
+    except Exception as e:
+        otask = task_reporter(otask=otask, desc="Configuration Error: "+str(e), finished=True, success=False, orun=orun)
+        raise e
     otask = task_reporter("Syntax Check (%s)" % display_onto_name, desc="Check the syntax", orun=orun)
     if not syntaxchecker.valid_syntax(os.path.join(base_dir, changed_file)):
         repo.notes += "syntax error in %s\n" % changed_file
@@ -244,7 +248,7 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
                 otask = task_reporter(otask=otask, desc="Error generating OOPS! report", finished=True, success=False, orun=orun)
             else:
                 dolog("OOPS! report is generated successfully")
-                repo.notes += "Evaluation report is produced for: " % str(changed_file)
+                repo.notes += "Evaluation report is produced for: %s " % str(changed_file)
                 repo.save()
                 otask = task_reporter(otask=otask, desc="OOPS! reported is generated", finished=True, success=True, orun=orun)
 
@@ -296,7 +300,7 @@ def create_of_get_conf(ofile, base_dir):
     oops_sec_name = 'oops'
     owl2jsonld_sec_name = 'owl2jsonld'
     themis_sec_name = 'themis'
-    config = ConfigParser.RawConfigParser()
+    config = configparser.ConfigParser()
     # import subprocess
     # subprocess.call('echo "terminal output: "', shell=True)
     # comm = 'cat %s'%ofile_config_file_abs
@@ -369,15 +373,22 @@ def create_of_get_conf(ofile, base_dir):
             config.add_section(sec)
             for k in config_result[sec].keys():
                 if k != 'languages':
-                    config.set(sec, k, config_result[sec][k])
+                    dolog("config res: <%s> <%s> " % (sec, k))
+                    dolog(config_result[sec][k])
+                    if type(config_result[sec][k]) == bool:
+                        str_v = str(config_result[sec][k]).lower()
+                    else:
+                        str_v = config_result[sec][k]
+                    config.set(sec, k, str_v)
         config.set(widoco_sec_name, 'languages', ",".join(config_result[widoco_sec_name]['languages']))
         dolog('will create conf file: ' + ofile_config_file_abs)
         try:
-            with open(ofile_config_file_abs, 'wb') as configfile:
+            with open(ofile_config_file_abs, 'w') as configfile:
                 config.write(configfile)
         except Exception as e:
             dolog('exception: ')
             dolog(e)
+            raise e
     return config_result
 
 
