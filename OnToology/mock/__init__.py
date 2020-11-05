@@ -52,7 +52,7 @@ mock_dict_success = {
     "/repos/%s/pulls" % repo: {
         "GET":{
             "status": 200,
-            "body": get_pulls_dict(repo)
+            "body": get_pulls_dict(repo, branch="master") # regardless of the branch. It always pass
         }
     }
 }

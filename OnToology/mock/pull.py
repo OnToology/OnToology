@@ -2,7 +2,7 @@ from .repo import get_repo_dict
 from .user import get_user_dict
 from .milestone import get_milestone_dict
 
-def get_pulls_dict(repo):
+def get_pulls_dict(repo, branch="master"):
   user, name = repo.split('/')
   pulls = [ {
     "url": "https://api.github.com/repos/%s/pulls/1347" % repo,
@@ -71,8 +71,8 @@ def get_pulls_dict(repo):
       "repo": get_repo_dict(repo)
     },
     "base": {
-      "label": "octocat:master",
-      "ref": "master",
+      "label": "octocat:%s" % branch,
+      "ref": "%s" % branch,
       "sha": "6dcb09b5b57875f334f61aebed695e2e4193db5e",
       "user": get_user_dict(user),
       "repo": get_repo_dict(repo)

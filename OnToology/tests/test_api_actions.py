@@ -335,7 +335,7 @@ enable = False
         #     files_to_check.append(ff)
         for f in files_to_check:
             print(os.path.join(resources_dir, f))
-            self.assertTrue(os.path.exists(os.path.join(resources_dir, f)), msg=(str(f) + " does not exists. This issue is from OOPS!"))
+            self.assertTrue(os.path.exists(os.path.join(resources_dir, f)), msg=(str(f) + " does not exists."))
         delete_all_repos_from_db()
 
 #     def test_doc_multi_lang(self):

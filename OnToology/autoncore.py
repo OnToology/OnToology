@@ -281,12 +281,18 @@ def git_magic(target_repo, user, changed_filesss, branch):
             try:
                 remove_old_pull_requests(target_repo)
                 time.sleep(5)
-                r = send_pull_request(target_repo, ToolUser)
-                dolog('pull request is sent')
-                # drepo.state = 'pull request is sent'
-                drepo.state = 'Ready'
-                drepo.notes = ''
-                drepo.save()
+                r = send_pull_request(target_repo, ToolUser, branch)
+                if r['status']:
+                    dolog('pull request is sent')
+                    drepo.notes = ''
+                    drepo.state = 'Ready'
+                    drepo.save()
+                else:
+                    dolog('Error generating the pull request')
+                    drepo.notes = r['error']
+                    drepo.state = 'Ready'
+                    drepo.save()
+                    raise Exception(r['error'])
             except Exception as e:
                 print("exception: " + str(e))
                 traceback.print_exc()
@@ -294,6 +300,10 @@ def git_magic(target_repo, user, changed_filesss, branch):
                 dolog('failed to create pull request: ' + exception_if_exists)
                 drepo.state = 'failed to create a pull request'
                 drepo.save()
+                otask.success = False
+                otask.finished = True
+                otask.save()
+                return
         else:
             dolog("No pull for testing 11")
             print('No pull for testing 11')
@@ -667,14 +677,14 @@ def remove_old_pull_requests(target_repo):
             dolog("Exception removing an old pull request: " + str(e))
 
 
-def send_pull_request(target_repo, username):
+def send_pull_request(target_repo, username, branch):
     title = 'OnToology update'
     body = title
     err = ""
     time.sleep(sleeping_time)
     repo = g.get_repo(target_repo)
     try:
-        repo.create_pull(head=username + ':master', base='master', title=title, body=body)
+        repo.create_pull(head=username + ':%s' % branch, base='%s' % branch, title=title, body=body)
         return {'status': True, 'msg': 'pull request created successfully'}
     except Exception as e:
         err = str(e)
