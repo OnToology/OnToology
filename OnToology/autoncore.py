@@ -138,8 +138,8 @@ def git_magic(target_repo, user, changed_filesss, branch):
         prepare_log(user)
     dolog('############################### magic #############################')
     dolog("1> number of users: %d" % len(OUser.objects.all()))
-    dolog('target_repo: ' + target_repo)
-    dolog("looking for target repo <"+target_repo+">")
+    dolog('target_repo: <%s>' % target_repo)
+    dolog("branch: %s" % branch)
     drepo = Repo.objects.get(url=target_repo)
     drepo.state = 'Preparing'
     drepo.save()
