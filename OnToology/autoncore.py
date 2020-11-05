@@ -255,6 +255,7 @@ def git_magic(target_repo, user, changed_filesss, branch):
         if len(files_to_verify) == 0:
             print("files: " + str(files_to_verify))
             drepo.state = 'Ready'
+            drepo.notes = ''
             drepo.progress = 100
             drepo.save()
             return
@@ -296,9 +297,11 @@ def git_magic(target_repo, user, changed_filesss, branch):
             except Exception as e:
                 print("exception: " + str(e))
                 traceback.print_exc()
-                exception_if_exists += str(e)
+                exception_if_exists = str(e)
                 dolog('failed to create pull request: ' + exception_if_exists)
-                drepo.state = 'failed to create a pull request'
+                drepo.notes = 'failed to create a pull request'
+                drepo.progress = 100
+                drepo.state = 'Ready'
                 drepo.save()
                 otask.success = False
                 otask.finished = True
