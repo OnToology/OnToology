@@ -258,6 +258,11 @@ def get_changed_files_from_payload(payload):
 @csrf_exempt
 def add_hook(request):
     print("in add hook function")
+    print("method: "+requet.method)
+    print("body: ")
+    print(request.body)
+    print("header: ")
+    print(request.headers)
     if settings.test_conf['local']:
         print('We are in test mode')
     try:
@@ -311,9 +316,9 @@ def add_hook(request):
         msg = 'This request should be a webhook ping'
         if settings.test_conf['local']:
             print(msg)
-            return
+            return JsonResponse({'status': False, 'error': str(e)})
         else:
-            return render(request, 'msg.html', {'msg': msg},)
+            return JsonResponse({'status': False, 'error': str(e)})
     try:
         print('##################################################')
         print('changed_files: ' + str(changed_files))
@@ -337,7 +342,8 @@ def add_hook(request):
         else:
             error_msg = 'generic error, please report the problem to us ontoology@delicias.dia.fi.upm.es'
         s = error_msg
-    return render('msg.html', {'msg': '' + s}, )
+    return JsonResponse({'status': True})
+    # return render(request, 'msg.html', {'msg': '' + s}, )
 
 
 @login_required
