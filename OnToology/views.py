@@ -133,8 +133,8 @@ def repo_view(request):
             print("in request GET")
             repo_name = request.GET['repo'].strip()
             repos = Repo.objects.filter(url=repo_name)
-            for r in Repo.objects.all():
-                print("repo: <"+r.url+"> ")
+            # for r in Repo.objects.all():
+            #     print("repo: <"+r.url+"> ")
             if len(repos) == 1:
                 print("single repo")
                 repo = repos[0]
