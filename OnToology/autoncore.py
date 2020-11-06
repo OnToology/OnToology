@@ -150,7 +150,7 @@ def git_magic(target_repo, user, changed_filesss, branch):
     dolog("looking for user: <%s> " % (str(user)))
     ouser = OUser.objects.get(email=user)
     dolog("got the ouser")
-    orun = ORun(user=ouser, repo=drepo)
+    orun = ORun(user=ouser, repo=drepo, branch=branch)
     orun.save()
     dolog("created the orun")
     otask = OTask(name='Preparation', finished=False, success=False, description="")
@@ -1513,58 +1513,13 @@ def get_proper_loggedin_scope(ouser, target_repo):
         return True
 
 
-# def is_busy(repo_name):
-#     """
-#     Whether the repo is busy or not
-#     :param repo_name:
-#     :return: True, False, None (if the repo do not exists)
-#     """
-#     from models import Repo
-#     repos = Repo.objects.filter(url=repo_name.strip())
-#     if len(repos) == 0:
-#         return None
-#     repo = repos[0]
-#     return repo.busy
-
-# def busy_lock(repo_name):
-#     """
-#     Whether the repo is busy or not and set it to busy
-#     :param repo_name:
-#     :return: True, False, None (if the repo do not exists)
-#     """
-#     from models import Repo
-#     repos = Repo.objects.filter(url=repo_name.strip())
-#     if len(repos) == 0:
-#         return None
-#     repo = repos[0]
-#     ret = repo.busy
-#     repo.busy = True
-#     repo.save()
-#     return ret
-#
-#
-# def busy_unlock(repo_name):
-#     """
-#     Whether unlock
-#     :param repo_name:
-#     :return:
-#     """
-#     from models import Repo
-#     repos = Repo.objects.filter(url=repo_name.strip())
-#     if len(repos) == 0:
-#         return None
-#     repo = repos[0]
-#     repo.busy = False
-#     repo.save()
-#
-#
-# def clear_busy():
-#     from models import Repo
-#     repos = Repo.objects.all()
-#     for r in repos:
-#         r.busy = False
-#         r.save()
-
+def get_repo_branches(repo):
+    global g
+    if g is None:
+        g = init_g()
+    repo = g.get_repo(repo)
+    branches = repo.get_branches()
+    return [b.name for b in branches]
 
 ##########################################################################
 #####################   Generate user log file  ##########################

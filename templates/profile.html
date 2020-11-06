@@ -38,7 +38,7 @@
 
 <canvas id="myCanvas"  height="200" width="400"  style="border:1px solid #d3d3d3;">
             Your browser does not support the canvas element.
-        </canvas>
+</canvas>
  <script>
         var base_area_component = document.getElementById("basearea");
         var canvas = document.getElementById("myCanvas");
@@ -220,6 +220,10 @@ function GetURLParameter(sParam)
 <p class="red">{{error}}</p>
 
 
+<div class="alert alert-warning">
+    Note that some functionalities are more to the <a href="/repo">repos and runs page</a>
+</div>
+
 
 <!--<h4>You can see what is going on with your repositories <a href="/progress">here</a></h4>-->
 <span id="profiletables">
@@ -285,11 +289,11 @@ function GetURLParameter(sParam)
                                         <div class="col-md-2 col-sm-2 handpointer" style="color: #000;" >
                                             <span class="glyphicon glyphicon-refresh  repo" url="{{r.url}}" title="Get ontologies configuration in this repo"></span>
                                         </div>
-                                        <div class="col-md-2 col-sm-2 ">
-                                            <span class="generateall-btn handpointer" repo="{{r.url}}" title="Generate documentation, diagrams and evaluation">
-                                                <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/regenerate_all.png" height="20px">
-                                            </span>
-                                        </div>
+<!--                                        <div class="col-md-2 col-sm-2 ">-->
+<!--                                            <span class="generateall-btn handpointer" repo="{{r.url}}" title="Generate documentation, diagrams and evaluation">-->
+<!--                                                <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/regenerate_all.png" height="20px">-->
+<!--                                            </span>-->
+<!--                                        </div>-->
                                         {%if r.previsual_page_available %}
                                             <div class="col-md-2 col-sm-2 "> <a href="/renew_previsual?target_repo={{r.url}}" title="Renew previsualization">
                                                 <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/renew_previsual.png" height="20px"> </a>
@@ -713,11 +717,12 @@ $( document ).ready(function() {
         //$.post("get_bundle", {"repo": $(this).attr('repo'), "ontology": $(this).attr('ontology'), csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value });
     });
 
+/*
     $(document).on('click', '.generateall-btn', function(){
         alert($(this).attr('repo'));
         $.get("generateforall", {"repo": $(this).attr('repo')});
     });
-
+*/
 
 
 

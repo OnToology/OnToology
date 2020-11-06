@@ -46,6 +46,7 @@ urlpatterns = [
     url(r'^progress', views.progress_page),
     url(r'500', views.handler500),
     url(r'faqs', views.faqs),
+    url(r'get_branches', views.get_branches),
     url(r'get_outline', views.get_outline),
     url(r'^show_repos_list', views.show_repos_list),
     url(r'^get_repos_list_file', views.get_repos_list_file),

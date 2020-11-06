@@ -243,7 +243,7 @@ def get_access_token(request):
         if repo not in ouser.repos.all():
             ouser.repos.add(repo)
             ouser.save()
-            generateforall(repo.url, ouser.email)
+            # generateforall(repo.url, ouser.email, branch)
     return render(request, 'msg.html',  {'msg': msg})
 
 
@@ -350,11 +350,15 @@ def add_hook(request):
 def generateforall_view(request):
     if 'repo' not in request.GET:
         return HttpResponseRedirect('/')
+    if 'branch' not in request.GET:
+        return render(request, 'msg.html', {'msg': 'A beanch is expected as a GET parameter'})
     target_repo = request.GET['repo'].strip()
+    branch = request.GET['branch'].strip()
     found = False
     if target_repo[-1] == '/':
         target_repo = target_repo[:-1]
     print('target_repo is <%s>' % target_repo)
+    print("branch: <%s>" % (branch))
     # The below couple of lines are to check that the user currently have permission over the repository
     try:
         ouser = OUser.objects.get(email=request.user.email)
@@ -368,7 +372,7 @@ def generateforall_view(request):
         return render(request, 'msg.html',
                       {'msg': 'You need to register/watch this repository while you are logged in'})
     try:
-        res = generateforall(target_repo, request.user.email)
+        res = generateforall(target_repo, request.user.email, branch)
     except Exception as e:
         print("generateforall_view exception: "+str(e))
         return render(request, 'msg.html', {'msg':  'Internal error in generating the resources'})
@@ -379,7 +383,7 @@ def generateforall_view(request):
         return render(request, 'msg.html', {'msg': res['error']})
 
 
-def generateforall(target_repo, user_email):
+def generateforall(target_repo, user_email, branch):
     user = user_email
     ontologies = get_ontologies_in_online_repo(target_repo)
     changed_files = ontologies
@@ -395,7 +399,7 @@ def generateforall(target_repo, user_email):
         j = {
             'action': 'magic',
             'repo': target_repo,
-            'branch': r.branch,
+            'branch': branch,
             'useremail': user,
             'changedfiles': changed_files,
             'created': str(timezone.now()),
@@ -406,7 +410,7 @@ def generateforall(target_repo, user_email):
             j = {
                 'action': 'magic',
                 'repo': target_repo,
-                'branch': r.branch,
+                'branch': branch,
                 'useremail': user,
                 'changedfiles': changed_files,
                 'created': str(timezone.now()),
@@ -962,6 +966,17 @@ def error_test(request):
     return render(request, 'msg.html',  {'msg': 'expecting an exception'})
 
 
-
+@login_required
+def get_branches(request):
+    if 'repo' not in request.GET:
+        return JsonReponse({'error': 'repo is not passed'}, status=400)
+    try:
+        repo = request.GET['repo'].strip()
+        #branches = [str(i)+"-abc" for i in range(20)]
+        branches = get_repo_branches(repo)
+        return JsonResponse({'branches': branches})
+    except Exception as e:
+        print(str(e))
+        return JsonResponse({'error': 'Internal Error: %s' % str(e)}, status=500)
 
 

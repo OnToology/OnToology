@@ -95,7 +95,7 @@ class TestActionAPIs(Serializer, TestCase):
             raise Exception("Error deleteing users")
         self.url = 'ahmad88me/ontoology-auto-test-no-res'
         self.user = OUser.objects.all()[0]
-
+        self.branch = 'master'
         logger.debug("rabbit host in test: "+rabbit_host)
         num_of_msgs = get_pending_messages()
         logger.debug("test> number of messages in the queue is: " + str(num_of_msgs))
@@ -186,7 +186,7 @@ enable = False
         c = Client()
         print("printing repo: ")
         print(Repo.objects.all()[0].json())
-        response = c.post('/api/generate_all', {'url': Repo.objects.all()[0].url},
+        response = c.post('/api/generate_all', {'url': Repo.objects.all()[0].url, 'branch': self.branch},
                           HTTP_AUTHORIZATION='Token '+self.user.token)
         print("---------------\n\n\n\n\n--- IN THE MIDDLE --test_generate_all_check_generated_resources_slash###############\n\n")
         self.assertEqual(response.status_code, 202, msg=response.content)
@@ -305,7 +305,7 @@ enable = False
         print("\n\n\n\nnum of repos %d" % len(Repo.objects.all()))
         logger.debug("\n\n\n\nnum of repos %d" % len(Repo.objects.all()))
         print("url repo url: "+Repo.objects.all()[0].url)
-        response = c.post('/api/generate_all', {'url': Repo.objects.all()[0].url},
+        response = c.post('/api/generate_all', {'url': Repo.objects.all()[0].url, 'branch': self.branch},
                           HTTP_AUTHORIZATION='Token ' + self.user.token)
         self.assertEqual(response.status_code, 202, msg=response.content)
         sleep(3)

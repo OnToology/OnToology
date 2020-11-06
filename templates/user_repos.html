@@ -1,5 +1,38 @@
 {% extends "base2.html"%}
 {%block body%}
+
+<!--  <strong>Loading...</strong>-->
+<!--<div class="d-flex justify-content-center">-->
+<!--  <div class="spinner-border text-info" role="status">-->
+<!--    <span class="sr-only">Loading...</span>-->
+<!--  </div>-->
+<!--</div>-->
+
+<!--<div class="clearfix">-->
+<!--      <strong> Loading ...</strong>-->
+<!--  <div class="spinner-border float-left" role="status">-->
+<!--    <span class="sr-only">Loading...</span>-->
+<!--  </div>-->
+
+<!--</div>-->
+
+
+<!--<div class=" align-items-center" id="abc">-->
+<!--  <strong>Example ...</strong>-->
+<!--</div>-->
+
+<div class="clearfix alert alert-info" id="spinner">
+     <strong>Loading ...</strong>
+  <div class="spinner-border float-right text-light" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+
+<!--<div class="align-items-center" id="spinner">-->
+<!--  <strong>Loading ...</strong>-->
+<!--    <div class="spinner-border ml-auto text-info" role="status" aria-hidden="true"></div>-->
+<!--</div>-->
+
 <table class="table">
       <tbody>
     {%for r in repos%}
@@ -22,7 +55,7 @@
                                              class="img-circle" height="25px"></a>
         </td>
         <td>
-            <span class="generateall-btn handpointer" repo="{{r.url}}"
+            <span class="generateall-btn btn" repo="{{r.url}}"
                                                   title="Generate documentation, diagrams and evaluation">
                                                 <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/regenerate_all.png"
                                                      height="20px">
@@ -33,12 +66,86 @@
     {%endfor%}
 </table>
 
+
+<div class="modal" tabindex="-1" id="branches-modal">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Choose a branch</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Click on the branch you like to generate resources for</p>
+          <div id="branches-div"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+<!--        <button type="button" class="btn btn-primary">Save changes</button>-->
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <script>
+    var chosen_repo = "";
         $(document).on('click', '.generateall-btn', function(){
-        alert($(this).attr('repo'));
-        $.get("generateforall", {"repo": $(this).attr('repo')});
+        console.log("generateall btn is clicked");
+        chosen_repo = $(this).attr('repo');
+        //$("#spinner").hide();
+        $("#spinner").show();
+        var html_list=""
+        $.ajax({
+			  method: "GET",
+			  url: "/get_branches?repo="+$(this).attr('repo'),
+			}).fail(function(resp){
+                	alert("error getting the branches");
+					console.log(resp.error);
+					$("#spinner").hide();
+			}).done(function(resp){
+				    for(var i=0;i<resp.branches.length;i++){
+                        html_list+="<li class='list-group-item branch btn'>"+resp.branches[i]+"</li>"
+                        console.log(resp.branches[i])
+                    }
+                    $("#branches-div").html(html_list);
+                    $('#branches-modal').modal('show');
+                    set_branch_listeners();
+                    $("#spinner").hide();
+		});
+
+        //alert($(this).attr('repo'));
+        //$.get("generateforall", {"repo": $(this).attr('repo')});
     });
 
+function set_branch_listeners(){
+    console.log("in branch listeners")
+    $(document).on('click', '.branch', function(){
+        var clicked_branch = $(this).html();
+        console.log("clicked branch: "+clicked_branch)
+        $('#branches-modal').modal('hide');
+        $("#spinner").show();
+        console.log("chosen_repo: "+chosen_repo);
+        //$.get("generateforall", {"repo": chosen_repo, "branch": clicked_branch});
+
+        $.ajax({
+			  method: "GET",
+			  url: "/generateforall?repo="+chosen_repo+"&branch="+clicked_branch,
+			}).fail(function(resp){
+                	alert("error in generating the request");
+					console.log(resp.error);
+					$("#spinner").hide();
+			}).done(function(resp){
+                    $("#spinner").hide();
+                    location.href="/repo?repo="+chosen_repo
+		});// ajax
+
+    });//set branch listeners
+}
+$("#spinner").hide();
 </script>
+
+
 
 {% endblock %}

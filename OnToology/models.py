@@ -243,6 +243,7 @@ class OTask(models.Model):
 
 class ORun(models.Model):
     repo = models.ForeignKey(Repo, on_delete=models.CASCADE)
+    branch = models.TextField(default='')
     user = models.ForeignKey(OUser, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(default=timezone.now)
     # tasks = models.EmbeddedField(model_container=OTask)

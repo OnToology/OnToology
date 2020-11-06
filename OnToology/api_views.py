@@ -151,6 +151,9 @@ def generate_all(request):
         user = request.user
         if 'url' not in request.POST:
             return JsonResponse({'message': 'url is missing'}, status=400)
+        if 'branch' not in request.POST:
+            return JsonResponse({'message': 'branch is missing'}, status=400)
+        branch = request.POST['branch'].strip()
         print("url: 1")
         url =request.POST['url'].strip()
         print("url: 2")
@@ -170,7 +173,7 @@ def generate_all(request):
                 print("url not in")
         if found:
             print("generate for all url")
-            res = generateforall(url, user.email)
+            res = generateforall(url, user.email, branch)
             print("res from renerate all")
             return JsonResponse({'message': 'generation is in process'}, status=202)
         else:
