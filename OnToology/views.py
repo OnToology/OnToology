@@ -258,7 +258,7 @@ def get_changed_files_from_payload(payload):
 @csrf_exempt
 def add_hook(request):
     print("in add hook function")
-    print("method: "+requet.method)
+    print("method: "+request.method)
     print("body: ")
     print(request.body)
     print("header: ")
