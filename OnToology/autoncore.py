@@ -47,7 +47,6 @@ print("autonecore continue")
 
 from OnToology import settings
 from OnToology.models import *
-from OnToology.models import *
 import io
 import configparser as ConfigParser
 
@@ -802,54 +801,58 @@ def previsual(useremail, target_repo):
     #     OUser.objects.all()
     # except:
     #     django_setup_script()
-    from OnToology.models import OUser
-    user = OUser.objects.filter(email=useremail)
-    if len(user) != 1:
-        error_msg = "%s is invalid email %s" % useremail
-        #print(error_msg)
-        dolog("previsual> " + error_msg)
-        return error_msg
-    user = user[0]
-    found = False
-    repo = None
-    for r in user.repos:
-        if target_repo == r.url:
-            found = True
-            repo = r
-            break
-    if found:
-        dolog("previsual> " + "repo is found and now generating previsualization")
-        repo.state = 'Generating Previsualization'
-        repo.notes = ''
-        repo.previsual_page_available = True
-        repo.save()
-        # prepare_log(user.email)
-        # cloning_repo should look like 'git@github.com:AutonUser/target.git'
-        cloning_repo = 'git@github.com:%s.git' % target_repo
-        sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
-        folder_name = 'prevclone-' + sec
-        clone_repo(cloning_repo, folder_name, dosleep=True)
-        repo_dir = os.path.join(home, folder_name)
-        dolog("previsual> will call start previsual")
-        msg = start_previsual(repo_dir, target_repo)
-        if msg == "":  # not errors
-            dolog("previsual> completed successfully")
+    try:
+        dolog("trying the previsual")
+        user = OUser.objects.filter(email=useremail)
+        if len(user) != 1:
+            error_msg = "%s is invalid email %s" % useremail
+            #print(error_msg)
+            dolog("previsual> " + error_msg)
+            return error_msg
+        user = user[0]
+        found = False
+        repo = None
+        for r in user.repos:
+            if target_repo == r.url:
+                found = True
+                repo = r
+                break
+        if found:
+            dolog("previsual> " + "repo is found and now generating previsualization")
+            repo.state = 'Generating Previsualization'
+            repo.notes = ''
+            repo.previsual_page_available = True
+            repo.save()
+            # prepare_log(user.email)
+            # cloning_repo should look like 'git@github.com:AutonUser/target.git'
+            cloning_repo = 'git@github.com:%s.git' % target_repo
+            sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
+            folder_name = 'prevclone-' + sec
+            clone_repo(cloning_repo, folder_name, dosleep=True)
+            repo_dir = os.path.join(home, folder_name)
+            dolog("previsual> will call start previsual")
+            msg = start_previsual(repo_dir, target_repo)
+            if msg == "":  # not errors
+                dolog("previsual> completed successfully")
+                repo.state = 'Ready'
+                repo.save()
+                dolog("previsual> test state: %s" % repo.state)
+                return ""
+            else:
+                repo.notes = msg
+                repo.state = 'Ready'
+                repo.save()
+                return msg
+        else:  # not found
             repo.state = 'Ready'
             repo.save()
-            dolog("previsual> test state: %s" % repo.state)
-            return ""
-        else:
-            repo.notes = msg
-            repo.state = 'Ready'
-            repo.save()
-            return msg
-    else:  # not found
-        repo.state = 'Ready'
-        repo.save()
-        error_msg = 'You should add the repo while you are logged in before the revisual renewal'
-        dolog("previsual> " + error_msg)
-        return error_msg
-
+            error_msg = 'You should add the repo while you are logged in before the revisual renewal'
+            dolog("previsual> " + error_msg)
+            return error_msg
+    except Exception as e:
+        dolog("autoncore.previsual exception: <%s>" % str(e))
+        dolog(traceback.format_exc())
+        return str(e)
 
 def update_g(token):
     global g
