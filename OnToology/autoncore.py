@@ -614,10 +614,10 @@ def clone_repo(cloning_url, parent_folder, dosleep=True):
     # if not settings.test_conf['local']:
     #     comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
-    print("comm: %s" % comm)
+    # print("comm: %s" % comm)
     call(comm, shell=True)
-    dolog(comm)
-    call(comm, shell=True)
+    # dolog(comm)
+    # call(comm, shell=True)
     # comm = "chmod -R 777 " + home + parent_folder
     # if not settings.TEST:
     #     comm += ' >> "' + log_file_dir + '"'
@@ -795,18 +795,13 @@ def add_collaborator(target_repo, user, newg=None):
 
 def previsual(useremail, target_repo):
     from Integrator.previsual import start_previsual
-    prepare_logger(useremail+"prev")
+    prepare_logger(useremail+"-prev-")
     dolog("starting previsual function with ontology: %s" % target_repo)
-    # try:
-    #     OUser.objects.all()
-    # except:
-    #     django_setup_script()
     try:
         dolog("trying the previsual")
         user = OUser.objects.filter(email=useremail)
         if len(user) != 1:
             error_msg = "%s is invalid email %s" % useremail
-            #print(error_msg)
             dolog("previsual> " + error_msg)
             return error_msg
         user = user[0]
@@ -1007,7 +1002,10 @@ def publish(name, target_repo, ontology_rel_path, useremail):
                     error_msg = "github error: %s" % str(e)
                     dolog("publish> " + error_msg)
                     return error_msg
-            dolog("publish> " + "htaccess content: ")
+            dolog("publish> htaccess content: ")
+            dolog(str(type(htaccess)))
+            htaccess = str(htaccess)
+            dolog(str(type(htaccess)))
             dolog(htaccess)
             new_htaccess = htaccess_github_rewrite(target_repo=target_repo, htaccess_content=htaccess,
                                                    ontology_rel_path=ontology_rel_path)
