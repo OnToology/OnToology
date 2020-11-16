@@ -797,6 +797,7 @@ def add_collaborator(target_repo, user, newg=None):
 def previsual(useremail, target_repo):
     from Integrator.previsual import start_previsual
     prepare_logger(useremail+"prev")
+    dolog("starting previsual function with ontology: %s" % target_repo)
     # try:
     #     OUser.objects.all()
     # except:
