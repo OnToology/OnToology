@@ -812,7 +812,7 @@ def previsual(useremail, target_repo):
         user = user[0]
         found = False
         repo = None
-        for r in user.repos:
+        for r in user.repos.all():
             if target_repo == r.url:
                 found = True
                 repo = r
@@ -957,7 +957,7 @@ def publish(name, target_repo, ontology_rel_path, useremail):
         error_msg = "user is not found"
         dolog("publish> error: %s" % str(e))
         return error_msg
-    for r in user.repos:
+    for r in user.repos.all():
         if target_repo == r.url:
             found = True
             repo = r
