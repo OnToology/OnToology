@@ -796,15 +796,16 @@ def add_collaborator(target_repo, user, newg=None):
 
 def previsual(useremail, target_repo):
     from Integrator.previsual import start_previsual
-    try:
-        OUser.objects.all()
-    except:
-        django_setup_script()
+    prepare_logger(useremail+"prev")
+    # try:
+    #     OUser.objects.all()
+    # except:
+    #     django_setup_script()
     from OnToology.models import OUser
     user = OUser.objects.filter(email=useremail)
     if len(user) != 1:
         error_msg = "%s is invalid email %s" % useremail
-        print(error_msg)
+        #print(error_msg)
         dolog("previsual> " + error_msg)
         return error_msg
     user = user[0]
