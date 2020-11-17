@@ -339,8 +339,10 @@ def handle_publish(j, logger):
         print("set logger")
         logger.debug('handle_publish> going for previsual')
         try:
-            autoncore.previsual(useremail=j['useremail'], target_repo=j['repo'])
+            err = autoncore.previsual(useremail=j['useremail'], target_repo=j['repo'])
+            logger.debug("handle_publish> prev error: %s" % str(err))
         except Exception as e:
+            logger.debug('handle_publish> Error in previsualisation')
             logger.error('handle_publish> ERROR in previsualisation: '+str(e))
             return
         logger.debug('handle_publish> going for publish')

@@ -47,7 +47,6 @@ print("autonecore continue")
 
 from OnToology import settings
 from OnToology.models import *
-from OnToology.models import *
 import io
 import configparser as ConfigParser
 
@@ -615,10 +614,10 @@ def clone_repo(cloning_url, parent_folder, dosleep=True):
     # if not settings.test_conf['local']:
     #     comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
-    print("comm: %s" % comm)
+    # print("comm: %s" % comm)
     call(comm, shell=True)
-    dolog(comm)
-    call(comm, shell=True)
+    # dolog(comm)
+    # call(comm, shell=True)
     # comm = "chmod -R 777 " + home + parent_folder
     # if not settings.TEST:
     #     comm += ' >> "' + log_file_dir + '"'
@@ -796,58 +795,59 @@ def add_collaborator(target_repo, user, newg=None):
 
 def previsual(useremail, target_repo):
     from Integrator.previsual import start_previsual
+    prepare_logger(useremail+"-prev-")
+    dolog("starting previsual function with ontology: %s" % target_repo)
     try:
-        OUser.objects.all()
-    except:
-        django_setup_script()
-    from OnToology.models import OUser
-    user = OUser.objects.filter(email=useremail)
-    if len(user) != 1:
-        error_msg = "%s is invalid email %s" % useremail
-        print(error_msg)
-        dolog("previsual> " + error_msg)
-        return error_msg
-    user = user[0]
-    found = False
-    repo = None
-    for r in user.repos:
-        if target_repo == r.url:
-            found = True
-            repo = r
-            break
-    if found:
-        dolog("previsual> " + "repo is found and now generating previsualization")
-        repo.state = 'Generating Previsualization'
-        repo.notes = ''
-        repo.previsual_page_available = True
-        repo.save()
-        # prepare_log(user.email)
-        # cloning_repo should look like 'git@github.com:AutonUser/target.git'
-        cloning_repo = 'git@github.com:%s.git' % target_repo
-        sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
-        folder_name = 'prevclone-' + sec
-        clone_repo(cloning_repo, folder_name, dosleep=True)
-        repo_dir = os.path.join(home, folder_name)
-        dolog("previsual> will call start previsual")
-        msg = start_previsual(repo_dir, target_repo)
-        if msg == "":  # not errors
-            dolog("previsual> completed successfully")
+        dolog("trying the previsual")
+        user = OUser.objects.filter(email=useremail)
+        if len(user) != 1:
+            error_msg = "%s is invalid email %s" % useremail
+            dolog("previsual> " + error_msg)
+            return error_msg
+        user = user[0]
+        found = False
+        repo = None
+        for r in user.repos.all():
+            if target_repo == r.url:
+                found = True
+                repo = r
+                break
+        if found:
+            dolog("previsual> " + "repo is found and now generating previsualization")
+            repo.state = 'Generating Previsualization'
+            repo.notes = ''
+            repo.previsual_page_available = True
+            repo.save()
+            # prepare_log(user.email)
+            # cloning_repo should look like 'git@github.com:AutonUser/target.git'
+            cloning_repo = 'git@github.com:%s.git' % target_repo
+            sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
+            folder_name = 'prevclone-' + sec
+            clone_repo(cloning_repo, folder_name, dosleep=True)
+            repo_dir = os.path.join(home, folder_name)
+            dolog("previsual> will call start previsual")
+            msg = start_previsual(repo_dir, target_repo)
+            if msg == "":  # not errors
+                dolog("previsual> completed successfully")
+                repo.state = 'Ready'
+                repo.save()
+                dolog("previsual> test state: %s" % repo.state)
+                return ""
+            else:
+                repo.notes = msg
+                repo.state = 'Ready'
+                repo.save()
+                return msg
+        else:  # not found
             repo.state = 'Ready'
             repo.save()
-            dolog("previsual> test state: %s" % repo.state)
-            return ""
-        else:
-            repo.notes = msg
-            repo.state = 'Ready'
-            repo.save()
-            return msg
-    else:  # not found
-        repo.state = 'Ready'
-        repo.save()
-        error_msg = 'You should add the repo while you are logged in before the revisual renewal'
-        dolog("previsual> " + error_msg)
-        return error_msg
-
+            error_msg = 'You should add the repo while you are logged in before the revisual renewal'
+            dolog("previsual> " + error_msg)
+            return error_msg
+    except Exception as e:
+        dolog("autoncore.previsual exception: <%s>" % str(e))
+        dolog(traceback.format_exc())
+        return str(e)
 
 def update_g(token):
     global g
@@ -952,7 +952,7 @@ def publish(name, target_repo, ontology_rel_path, useremail):
         error_msg = "user is not found"
         dolog("publish> error: %s" % str(e))
         return error_msg
-    for r in user.repos:
+    for r in user.repos.all():
         if target_repo == r.url:
             found = True
             repo = r
@@ -1002,7 +1002,10 @@ def publish(name, target_repo, ontology_rel_path, useremail):
                     error_msg = "github error: %s" % str(e)
                     dolog("publish> " + error_msg)
                     return error_msg
-            dolog("publish> " + "htaccess content: ")
+            dolog("publish> htaccess content: ")
+            dolog(str(type(htaccess)))
+            htaccess = str(htaccess)
+            dolog(str(type(htaccess)))
             dolog(htaccess)
             new_htaccess = htaccess_github_rewrite(target_repo=target_repo, htaccess_content=htaccess,
                                                    ontology_rel_path=ontology_rel_path)

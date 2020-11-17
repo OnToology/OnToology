@@ -12,7 +12,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
 from OnToology.views import generateforall
-from OnToology.autoncore import publish, previsual, django_setup_script
+from OnToology.djangoperpmod import *
+from OnToology.autoncore import publish, previsual
 from OnToology import autoncore
 from OnToology.models import *
 from OnToology.views import publish_dir
@@ -117,7 +118,6 @@ class PublishView(View):
     def post(self, request):
         user = request.user
         if 'name' in request.POST and 'repo' in request.POST and 'ontology' in request.POST:
-            django_setup_script()
             name = request.POST['name']
             target_repo = request.POST['repo']
             ontology_rel_path = request.POST['ontology']

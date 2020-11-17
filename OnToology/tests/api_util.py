@@ -48,7 +48,7 @@ def create_user():
 
 
 def delete_all_publishnames():
-    PublishName.objects.delete()
+    PublishName.objects.all().delete()
 
 
 def create_publishname(name=None, user=None, repo=None, ontology=None):
