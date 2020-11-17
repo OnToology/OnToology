@@ -7,7 +7,7 @@ services:
       # The standard AMQP protocol port
       - '5672:5672'
   db:
-    image: mongo:4.0.9-xenial
+    image: mongo:4.4.1-bionic
     ports:
       - "27017:27017"
   web:

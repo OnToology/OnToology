@@ -19,7 +19,7 @@ echo "pre secret PLAYGROUND: $PLAYGROUND"
 echo "post secret PLAYGROUND: $PLAYGROUND"
 
 # In case it does not exists
-echo "" >>  $PLAYGROUND/OnToology/OnToology/localwsgi.py
+echo "" >  $PLAYGROUND/OnToology/OnToology/localwsgi.py
 
 
 cat <<EOT >> $PLAYGROUND/OnToology/OnToology/localwsgi.py
@@ -59,8 +59,18 @@ environ['test_user_token']="$test_user_token"
 environ['test_user_email']="$test_user_email"
 environ['db_host']="$db_host"
 environ['db_port']="$db_port"
+environ['db_name'] = "ontoology"
 environ['debug']="true"
-environ['rabbit_processes']="3"
+environ['rabbit_processes']="1"
+environ['rabbit_log_dir']="$PLAYGROUND/rabbit.log"
+environ['rabbit_host']="rabbitmq"
+environ['debug']="true"
+environ['mock_id']="success"
+environ["test_local"]="false"
+environ["test_fork"]="false"
+environ["test_clone"]="true"
+environ["test_push"]="false"
+environ["test_pull"]="false"
 
 EOT
 

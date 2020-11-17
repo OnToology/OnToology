@@ -33,27 +33,19 @@ ENV debug "True"
 ENV db_host db
 ENV db_port 27017
 ENV rabbit_host rabbitmq
-ENV rabbit_host rabbitmq
 ENV rabbit_log_dir /playground/rabbit.log
 
-
-#RUN nohup bash -c "mongod --config /etc/mongod.conf &" && sleep 4 && echo "Mongo should be running"
-#RUN bash -c "mongod --config /etc/mongod.conf & sleep 4 && echo 'Mongo should be running' && tail -F /dev/null"
-
-#RUN bash -c "mongod --config /etc/mongod.conf & sleep 4 && echo 'Mongo should be running' && tail -F /dev/null"
-#ENTRYPOINT ["mongod", "--config", "/etc/mongod.conf", " & "]
-#CMD ["mongod", "--config", "/etc/mongod.conf", " & "]
 
 RUN sh scripts/setup.sh
 #RUN .venv/bin/coverage run manage.py test OnToology
 #RUN .venv/bin/coverage report
 #RUN sh test.sh
 
-COPY ssh/id_rsa /root/.ssh/
-COPY ssh/id_rsa.pub /root/.ssh/
+#COPY ssh/id_rsa /root/.ssh/
+#COPY ssh/id_rsa.pub /root/.ssh/
 # Generate the ssh key from the docker
-# RUN ssh-keygen -b 2048 -t rsa -f /root/.ssh/ -q -N ""
-RUN chmod 400 /root/.ssh/*
+RUN ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ""
+#RUN chmod 400 /root/.ssh/*
 
 # For the codecov
 COPY .git ./
