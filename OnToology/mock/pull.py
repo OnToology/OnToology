@@ -108,3 +108,4 @@ def get_pulls_dict(repo, branch="master"):
   }
 ]
   return pulls
+

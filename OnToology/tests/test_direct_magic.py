@@ -154,7 +154,7 @@ enable = False
             "action": "magic"
         }
         print("going to rabbit: ")
-        rabbit.handle_action(j, logger)
+        rabbit.handle_action(j, logger, raise_exp=True)
         print("returned from rabbit")
         self.assertEqual(1, len(Repo.objects.all()))
         repo = Repo.objects.all()[0]
