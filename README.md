@@ -66,6 +66,11 @@ export rabbit_host=""
 Here we describe some of the main ones
 * `rabbit_processes` : The number of rabbit processes to automatically run (0 means do not run it automatically).
 
+## Why you need your key
+You have to use your own ssh key. The reason is that using git with ssh require that and for security reason,
+we do not provide one. Hence, look at `Dockerfile` for the location and the names of the ssh keys (private and public).
+This is already added in `.gitignore`, so your key will not be shared to github in case you contribute to the project.
+
 
 ## How to contribute
 There are two workflows:
