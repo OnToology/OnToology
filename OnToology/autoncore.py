@@ -118,7 +118,7 @@ def init_g():
         g = Github(username, password)
     return g
 
-def git_magic(target_repo, user, changed_filesss, branch):
+def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
     """
     :param target_repo: user/reponame
     :param user: user email
@@ -210,6 +210,8 @@ def git_magic(target_repo, user, changed_filesss, branch):
         drepo.notes+= str(e)
         drepo.progress = 100
         drepo.save()
+        if raise_exp:
+            raise Exception(str(e))
         return
 
     otask.finished = True
@@ -232,6 +234,8 @@ def git_magic(target_repo, user, changed_filesss, branch):
         drepo.notes += str(e)
         drepo.progress = 100
         drepo.save()
+        if raise_exp:
+            raise Exception(str(e))
         return
 
     otask = OTask(name="Postprocessing", description="trying", success=False, finished=False)
@@ -305,6 +309,8 @@ def git_magic(target_repo, user, changed_filesss, branch):
                 otask.success = False
                 otask.finished = True
                 otask.save()
+                if raise_exp:
+                    raise Exception(str(e))
                 return
         else:
             dolog("No pull for testing 11")
@@ -324,7 +330,10 @@ def git_magic(target_repo, user, changed_filesss, branch):
         otask.success = False
         otask.description = str(e)
         otask.save()
-
+        otask.finished = True
+        otask.save()
+        if raise_exp:
+            raise Exception(str(e))
     otask.finished = True
     otask.save()
 
@@ -494,8 +503,6 @@ def get_ontologies_from_submodules_tree(tree, repo):
 def get_ontologies_in_online_repo(target_repo):
     global g
     ontologies = []
-    if type(g) == type(None):
-        init_g()
     try:
         g = init_g()
         print("asking for repo: <%s>" % target_repo)

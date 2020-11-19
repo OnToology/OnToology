@@ -364,7 +364,7 @@ def handle_publish(j, logger):
         logger.error(err)
 
 
-def handle_action(j, logger):
+def handle_action(j, logger, raise_exp=False):
     """
     :param j:
     :return:
@@ -383,7 +383,7 @@ def handle_action(j, logger):
         if j['action'] == 'magic':
             logger.debug("going for magic: "+str(j))
             try:
-                autoncore.git_magic(j['repo'], j['useremail'], j['changedfiles'], j['branch'])
+                autoncore.git_magic(j['repo'], j['useremail'], j['changedfiles'], j['branch'], raise_exp=raise_exp)
                 logger.debug("magic success")
             except Exception as e:
                 logger.debug("dException in magic")
@@ -394,6 +394,8 @@ def handle_action(j, logger):
                 print("Exception in magic for repo: "+j['repo'])
                 print(str(e))
                 traceback.print_exc()
+                if raise_exp:
+                    raise Exception(str(e))
             logger.debug("magic is done")
         else:
             logger.debug("dInvalid magic redirect: ")
@@ -408,6 +410,8 @@ def handle_action(j, logger):
         logger.error("Exception 2 for magic: "+str(e))
         logger.error("Exception for j: "+str(j))
         traceback.print_exc()
+        if raise_exp:
+            raise Exception(str(e))
     logger.debug("finished handle_action: "+str(j))
 
 
