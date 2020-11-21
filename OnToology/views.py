@@ -705,17 +705,17 @@ def delete_repo(request):
 
 @login_required
 def previsual_toggle(request):
-    user = OUser.objects.get(email=request.user.email)
-    target_repo = request.GET['target_repo']
-    found = False
-    for repo in user.repos.all():
-        if target_repo == repo.url:
-            found = True
-            target_repo = repo
-            break
-    if found:
-        target_repo.previsual = not target_repo.previsual
-        target_repo.save()
+    # user = OUser.objects.get(email=request.user.email)
+    # target_repo = request.GET['target_repo']
+    # found = False
+    # for repo in user.repos.all():
+    #     if target_repo == repo.url:
+    #         found = True
+    #         target_repo = repo
+    #         break
+    # if found:
+    #     # target_repo.previsual = not target_repo.previsual
+    #     target_repo.save()
     return HttpResponseRedirect('/profile')
 
 
@@ -733,7 +733,7 @@ def renew_previsual(request):
     if found:
         repo.state = 'Generating Previsualization'
         repo.notes = ''
-        repo.previsual_page_available = True
+        # repo.previsual_page_available = True
         repo.save()
         autoncore.prepare_log(user.email)
         # cloning_repo should look like 'git@github.com:user/target.git'

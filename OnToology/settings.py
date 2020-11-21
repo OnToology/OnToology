@@ -94,22 +94,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'OnToology.wsgi.application'
 
+
 DATABASES = {
     'default': {
-        'ENGINE': 'djongo',
-        'NAME': 'OnToology123',
-        'ENFORCE_SCHEMA': False,
-        'LOGGING': {
-            'version': 1,
-            'loggers': {
-                'djongo': {
-                    'level': 'DEBUG',
-                    'propagate': False,
-                }
-            },
-        },
+
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -179,36 +170,24 @@ except Exception as e:
 
 environ = os.environ
 print("environ: ")
-# print(environ)
 
-print("type: " + str(type(environ)))
-# print("host in environ: "+environ['host_db'])
+
+db_name = environ['db_name']
+if DEBUG:
+    db_name += "test"
+DATABASES['default']['NAME'] = db_name
+
+DATABASES['default']['ENGINE'] = environ['db_engine']
 
 if 'db_host' in environ:
     print("yes db_host in environ")
     host_db = environ['db_host']
-    DATABASES['default']['CLIENT'] = {}
-    DATABASES['default']['CLIENT']['host'] = host_db
+    DATABASES['default']['HOST'] = host_db
     if 'db_port' in environ:
-        DATABASES['default']['CLIENT']['port'] = int(environ['db_port'])
-
-    print("updated with host: " + str(DATABASES['default']['CLIENT']['host']))
-
+        DATABASES['default']['PORT'] = environ['db_port']
 else:
     print("db_host is not in environ")
 
-if 'db_name' in environ:
-    db_name = environ['db_name']
-    if DEBUG:
-        db_name += "test"
-    DATABASES['default']['NAME'] = db_name
-    print("updated with name: " + str(DATABASES['default']['NAME']))
-else:
-    print("db_name is not in environ")
-
-
-
-print("MONGODB: " + str(DATABASES))
 
 GITHUB_LOCAL_APP_ID = '3995f5db01f035de44c6'
 GITHUB_LOCAL_API_SECRET = '141f896e53db4a4427db177f1ef2c9975e8a3c1f'

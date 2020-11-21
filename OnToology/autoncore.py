@@ -152,14 +152,14 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
     orun = ORun(user=ouser, repo=drepo, branch=branch)
     orun.save()
     dolog("created the orun")
-    otask = OTask(name='Preparation', finished=False, success=False, description="")
+    otask = OTask(name='Preparation', finished=False, success=False, description="", orun=orun)
     dolog("otask is init")
     otask.save()
     dolog("otask is saved")
     otask.description = 'Getting changed files'
     dolog("created the otask")
-    orun.tasks.add(otask)
-    orun.save()
+    # orun.tasks.add(otask)
+    # orun.save()
     dolog("added the task to run")
     try:
         for ftov in changed_filesss:
@@ -238,10 +238,10 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
             raise Exception(str(e))
         return
 
-    otask = OTask(name="Postprocessing", description="trying", success=False, finished=False)
+    otask = OTask(name="Postprocessing", description="trying", success=False, finished=False, orun=orun)
     otask.save()
-    orun.tasks.add(otask)
-    orun.save()
+    # orun.tasks.add(otask)
+    # orun.save()
     try:
         otask.description = "verifying changed files"
         otask.save()
@@ -1063,10 +1063,10 @@ def change_configuration(user_email, target_repo, data, ontologies):
 
         orun = ORun(user=user, repo=repo)
         orun.save()
-        otask = OTask(name="Change Configuration", description="changing the configuration")
+        otask = OTask(name="Change Configuration", description="changing the configuration", orun=orun)
         otask.save()
-        orun.tasks.add(otask)
-        orun.save()
+        # orun.tasks.add(otask)
+        # orun.save()
         for onto in ontologies:
             dolog('inside the loop')
             ar2dtool = onto + '-ar2dtool' in data

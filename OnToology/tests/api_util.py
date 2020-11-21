@@ -9,27 +9,35 @@ user_password = os.environ['test_user_token']
 
 
 def delete_all_repos_from_db():
-    for u in OUser.objects.all():
-        u.repos = []
-        u.save()
-    for r in Repo.objects.all():
-        r.delete()
-        r.save()
+    # OUser.objects.all().delete()
+    # for u in OUser.objects.all():
+    #     u.repos = []
+    #     u.save()
+    # for r in Repo.objects.all():
+    #     r.delete()
+    #     r.save()
     Repo.objects.all().delete()
 
 
 def delete_all_users():
-    for u in OUser.objects.all():
-        u.delete()
-        u.save()
+    # for u in OUser.objects.all():
+    #     u.delete()
+    #     u.save()
     OUser.objects.all().delete()
 
 
 def create_repo(url=None, user=None):
+    if user is None:
+        print("user is none")
+        user = OUser.objects.all()[0]
+    else:
+        print("user is passed")
+        print(type(user))
+        print(user.json())
+    print(OUser.objects.all())
+    print(Repo.objects.all())
     r = Repo(url=url)
     r.save()
-    if user is None:
-        user = OUser.objects.all()[0]
     user.repos.add(r)
     user.save()
     return r
@@ -39,6 +47,7 @@ def create_user():
     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
     user = OUser.objects.create_user(email=os.environ['test_user_email'], username=os.environ['test_user_email'],
                              password=os.environ['test_user_token'], token=sec)
+    user.save()
     # user = OUser()
     # user.email = os.environ['test_user_email']
     # user.username = user.email

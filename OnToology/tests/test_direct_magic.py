@@ -76,20 +76,21 @@ class TestDirectMagic(Serializer, TestCase):
     def setUp(self):
         print("setup DirectMagic")
         delete_all_users()
-        if len(OUser.objects.all()) == 0:
-            create_user()
+        delete_all_repos_from_db()
+        # if len(OUser.objects.all()) == 0:
+        #     create_user()
+        create_user()
         self.url = 'ahmad88me/ontoology-auto-test-no-res'
         self.user = OUser.objects.all()[0]
 
         logger.debug("rabbit host in test: "+rabbit_host)
         num_of_msgs = get_pending_messages()
         logger.debug("test> number of messages in the queue is: " + str(num_of_msgs))
-        delete_all_repos_from_db()
+
 
 # For the jongo test
     def test_generate_all_slash_direct_but_doc(self):
         print("######################test_generate_all_slash_direct_but_doc###############\n\n")
-        delete_all_repos_from_db()
         logger.error("testing the logger\n\n\n\n\n")
         resources_dir = get_repo_resource_dir(os.environ['test_user_email'])
         clone_if_not(resources_dir, self.url)
