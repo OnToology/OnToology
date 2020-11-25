@@ -340,6 +340,9 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
 
 def update_file(target_repo, path, message, content, branch=None):
     global g
+    clean_path = path[0]
+    if path[0] == '/':
+        clean_path = clean_path[1:]
     username = os.environ['github_username']
     password = os.environ['github_password']
     g = Github(username, password)
@@ -349,10 +352,8 @@ def update_file(target_repo, path, message, content, branch=None):
         dolog('default branch with file sha: %s' % str(sha))
     else:
         sha = repo.get_contents(path, branch).sha
-        dolog('branch %s with file %s sha: %s' % (branch, path, str(sha)))
-    apath = path
-    if apath[0] != "/":
-        apath = "/" + apath.strip()
+        dolog('branch %s with file %s sha: %s' % (branch, clean_path, str(sha)))
+    apath = clean_path.strip()
     dolog("username: " + username)
     dolog('will update the file <%s> on repo<%s> with the content <%s>,  sha <%s> and message <%s>' %
           (apath, target_repo, content, sha, message))
@@ -367,7 +368,7 @@ def update_file(target_repo, path, message, content, branch=None):
             return
         except:
             dolog('chance #%d file update' % i)
-            time.sleep(1)
+            time.sleep(3)
     dolog('after 10 changes, still could not update ')
     # so if there is a problem it will raise an exception which will be captured by the calling function
     repo.update_file(apath, message, content, sha)
@@ -823,14 +824,17 @@ def previsual(useremail, target_repo):
             dolog("previsual> " + "repo is found and now generating previsualization")
             repo.state = 'Generating Previsualization'
             repo.notes = ''
-            repo.previsual_page_available = True
+            # repo.previsual_page_available = True
             repo.save()
             # prepare_log(user.email)
             # cloning_repo should look like 'git@github.com:AutonUser/target.git'
             cloning_repo = 'git@github.com:%s.git' % target_repo
             sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
             folder_name = 'prevclone-' + sec
-            clone_repo(cloning_repo, folder_name, dosleep=True)
+
+            if not settings.test_conf['local'] or settings.test_conf['clone']:
+                clone_repo(cloning_repo, folder_name, dosleep=True)
+
             repo_dir = os.path.join(home, folder_name)
             dolog("previsual> will call start previsual")
             msg = start_previsual(repo_dir, target_repo)

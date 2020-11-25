@@ -1,5 +1,5 @@
 OnToology/migrations/
-
+*.db
 nohup.*
 *.swp
 secret_*

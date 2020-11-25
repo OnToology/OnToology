@@ -174,7 +174,9 @@ print("environ: ")
 
 db_name = environ['db_name']
 if DEBUG:
-    db_name += "test"
+    db_name_parts = db_name.split('.')
+    db_name = ".".join(db_name_parts[:-1] + ["test"] + [db_name_parts[-1]])
+    # db_name += "test"
 DATABASES['default']['NAME'] = db_name
 
 DATABASES['default']['ENGINE'] = environ['db_engine']
