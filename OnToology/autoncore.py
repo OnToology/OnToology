@@ -646,7 +646,8 @@ def commit_changes():
     if not settings.test_conf['local']:
         comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
-    call(comm, shell=True)
+    if settings.test_conf['push'] or not settings.test_conf['local']:
+        call(comm, shell=True)
 
     # comm = "cd " + home + parent_folder + ";" + \
     comm = "cd " + os.path.join(home, parent_folder) + ";" + \
@@ -654,14 +655,16 @@ def commit_changes():
     if not settings.test_conf['local']:
         comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
-    call(comm, shell=True)
+    if settings.test_conf['push'] or not settings.test_conf['local']:
+        call(comm, shell=True)
     gup = "git config push.default matching;"
     # comm = "cd " + home + parent_folder + ";" + gu + gup + " git push "
     comm = "cd " + os.path.join(home, parent_folder) + ";" + gu + gup + " git push "
     if not settings.test_conf['local']:
         comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
-    call(comm, shell=True)
+    if settings.test_conf['push'] or not settings.test_conf['local']:
+        call(comm, shell=True)
 
 
 def refresh_repo(target_repo):
