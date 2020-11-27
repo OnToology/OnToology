@@ -29,7 +29,7 @@ environ = os.environ
 
 environ['github_username']="OnToologyTestUser"
 environ['github_repos_dir']="$PLAYGROUND/repos/"
-environ['ar2dtool_dir']="$PLAYGROUND/ar2dtool/bin/"
+environ['ar2dtool_dir']="$PLAYGROUND/ar2dtool/"
 environ['ar2dtool_config']="$PLAYGROUND/config/"
 environ['widoco_dir']="$PLAYGROUND/widoco/"
 environ['owl2jsonld_dir']="$PLAYGROUND/owl2jsonld"
@@ -57,11 +57,18 @@ environ['client_secret_public']="$client_secret_public"
 environ['client_secret_private']="$client_secret_private"
 environ['test_user_token']="$test_user_token"
 environ['test_user_email']="$test_user_email"
-environ['db_host']="$db_host"
-environ['db_port']="$db_port"
+#environ['db_host']="$db_host"
+#environ['db_port']="$db_port"
 environ['debug']="true"
+environ['rabbit_log_dir']='$PLAYGROUND/rabbit.log'
 environ['rabbit_processes']="3"
-
+environ['db_name']="ontoology.db"
+environ['db_engine']="django.db.backends.sqlite3"
+environ['test_local']='true'
+environ['test_fork']='false'
+environ['test_clone']='true'
+environ['test_push']='false'
+environ['test_pull']='false'
 EOT
 
 # For some reason if I remove this echo, the appending to

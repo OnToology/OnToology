@@ -6,26 +6,9 @@ services:
     ports:
       # The standard AMQP protocol port
       - '5672:5672'
-  db:
-    image: mongo:4.0.9-xenial
-    ports:
-      - "27017:27017"
   web:
-#    environment:
-#    - db_host=db
-#    - db_port=27017
-#    - github_password
-#    - client_id_login
-#    - client_id_public
-#    - client_id_private
-#    - client_secret_login
-#    - client_secret_public
-#    - client_secret_private
-#    - test_user_token
-#    - test_user_email
     build: .
     depends_on:
-      - db
       - rabbitmq
     ports:
       - "8000:8000"
