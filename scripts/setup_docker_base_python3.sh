@@ -1,16 +1,5 @@
-apk add --update \
-    python3 \
-    python3-dev \
-    py3-pip \
-    build-base \
-    wget \
-    git \
-    vim \
-    graphviz \
-    zip \
-    py-virtualenv \
-    openssh \
-  && rm -rf /var/cache/apk/*
+apt-get update
+apt-get install wget python-virtualenv graphviz git zip default-jre -y
 
 
 export PLAYGROUND=/playground

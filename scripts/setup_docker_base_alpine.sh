@@ -1,13 +1,14 @@
 apk add --update \
-    python3 \
-    python3-dev \
-    py3-pip \
+    python \
+    python-dev \
+    py-pip \
     build-base \
     wget \
     git \
     vim \
     graphviz \
     zip \
+    openjdk8-jre \
     py-virtualenv \
     openssh \
   && rm -rf /var/cache/apk/*
@@ -26,16 +27,18 @@ mkdir $PLAYGROUND/repos
 mkdir $PLAYGROUND/repos/log
 
 
+virtualenv -p /usr/bin/python2.7 .venv
+.venv/bin/pip install -r requirements.txt
 
 
 
 # setup widoco
 echo "Widoco setup ..."
-cd $PLAYGROUND;mkdir widoco;cd widoco; wget --progress=bar:force https://github.com/dgarijo/Widoco/releases/download/v1.4.15_0/widoco-1.4.15-jar-with-dependencies.jar ; mv *.jar widoco.jar ; chmod 777 widoco*
+cd $PLAYGROUND;mkdir widoco;cd widoco; wget --progress=bar:force https://github.com/dgarijo/Widoco/releases/download/v1.4.15_0/widoco-1.4.15-jar-with-dependencies.jar ; mv widoco-* widoco.jar ; chmod 777 widoco*
 
 # setup ar2dtool
 echo "ar2dtool ..."
-cd $PLAYGROUND;mkdir ar2dtool;wget --progress=bar:force https://github.com/ahmad88me/ar2dtool-oegfork/releases/download/v.1.3/ar2dtool-1.3.0-jar-with-dependencies.jar;mv ar2tdtool/*.jar ar2dtool/ar2dtool.jar
+cd $PLAYGROUND;git clone https://github.com/idafensp/ar2dtool.git; chmod 777 ar2dtool/bin/ar2dtool.jar
 
 # vocablite
 echo "vocabLite ..."
@@ -49,7 +52,7 @@ cd $PLAYGROUND;mkdir owl2jsonld; cd owl2jsonld; wget --progress=bar:force https:
 # setup oops report
 echo "OOPS! report ..."
 cd $PLAYGROUND;git clone https://github.com/OnToology/oops-report.git
-cd $PLAYGROUND; cd oops-report;virtualenv -p /usr/bin/python3 .venv;.venv/bin/pip install -r requirements.txt
+cd $PLAYGROUND; cd oops-report;virtualenv -p /usr/bin/python2.7 .venv;.venv/bin/pip install -r requirements.txt
 
 
 

@@ -1,4 +1,4 @@
-FROM ahmad88me/ontoology:alpine
+FROM ahmad88me/ontoology:python3
 WORKDIR /playground/OnToology
 
 COPY Integrator Integrator

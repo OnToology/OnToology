@@ -1,7 +1,7 @@
-FROM openjdk:8-alpine
-RUN mkdir -p playground ;\
-    chmod 777 playground ; \
-    mkdir -p playground/OnToology
+FROM python:3.8-slim
+RUN mkdir -p playground
+RUN chmod 777 playground
+RUN mkdir -p playground/OnToology
 WORKDIR /playground/OnToology
 COPY scripts scripts
 COPY *.sh ./
