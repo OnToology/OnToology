@@ -296,7 +296,7 @@ def add_hook(request):
                         repo.progress = 100.0
                         repo.save()
                         print('repo saved')
-                    except Model.DoesNotExist:
+                    except ObjectDoesNotExist:
                         repo = Repo()
                         repo.url = target_repo
                         repo.save()
