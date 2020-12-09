@@ -789,7 +789,7 @@ def add_collaborator(target_repo, user, newg=None):
                     # username = os.environ['github_username']
                     # password = os.environ['github_password']
                     # g_ontoology_user = Github(username, password)
-                    g_ontoology_user.get_user().accept_invitation(invitation)
+                    g.get_user().accept_invitation(invitation)
                     print("invitation accepted: " + str(invitation))
                     return {'status': True, 'msg': 'added as a new collaborator'}
                 except Exception as e:

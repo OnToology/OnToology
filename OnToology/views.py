@@ -263,6 +263,7 @@ def add_hook(request):
     print(request.body)
     print("header: ")
     print(request.headers)
+    changed_files = []
     if settings.test_conf['local']:
         print('We are in test mode')
     try:
