@@ -118,6 +118,7 @@ def init_g():
         g = Github(username, password)
     return g
 
+
 def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
     """
     :param target_repo: user/reponame
@@ -130,7 +131,7 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
     global parent_folder
     global log_file_dir
 
-    print("\n\n\n In gitmagic print")
+    print("\n\n\n In gitmagic print: user <%s>" % str(user))
     logger_fname = prepare_logger(user)
     parent_folder = user
     if not settings.test_conf['local']:
@@ -1011,7 +1012,9 @@ def publish(name, target_repo, ontology_rel_path, useremail):
                     return error_msg
             dolog("publish> htaccess content: ")
             dolog(str(type(htaccess)))
-            htaccess = str(htaccess)
+            if isinstance(htaccess, bytes):
+                htaccess = htaccess.decode('utf-8')
+            # htaccess = str(htaccess)
             dolog(str(type(htaccess)))
             dolog(htaccess)
             new_htaccess = htaccess_github_rewrite(target_repo=target_repo, htaccess_content=htaccess,

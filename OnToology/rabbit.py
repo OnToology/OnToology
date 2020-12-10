@@ -84,6 +84,7 @@ def run_rabbit():
 #     """
 #     return direct_call(message_json)
 
+
 def send(message_json):
     """
     :param message:
@@ -164,7 +165,6 @@ def get_num_of_processes_of_rabbit():
     return -1
 
 
-
 def direct_call(j):
     """
     Consume messages from the ready queue
@@ -200,7 +200,6 @@ def direct_call(j):
         return False
 
 
-
 def callback_consumer(lock, sender, receiver, logger, j):
     # lock = extra['lock']
     # logger = extra['logger']
@@ -230,6 +229,7 @@ def callback_consumer(lock, sender, receiver, logger, j):
     sender.send(locked_repos)
     lock.release()
     logger.debug("")
+
 
 def callback2(extra, ch, method, properties, body):
     """
