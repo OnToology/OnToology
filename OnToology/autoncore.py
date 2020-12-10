@@ -1385,6 +1385,7 @@ def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):
         "RewriteRule ^$ ontology.json [R=303, L]",
         "RewriteRule ^$ ontology.nt [R=303, L]",
 
+        "RewriteRule ^$ index-de.html [R=303,L]",
         "RewriteRule ^$ index-pt.html [R=303,L]",
         "RewriteRule ^$ index-it.html [R=303,L]",
         "RewriteRule ^$ index-es.html [R=303,L]",
