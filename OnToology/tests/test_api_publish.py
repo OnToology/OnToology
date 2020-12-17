@@ -9,9 +9,10 @@ from .api_util import create_publishname, delete_all_users
 from django.test import Client
 from unittest import TestCase
 from OnToology.models import *
+from  .serializer import Serializer
 
 
-class TestPublishAPI(TestCase):
+class TestPublishAPI(Serializer, TestCase):
     def setUp(self):
         delete_all_users()
         if len(OUser.objects.all()) == 0:

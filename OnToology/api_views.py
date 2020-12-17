@@ -2,6 +2,7 @@ import random
 import string
 import os
 from subprocess import call
+import traceback
 
 from github import Github
 
@@ -75,7 +76,7 @@ class ReposView(View):
     @method_decorator(token_required)
     def get(self, request):
         user = request.user
-        repos = [r.json() for r in user.repos]
+        repos = [r.json() for r in user.repos.all()]
         return JsonResponse({'repos': repos})
 
     @method_decorator(token_required)
@@ -90,7 +91,7 @@ class ReposView(View):
             repo.url = url
             #repo.owner = owner
             repo.save()
-            user.repos.append(repo)
+            user.repos.add(repo)
             user.save()
             return JsonResponse({'message': 'Repo is added successfully'}, status=201)
         except Exception as e:
@@ -99,17 +100,20 @@ class ReposView(View):
     @method_decorator(token_required)
     def delete(self, request, repoid):
         try:
+            # print("delete start")
             user = request.user
             r = Repo.objects.filter(id=repoid)
-            if len(r) == 0 or r[0] not in user.repos:
+            if len(r) == 0 or r[0] not in user.repos.all():
                 return JsonResponse({'message': 'Invalid repo'}, status=404)
-
             r = r[0]
-            user.update(pull__repos=r)
+            # user.repos.remove(r)
+            # user.update(pull__repos=r)
             r.delete()
-            user.save()
+            #user.save()
             return JsonResponse({'message': 'The repo is deleted successfully'}, status=204)
         except Exception as e:
+            # print("delete exception")
+            traceback.print_exc(file=sys.stdout)
             return JsonResponse({'message': 'Internal error: '+str(e)}, status=500)
 
 
