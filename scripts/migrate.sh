@@ -1,4 +1,6 @@
+echo "Migration script -- START"
 rm -Rf OnToology/migrations
 rm -Rf *.db
-python manage.py makemigrations OnToology
-python manage.py migrate
+.venv/bin/python manage.py makemigrations OnToology
+.venv/bin/python manage.py migrate
+echo "Migration script -- FINISHED"

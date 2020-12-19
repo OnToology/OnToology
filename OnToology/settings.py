@@ -144,7 +144,16 @@ STATIC_URL = '/static/'
 
 
 try:
-    from OnToology.localwsgi import *
+    print("openning the file:")
+    f = open("OnToology/localwsgi.py")
+    print(f.read())
+    f.close()
+    print("closing the file:")
+    from OnToology.localwsgi import environ  # as environabc
+    print("\\\\*****\\\\\\*****\n\n\n\n\n****")
+    for k in environ:
+        print(k+" abc--> "+str(environ[k]))
+    # print(environ)
     test_conf = {
         'local': environ['test_local'].strip().lower() =="true",  # doing test
         'fork': environ['test_fork'].strip().lower() =="true",  # perform fork
@@ -154,8 +163,11 @@ try:
     }
     print("importing environ from local wsgi")
 except Exception as e:
-    print("settings> no OnToology.local wsgi")
+    print("settings> no1 OnToology.local wsgi")
     print(e)
+    import traceback
+    traceback.print_exc()
+
     test_conf = {'local': False,  # doing test
                  'fork': False,  # perform fork
                  'clone': False,  # perform clone
@@ -165,7 +177,7 @@ except Exception as e:
     try:
         from localwsgi import *
     except Exception as e:
-        print("settings> no local_wsgi")
+        print("settings> no2 local_wsgi")
         raise Exception("Force local wsgi load")
 
 environ = os.environ
