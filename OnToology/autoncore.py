@@ -100,22 +100,24 @@ def init_g():
     username = os.environ['github_username']
     password = os.environ['github_password']
     if settings.DEBUG == True:
+        print("init_g> debug")
         from OnToology.mock import mock_dict
         if 'mock_id' in os.environ and os.environ['mock_id'].strip() != "":
-            print("mock_id in environ: ")
+            print("init_g> mock_id in environ: ")
             mock_id = os.environ['mock_id']
             m = mock_dict[mock_id]
-            print("mock: ")
+            print("init_g>  mock: ")
             # import pprint
             # pp = pprint.PrettyPrinter(indent=1)
             # pp.pprint(m)
             print(m.keys())
             g = Github(username, password, mock=m)
         else:
-            print("mock_id is not in environ")
+            print("init_g> mock_id is not in environ")
             g = Github(username, password)
     else:
         g = Github(username, password)
+        print("init_g> No mock id")
     return g
 
 def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
@@ -774,33 +776,50 @@ def add_collaborator(target_repo, user, newg=None):
     global g
     if newg is None:
         if g is None:
-            init_g()
+            g = init_g()
         newg = g
     try:
+        print("in try")
+        u = newg.get_user()
+        print(u)
+        print("user name: "+str(u.name))
+        print("email: "+str(u.email))
         print("adding collaborator from user: %s " % str(newg.get_user().name))
-        if newg.get_user().name is None or newg.get_user().email is None:
+        print("goring for the first")
+        if u.name is None or u.email is None:
+            print("no email or name")
             return {'status': False, 'error': 'Make sure you have your name and email public and not empty on GitHub'}
         if newg.get_repo(target_repo).has_in_collaborators(user):
+            print("collaborator already there")
             return {'status': True, 'msg': 'this user is already a collaborator'}
         else:
+            print("going to add collaborator\n\n")
             invitation = newg.get_repo(target_repo).add_to_collaborators(user)
+            print("got a reply")
+            print(invitation)
             if invitation is None:
                 print("no invitation is created")
                 return {'status': False, 'error': 'Invitation is not generated'}
             else:
+                print("invitation exists")
                 try:
+                    print("go to init")
                     init_g()
+                    print("try to acceept invitation")
                     # username = os.environ['github_username']
                     # password = os.environ['github_password']
                     # g_ontoology_user = Github(username, password)
-                    g_ontoology_user.get_user().accept_invitation(invitation)
+                    # g_ontoology_user.get_user().accept_invitation(invitation)
+                    g.get_user().accept_invitation(invitation)
                     print("invitation accepted: " + str(invitation))
                     return {'status': True, 'msg': 'added as a new collaborator'}
                 except Exception as e:
                     print("exception: " + str(e))
                     print("invitation not accepted or invalid: " + str(invitation))
+                    traceback.print_exc()
                     return {'status': False, 'error': 'Could not accept the invitation for becoming a collaborator'}
     except Exception as e:
+        traceback.print_exc()
         return {'status': False, 'error': str(e)}  # e.data}
 
 
@@ -1018,7 +1037,9 @@ def publish(name, target_repo, ontology_rel_path, useremail):
                     return error_msg
             dolog("publish> htaccess content: ")
             dolog(str(type(htaccess)))
-            htaccess = str(htaccess)
+            if isinstance(htaccess, bytes):
+                htaccess = htaccess.decode('utf-8')
+            # htaccess = str(htaccess)
             dolog(str(type(htaccess)))
             dolog(htaccess)
             new_htaccess = htaccess_github_rewrite(target_repo=target_repo, htaccess_content=htaccess,
@@ -1378,6 +1399,7 @@ def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):
     :return: htaccess with github rewrite as the domain
     """
     rewrites = [
+        "RewriteRule ^$ index-de.html [R=303, L]",
         "RewriteRule ^$ index-pt.html [R=303, L]",
         "RewriteRule ^$ index-it.html [R=303, L]",
         "RewriteRule ^$ index-es.html [R=303, L]",
@@ -1389,6 +1411,7 @@ def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):
         "RewriteRule ^$ ontology.json [R=303, L]",
         "RewriteRule ^$ ontology.nt [R=303, L]",
 
+        "RewriteRule ^$ index-de.html [R=303,L]",
         "RewriteRule ^$ index-pt.html [R=303,L]",
         "RewriteRule ^$ index-it.html [R=303,L]",
         "RewriteRule ^$ index-es.html [R=303,L]",

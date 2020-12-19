@@ -57,3 +57,10 @@ class TestRepoAPI(Serializer, TestCase):
         response = c.delete('/api/repos/'+repoid, HTTP_AUTHORIZATION='Token ' + self.user.token)
         self.assertEqual(response.status_code, 204, msg=str(response.content))
         self.assertEqual(len(Repo.objects.all()), 0, msg="the repo is not deleted")
+
+    def test_add_collaborator(self):
+        delete_all_repos_from_db()
+        create_repo(url=self.url)
+        from OnToology.autoncore import add_collaborator
+        j = add_collaborator(target_repo=self.url, user=self.url.split('/')[0])
+        self.assertTrue(j['status'], msg="Error adding the collaborator:")
