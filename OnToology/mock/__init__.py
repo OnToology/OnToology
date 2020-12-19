@@ -58,6 +58,26 @@ mock_dict_success = {
             "status": 201,
             "body": get_pulls_dict(repo, branch="master")[0]
         }
+    },
+    "/repos/%s/collaborators/%s" % (repo,user) : {
+        # "GET": {
+        #     "status": 204,
+        #     "body": ""
+        # },
+        "GET": {
+            "status": 404,
+            "body": ""
+        },
+        "PUT": {
+            "status": 201,
+            "body": get_add_collaborator_dict(repo)
+        }
+    },
+    "/user/repository_invitations/%s" % "1" :{
+        "PATCH": {
+            "status": 204,
+            "body": ""
+        }
     }
 }
 
