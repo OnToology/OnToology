@@ -16,7 +16,13 @@
 #
 # @author Ahmad Alobaid
 #
-
+# try:
+#     from OnToology.models import *
+#     # from models import *
+# except:
+#     from djangoperpmod import *
+#     # from models import *
+#     from OnToology.models import *
 
 from github import Github
 from datetime import datetime
@@ -24,20 +30,34 @@ from subprocess import call
 import string
 import random
 import time
-import StringIO
-import settings
-import io
+import sys
+import traceback
 
-from __init__ import *
+from io import StringIO  ## for Python 3
+try:
+    print("importing OnToology...")
+    import OnToology
+    print("Success")
+except:
+    print("Importing djangoperpmode")
+    import djangoperpmod
+    print("Imported it")
+
+print("autonecore continue")
+
+from OnToology import settings
+from OnToology.models import *
+import io
+import configparser as ConfigParser
+
+from OnToology.__init__ import *
 
 import Integrator
 
 import shutil
 import logging
 
-from mongoengine import *
-
-from urllib import quote
+from urllib.parse import quote
 
 use_database = True
 
@@ -71,6 +91,7 @@ def prepare_logger(user, ext='.log_new'):
 
 
 def dolog(msg):
+    print("dolog> "+msg)
     logging.critical(msg)
 
 
@@ -78,182 +99,263 @@ def init_g():
     global g
     username = os.environ['github_username']
     password = os.environ['github_password']
-    g = Github(username, password)
+    if settings.DEBUG == True:
+        print("init_g> debug")
+        from OnToology.mock import mock_dict
+        if 'mock_id' in os.environ and os.environ['mock_id'].strip() != "":
+            print("init_g> mock_id in environ: ")
+            mock_id = os.environ['mock_id']
+            m = mock_dict[mock_id]
+            print("init_g>  mock: ")
+            # import pprint
+            # pp = pprint.PrettyPrinter(indent=1)
+            # pp.pprint(m)
+            print(m.keys())
+            g = Github(username, password, mock=m)
+        else:
+            print("init_g> mock_id is not in environ")
+            g = Github(username, password)
+    else:
+        g = Github(username, password)
+        print("init_g> No mock id")
+    return g
 
-
-def git_magic(target_repo, user, changed_filesss):
-    logger_fname = prepare_logger(user)
+def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
+    """
+    :param target_repo: user/reponame
+    :param user: user email
+    :param changed_filesss: list of changed files
+    :param branch: the branch of the changed
+    :return:
+    """
     global g
     global parent_folder
     global log_file_dir
+
+    print("\n\n\n In gitmagic print")
+    logger_fname = prepare_logger(user)
     parent_folder = user
     if not settings.test_conf['local']:
         prepare_log(user)
     dolog('############################### magic #############################')
-    dolog('target_repo: ' + target_repo)
-    change_status(target_repo, 'Preparing')
-    from models import Repo
+    dolog("1> number of users: %d" % len(OUser.objects.all()))
+    dolog('target_repo: <%s>' % target_repo)
+    dolog("branch: %s" % branch)
     drepo = Repo.objects.get(url=target_repo)
+    drepo.state = 'Preparing'
+    drepo.save()
+    dolog("have the repo now")
     drepo.clear_ontology_status_pairs()
-    for ftov in changed_filesss:
-        if ftov[-4:] in ontology_formats:
-            if ftov[:len('OnToology/')] != 'OnToology/':  # This is to solve bug #265
-                drepo.update_ontology_status(ontology=ftov, status='pending')
-    # so the tool user can takeover and do stuff
-    username = os.environ['github_username']
-    password = os.environ['github_password']
-    g = Github(username, password)
-    local_repo = target_repo.replace(target_repo.split('/')[-2], ToolUser)
-    if not settings.test_conf['local']:
-        delete_repo(local_repo)
-        time.sleep(refresh_sleeping_secs)
-    dolog('repo deleted')
-    if not settings.test_conf['local'] or settings.test_conf['fork'] or settings.test_conf[
-        'clone']:  # in case it is not test or test with fork option
-        dolog('will fork the repo')
-        change_status(target_repo, 'forking repo')
-        forked_repo = fork_repo(target_repo)
-        cloning_url = forked_repo.ssh_url
-        time.sleep(refresh_sleeping_secs)
-        dolog('repo forked')
-        drepo.progress = 10.0
-        drepo.save()
-    else:
-        print "no fork"
-    if not settings.test_conf['local'] or settings.test_conf['clone']:
-        change_status(target_repo, 'cloning repo')
-        clone_repo(cloning_url, user)
-        dolog('repo cloned')
-        drepo.progress = 20.0
-    files_to_verify = []
-    # print "will loop through changed files"
-    if log_file_dir is None:
-        prepare_log(user)
-
-    Integrator.tools_execution(changed_files=changed_filesss, base_dir=os.path.join(home, user), logfile=log_file_dir,
-                               target_repo=target_repo, g_local=g, dolog_fname=logger_fname,
-                               change_status=change_status, repo=drepo)
-
-    exception_if_exists = ""
-    files_to_verify = [c for c in changed_filesss if c[-4:] in ontology_formats]
-    for c in changed_filesss:
-        if c[:-4] in ontology_formats:
-            print "file to verify: " + c
+    dolog("cleared")
+    dolog("2> number of users: %d" % len(OUser.objects.all()))
+    dolog("looking for user: <%s> " % (str(user)))
+    ouser = OUser.objects.get(email=user)
+    dolog("got the ouser")
+    orun = ORun(user=ouser, repo=drepo, branch=branch)
+    orun.save()
+    dolog("created the orun")
+    otask = OTask(name='Preparation', finished=False, success=False, description="", orun=orun)
+    dolog("otask is init")
+    otask.save()
+    dolog("otask is saved")
+    otask.description = 'Getting changed files'
+    dolog("created the otask")
+    # orun.tasks.add(otask)
+    # orun.save()
+    dolog("added the task to run")
+    try:
+        for ftov in changed_filesss:
+            if ftov[-4:] in ontology_formats:
+                if ftov[:len('OnToology/')] != 'OnToology/':  # This is to solve bug #265
+                    dolog("update ontology status")
+                    dolog("ontology: "+ftov)
+                    drepo.update_ontology_status(ontology=ftov, status='pending')
+                    dolog("ontology status is updated")
+        # so the tool user can takeover and do stuff
+        dolog("pre block")
+        g = init_g()
+        if not settings.test_conf['local'] or settings.test_conf['fork'] or settings.test_conf[
+            'clone']:  # in case it is not test or test with fork option
+            dolog('will fork the repo')
+            drepo.state = 'forking repo'
+            otask.description += 'fork the repo'
+            otask.save()
+            forked_repo = fork_repo(target_repo)
+            cloning_url = forked_repo.ssh_url
+            time.sleep(refresh_sleeping_secs)
+            dolog('repo forked: '+str(cloning_url))
+            drepo.progress = 10.0
+            drepo.save()
         else:
-            print "c: %s c-4: %s" % (c, c[-4:])
-
-    # After the loop
-    dolog("number of files to verify %d" % (len(files_to_verify)))
-    if len(files_to_verify) == 0:
-        print "files: " + str(files_to_verify)
-        change_status(target_repo, 'Ready')
+            print("no fork")
+        if not settings.test_conf['local'] or settings.test_conf['clone']:
+            drepo.state = 'cloning repo'
+            drepo.save()
+            otask.description = 'Clone the repo'
+            otask.save()
+            clone_repo(cloning_url, user)
+            dolog('repo cloned')
+            drepo.progress = 20.0
+        files_to_verify = []
+        if log_file_dir is None:
+            prepare_log(user)
+        otask.success = True
+        otask.save()
+    except Exception as e:
+        dolog("Exception: "+str(e))
+        traceback.print_exc()
+        otask.success = False
+        otask.finished = True
+        otask.description = str(e)
+        otask.save()
+        drepo.state = 'Ready'
+        drepo.notes+= str(e)
         drepo.progress = 100
         drepo.save()
+        if raise_exp:
+            raise Exception(str(e))
         return
-    # if not test or test with push
-    if not settings.test_conf['local'] or settings.test_conf['push']:
-        commit_changes()
-        dolog('changes committed')
-    else:
-        print 'No push for testing'
-    remove_old_pull_requests(target_repo)
-    if exception_if_exists == "":  # no errors
-        change_status(target_repo, 'validating')
-    else:
-        change_status(target_repo, exception_if_exists)
-        # in case there is an error, create the pull request as well
-    # Now to enabled
-    # This kind of verification is too naive and need to be eliminated
-    # for f in files_to_verify:
-    #     repo = None
-    #     if use_database:
-    #         from models import Repo
-    #         repo = Repo.objects.get(url=target_repo)
-    #     try:
-    #         verify_tools_generation_when_ready(f, repo)
-    #         dolog('verification is done successfully')
-    #     except Exception as e:
-    #         dolog('verification have an exception: ' + str(e))
 
-    if use_database:
-        if Repo.objects.get(url=target_repo).state != 'validating':
-            r = Repo.objects.get(url=target_repo)
-            s = r.state
-            s = s.replace('validating', '')
-            r.state = s
-            r.save()
-            # The below "return" is commented so pull request are created even if there are files that are not generated
-    # if not testing or testing with pull enabled
-    if settings.test_conf['pull']:
-        print "pull is true"
-    else:
-        print "pull is false"
-    if not settings.test_conf['local'] or settings.test_conf['pull']:
-        change_status(target_repo, 'creating a pull request')
-        try:
-            r = send_pull_request(target_repo, ToolUser)
-            dolog('pull request is sent')
-            change_status(target_repo, 'pull request is sent')
-            change_status(target_repo, 'Ready')
-        except Exception as e:
-            exception_if_exists += str(e)
-            dolog('failed to create pull request: ' + exception_if_exists)
-            change_status(target_repo, 'failed to create a pull request')
-    else:
-        dolog("No pull for testing")
-        print 'No pull for testing'
-        change_status(target_repo, 'Ready')
-    drepo.progress = 100
+    otask.finished = True
+    otask.save()
+    drepo.state = 'Tools'
     drepo.save()
-    # change_status(target_repo, 'Ready')
 
-
-def verify_tools_generation_when_ready(ver_file_comp, repo=None):
-    ver_file = os.path.join(get_target_home(), ver_file_comp['file'], verification_log_fname)
-    ver_file = get_abs_path(ver_file)
-    dolog('ver file: ' + ver_file)
-    if ver_file_comp['ar2dtool_enable'] == ver_file_comp['widoco_enable'] == ver_file_comp['oops_enable'] == \
-            ver_file_comp['owl2jsonld_enable'] == False:
+    try:
+        Integrator.tools_execution(changed_files=changed_filesss, base_dir=os.path.join(home, user), logfile=log_file_dir,
+                                   target_repo=target_repo, g_local=g, dolog_fname=logger_fname,
+                                   change_status=change_status, repo=drepo, orun=orun)
+    except Exception as e:
+        dolog("Exception: " + str(e))
+        traceback.print_exc()
+        # otask.success = False
+        # otask.finished = True
+        # otask.description = str(e)
+        # otask.save()
+        drepo.state = 'Ready'
+        drepo.notes += str(e)
+        drepo.progress = 100
+        drepo.save()
+        if raise_exp:
+            raise Exception(str(e))
         return
-    for i in range(20):
-        time.sleep(15)
-        f = open(ver_file, "r")
-        s = f.read()
-        f.close()
-        if ver_file_comp['ar2dtool_enable'] and 'ar2dtool' not in s:
-            continue
-        if ver_file_comp['widoco_enable'] and 'widoco' not in s:
-            continue
-        if ver_file_comp['oops_enable'] and 'oops' not in s:
-            continue
-        if ver_file_comp['owl2jsonld_enable'] and 'owl2jsonld' not in s:
-            continue
-        os.remove(ver_file)  # the verification file is no longer needed
-        dolog('The removed file is: ' + ver_file)
-        return verify_tools_generation(ver_file_comp, repo)
-    repo.state = ver_file_comp['file'] + \
-                 ' is talking too much time to generate output'
-    if settings.test_conf['local']:
-        assert False, 'Taking too much time for verification'
-    else:  # I want to see the file in case of testing
-        os.remove(ver_file)  # the verification file is no longer needed
+
+    otask = OTask(name="Postprocessing", description="trying", success=False, finished=False, orun=orun)
+    otask.save()
+    # orun.tasks.add(otask)
+    # orun.save()
+    try:
+        otask.description = "verifying changed files"
+        otask.save()
+        files_to_verify = [c for c in changed_filesss if c[-4:] in ontology_formats]
+        for c in changed_filesss:
+            if c[:-4] in ontology_formats:
+                print("file to verify: " + c)
+            else:
+                print("c: %s c-4: %s" % (c, c[-4:]))
+        otask.description = "preparing the repo after the processing"
+        otask.save()
+        # After the loop
+        dolog("number of files to verify %d" % (len(files_to_verify)))
+        if len(files_to_verify) == 0:
+            print("files: " + str(files_to_verify))
+            drepo.state = 'Ready'
+            drepo.notes = ''
+            drepo.progress = 100
+            drepo.save()
+            return
+        # if not test or test with push
+        if not settings.test_conf['local'] or settings.test_conf['push']:
+            dolog("will commit the changed")
+            commit_changes()
+            dolog('changes committed')
+        else:
+            dolog('No push for testing')
+        otask.description = "Removing old pull requests"
+        otask.save()
+        # remove_old_pull_requests(target_repo)
+
+        otask.description = "Generating pull request"
+        otask.save()
+        if settings.test_conf['pull']:
+            print("pull is true")
+        else:
+            print("pull is false")
+        if not settings.test_conf['local'] or settings.test_conf['pull']:
+            drepo.state = 'creating a pull request'
+            drepo.save()
+            try:
+                remove_old_pull_requests(target_repo)
+                time.sleep(5)
+                r = send_pull_request(target_repo, ToolUser, branch)
+                if r['status']:
+                    dolog('pull request is sent')
+                    drepo.notes = ''
+                    drepo.state = 'Ready'
+                    drepo.save()
+                else:
+                    dolog('Error generating the pull request')
+                    drepo.notes = r['error']
+                    drepo.state = 'Ready'
+                    drepo.save()
+                    raise Exception(r['error'])
+            except Exception as e:
+                print("exception: " + str(e))
+                traceback.print_exc()
+                exception_if_exists = str(e)
+                dolog('failed to create pull request: ' + exception_if_exists)
+                drepo.notes = 'failed to create a pull request'
+                drepo.progress = 100
+                drepo.state = 'Ready'
+                drepo.save()
+                otask.success = False
+                otask.finished = True
+                otask.save()
+                if raise_exp:
+                    raise Exception(str(e))
+                return
+        else:
+            dolog("No pull for testing 11")
+            print('No pull for testing 11')
+            drepo.state = 'Ready'
+            drepo.save()
+        drepo.progress = 100
+        drepo.save()
+
+        otask.success = True
+        otask.save()
+
+
+    except Exception as e:
+        print("exception: "+str(e))
+        traceback.print_exc()
+        otask.success = False
+        otask.description = str(e)
+        otask.save()
+        otask.finished = True
+        otask.save()
+        if raise_exp:
+            raise Exception(str(e))
+    otask.finished = True
+    otask.save()
 
 
 def update_file(target_repo, path, message, content, branch=None):
     global g
+    clean_path = path[0]
+    if path[0] == '/':
+        clean_path = clean_path[1:]
     username = os.environ['github_username']
     password = os.environ['github_password']
     g = Github(username, password)
     repo = g.get_repo(target_repo)
     if branch is None:
-        sha = repo.get_file_contents(path).sha
+        sha = repo.get_contents(path).sha
         dolog('default branch with file sha: %s' % str(sha))
     else:
-        sha = repo.get_file_contents(path, branch).sha
-        dolog('branch %s with file %s sha: %s' % (branch, path, str(sha)))
-    apath = path
-    if apath[0] != "/":
-        apath = "/" + apath.strip()
+        sha = repo.get_contents(path, branch).sha
+        dolog('branch %s with file %s sha: %s' % (branch, clean_path, str(sha)))
+    apath = clean_path.strip()
     dolog("username: " + username)
     dolog('will update the file <%s> on repo<%s> with the content <%s>,  sha <%s> and message <%s>' %
           (apath, target_repo, content, sha, message))
@@ -268,7 +370,7 @@ def update_file(target_repo, path, message, content, branch=None):
             return
         except:
             dolog('chance #%d file update' % i)
-            time.sleep(1)
+            time.sleep(3)
     dolog('after 10 changes, still could not update ')
     # so if there is a problem it will raise an exception which will be captured by the calling function
     repo.update_file(apath, message, content, sha)
@@ -280,7 +382,7 @@ def verify_tools_generation(ver_file_comp, repo=None):
         target_file = os.path.join(get_abs_path(get_target_home()),
                                    ver_file_comp['file'],
                                    tools_conf['ar2dtool']['folder_name'],
-                                   ar2dtool.ar2dtool_config_types[0][:-5],
+                                   Integrator.ar2dtool.ar2dtool_config_types[0][:-5],
                                    get_file_from_path(ver_file_comp['file']) +
                                    "." + tools_conf['ar2dtool']['type'] +
                                    '.graphml')
@@ -357,7 +459,7 @@ def get_ontologies_from_a_submodule(path, url):
     """
     global g
     ontologies = []
-    print "get_ontologies_from_a_submodule: path=%s and url=%s" % (path, url)
+    print("get_ontologies_from_a_submodule: path=%s and url=%s" % (path, url))
     try:
         target_repo = ("/".join(url.split('/')[-2:])).strip()[:-4]
         repo = g.get_repo(target_repo)
@@ -369,11 +471,11 @@ def get_ontologies_from_a_submodule(path, url):
                 if f.type == 'blob':
                     for ontfot in ontology_formats:
                         if f.path[-len(ontfot):] == ontfot:
-                            print "get_ontologies_from_a_submodule f.path: %s" % f.path
+                            print("get_ontologies_from_a_submodule f.path: %s" % f.path)
                             ontologies.append(os.path.join(path, f.path))
                             break
     except Exception as e:
-        print "get_ontologies_from_a_submodule exception: " + str(e)
+        print("get_ontologies_from_a_submodule exception: " + str(e))
     return ontologies
 
 
@@ -387,9 +489,9 @@ def get_ontologies_from_submodules_tree(tree, repo):
     submodule_tree_elements = [f for f in tree if f.path == '.gitmodules']
     if len(submodule_tree_elements) == 1:
         config_parser = ConfigParser.RawConfigParser()
-        file_content = repo.get_file_contents(submodule_tree_elements[0].path).decoded_content
-        print "file_content"
-        print file_content
+        file_content = repo.get_contents(submodule_tree_elements[0].path).decoded_content
+        print("file_content")
+        print(file_content)
         file_content = file_content.replace('\t', '')  # because it was containing \t
         config_parser.readfp(io.BytesIO(file_content))
         sections = config_parser.sections()
@@ -404,11 +506,13 @@ def get_ontologies_from_submodules_tree(tree, repo):
 def get_ontologies_in_online_repo(target_repo):
     global g
     ontologies = []
-    if type(g) == type(None):
-        init_g()
     try:
+        g = init_g()
+        print("asking for repo: <%s>" % target_repo)
         repo = g.get_repo(target_repo)
+        print("asking for commits")
         sha = repo.get_commits()[0].sha
+        print("asking for files")
         files = repo.get_git_tree(sha=sha, recursive=True).tree
         ontoology_home_name = 'OnToology'
 
@@ -421,7 +525,8 @@ def get_ontologies_in_online_repo(target_repo):
                             break
         ontologies += get_ontologies_from_submodules_tree(files, repo)
     except Exception as e:
-        print "get_ontologies_in_online_repo exception: " + str(e)
+        print("get_ontologies_in_online_repo exception: " + str(e))
+        traceback.print_exc()
     return ontologies
 
 
@@ -472,20 +577,25 @@ def fork_repo(target_repo):
     """
     # the wait time to give github sometime so the repo can be forked
     # successfully
-    time.sleep(sleeping_time)
-    # this is a workaround and not a proper way to do a fork
-    # comm = "curl --user \"%s:%s\" --request POST --data \'{}\' https://api.github.com/repos/%s/forks" % (
-    #     username, password, target_repo)
-    # if not settings.test_conf['local']:
-    #     comm += ' >> "' + log_file_dir + '"'
-    # dolog(comm)
-    # call(comm, shell=True)
-    username = os.environ['github_username']
-    password = os.environ['github_password']
-    gg = Github(username, password)
+    # time.sleep(sleeping_time)
+    gg = init_g()
     repo = gg.get_repo(target_repo)
     user = gg.get_user()
+    dolog("To fork repo: "+target_repo)
+    try:
+        gg.get_repo("%s/%s" % (user.name,repo.name)).delete()
+        dolog("deleted %s/%s" % (user.name,repo.name))
+    except:
+        dolog("did not delete %s/%s" % (user.name,repo.name))
+    for i in range(1,3):
+        try:
+            gg.get_repo("%s/%s-%d" % (user.name,repo.name,i)).delete()
+            dolog("deleted %s/%s-%d" % (user.name,repo.name,i))
+        except:
+            dolog("did not delete %s/%s-%d" % (user.name,repo.name,i))
+    time.sleep(sleeping_time)
     forked_repo = user.create_fork(repo)
+    dolog("forked repo")
     dolog('forked to: ' + forked_repo.name)
     return forked_repo
 
@@ -514,14 +624,10 @@ def clone_repo(cloning_url, parent_folder, dosleep=True):
     # if not settings.test_conf['local']:
     #     comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
-    print "comm: %s" % comm
+    # print("comm: %s" % comm)
     call(comm, shell=True)
-    # Change ownership to solve the problem of permission denied to create OnToology.cfg file
-    # comm = 'chown $USER  "%s"' % os.path.join(home, parent_folder)
-    # print "chown command: "
-    # print comm
-    dolog(comm)
-    call(comm, shell=True)
+    # dolog(comm)
+    # call(comm, shell=True)
     # comm = "chmod -R 777 " + home + parent_folder
     # if not settings.TEST:
     #     comm += ' >> "' + log_file_dir + '"'
@@ -542,7 +648,8 @@ def commit_changes():
     if not settings.test_conf['local']:
         comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
-    call(comm, shell=True)
+    if settings.test_conf['push'] or not settings.test_conf['local']:
+        call(comm, shell=True)
 
     # comm = "cd " + home + parent_folder + ";" + \
     comm = "cd " + os.path.join(home, parent_folder) + ";" + \
@@ -550,14 +657,16 @@ def commit_changes():
     if not settings.test_conf['local']:
         comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
-    call(comm, shell=True)
+    if settings.test_conf['push'] or not settings.test_conf['local']:
+        call(comm, shell=True)
     gup = "git config push.default matching;"
     # comm = "cd " + home + parent_folder + ";" + gu + gup + " git push "
     comm = "cd " + os.path.join(home, parent_folder) + ";" + gu + gup + " git push "
     if not settings.test_conf['local']:
         comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
-    call(comm, shell=True)
+    if settings.test_conf['push'] or not settings.test_conf['local']:
+        call(comm, shell=True)
 
 
 def refresh_repo(target_repo):
@@ -579,26 +688,27 @@ def remove_old_pull_requests(target_repo):
             if p.title == title:
                 p.edit(state="closed")
         except Exception as e:
-            print "Exception removing an old pull request: " + str(e)
+            print("Exception removing an old pull request: " + str(e))
             dolog("Exception removing an old pull request: " + str(e))
 
 
-def send_pull_request(target_repo, username):
+def send_pull_request(target_repo, username, branch):
     title = 'OnToology update'
     body = title
     err = ""
     time.sleep(sleeping_time)
     repo = g.get_repo(target_repo)
     try:
-        repo.create_pull(head=username + ':master', base='master', title=title, body=body)
+        repo.create_pull(head=username + ':%s' % branch, base='%s' % branch, title=title, body=body)
         return {'status': True, 'msg': 'pull request created successfully'}
     except Exception as e:
         err = str(e)
         dolog('pull request error: ' + err)
         if 'No commits between' in err:
             dolog('pull request detecting no commits')
-            repo.notes = 'No difference to generate the pull request, make a change in the repo so the pull request can be generated.'
-            repo.save()
+            r = Repo.objects.get(url=target_repo)
+            r.notes = 'No difference to generate the pull request, make a change in the repo so the pull request can be generated.'
+            r.save()
     return {'status': False, 'error': err}
 
 
@@ -628,15 +738,15 @@ def remove_webhook(target_repo, notification_url):
     if g is None:
         init_g()
     # for some reason adding the below two prints solves the problem for removing the webhook, strange but true
-    print "target_repo: " + str(target_repo)
-    print "notification url: " + str(notification_url)
+    print("target_repo: " + str(target_repo))
+    print("notification url: " + str(notification_url))
     for hook in g.get_repo(target_repo).get_hooks():
         try:
             if hook.config["url"] == notification_url:
                 hook.delete()
                 break
         except Exception as e:
-            print "error removing the webhook: %s" % (str(e))
+            print("error removing the webhook: %s" % (str(e)))
             time.sleep(2)
     sys.stdout.flush()
     sys.stderr.flush()
@@ -666,89 +776,111 @@ def add_collaborator(target_repo, user, newg=None):
     global g
     if newg is None:
         if g is None:
-            init_g()
+            g = init_g()
         newg = g
     try:
-        print "adding collaborator from user: %s " % str(newg.get_user().name)
-        if newg.get_user().name is None or newg.get_user().email is None:
+        print("in try")
+        u = newg.get_user()
+        print(u)
+        print("user name: "+str(u.name))
+        print("email: "+str(u.email))
+        print("adding collaborator from user: %s " % str(newg.get_user().name))
+        print("goring for the first")
+        if u.name is None or u.email is None:
+            print("no email or name")
             return {'status': False, 'error': 'Make sure you have your name and email public and not empty on GitHub'}
         if newg.get_repo(target_repo).has_in_collaborators(user):
+            print("collaborator already there")
             return {'status': True, 'msg': 'this user is already a collaborator'}
         else:
+            print("going to add collaborator\n\n")
             invitation = newg.get_repo(target_repo).add_to_collaborators(user)
+            print("got a reply")
+            print(invitation)
             if invitation is None:
-                print "no invitation is created"
-                {'status': False, 'error': 'Invitation is not generated'}
+                print("no invitation is created")
+                return {'status': False, 'error': 'Invitation is not generated'}
             else:
+                print("invitation exists")
                 try:
-                    username = os.environ['github_username']
-                    password = os.environ['github_password']
-                    g_ontoology_user = Github(username, password)
-                    g_ontoology_user.get_user().accept_invitation(invitation)
-                    print "invitation accepted: " + str(invitation)
+                    print("go to init")
+                    init_g()
+                    print("try to acceept invitation")
+                    # username = os.environ['github_username']
+                    # password = os.environ['github_password']
+                    # g_ontoology_user = Github(username, password)
+                    # g_ontoology_user.get_user().accept_invitation(invitation)
+                    g.get_user().accept_invitation(invitation)
+                    print("invitation accepted: " + str(invitation))
                     return {'status': True, 'msg': 'added as a new collaborator'}
                 except Exception as e:
-                    print "exception: " + str(e)
-                    print "invitation not accepted or invalid: " + str(invitation)
+                    print("exception: " + str(e))
+                    print("invitation not accepted or invalid: " + str(invitation))
+                    traceback.print_exc()
                     return {'status': False, 'error': 'Could not accept the invitation for becoming a collaborator'}
     except Exception as e:
+        traceback.print_exc()
         return {'status': False, 'error': str(e)}  # e.data}
 
 
 def previsual(useremail, target_repo):
     from Integrator.previsual import start_previsual
+    prepare_logger(useremail+"-prev-")
+    dolog("starting previsual function with ontology: %s" % target_repo)
     try:
-        OUser.objects.all()
-    except:
-        django_setup_script()
-    from OnToology.models import OUser
-    user = OUser.objects.filter(email=useremail)
-    if len(user) != 1:
-        error_msg = "%s is invalid email %s" % useremail
-        print(error_msg)
-        dolog("previsual> " + error_msg)
-        return error_msg
-    user = user[0]
-    found = False
-    repo = None
-    for r in user.repos:
-        if target_repo == r.url:
-            found = True
-            repo = r
-            break
-    if found:
-        dolog("previsual> " + "repo is found and now generating previsualization")
-        repo.state = 'Generating Previsualization'
-        repo.notes = ''
-        repo.previsual_page_available = True
-        repo.save()
-        # prepare_log(user.email)
-        # cloning_repo should look like 'git@github.com:AutonUser/target.git'
-        cloning_repo = 'git@github.com:%s.git' % target_repo
-        sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
-        folder_name = 'prevclone-' + sec
-        clone_repo(cloning_repo, folder_name, dosleep=True)
-        repo_dir = os.path.join(home, folder_name)
-        dolog("previsual> will call start previsual")
-        msg = start_previsual(repo_dir, target_repo)
-        if msg == "":  # not errors
-            dolog("previsual> completed successfully")
-            repo.state = 'Ready'
+        dolog("trying the previsual")
+        user = OUser.objects.filter(email=useremail)
+        if len(user) != 1:
+            error_msg = "%s is invalid email %s" % useremail
+            dolog("previsual> " + error_msg)
+            return error_msg
+        user = user[0]
+        found = False
+        repo = None
+        for r in user.repos.all():
+            if target_repo == r.url:
+                found = True
+                repo = r
+                break
+        if found:
+            dolog("previsual> " + "repo is found and now generating previsualization")
+            repo.state = 'Generating Previsualization'
+            repo.notes = ''
+            # repo.previsual_page_available = True
             repo.save()
-            dolog("previsual> test state: %s" % repo.state)
-            return ""
-        else:
-            repo.notes = msg
-            repo.state = 'Ready'
-            repo.save()
-            return msg
-    else:  # not found
-        repo.state = 'Ready'
-        repo.save()
-        error_msg = 'You should add the repo while you are logged in before the revisual renewal'
-        dolog("previsual> " + error_msg)
-        return error_msg
+            # prepare_log(user.email)
+            # cloning_repo should look like 'git@github.com:AutonUser/target.git'
+            cloning_repo = 'git@github.com:%s.git' % target_repo
+            sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
+            folder_name = 'prevclone-' + sec
 
+            if not settings.test_conf['local'] or settings.test_conf['clone']:
+                clone_repo(cloning_repo, folder_name, dosleep=True)
+
+            repo_dir = os.path.join(home, folder_name)
+            dolog("previsual> will call start previsual")
+            msg = start_previsual(repo_dir, target_repo)
+            if msg == "":  # not errors
+                dolog("previsual> completed successfully")
+                repo.state = 'Ready'
+                repo.save()
+                dolog("previsual> test state: %s" % repo.state)
+                return ""
+            else:
+                repo.notes = msg
+                repo.state = 'Ready'
+                repo.save()
+                return msg
+        else:  # not found
+            repo.state = 'Ready'
+            repo.save()
+            error_msg = 'You should add the repo while you are logged in before the revisual renewal'
+            dolog("previsual> " + error_msg)
+            return error_msg
+    except Exception as e:
+        dolog("autoncore.previsual exception: <%s>" % str(e))
+        dolog(traceback.format_exc())
+        return str(e)
 
 def update_g(token):
     global g
@@ -761,11 +893,11 @@ def get_file_content(target_repo, path, branch=None):
     password = os.environ['github_password']
     g = Github(username, password)
     repo = g.get_repo(target_repo)
-    # sha = repo.get_file_contents(path).sha
+    # sha = repo.get_contents(path).sha
     if branch is None:
-        return repo.get_file_contents(path).decoded_content
+        return repo.get_contents(path).decoded_content
     else:
-        return repo.get_file_contents(path, branch).decoded_content
+        return repo.get_contents(path, branch).decoded_content
 
 
 def generate_bundle(base_dir, target_repo, ontology_bundle):
@@ -779,17 +911,17 @@ def generate_bundle(base_dir, target_repo, ontology_bundle):
     if g is None:
         init_g()
     try:
-        print 'ontology bundle: ' + ontology_bundle
+        print('ontology bundle: ' + ontology_bundle)
         repo = g.get_repo(target_repo)
         sha = repo.get_commits()[0].sha
         files = repo.get_git_tree(sha=sha, recursive=True).tree
-        print 'num of files: ' + str(len(files))
+        print('num of files: ' + str(len(files)))
         for f in files:
             try:
                 for i in range(3):
                     try:
-                        print 'f: ' + str(f)
-                        print 'next: ' + str(f.path)
+                        print('f: ' + str(f))
+                        print('next: ' + str(f.path))
                         p = f.path
                         break
                     except:
@@ -799,7 +931,7 @@ def generate_bundle(base_dir, target_repo, ontology_bundle):
                     p = p[1:]
                 abs_path = os.path.join(base_dir, p)
                 if p[:len(ontology_bundle)] == ontology_bundle:
-                    print 'true: ' + str(p)
+                    print('true: ' + str(p))
                     if f.type == 'tree':
                         os.makedirs(abs_path)
                     elif f.type == 'blob':
@@ -810,23 +942,23 @@ def generate_bundle(base_dir, target_repo, ontology_bundle):
                             except:
                                 pass
                         with open(abs_path, 'w') as fii:
-                            file_content = repo.get_file_contents(f.path).decoded_content
+                            file_content = repo.get_contents(f.path).decoded_content
                             fii.write(file_content)
-                            print 'file %s content: %s' % (f.path, file_content[:10])
+                            print('file %s content: %s' % (f.path, file_content[:10]))
                     else:
-                        print 'unknown type in generate bundle'
+                        print('unknown type in generate bundle')
                 else:
-                    print 'not: ' + p
+                    print('not: ' + p)
             except Exception as e:
-                print 'exception: ' + str(e)
+                print('exception: ' + str(e))
         zip_file = os.path.join(base_dir, '%s.zip' % ontology_bundle.split('/')[-1])
         comm = "cd %s; zip -r '%s' OnToology" % (base_dir, zip_file)
-        print 'comm: %s' % comm
+        print('comm: %s' % comm)
         call(comm, shell=True)
         return os.path.join(base_dir, zip_file)
         # return None
     except Exception as e:
-        print 'error in generate_bundle: ' + str(e)
+        print('error in generate_bundle: ' + str(e))
         return None
 
 
@@ -853,7 +985,7 @@ def publish(name, target_repo, ontology_rel_path, useremail):
         error_msg = "user is not found"
         dolog("publish> error: %s" % str(e))
         return error_msg
-    for r in user.repos:
+    for r in user.repos.all():
         if target_repo == r.url:
             found = True
             repo = r
@@ -903,7 +1035,12 @@ def publish(name, target_repo, ontology_rel_path, useremail):
                     error_msg = "github error: %s" % str(e)
                     dolog("publish> " + error_msg)
                     return error_msg
-            dolog("publish> " + "htaccess content: ")
+            dolog("publish> htaccess content: ")
+            dolog(str(type(htaccess)))
+            if isinstance(htaccess, bytes):
+                htaccess = htaccess.decode('utf-8')
+            # htaccess = str(htaccess)
+            dolog(str(type(htaccess)))
             dolog(htaccess)
             new_htaccess = htaccess_github_rewrite(target_repo=target_repo, htaccess_content=htaccess,
                                                    ontology_rel_path=ontology_rel_path)
@@ -930,14 +1067,84 @@ def publish(name, target_repo, ontology_rel_path, useremail):
         return error_msg
 
 
+def change_configuration(user_email, target_repo, data, ontologies):
+    """
+    :param user_email:
+    :param target_repo:
+    :param data:
+    :param ontologies:
+    :return:
+    """
+    try:
+        users = OUser.objects.filter(email=user_email)
+        repos = Repo.objects.filter(url=target_repo)
+        if len(repos) == 1:
+            repo = repos[0]
+        else:
+            dolog("change_configuration> Invalid repo: "+target_repo)
+            raise Exception("Invalid repo: "+target_repo)
+        if len(users) == 1:
+            user = users[0]
+        else:
+            dolog("change_configuration> Invalid email: "+user_email)
+            raise Exception("Invalid email: "+user_email)
+
+        orun = ORun(user=user, repo=repo)
+        orun.save()
+        otask = OTask(name="Change Configuration", description="changing the configuration", orun=orun)
+        otask.save()
+        # orun.tasks.add(otask)
+        # orun.save()
+        for onto in ontologies:
+            dolog('inside the loop')
+            ar2dtool = onto + '-ar2dtool' in data
+            widoco = onto + '-widoco' in data
+            oops = onto + '-oops' in data
+            dolog('will call get_conf')
+            otask.description = 'Get new configuration for the ontology: '+onto
+            otask.save()
+            new_conf = get_conf(ar2dtool, widoco, oops)
+            dolog('will call update_file')
+            o = 'OnToology' + onto + '/OnToology.cfg'
+            try:
+                dolog("target_repo <%s> ,  path <%s> ,  message <%s> ,   content <%s>" % (
+                    target_repo, o, 'OnToology Configuration', new_conf))
+                otask.description = 'Update the configuration for the ontology: ' + onto
+                otask.save()
+                update_file(target_repo, o, 'OnToology Configuration', new_conf)
+                dolog('configuration is changed for file for ontology: '+onto)
+                otask.description = 'The task is completed successfully'
+                otask.success = True
+                otask.save()
+            except Exception as e:
+                dolog('Error in updating the configuration: ' + str(e))
+                # return render(request, 'msg.html', {'msg': str(e)})
+                otask.description = 'Error in updating the configuration: ' + str(e)
+                otask.success = False
+                # otask.finished = True
+                otask.save()
+                # return
+                break
+        otask.finished = True
+        otask.save()
+    except Exception as e:
+        err = "Error in change_configuration"
+        print(err)
+        dolog(err)
+        err = str(e)
+        print(err)
+        dolog(err)
+        otask.finished = True
+        otask.success = False
+        otask.description = str(e)
+        otask.save()
+
 ########################################################################
 ########################################################################
 # #####################  Auton configuration file  #####################
 ########################################################################
 ########################################################################
 
-
-import ConfigParser
 
 
 def get_conf(ar2dtool, widoco, oops):
@@ -999,11 +1206,11 @@ def compute_themis_results(repo, path):
     :return: score (0-100)
     """
     p = quote(path)
-    print "get file content: %s" % (str(path))
-    print "after quote: %s" % p
-    print "now get the decoded content"
-    # file_content = repo.get_file_contents(cpath.path).decoded_content
-    file_content = repo.get_file_contents(p).decoded_content
+    print("get file content: %s" % (str(path)))
+    print("after quote: %s" % p)
+    print("now get the decoded content")
+    # file_content = repo.get_contents(cpath.path).decoded_content
+    file_content = repo.get_contents(p).decoded_content
     passed = 0
     failed = 0
     for line in file_content.split('\n'):
@@ -1059,23 +1266,26 @@ def parse_online_repo_for_ontologies(target_repo):
     global g
     if g is None:
         init_g()
-    print "in parse online repo for ontologies"
+    print("in parse online repo for ontologies")
     repo, conf_paths = get_confs_from_repo(target_repo)
-    print "repo: %s, conf_paths: %s" % (str(repo), str(conf_paths))
+    print("repo: %s, conf_paths: %s" % (str(repo), str(conf_paths)))
     ontologies = []
 
     for cpath in conf_paths:
         p = quote(cpath.path)
-        print "get file content: %s" % (str(cpath.path))
-        print "after quote: %s" % p
-        print "now get the decoded content"
-        # file_content = repo.get_file_contents(cpath.path).decoded_content
-        file_content = repo.get_file_contents(p).decoded_content
-        print "file_content: " + str(file_content)
-        buffile = StringIO.StringIO(file_content)
-        print "will get the config"
-        confs = get_auton_config(buffile)
-        print "gotten confs: " + str(confs)
+        print("get file content: %s" % (str(cpath.path)))
+        print("after quote: %s" % p)
+        print("now get the decoded content")
+        # file_content = repo.get_contents(cpath.path).decoded_content
+        file_content = repo.get_contents(p).decoded_content
+        print("type: "+str(type(file_content)))
+        # file_content = str(file_content)
+        file_content = file_content.decode('utf-8')
+        print("file_content: " + file_content)
+        # buffile = StringIO(file_content)
+        print("will get the config")
+        confs = get_auton_config(file_content, from_string=True)
+        print("gotten confs: " + str(confs))
         o = {}
         # o['ontology'] = get_parent_path(cpath.path)[len(get_target_home()):]
         o['ontology'] = get_parent_path(p)[len(get_target_home()):]
@@ -1126,9 +1336,10 @@ def get_auton_config(conf_file_abs, from_string=True):
     widoco_enable = True
     oops_enable = True
     owl2jsonld_enable = True
-    config = ConfigParser.RawConfigParser()
+    config = ConfigParser.ConfigParser()
+    print("config raw parser")
     if from_string:
-        opened_conf_files = config.readfp(conf_file_abs)
+        opened_conf_files = config.read_string(conf_file_abs)
     else:
         opened_conf_files = config.read(conf_file_abs)
     if from_string or len(opened_conf_files) == 1:
@@ -1188,6 +1399,7 @@ def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):
     :return: htaccess with github rewrite as the domain
     """
     rewrites = [
+        "RewriteRule ^$ index-de.html [R=303, L]",
         "RewriteRule ^$ index-pt.html [R=303, L]",
         "RewriteRule ^$ index-it.html [R=303, L]",
         "RewriteRule ^$ index-es.html [R=303, L]",
@@ -1199,6 +1411,7 @@ def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):
         "RewriteRule ^$ ontology.json [R=303, L]",
         "RewriteRule ^$ ontology.nt [R=303, L]",
 
+        "RewriteRule ^$ index-de.html [R=303,L]",
         "RewriteRule ^$ index-pt.html [R=303,L]",
         "RewriteRule ^$ index-it.html [R=303,L]",
         "RewriteRule ^$ index-es.html [R=303,L]",
@@ -1231,7 +1444,7 @@ def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):
             new_htaccess += " ".join(rewr_rule[2:]) + "\n"
         else:
             if "RewriteRule" in line:
-                print "NOTIN: " + line
+                print("NOTIN: " + line)
             new_htaccess += line + "\n"
     return new_htaccess
 
@@ -1245,7 +1458,7 @@ def delete_dir(target_directory):
     comm = "rm -Rf " + target_directory
     if not settings.test_conf['local']:
         comm += '  >> "' + log_file_dir + '" '
-    print comm
+    print(comm)
     call(comm, shell=True)
 
 
@@ -1303,24 +1516,25 @@ def build_file_structure(file_with_rel_dir, category_folder='', abs_home=''):
 #    from Auton.models import Repo
 # import it for now
 def change_status(target_repo, state):
-    from models import Repo
-    if not use_database:
-        return ''
     try:
         repo = Repo.objects.get(url=target_repo)
-        repo.last_used = datetime.today()
+        repo.last_used = timezone.now()
         repo.state = state
-        repo.owner = parent_folder
+        # repo.owner = parent_folder
         repo.save()
-    except DoesNotExist:
+        print("change_status> "+repo.state)
+        return repo
+    except models.DoesNotExist:
+        print("change_status> New repo")
         repo = Repo()
         repo.url = target_repo
         repo.state = state
-        repo.owner = parent_folder
+        # repo.owner = parent_folder
         repo.save()
+        return repo
     except Exception as e:
-        print 'database_exception: ' + str(e)
-
+        print('database_exception: ' + str(e))
+    return None
 
 # Before calling this function, the g must belong to the user not OnToologyUser
 def get_proper_loggedin_scope(ouser, target_repo):
@@ -1339,58 +1553,13 @@ def get_proper_loggedin_scope(ouser, target_repo):
         return True
 
 
-# def is_busy(repo_name):
-#     """
-#     Whether the repo is busy or not
-#     :param repo_name:
-#     :return: True, False, None (if the repo do not exists)
-#     """
-#     from models import Repo
-#     repos = Repo.objects.filter(url=repo_name.strip())
-#     if len(repos) == 0:
-#         return None
-#     repo = repos[0]
-#     return repo.busy
-
-# def busy_lock(repo_name):
-#     """
-#     Whether the repo is busy or not and set it to busy
-#     :param repo_name:
-#     :return: True, False, None (if the repo do not exists)
-#     """
-#     from models import Repo
-#     repos = Repo.objects.filter(url=repo_name.strip())
-#     if len(repos) == 0:
-#         return None
-#     repo = repos[0]
-#     ret = repo.busy
-#     repo.busy = True
-#     repo.save()
-#     return ret
-#
-#
-# def busy_unlock(repo_name):
-#     """
-#     Whether unlock
-#     :param repo_name:
-#     :return:
-#     """
-#     from models import Repo
-#     repos = Repo.objects.filter(url=repo_name.strip())
-#     if len(repos) == 0:
-#         return None
-#     repo = repos[0]
-#     repo.busy = False
-#     repo.save()
-#
-#
-# def clear_busy():
-#     from models import Repo
-#     repos = Repo.objects.all()
-#     for r in repos:
-#         r.busy = False
-#         r.save()
-
+def get_repo_branches(repo):
+    global g
+    if g is None:
+        g = init_g()
+    repo = g.get_repo(repo)
+    branches = repo.get_branches()
+    return [b.name for b in branches]
 
 ##########################################################################
 #####################   Generate user log file  ##########################
@@ -1404,10 +1573,10 @@ def generate_user_log(log_file_name):
     comm = 'cp ' + os.path.join(home, 'log', log_file_name) + '  ' + \
            os.path.join(settings.MEDIA_ROOT,
                         'logs')  # ' /home/ubuntu/auton/media/logs/'
-    print comm
+    print(comm)
     sys.stdout.flush()
     if sys.stdout == default_stdout:
-        print 'Warning: trying to close sys.stdout in generate_user_log function, I am disabling the closing for now'
+        print('Warning: trying to close sys.stdout in generate_user_log function, I am disabling the closing for now')
     call(comm, shell=True)
 
 
@@ -1415,14 +1584,6 @@ def generate_user_log(log_file_name):
 # ###################################   main  #############################
 # #########################################################################
 
-#
-# if __name__ == "__main__":
-#     print "autoncore command: " + str(sys.argv)
-#     if use_database:
-#         connect('OnToology')
-#     git_magic(sys.argv[1], sys.argv[2], sys.argv[3:])
-#
-#
 
 def django_setup_script():
     #################################################################
@@ -1450,7 +1611,7 @@ def django_setup_script():
 
 
 if __name__ == "__main__":
-    django_setup_script()
+    # django_setup_script()
     from OnToology.models import *
     import argparse
 
@@ -1474,8 +1635,8 @@ if __name__ == "__main__":
         prepare_logger(args.useremail)
         if args.target_repo and len(args.target_repo.split('/')) == 2:
             if args.magic:
-                print "changed files: "
-                print args.changedfiles[0]
+                print("changed files: ")
+                print(args.changedfiles[0])
                 git_magic(args.target_repo, args.useremail, args.changedfiles[0])
             if args.previsual:
                 msg = previsual(useremail=args.useremail, target_repo=args.target_repo)
@@ -1485,11 +1646,11 @@ if __name__ == "__main__":
             elif args.publish:
                 pass
         else:
-            print 'autoncore> invalid target repo: <%s>' % args.target_repo
+            print('autoncore> invalid target repo: <%s>' % args.target_repo)
     # elif args.busyclear:
     #     clear_busy()
     else:
-        print 'autoncore> invalid user email: <%s>' % args.useremail
+        print('autoncore> invalid user email: <%s>' % args.useremail)
 
 
 

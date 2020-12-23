@@ -3,3 +3,4 @@ omit =
     util*
     manage.py
     .venv/*
+    OnToology/migrations/*

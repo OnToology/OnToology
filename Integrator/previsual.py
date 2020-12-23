@@ -174,7 +174,7 @@ def get_confs_from_local(repo_abs_dir):
                     ont_files.append(ont)
     dolog('There are %d ontologies' % len(ont_files))
     for o in ont_files:
-        print o
+        print(o)
     return ont_files
 
 

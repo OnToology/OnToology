@@ -2,6 +2,7 @@ import random
 import string
 import os
 from subprocess import call
+import traceback
 
 from github import Github
 
@@ -12,10 +13,12 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
 from OnToology.views import generateforall
-from OnToology.autoncore import publish, previsual, django_setup_script
+from OnToology.djangoperpmod import *
+from OnToology.autoncore import publish, previsual
 from OnToology import autoncore
-from models import *
-from views import publish_dir
+from OnToology.models import *
+from OnToology.views import publish_dir
+from django.utils import timezone
 
 
 def token_required(func):
@@ -54,7 +57,7 @@ def login(request):
             g.get_user().login
             try:
                 user = OUser.objects.get(username=username)
-                if user.token_expiry <= datetime.now():
+                if user.token_expiry <= timezone.now():
                     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
                     while len(OUser.objects.filter(token=sec)) > 0:  # to ensure a unique token
                         sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
@@ -73,7 +76,7 @@ class ReposView(View):
     @method_decorator(token_required)
     def get(self, request):
         user = request.user
-        repos = [r.json() for r in user.repos]
+        repos = [r.json() for r in user.repos.all()]
         return JsonResponse({'repos': repos})
 
     @method_decorator(token_required)
@@ -86,9 +89,9 @@ class ReposView(View):
             owner = user.username
             repo = Repo()
             repo.url = url
-            repo.owner = owner
+            #repo.owner = owner
             repo.save()
-            user.repos.append(repo)
+            user.repos.add(repo)
             user.save()
             return JsonResponse({'message': 'Repo is added successfully'}, status=201)
         except Exception as e:
@@ -97,17 +100,20 @@ class ReposView(View):
     @method_decorator(token_required)
     def delete(self, request, repoid):
         try:
+            # print("delete start")
             user = request.user
             r = Repo.objects.filter(id=repoid)
-            if len(r) == 0 or r[0] not in user.repos:
+            if len(r) == 0 or r[0] not in user.repos.all():
                 return JsonResponse({'message': 'Invalid repo'}, status=404)
-
             r = r[0]
-            user.update(pull__repos=r)
+            # user.repos.remove(r)
+            # user.update(pull__repos=r)
             r.delete()
-            user.save()
+            #user.save()
             return JsonResponse({'message': 'The repo is deleted successfully'}, status=204)
         except Exception as e:
+            # print("delete exception")
+            traceback.print_exc(file=sys.stdout)
             return JsonResponse({'message': 'Internal error: '+str(e)}, status=500)
 
 
@@ -116,7 +122,6 @@ class PublishView(View):
     def post(self, request):
         user = request.user
         if 'name' in request.POST and 'repo' in request.POST and 'ontology' in request.POST:
-            django_setup_script()
             name = request.POST['name']
             target_repo = request.POST['repo']
             ontology_rel_path = request.POST['ontology']
@@ -150,6 +155,9 @@ def generate_all(request):
         user = request.user
         if 'url' not in request.POST:
             return JsonResponse({'message': 'url is missing'}, status=400)
+        if 'branch' not in request.POST:
+            return JsonResponse({'message': 'branch is missing'}, status=400)
+        branch = request.POST['branch'].strip()
         print("url: 1")
         url =request.POST['url'].strip()
         print("url: 2")
@@ -157,8 +165,8 @@ def generate_all(request):
             url = url[:-1]
         found = False
         print("user.repos: ")
-        print(user.repos)
-        for r in user.repos:
+        print(user.repos.all())
+        for r in user.repos.all():
             print("url for user")
             print(r.json())
             if r.url == url:
@@ -169,7 +177,7 @@ def generate_all(request):
                 print("url not in")
         if found:
             print("generate for all url")
-            res = generateforall(url, user.email)
+            res = generateforall(url, user.email, branch)
             print("res from renerate all")
             return JsonResponse({'message': 'generation is in process'}, status=202)
         else:

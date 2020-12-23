@@ -48,8 +48,8 @@ env_variables_to_pass = ['github_username', 'github_password', 'github_repos_dir
 
 def application(environ, start_response):
     # pass the WSGI environment variables on through to os.environ
-    print "wsgi environ"
-    print os.environ
+    print("wsgi environ")
+    print(os.environ)
     for var in env_variables_to_pass:
         os.environ[var] = environ.get(var, '')
     return _application(environ, start_response)

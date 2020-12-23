@@ -19,17 +19,18 @@ echo "pre secret PLAYGROUND: $PLAYGROUND"
 echo "post secret PLAYGROUND: $PLAYGROUND"
 
 # In case it does not exists
-echo "" >>  $PLAYGROUND/OnToology/OnToology/localwsgi.py
+echo "" >  $PLAYGROUND/OnToology/OnToology/localwsgi.py
+
+echo "SETUP  The location of localwsgi: "
+echo $PLAYGROUND/OnToology/OnToology/localwsgi.py
 
 
-cat <<EOT >> $PLAYGROUND/OnToology/OnToology/localwsgi.py
-
+cat <<EOT >> /playground/OnToology/OnToology/localwsgi.py
 import os
 environ = os.environ
-
 environ['github_username']="OnToologyTestUser"
 environ['github_repos_dir']="$PLAYGROUND/repos/"
-environ['ar2dtool_dir']="$PLAYGROUND/ar2dtool/bin/"
+environ['ar2dtool_dir']="$PLAYGROUND/ar2dtool/"
 environ['ar2dtool_config']="$PLAYGROUND/config/"
 environ['widoco_dir']="$PLAYGROUND/widoco/"
 environ['owl2jsonld_dir']="$PLAYGROUND/owl2jsonld"
@@ -47,7 +48,6 @@ environ['email_server']=""
 environ['email_from']=""
 environ['email_username']=""
 environ['email_password']=""
-
 environ['github_password']="$github_password"
 environ['client_id_login']="$client_id_login"
 environ['client_id_public']="$client_id_public"
@@ -57,19 +57,33 @@ environ['client_secret_public']="$client_secret_public"
 environ['client_secret_private']="$client_secret_private"
 environ['test_user_token']="$test_user_token"
 environ['test_user_email']="$test_user_email"
-environ['db_host']="$db_host"
-environ['db_port']="$db_port"
+#environ['db_host']="$db_host"
+#environ['db_port']="$db_port"
 environ['debug']="true"
-environ['rabbit_processes']=3
-
+environ['rabbit_log_dir']='$PLAYGROUND/rabbit.log'
+environ['rabbit_processes']="1"
+environ['db_name']="ontoology.db"
+environ['db_engine']="django.db.backends.sqlite3"
+environ['test_local']="true"
+environ['test_fork']="false"
+environ['test_clone']="true"
+environ['test_push']="false"
+environ['test_pull']="false"
+print("--------------\n\n\nxyz are loaded\n\n\n")
 EOT
 
+
+
+echo "SETUP   The content of local WSGI is: "
+
+cat $PLAYGROUND/OnToology/OnToology/localwsgi.py
+
 # For some reason if I remove this echo, the appending to
-echo $PLAYGROUND/OnToology/.venv/bin/activate
+#echo $PLAYGROUND/OnToology/.venv/bin/activate
 
 
 # Add github to known hosts
-mkdir ~/.ssh
+# mkdir ~/.ssh
 ssh-keyscan github.com > ~/.ssh/known_hosts
 
 
@@ -81,4 +95,8 @@ export USER=`whoami`
 #$PLAYGROUND/config/ar2dtool-class.conf
 # $PLAYGROUND/config/ar2dtool-taxonomy.conf
 
+# Setup virtual env
+# cd $PLAYGROUND;wget --progress=bar:force https://github.com/ahmad88me/PyGithub.git
+cd $PLAYGROUND/OnToology; python3 -m venv .venv; .venv/bin/pip install wheel pip --upgrade
+cd $PLAYGROUND/OnToology; .venv/bin/pip install -r requirements.txt; .venv/bin/pip install git+https://github.com/ahmad88me/PyGithub.git
 

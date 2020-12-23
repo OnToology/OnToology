@@ -30,15 +30,15 @@
 <!--});-->
 <!--</script>-->
 
-<link rel="stylesheet" href="http://rendro.github.io/easy-pie-chart/stylesheets/jquery.easy-pie-chart.css">
-<script src="http://rendro.github.io/easy-pie-chart/javascripts/jquery.easy-pie-chart.js"></script>
+<link rel="stylesheet" href="https://rendro.github.io/easy-pie-chart/stylesheets/jquery.easy-pie-chart.css">
+<script src="https://rendro.github.io/easy-pie-chart/javascripts/jquery.easy-pie-chart.js"></script>
 
 <script src="https://ahmad88me.github.io/outlinejs/cdn/outline.js"></script>
 <!--<script src="media/js/outline.js"></script>-->
 
 <canvas id="myCanvas"  height="200" width="400"  style="border:1px solid #d3d3d3;">
             Your browser does not support the canvas element.
-        </canvas>
+</canvas>
  <script>
         var base_area_component = document.getElementById("basearea");
         var canvas = document.getElementById("myCanvas");
@@ -220,6 +220,10 @@ function GetURLParameter(sParam)
 <p class="red">{{error}}</p>
 
 
+<div class="alert alert-warning">
+    Note that some functionalities are more to the <a href="/repo">repos and runs page</a>
+</div>
+
 
 <!--<h4>You can see what is going on with your repositories <a href="/progress">here</a></h4>-->
 <span id="profiletables">
@@ -245,7 +249,7 @@ function GetURLParameter(sParam)
                                             <!--<span class="col-md-12 col-sm-12 darktext" style="word-break: break-all">{{r.url}}</span>-->
                                             <!--<span class="col-md-6 col-sm-6 darktext" style="word-break: break-all">{{r.url}}</span>-->
                                             <!--<p class="col-md-6 col-sm-6" style="word-break: break-all">{{r.state}}</p>-->
-                                            <span class="col-md-4 col-sm-4 darktext" style="word-break: break-all">{{r.url}}</span>
+                                            <a class="col-md-4 col-sm-4 darktext" style="word-break: break-all" href="/repo?repo={{r.url}}">{{r.url}}</a>
                                             <p class="col-md-3 col-sm-3" style="word-break: break-all">{{r.state}}</p>
                                             <p class="col-md-3 col-sm-3" style="word-break: break-all">{{r.notes}}</p>
                                             <div class="col-md-2 col-sm-2" style="word-break: break-all">
@@ -285,11 +289,11 @@ function GetURLParameter(sParam)
                                         <div class="col-md-2 col-sm-2 handpointer" style="color: #000;" >
                                             <span class="glyphicon glyphicon-refresh  repo" url="{{r.url}}" title="Get ontologies configuration in this repo"></span>
                                         </div>
-                                        <div class="col-md-2 col-sm-2 ">
-                                            <span class="generateall-btn handpointer" repo="{{r.url}}" title="Generate documentation, diagrams and evaluation">
-                                                <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/regenerate_all.png" height="20px">
-                                            </span>
-                                        </div>
+<!--                                        <div class="col-md-2 col-sm-2 ">-->
+<!--                                            <span class="generateall-btn handpointer" repo="{{r.url}}" title="Generate documentation, diagrams and evaluation">-->
+<!--                                                <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/regenerate_all.png" height="20px">-->
+<!--                                            </span>-->
+<!--                                        </div>-->
                                         {%if r.previsual_page_available %}
                                             <div class="col-md-2 col-sm-2 "> <a href="/renew_previsual?target_repo={{r.url}}" title="Renew previsualization">
                                                 <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/renew_previsual.png" height="20px"> </a>
@@ -402,10 +406,13 @@ $( document ).ready(function() {
 	}
 
 	$(".repo").click(function() {
+	    console.log("In repo")
 		if (cc){
 			cc=false;
+			console.log("exit repo cc false")
 			return;
 		}
+		console.log("continue")
 		var targetpanel = $(this);
         var bodypanel = $(this).parent().parent().parent().parent().parent().parent().find(".ontologiesspace");
 		current_url = $(this).attr('url');
@@ -452,7 +459,7 @@ $( document ).ready(function() {
 		                '<div class="col-md-1 col-xs-1">Bundle</div></br><hr>');
 		    }
 		    temp=bodypanel.html();
-		    temp += '<form action="/update_conf" method="POST">' + "{% csrf_token %}"
+		    temp += '<form action="/update_conf" method="POST">' + '{% csrf_token %}'
 		    for(o=0;o<ontologies.length;o++){
 		    	if(ontologies[o].published==true){
 		    		republish_img = 'https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/republish.png';
@@ -710,11 +717,12 @@ $( document ).ready(function() {
         //$.post("get_bundle", {"repo": $(this).attr('repo'), "ontology": $(this).attr('ontology'), csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value });
     });
 
+/*
     $(document).on('click', '.generateall-btn', function(){
         alert($(this).attr('repo'));
         $.get("generateforall", {"repo": $(this).attr('repo')});
     });
-
+*/
 
 
 

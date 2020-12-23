@@ -2,7 +2,7 @@ from collections import Counter
 import rdflib
 from rdflib.namespace import RDF, RDFS, OWL
 import requests
-from sets import Set
+from collections import Set
 import os
 
 from . import dolog, get_file_from_path, tools_conf, build_path_all, get_target_home, get_parent_path, log_file_dir, g
@@ -32,19 +32,18 @@ def get_themis_results(ontology_url, tests):
     if r.status_code == 200:
         dolog("Themis APIs is a success for <%s>" % ontology_url)
         raw_results = r.json()
-        print raw_results
+        print(raw_results)
         # num_of_passed = 0
         # parsed_results = []
         # for r in test_results:
         #     parsed_results.append(r['Results'][0]['Result'])
         # c = Counter(parsed_results)
-        # print c
         test_result_pairs = []
         stats = []
         for r in raw_results:
             p = (r['Test'], r['Results'][0]['Result'])
             stats.append(r['Results'][0]['Result'])
-            print p
+            print(p)
             test_result_pairs.append(p)
         c = Counter(stats)
         print(c)
@@ -70,7 +69,7 @@ def generate_test_class_type(g):
         tests = []
         for c in classes_set:
             t = "%s type Class" % c
-            print t
+            print(t)
             tests.append(t)
         return tests
     except Exception as e:
@@ -89,7 +88,6 @@ def generate_tests(file_abs_dir):
         try:
             g.parse(file_abs_dir, format=a_format)
             tests = generate_test_class_type(g)
-            #print tests
             return tests
         except Exception as e:
             pass

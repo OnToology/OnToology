@@ -15,30 +15,44 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-MEDIA_ROOT = BASE_DIR+'/media/'
+MEDIA_ROOT = BASE_DIR + '/media/'
 MEDIA_URL = '/media/'
 
 LOGIN_URL = '/login'
+
+ADMINS = (
+    ('Ahmad Alobaid', 'aalobaid@fi.upm.es'),
+)
+
+MANAGERS = ADMINS
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = '!pt9$ocsv9m1@_$eiq(9=0&_=wg@-^&f$f0j#k57l&g71$av(n'
+# SECRET_KEY = '!pt9$ocsv9m1@_$eiq(9=0&_=wg@-^&f$f0j#k57l&g71$av(n'
 SECRET_KEY = 'xj1c6fel(z5@=%(br!j)u155a71j*^u_b+2'
-
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+
+print("environ: ")
+print(os.environ)
+
 if 'debug' in os.environ:
     DEBUG = os.environ['debug'].lower() == 'true'
+    print("DEBUG in ENVIRON")
+else:
+    print("DEBUG is not in ENVIRON")
+
+
+if DEBUG == True:
+    print("settings: DEBUG>>>>>>>>>>>>>>\n\n\n")
+else:
+    print("settings: Not DEBUG>>>>>>>>>>>>>>\n\n\n")
 
 ALLOWED_HOSTS = ['*']
-
-
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -47,16 +61,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_mongoengine',
-    'django_mongoengine.mongo_auth',
-
+    'OnToology'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -67,7 +79,7 @@ ROOT_URLCONF = 'OnToology.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR+'/templates',],
+        'DIRS': [BASE_DIR + '/templates', ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -83,12 +95,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'OnToology.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.dummy',
+
     }
 }
 
@@ -111,13 +120,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Madrid'
 
 USE_I18N = True
 
@@ -125,74 +133,78 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
 
-
-
-
 #### Mongo Engine configs #########
 
 
-test_conf = {'local': False,  # doing test
-             'fork': False,  # perform fork
-             'clone': False,  # perform clone
-             'push': False,  # push the changes to GitHub
-             'pull': False,  # to create a pull request from the forked on
-             }
+
 
 try:
-    from localwsgi import *
-    print "importing environ from local wsgi"
+    print("openning the file:")
+    f = open("OnToology/localwsgi.py")
+    print(f.read())
+    f.close()
+    print("closing the file:")
+    from OnToology.localwsgi import environ  # as environabc
+    print("\\\\*****\\\\\\*****\n\n\n\n\n****")
+    for k in environ:
+        print(k+" abc--> "+str(environ[k]))
+    # print(environ)
+    test_conf = {
+        'local': environ['test_local'].strip().lower() =="true",  # doing test
+        'fork': environ['test_fork'].strip().lower() =="true",  # perform fork
+        'clone': environ['test_clone'].strip().lower() =="true",  # perform clone
+        'push': environ['test_push'].strip().lower() =="true",  # push the changes to GitHub
+        'pull': environ['test_pull'].strip().lower() =="true",  # to create a pull request from the forked on
+    }
+    print("importing environ from local wsgi")
 except Exception as e:
-    print "no local wsgi"
-    print e
+    print("settings> no1 OnToology.local wsgi")
+    print(e)
+    import traceback
+    traceback.print_exc()
 
-# MongoDB settings
-MONGODB_DATABASES = {
-    'default': {'name': 'OnToology'}
-}
+    test_conf = {'local': False,  # doing test
+                 'fork': False,  # perform fork
+                 'clone': False,  # perform clone
+                 'push': False,  # push the changes to GitHub
+                 'pull': False,  # to create a pull request from the forked on
+    }
+    try:
+        from localwsgi import *
+    except Exception as e:
+        print("settings> no2 local_wsgi")
+        raise Exception("Force local wsgi load")
 
 environ = os.environ
 print("environ: ")
-print(environ)
 
-print("type: "+str(type(environ)))
-# print("host in environ: "+environ['host_db'])
+
+db_name = environ['db_name']
+if DEBUG:
+    db_name_parts = db_name.split('.')
+    db_name = ".".join(db_name_parts[:-1] + ["test"] + [db_name_parts[-1]])
+    # db_name += "test"
+DATABASES['default']['NAME'] = db_name
+
+DATABASES['default']['ENGINE'] = environ['db_engine']
 
 if 'db_host' in environ:
     print("yes db_host in environ")
     host_db = environ['db_host']
+    DATABASES['default']['HOST'] = host_db
     if 'db_port' in environ:
-        host_db+=":"+str(environ['db_port'])
-    MONGODB_DATABASES['default']['host'] = host_db
-    print("updated with host: "+str(MONGODB_DATABASES['default']['host']))
-    if 'db_name' in environ:
-        MONGODB_DATABASES['default']['name'] = environ['db_name']
-        print("updated with host: " + str(MONGODB_DATABASES['default']['name']))
-
+        DATABASES['default']['PORT'] = environ['db_port']
 else:
     print("db_host is not in environ")
-
-print("MONGODB: "+str(MONGODB_DATABASES))
-
-
-
 
 
 GITHUB_LOCAL_APP_ID = '3995f5db01f035de44c6'
 GITHUB_LOCAL_API_SECRET = '141f896e53db4a4427db177f1ef2c9975e8a3c1f'
-
-
-AUTH_USER_MODEL = 'mongo_auth.MongoUser'
-AUTHENTICATION_BACKENDS = (
-    'django_mongoengine.mongo_auth.backends.MongoEngineBackend',
-)
-
-SESSION_ENGINE = 'django_mongoengine.sessions'
 
 
 host = 'http://ontoology.linkeddata.es'
@@ -204,26 +216,10 @@ if 'OnToology_home' in os.environ and os.environ['OnToology_home'].lower() == "t
     host = 'http://127.0.0.1:8000'
     client_id = GITHUB_LOCAL_APP_ID
     client_secret = GITHUB_LOCAL_API_SECRET
-    print "Going local"
+    print("Going local")
 else:
-    print "Going remote"
-    print os.environ
+    print("Going remote")
+    print(os.environ)
 
 
-
-#
-# from mongoengine import connect
-# MONGO_DATABASE_NAME = "OnToology"
-# if "db_name" in os.environ:
-#     MONGO_DATABASE_NAME = os.environ["db_name"]
-#
-# if 'db_username' not in os.environ or os.environ['db_username'].strip() == '':
-#     print "no auth"
-#     connect(MONGO_DATABASE_NAME)
-# else:
-#     print "with auth"
-#     connect(MONGO_DATABASE_NAME, host=os.environ['db_host'], port=int(os.environ['db_port']),
-#             username=os.environ['db_username'], password=os.environ['db_password'],
-#             )
-#             #authentication_mechanism='MONGODB-CR')
-#             #authentication_mechanism='SCRAM-SHA-1')
+AUTH_USER_MODEL = 'OnToology.OUser'

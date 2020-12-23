@@ -21,7 +21,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from OnToology import views
 from django.conf import settings
-import api_urls
+from OnToology import api_urls
 
 
 urlpatterns = [
@@ -31,6 +31,7 @@ urlpatterns = [
     url(r'^get_access_token', views.get_access_token, name='getaccesstoken'),
     url(r'^grantupdate', views.grant_update, name='grantupdate'),
     url(r'^profile', views.profile, name='profile'),
+    url(r'^repo', views.repo_view, name='repo'),
     url(r'^login_get_access', views.login_get_access, name='login_get_access'),
     url(r'^login', views.login, name='login'),
     url(r'^logout', views.logout, name='logout'),
@@ -45,6 +46,7 @@ urlpatterns = [
     url(r'^progress', views.progress_page),
     url(r'500', views.handler500),
     url(r'faqs', views.faqs),
+    url(r'get_branches', views.get_branches),
     url(r'get_outline', views.get_outline),
     url(r'^show_repos_list', views.show_repos_list),
     url(r'^get_repos_list_file', views.get_repos_list_file),
