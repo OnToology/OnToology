@@ -793,7 +793,7 @@ def add_collaborator(target_repo, user, newg=None):
             print("collaborator already there")
             return {'status': True, 'msg': 'this user is already a collaborator'}
         else:
-            print("going to add collaborator\n\n")
+            print("going to collaborator\n\n")
             invitation = newg.get_repo(target_repo).add_to_collaborators(user)
             print("got a reply")
             print(invitation)
