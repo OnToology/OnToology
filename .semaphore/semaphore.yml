@@ -16,7 +16,7 @@ blocks:
         - name: Built docker and run tests
           commands:
             - ls -ltr
-            - checkout
+            - 'checkout '
             - echo "check secrets"
             - ls ../*
             - echo "check OnToology content"
