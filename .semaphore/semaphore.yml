@@ -35,7 +35,8 @@ blocks:
             - docker-compose build
             - echo "Images are built"
             - echo "Running the tests"
-            - docker-compose run web .venv/bin/python manage.py test OnToology
+            - sh scripts/run_docker_tests.sh
+            - '#docker-compose run web .venv/bin/python manage.py test OnToology'
             - echo "Running Coverage"
             - docker-compose run -e CODECOV_TOKEN=$CODECOV_TOKEN web sh semaphoreci.sh
       secrets:
