@@ -1,7 +1,10 @@
 # ![alt text](https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/logoprop1_readme.png "OnToology")
 <!--[![Build Status](https://semaphoreci.com/api/v1/ahmad88me/ontoology/branches/master/badge.svg)](https://semaphoreci.com/ahmad88me/ontoology)
 -->
+<!--
 [![Build Status](https://ahmad88me.semaphoreci.com/badges/OnToology.svg)](https://ahmad88me.semaphoreci.com/projects/OnToology) 
+-->
+[![Build Status](https://ahmad88me.semaphoreci.com/badges/OnToology/branches/master.svg)](https://ahmad88me.semaphoreci.com/projects/OnToology) 
 [![codecov](https://codecov.io/gh/OnToology/OnToology/branch/master/graph/badge.svg)](https://codecov.io/gh/OnToology/OnToology)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1317786.svg)](https://doi.org/10.5281/zenodo.1317786)
 
