@@ -144,11 +144,11 @@ STATIC_URL = '/static/'
 
 
 try:
-    print("openning the file:")
-    f = open("OnToology/localwsgi.py")
-    print(f.read())
-    f.close()
-    print("closing the file:")
+    # print("openning the file:")
+    # f = open("OnToology/localwsgi.py")
+    # print(f.read())
+    # f.close()
+    # print("closing the file:")
     from OnToology.localwsgi import environ  # as environabc
     print("\\\\*****\\\\\\*****\n\n\n\n\n****")
     for k in environ:
