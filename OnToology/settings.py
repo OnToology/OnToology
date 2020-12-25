@@ -192,6 +192,11 @@ if DEBUG:
 DATABASES['default']['NAME'] = db_name
 
 DATABASES['default']['ENGINE'] = environ['db_engine']
+if 'db_password' in environ:
+    DATABASES['default']['PASSWORD'] = environ['db_password']
+
+if 'db_username' in environ:
+    DATABASES['default']['USER'] = environ['db_username']
 
 if 'db_host' in environ:
     print("yes db_host in environ")
