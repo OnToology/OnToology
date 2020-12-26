@@ -9,17 +9,26 @@
             Your browser does not support the canvas element.
 </canvas>
 
+
+
+
+
+
+
+
+
+
    {%for orun in oruns reversed%}
   <div class="card">
     <div class="card-header" role="tab" >
       <h4 class="card-title">
-        <a role="button" data-toggle="collapse" href="#coll{{r.id}}">
+        <a role="button" data-toggle="collapse" href="#coll{{orun.id}}" role="button" aria-expanded="false" aria-controls="coll{{orun.id}}">
           {{orun.timestamp}} ({{orun.repo.url}})
         </a>
       </h4>
     </div>
-      <div class="panel-body" id="coll{{r.id}}">
-            {%for otask in orun.tasks.all%}
+      <div class="panel-body collapse" id="coll{{orun.id}}">
+            {%for otask in orun.otasks.all%}
             {%if otask.success%}
                     <li class="list-group-item " >
                     {{otask.name}} | {{otask.description}}

@@ -48,6 +48,11 @@
       <li class="nav-item active">
         <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
       </li>
+    <li><a class="nav-link" href="/stepbystep">Step by Step </a></li>
+    <li><a class="nav-link" href="/about">About </a></li>
+    <li><a class="nav-link" href="/faqs">FAQ </a></li>
+    <li><a class="nav-link" href="/publications">Publications </a></li>
+
          {% if request.user.is_authenticated %}
       <li class="nav-item">
         <a class="nav-link" href="/profile">Profile</a>
@@ -59,10 +64,11 @@
 
 {%block body%}
 {%endblock%}
+<br><br><br><br><br>
+<br><br><br><br><br>
 
-
-<div id="footer" class="fixed-bottom">
-    <div class="container">
+<div id="footer" class="fixed-bottom" style="background-color: #FFFFFF;">
+<!--    <div class="container">-->
         <div class="row ">
             <div class="col-md-6 col-xs-6 " align="left">
                 <p>
@@ -75,15 +81,18 @@
                 </p>
             </div>
             <div class="col-md-6 col-xs-6 " align="right">
-                <a href="http://www.oeg-upm.net/" target="_blank"><img
+                <a href="http://www.oeg-upm.net/" target="_blank">
+                    <img height="65px"
                         src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/home/oeg.gif"
                         alt="OEG logo" class="img-rounded" class="img-responsive"/></a>
-                <img height="100px" src="https://www.upm.es/sfs/Rectorado/Gabinete%20del%20Rector/Logos/FAC_INFORMATICA/FacInformatica.jpg"/>
-                <img height="100px" src="https://www.upm.es/sfs/Rectorado/Gabinete%20del%20Rector/Logos/UPM/CEI/LOGOTIPO%20leyenda%20color%20JPG.jpg"/>
+                <img height="70px" src="https://www.upm.es/sfs/Rectorado/Gabinete%20del%20Rector/Logos/FAC_INFORMATICA/FacInformatica.jpg"/>
+                <img height="90px" src="https://www.upm.es/sfs/Rectorado/Gabinete%20del%20Rector/Logos/UPM/CEI/LOGOTIPO%20leyenda%20color%20JPG.jpg"/>
             </div>
 
         </div>
+<!--
     </div>
+-->
 </div>
 </body>
 </html>
