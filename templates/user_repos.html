@@ -37,7 +37,7 @@
       <tbody>
     {%for r in repos%}
     <tr>
-        <td><a href="/repo?repo={{r.url}}">{{r.url}}</a></td>
+        <td><a href="/runs?repo={{r.url}}">{{r.url}}</a></td>
         <td>{{r.state}}</td>
         <td>{{r.notes}}</td>
         <td>
@@ -138,7 +138,7 @@ function set_branch_listeners(){
 					$("#spinner").hide();
 			}).done(function(resp){
                     $("#spinner").hide();
-                    location.href="/repo?repo="+chosen_repo
+                    location.href="/runs?repo="+chosen_repo
 		});// ajax
 
     });//set branch listeners

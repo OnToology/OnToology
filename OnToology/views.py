@@ -125,16 +125,14 @@ def home(request):
 
 
 @login_required
-def repo_view(request):
+def runs_view(request):
     user = request.user
     try:
-        print("in repo view")
+        print("in runs view")
         if 'repo' in request.GET:
             print("in request GET")
             repo_name = request.GET['repo'].strip()
             repos = Repo.objects.filter(url=repo_name)
-            # for r in Repo.objects.all():
-            #     print("repo: <"+r.url+"> ")
             if len(repos) == 1:
                 print("single repo")
                 repo = repos[0]
@@ -151,13 +149,13 @@ def repo_view(request):
                 #     else:
                 #         latest_oruns.append(orun)
                 print("going to render")
-                return render(request, 'repo.html', {'oruns': latest_oruns})
+                return render(request, 'runs.html', {'oruns': latest_oruns})
             else:
-                print("repo_view> repo <"+str(repo_name)+"> does not exist for user: "+str(user))
+                print("runs_view> repo <"+str(repo_name)+"> does not exist for user: "+str(user))
         else:
             return render(request, 'user_repos.html', {'repos': user.repos.all()})
     except Exception as e:
-        print("repo_view> exception: "+str(e))
+        print("runs_view> exception: "+str(e))
     return HttpResponseRedirect(reverse('profile'))
 
 
