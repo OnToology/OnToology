@@ -64,8 +64,12 @@
     </tr>
       </tbody>
     {%endfor%}
+
 </table>
 
+{%if not repos%}
+<p>has previous runs</p>
+{%endif%}
 
 <div class="modal" tabindex="-1" id="branches-modal">
   <div class="modal-dialog modal-dialog-scrollable">

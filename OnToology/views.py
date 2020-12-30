@@ -125,6 +125,43 @@ def home(request):
 
 
 @login_required
+def get_ontologies(request):
+    user = request.user
+    if 'branch' in request.GET and 'repo' in request.GET:
+        branch = request.GET['branch'].strip()
+        repo_url = request.GET['repo'].strip()
+        repos = user.repos.filter(url=repo_url)
+        if len(repos) == 0:
+            return JsonReponse({'error': 'This repo does not belong to your user account. Make sure to add it.'}, status=400)
+        else:
+            try:
+                ontologies = parse_online_repo_for_ontologies(repo_url, branch)
+                print("ontologies: ")
+                print(ontologies)
+                j = {'ontologies': ontologies}
+                return JsonResponse(j)
+            except Exception as e:
+                print("Exception: "+str(e))
+                j = {'error': 'Make sure you have the branch and the repository URL are correct'}
+                return JsonResponse(j, status=400)
+    else:
+        return JsonResponse({'error': 'expecting the branch and repo'}, status=400)
+
+@login_required
+def repos_view(request):
+    user = request.user
+    if 'branch' in request.GET and 'repo' in request.GET:
+        branch = request.GET['branch'].strip()
+        repo_url = request.GET['repo'].strip()
+        repos = user.repos.filter(url=repo_url)
+        if len(repos) == 0:
+            return render(request,'msg.html', {'msg': 'This repo does not belong to your user account. Make sure to add it.'})
+        return render(request, 'repo.html', {'repo': repos[0], 'branch': branch})
+    else:
+        return render(request, 'repos.html', {'repos': user.repos.all()})
+
+
+@login_required
 def runs_view(request):
     user = request.user
     try:

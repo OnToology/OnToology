@@ -1161,16 +1161,31 @@ enable = %s
     return conf
 
 
-def get_confs_from_repo(target_repo):
+def get_confs_from_repo(target_repo, branch):
     global g
     repo = g.get_repo(target_repo)
-    sha = repo.get_commits()[0].sha
+    branch = repo.get_branch(branch)
+    sha = branch.commit.sha
+    # sha = repo.get_commits()[0].sha
     files = repo.get_git_tree(sha=sha, recursive=True).tree
     conf_files = []
     for f in files:
         if 'OnToology.cfg' in f.path:
             conf_files.append(f)
     return repo, conf_files
+
+
+# old
+# def get_confs_from_repo(target_repo, branch):
+#     global g
+#     repo = g.get_repo(target_repo)
+#     sha = repo.get_commits()[0].sha
+#     files = repo.get_git_tree(sha=sha, recursive=True).tree
+#     conf_files = []
+#     for f in files:
+#         if 'OnToology.cfg' in f.path:
+#             conf_files.append(f)
+#     return repo, conf_files
 
 
 def add_themis_results(target_repo, ontologies):
@@ -1259,7 +1274,7 @@ def compute_themis_results(repo, path):
 #     f.path[-23:] == themis_results_dir
 
 
-def parse_online_repo_for_ontologies(target_repo):
+def parse_online_repo_for_ontologies(target_repo, branch='master'):
     """
         This is parse repositories for ontologies configuration files OnToology.cfg
     """
@@ -1267,7 +1282,7 @@ def parse_online_repo_for_ontologies(target_repo):
     if g is None:
         init_g()
     print("in parse online repo for ontologies")
-    repo, conf_paths = get_confs_from_repo(target_repo)
+    repo, conf_paths = get_confs_from_repo(target_repo, branch)
     print("repo: %s, conf_paths: %s" % (str(repo), str(conf_paths)))
     ontologies = []
 
@@ -1332,10 +1347,12 @@ def get_auton_config(conf_file_abs, from_string=True):
     widoco_sec_name = 'widoco'
     oops_sec_name = 'oops'
     owl2jsonld_sec_name = 'owl2jsonld'
+    themis_sec_name = 'themis'
     ar2dtool_enable = True
     widoco_enable = True
     oops_enable = True
     owl2jsonld_enable = True
+    themis_enable = True
     config = ConfigParser.ConfigParser()
     print("config raw parser")
     if from_string:
@@ -1367,6 +1384,12 @@ def get_auton_config(conf_file_abs, from_string=True):
             dolog('got owl2jsonld enable value: ' + str(owl2jsonld_enable))
         except:
             dolog('owl2jsonld enable value doesnot exist')
+        try:
+            themis_enable = config.getboolean(
+                themis_sec_name, 'enable')
+            dolog('got themis enable value: ' + str(themis_enable))
+        except:
+            dolog('themis enable value doesnot exist')
     else:
         dolog('auton configuration file does not exists')
         config.add_section(ar2dtool_sec_name)
@@ -1377,6 +1400,8 @@ def get_auton_config(conf_file_abs, from_string=True):
         config.set(oops_sec_name, 'enable', oops_enable)
         config.add_section(owl2jsonld_sec_name)
         config.set(owl2jsonld_sec_name, 'enable', owl2jsonld_enable)
+        config.add_section(themis_sec_name)
+        config.set(themis_sec_name, 'enable', themis_enable)
         conff = conf_file_abs
         dolog('will create conf file: ' + conff)
         try:
@@ -1388,7 +1413,8 @@ def get_auton_config(conf_file_abs, from_string=True):
     return {'ar2dtool_enable': ar2dtool_enable,
             'widoco_enable': widoco_enable,
             'oops_enable': oops_enable,
-            'owl2jsonld_enable': owl2jsonld_enable}
+            'owl2jsonld_enable': owl2jsonld_enable,
+            'themis_enable': themis_enable}
 
 
 def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):

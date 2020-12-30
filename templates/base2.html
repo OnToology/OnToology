@@ -52,9 +52,10 @@
     <li><a class="nav-link" href="/about">About </a></li>
     <li><a class="nav-link" href="/faqs">FAQ </a></li>
     <li><a class="nav-link" href="/publications">Publications </a></li>
-    <li><a class="nav-link" href="/runs">Runs</a></li>
 
          {% if request.user.is_authenticated %}
+            <li><a class="nav-link" href="/repos">Repos</a></li>
+            <li><a class="nav-link" href="/runs">Runs</a></li>
       <li class="nav-item">
         <a class="nav-link" href="/profile">Profile</a>
       </li>
