@@ -1281,6 +1281,7 @@ def parse_online_repo_for_ontologies(target_repo, branch='master'):
     global g
     if g is None:
         init_g()
+    #dolog("Parse online repo for ontologies\n\n\n\n")
     print("in parse online repo for ontologies")
     repo, conf_paths = get_confs_from_repo(target_repo, branch)
     print("repo: %s, conf_paths: %s" % (str(repo), str(conf_paths)))
@@ -1305,7 +1306,8 @@ def parse_online_repo_for_ontologies(target_repo, branch='master'):
         # o['ontology'] = get_parent_path(cpath.path)[len(get_target_home()):]
         o['ontology'] = get_parent_path(p)[len(get_target_home()):]
         for c in confs:
-            tool = c.replace('_enable', '')
+            #tool = c.replace('_enable', '')
+            tool = c
             o[tool] = confs[c]
         ontologies.append(o)
 
@@ -1342,79 +1344,101 @@ def get_auton_configuration(f=None, abs_folder=None):
 
 
 def get_auton_config(conf_file_abs, from_string=True):
-    dolog('auton config is called: ')
-    ar2dtool_sec_name = 'ar2dtool'
-    widoco_sec_name = 'widoco'
-    oops_sec_name = 'oops'
-    owl2jsonld_sec_name = 'owl2jsonld'
-    themis_sec_name = 'themis'
-    ar2dtool_enable = True
-    widoco_enable = True
-    oops_enable = True
-    owl2jsonld_enable = True
-    themis_enable = True
+    """
+    :param conf_file_abs:
+    :param from_string:
+    :return:
+    """
     config = ConfigParser.ConfigParser()
     print("config raw parser")
     if from_string:
-        opened_conf_files = config.read_string(conf_file_abs)
+        config_obj = config.read_string(conf_file_abs)
+        print("obj from string")
     else:
-        opened_conf_files = config.read(conf_file_abs)
-    if from_string or len(opened_conf_files) == 1:
-        dolog('auton configuration file exists')
-        try:
-            ar2dtool_enable = config.getboolean(ar2dtool_sec_name, 'enable')
-            dolog('got ar2dtool enable value: ' + str(ar2dtool_enable))
-        except:
-            dolog('ar2dtool enable value doesnot exist')
-            pass
-        try:
-            widoco_enable = config.getboolean(widoco_sec_name, 'enable')
-            dolog('got widoco enable value: ' + str(widoco_enable))
-        except:
-            dolog('widoco enable value doesnot exist')
-            pass
-        try:
-            oops_enable = config.getboolean(oops_sec_name, 'enable')
-            dolog('got oops enable value: ' + str(oops_enable))
-        except:
-            dolog('oops enable value doesnot exist')
-        try:
-            owl2jsonld_enable = config.getboolean(
-                owl2jsonld_sec_name, 'enable')
-            dolog('got owl2jsonld enable value: ' + str(owl2jsonld_enable))
-        except:
-            dolog('owl2jsonld enable value doesnot exist')
-        try:
-            themis_enable = config.getboolean(
-                themis_sec_name, 'enable')
-            dolog('got themis enable value: ' + str(themis_enable))
-        except:
-            dolog('themis enable value doesnot exist')
-    else:
-        dolog('auton configuration file does not exists')
-        config.add_section(ar2dtool_sec_name)
-        config.set(ar2dtool_sec_name, 'enable', ar2dtool_enable)
-        config.add_section(widoco_sec_name)
-        config.set(widoco_sec_name, 'enable', widoco_enable)
-        config.add_section(oops_sec_name)
-        config.set(oops_sec_name, 'enable', oops_enable)
-        config.add_section(owl2jsonld_sec_name)
-        config.set(owl2jsonld_sec_name, 'enable', owl2jsonld_enable)
-        config.add_section(themis_sec_name)
-        config.set(themis_sec_name, 'enable', themis_enable)
-        conff = conf_file_abs
-        dolog('will create conf file: ' + conff)
-        try:
-            with open(conff, 'wb') as configfile:
-                config.write(configfile)
-        except Exception as e:
-            dolog('expection: ')
-            dolog(e)
-    return {'ar2dtool_enable': ar2dtool_enable,
-            'widoco_enable': widoco_enable,
-            'oops_enable': oops_enable,
-            'owl2jsonld_enable': owl2jsonld_enable,
-            'themis_enable': themis_enable}
+        config_obj = config.read(conf_file_abs)
+        print("obj from file")
+    print("will ask for get json from conf obj")
+    try:
+        config_res, _ = Integrator.get_json_from_conf_obj(config)
+    except:
+        traceback.print_exc()
+    dolog("\n\n\n**************get_auton_config: ")
+    dolog(str(config_res))
+    return config_res
+
+
+# def get_auton_config(conf_file_abs, from_string=True):
+#     dolog('auton config is called: ')
+#     ar2dtool_sec_name = 'ar2dtool'
+#     widoco_sec_name = 'widoco'
+#     oops_sec_name = 'oops'
+#     owl2jsonld_sec_name = 'owl2jsonld'
+#     themis_sec_name = 'themis'
+#     ar2dtool_enable = True
+#     widoco_enable = True
+#     oops_enable = True
+#     owl2jsonld_enable = True
+#     themis_enable = True
+#     config = ConfigParser.ConfigParser()
+#     print("config raw parser")
+#     if from_string:
+#         opened_conf_files = config.read_string(conf_file_abs)
+#     else:
+#         opened_conf_files = config.read(conf_file_abs)
+#     if from_string or len(opened_conf_files) == 1:
+#         dolog('auton configuration file exists')
+#         try:
+#             ar2dtool_enable = config.getboolean(ar2dtool_sec_name, 'enable')
+#             dolog('got ar2dtool enable value: ' + str(ar2dtool_enable))
+#         except:
+#             dolog('ar2dtool enable value doesnot exist')
+#             pass
+#         try:
+#             widoco_enable = config.getboolean(widoco_sec_name, 'enable')
+#             dolog('got widoco enable value: ' + str(widoco_enable))
+#         except:
+#             dolog('widoco enable value doesnot exist')
+#             pass
+#         try:
+#             oops_enable = config.getboolean(oops_sec_name, 'enable')
+#             dolog('got oops enable value: ' + str(oops_enable))
+#         except:
+#             dolog('oops enable value doesnot exist')
+#         try:
+#             owl2jsonld_enable = config.getboolean(owl2jsonld_sec_name, 'enable')
+#             dolog('got owl2jsonld enable value: ' + str(owl2jsonld_enable))
+#         except:
+#             dolog('owl2jsonld enable value doesnot exist')
+#         try:
+#             themis_enable = config.getboolean(themis_sec_name, 'enable')
+#             dolog('got themis enable value: ' + str(themis_enable))
+#         except:
+#             dolog('themis enable value doesnot exist')
+#     else:
+#         dolog('auton configuration file does not exists')
+#         config.add_section(ar2dtool_sec_name)
+#         config.set(ar2dtool_sec_name, 'enable', ar2dtool_enable)
+#         config.add_section(widoco_sec_name)
+#         config.set(widoco_sec_name, 'enable', widoco_enable)
+#         config.add_section(oops_sec_name)
+#         config.set(oops_sec_name, 'enable', oops_enable)
+#         config.add_section(owl2jsonld_sec_name)
+#         config.set(owl2jsonld_sec_name, 'enable', owl2jsonld_enable)
+#         config.add_section(themis_sec_name)
+#         config.set(themis_sec_name, 'enable', themis_enable)
+#         conff = conf_file_abs
+#         dolog('will create conf file: ' + conff)
+#         try:
+#             with open(conff, 'wb') as configfile:
+#                 config.write(configfile)
+#         except Exception as e:
+#             dolog('expection: ')
+#             dolog(e)
+#     return {'ar2dtool_enable': ar2dtool_enable,
+#             'widoco_enable': widoco_enable,
+#             'oops_enable': oops_enable,
+#             'owl2jsonld_enable': owl2jsonld_enable,
+#             'themis_enable': themis_enable}
 
 
 def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):

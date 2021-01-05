@@ -67,13 +67,23 @@
     function get_card_body(ont_j){
         var i;
         var conf_html="";
-        //var conf_pre="<li class='list-group-item btn'>";
+        var j;
         var conf_pre="<li class='list-group-item'>";
         var conf_post="</li>";
         var ks=Object.keys(ont_j);
+        console.log('ont_j: ');
+        console.log(ont_j);
+        console.log("keys: ")
         for(i=0;i<ks.length;i++){
             if(ks[i]!='ontology'){
-                conf_html += conf_pre+ks[i]+": "+ont_j[ks[i]]+conf_post;
+                console.log(ks[i])
+                console.log(ont_j[ks[i]])
+                console.log('get j>');
+                j = ont_j[ks[i]]
+                console.log('j: ');
+                console.log(j);
+                conf_html += get_tool_html(ont_j['ontology'].substring(1),ks[i],j)
+                //conf_html += conf_pre+ks[i]+": "+ont_j[ks[i]]+conf_post;
             }
         }
         console.log("conf html: ");
@@ -81,7 +91,45 @@
         return conf_html;
     }
 
+    function get_tool_html(ontology,k,jobj){
+        // k is the tool
+        // jobj is the json including the attributes of the tools
+        console.log('jobj: ');
+        console.log(jobj)
+        console.log('key k: ');
+        console.log(k)
 
+        var attrs=Object.keys(jobj);
+        var conf_pre="<li class='list-group-item'>";
+        var conf_post="</li>";
+        var boolsvals = [true, false]
+        var i
+        var tool_html="";
+        console.log('in get_tool_html> ');
+        for(i=0;i<attrs.length;i++){
+            console.log('attrs[i]: ');
+            console.log(attrs[i]);
+            if(boolsvals.includes(jobj[attrs[i]])){
+                 tool_html += conf_pre + bool_html(ontology,k+'-'+attrs[i],k+'-'+attrs[i], jobj[attrs[i]])
+            }
+        }
+        return tool_html;
+    }
+
+    function bool_html(ontology,label, name, val){
+        var ch_html="";
+        var check_txt="";
+        var lab_html="";
+        var tag_id = ontology+'-'+name;
+        if(val){
+            check_txt = "checked"
+        }
+        lab_html = '<label class="form-check-label" for="'+tag_id+'">'+label+'</label>'
+        ch_html = '<input type="checkbox" class="form-check-input" name="'+name+'" id="'+ tag_id +'" ' + check_txt + '/>'
+        ch_html += lab_html
+        ch_html = '<div class="form-check">' + ch_html +'</div>'
+        return ch_html
+    }
 
 
     $("#spinner").hide();

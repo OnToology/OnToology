@@ -135,6 +135,7 @@ def get_ontologies(request):
             return JsonReponse({'error': 'This repo does not belong to your user account. Make sure to add it.'}, status=400)
         else:
             try:
+                print("going for: parse_online_repo_for_ontologies")
                 ontologies = parse_online_repo_for_ontologies(repo_url, branch)
                 print("ontologies: ")
                 print(ontologies)
