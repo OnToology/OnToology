@@ -347,7 +347,7 @@ def get_json_from_conf_obj(config):
     themis_sec_name = 'themis'
     config_result = get_default_conf()
     if len(config) == 1:
-        dolog(ofile+' configuration file exists')
+        dolog(' configuration file exists')
         # ar2dtool
         try:
             config_result['ar2dtool']['enable'] = config.getboolean(ar2dtool_sec_name, 'enable')
