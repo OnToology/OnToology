@@ -1,6 +1,12 @@
 {% extends "base2.html"%}
 {%block body%}
 
+<style>
+.datafont {
+  font-family: 'Courier New', monospace;
+}
+</style>
+
 <div class="clearfix alert alert-info" id="spinner">
      <strong>Loading ...</strong>
   <div class="spinner-border float-right text-light" role="status">
@@ -8,14 +14,17 @@
   </div>
 </div>
 
+<div class="container">
  <div class="card">
       <div class="card-body">
-        <h5 class="card-title">{{repo.url}}</h5>
-        <p>{{branch}}</p>
+          <h5 class="card-title">Repo: <span class="datafont">{{repo.url}}</span></h5>
+          <p>branch: <span class="datafont">{{branch}}</span></p>
       </div>
-     <button class="btn btn-primary" id="load">Load processed ontologies</button>
- </div>
 
+ </div>
+            <button class="btn btn-primary" id="load">Load processed ontologies</button>
+
+</div>
 
 
 <!-- <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">-->
@@ -46,7 +55,20 @@
 					console.log(resp.error);
 					$("#spinner").hide();
 			}).done(function(resp){
-			    var html_list="";
+			    var html_list='';
+			    html_list='<div class="container-fluid"><div class="col-sm-12 col-md-8 offset-md-2 col-lg-8 offset-lg-2">';
+			    html_list+='<br><div class="alert alert-secondary" role="alert">';
+			    html_list+='These configurations are <strong>read-only</strong>.';
+			    html_list+='You can change the configuration for each ontology by changing the values in the file "Ontology.cfg" for';
+			    html_list+=' each of these ontologies. These configuration files are located in "/OnToology" ';
+			    html_list+='folder in your repo.</div></div></div>';
+
+
+
+
+
+
+
 				    for(var i=0;i<resp.ontologies.length;i++){
                         html_list+=card_html_pre;
                         html_list+='<h5 class="card-title">';
@@ -54,7 +76,9 @@
                         html_list+='</h5>';
                         html_list+=get_card_body(resp.ontologies[i]);
                         html_list+=card_html_post;
-
+                    }
+                    if(resp.ontologies.length == 0){
+                        html_list='<div class="container-fluid"><div class="col-sm-12 col-md-8 offset-md-2 col-lg-8 offset-lg-2"><br><div class="alert alert-warning" role="alert">This repo does not have ontologies with generated resources</div></div></div>';
                     }
                     $("#content").html(html_list);
                     $("#spinner").hide();

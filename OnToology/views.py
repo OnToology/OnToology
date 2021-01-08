@@ -142,6 +142,7 @@ def get_ontologies(request):
                 j = {'ontologies': ontologies}
                 return JsonResponse(j)
             except Exception as e:
+                #traceback.print_exc()
                 print("Exception: "+str(e))
                 j = {'error': 'Make sure you have the branch and the repository URL are correct'}
                 return JsonResponse(j, status=400)
