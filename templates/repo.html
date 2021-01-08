@@ -136,6 +136,9 @@
             if(boolsvals.includes(jobj[attrs[i]])){
                  tool_html += conf_pre + bool_html(ontology,k+'-'+attrs[i],k+'-'+attrs[i], jobj[attrs[i]])
             }
+            else{
+                 tool_html += conf_pre + txtval_html(ontology,k+'-'+attrs[i],k+'-'+attrs[i], jobj[attrs[i]])
+            }
         }
         return tool_html;
     }
@@ -153,6 +156,14 @@
         ch_html += lab_html
         ch_html = '<div class="form-check">' + ch_html +'</div>'
         return ch_html
+    }
+
+    function txtval_html(ontology,label, name, val){
+        var t_html="";
+        var tag_id = ontology+'-'+name;
+        v_html='<code>'+val+'</code>';
+        t_html=label + ": " + v_html;
+        return t_html;
     }
 
 
