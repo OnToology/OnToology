@@ -7,25 +7,30 @@
 }
 </style>
 
-<div class="clearfix alert alert-info" id="spinner">
-     <strong>Loading ...</strong>
-  <div class="spinner-border float-right text-light" role="status">
-    <span class="sr-only">Loading...</span>
-  </div>
-</div>
+
+
 
 <div class="container">
  <div class="card">
       <div class="card-body">
           <h5 class="card-title">Repo: <span class="datafont">{{repo.url}}</span></h5>
           <p>branch: <span class="datafont">{{branch}}</span></p>
+          <a class="btn btn-primary float-right" href="/generateforall?repo={{repo.url}}&branch={{branch}}">Generate Resources</a>
+          <button class="btn btn-primary float-right" id="load">Load processed ontologies</button>
+
       </div>
 
  </div>
-            <button class="btn btn-primary" id="load">Load processed ontologies</button>
+    <br>
 
 </div>
 
+<div class="clearfix alert alert-info" id="spinner">
+     <strong>Loading ...</strong>
+  <div class="spinner-border float-right text-light" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
 
 <!-- <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">-->
 <!--    <div class="card">-->

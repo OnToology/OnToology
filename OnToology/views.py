@@ -179,14 +179,6 @@ def runs_view(request):
                     return render(request,'msg.html', {'msg': 'This repo does not belong to the loggedin user. Try to add it and try again.'})
                 now_timestamp = timezone.now()
                 latest_oruns = ORun.objects.filter(repo=repo)
-                # latest_oruns = ORun.objects.all()
-                # latest_oruns = []
-                # for orun in ORun.objects.filter(user=user, repo=repo).order_by('-timestamp'):
-                #     if (now_timestamp - timedelta(days=7)) > orun.timestamp:
-                #         print("repo_view> delete orun: "+str(orun.id)+"  <"+str(orun.timestamp)+"> ")
-                #         orun.delete()
-                #     else:
-                #         latest_oruns.append(orun)
                 print("going to render")
                 return render(request, 'runs.html', {'oruns': latest_oruns})
             else:
