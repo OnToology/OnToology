@@ -1,0 +1,27 @@
+{% extends "base2.html"%}
+{%block body%}
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Repository</th>
+      <th scope="col">Ontology</th>
+    </tr>
+  </thead>
+  <tbody>
+  {%for op in opubs%}
+    <tr>
+      <td>{{op.name}}</td>
+      <td>{{op.repo.url}}</td>
+      <td>{{op.ontology}}</td>
+    </tr>
+  {%endfor%}
+  </tbody>
+</table>
+
+
+
+
+
+{% endblock %}

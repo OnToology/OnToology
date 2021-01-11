@@ -164,6 +164,11 @@ def repos_view(request):
 
 
 @login_required
+def opub_view(request):
+    return render(request, 'opub.html', {'opubs': PublishName.objects.filter(user=request.user)})
+
+
+@login_required
 def runs_view(request):
     user = request.user
     try:

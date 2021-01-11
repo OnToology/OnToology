@@ -17,7 +17,6 @@
           <p>branch: <span class="datafont">{{branch}}</span></p>
           <a class="btn btn-primary float-right" href="/generateforall?repo={{repo.url}}&branch={{branch}}">Generate Resources</a>
           <button class="btn btn-primary float-right" id="load">Load processed ontologies</button>
-
       </div>
 
  </div>
@@ -31,6 +30,10 @@
     <span class="sr-only">Loading...</span>
   </div>
 </div>
+
+
+
+
 
 <!-- <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">-->
 <!--    <div class="card">-->
@@ -60,6 +63,8 @@
 					console.log(resp.error);
 					$("#spinner").hide();
 			}).done(function(resp){
+			    var tagid;
+			    var card_html_body;
 			    var html_list='';
 			    html_list='<div class="container-fluid"><div class="col-sm-12 col-md-8 offset-md-2 col-lg-8 offset-lg-2">';
 			    html_list+='<br><div class="alert alert-secondary" role="alert">';
@@ -68,25 +73,27 @@
 			    html_list+=' each of these ontologies. These configuration files are located in "/OnToology" ';
 			    html_list+='folder in your repo.</div></div></div>';
 
+                for(var i=0;i<resp.ontologies.length;i++){
+                    html_list+=card_html_pre;
+                    html_list+='<h5 class="card-title">';
+                    html_list+=resp.ontologies[i].ontology;
+                    html_list+='</h5>';
+                    card_html_body=get_card_body(resp.ontologies[i]);
+                    console.log('getting tagid');
+                    console.log(resp.ontologies[i].ontology);
+                    tagid = resp.ontologies[i].ontology.substring(1,)+"-coll";
+                    tagid = tagid.replace(/\./g, "-");
+                    card_html_body = collapse_html(tagid,card_html_body);
+                    html_list+=card_html_body;
+                    html_list+=card_html_post;
+                }
+                if(resp.ontologies.length == 0){
+                    html_list='<div class="container-fluid"><div class="col-sm-12 col-md-8 offset-md-2 col-lg-8 offset-lg-2"><br><div class="alert alert-warning" role="alert">This repo does not have ontologies with generated resources</div></div></div>';
+                }
+                $("#content").html(html_list);
+                update_collapse_listener();
+                $("#spinner").hide();
 
-
-
-
-
-
-				    for(var i=0;i<resp.ontologies.length;i++){
-                        html_list+=card_html_pre;
-                        html_list+='<h5 class="card-title">';
-                        html_list+=resp.ontologies[i].ontology;
-                        html_list+='</h5>';
-                        html_list+=get_card_body(resp.ontologies[i]);
-                        html_list+=card_html_post;
-                    }
-                    if(resp.ontologies.length == 0){
-                        html_list='<div class="container-fluid"><div class="col-sm-12 col-md-8 offset-md-2 col-lg-8 offset-lg-2"><br><div class="alert alert-warning" role="alert">This repo does not have ontologies with generated resources</div></div></div>';
-                    }
-                    $("#content").html(html_list);
-                    $("#spinner").hide();
 		});
 
 
@@ -170,6 +177,44 @@
         t_html=label + ": " + v_html;
         return t_html;
     }
+
+    function collapse_html(tag_id, inner_html){
+        //a collapse
+        //var btnhtml = '<a type="button" data-toggle="collapse" href="#'+tag_id+'" role="button" aria-expanded="false" aria-controls="'+tag_id+'">show configuration</a>'
+        //button collapse
+        var btnhtml = '<button class="btn btn-primary collapse-btn" type="button" data-toggle="collapse" data-target="#'+tag_id+'" aria-expanded="false" aria-controls="'+tag_id+'">Show configuration</button>'
+        var chtml = '<div class="collapse show" id="'+tag_id+'">';
+
+        chtml += inner_html;
+        chtml += '</div>';
+
+        return btnhtml+chtml;
+    }
+
+
+
+
+    function update_collapse_listener(){
+        $('.collapse').collapse({'toggle': true});
+        /*
+        $(".collapse-btn").each(function(index){
+            console.log("Each: "+index);
+            $(this).on('click', function(){
+                console.log("clicked");
+                var coll_target_sel = $(this).attr("data-target");
+                console.log('coll_target_sel: ');
+                console.log(coll_target_sel);
+                $(coll_target_sel).collapse('toggle');
+                $('#abc').collapse('toggle');
+            });
+        });
+        */
+
+
+    }
+
+
+
 
 
     $("#spinner").hide();

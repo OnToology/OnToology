@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'^repos', views.repos_view, name='repos'),
     url(r'^ontologies', views.get_ontologies, name='ontologies'),
     url(r'^runs', views.runs_view, name='runs'),
+    url(r'^opub', views.opub_view, name='opub'),
     # url(r'^repo', views.repo_view, name='repo'),
     url(r'^login_get_access', views.login_get_access, name='login_get_access'),
     url(r'^login', views.login, name='login'),
