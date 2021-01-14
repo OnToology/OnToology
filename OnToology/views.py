@@ -936,10 +936,13 @@ def get_managers():
 @login_required
 def publish_view(request):
     if 'name' not in request.GET:
+        print("missing name")
         return HttpResponseRedirect('/')
     if 'repo' not in request.GET:
+        print("missing repo")
         return HttpResponseRedirect('/')
     if 'ontology' not in request.GET:
+        print("missing ontology")
         return HttpResponseRedirect('/')
     name = request.GET['name']
     target_repo = request.GET['repo']

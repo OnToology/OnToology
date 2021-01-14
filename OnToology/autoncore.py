@@ -340,15 +340,22 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
     otask.save()
 
 
-def update_file(target_repo, path, message, content, branch=None):
+def update_file(target_repo, path, message, content, branch=None, g_local=None):
     global g
+    if g_local is None:
+        if g is None:
+            gg = init_g()
+        else:
+            gg = g
+    else:
+        gg = g_local
     clean_path = path[0]
     if path[0] == '/':
         clean_path = clean_path[1:]
-    username = os.environ['github_username']
-    password = os.environ['github_password']
-    g = Github(username, password)
-    repo = g.get_repo(target_repo)
+    # username = os.environ['github_username']
+    # password = os.environ['github_password']
+    # g = Github(username, password)
+    repo = gg.get_repo(target_repo)
     if branch is None:
         sha = repo.get_contents(path).sha
         dolog('default branch with file sha: %s' % str(sha))
@@ -356,7 +363,7 @@ def update_file(target_repo, path, message, content, branch=None):
         sha = repo.get_contents(path, branch).sha
         dolog('branch %s with file %s sha: %s' % (branch, clean_path, str(sha)))
     apath = clean_path.strip()
-    dolog("username: " + username)
+    # dolog("username: " + username)
     dolog('will update the file <%s> on repo<%s> with the content <%s>,  sha <%s> and message <%s>' %
           (apath, target_repo, content, sha, message))
     dolog("repo.update_file('%s', '%s', \"\"\"%s\"\"\" , '%s' )" % (apath, message, content, sha))
@@ -962,7 +969,7 @@ def generate_bundle(base_dir, target_repo, ontology_bundle):
         return None
 
 
-def publish(name, target_repo, ontology_rel_path, useremail):
+def publish(name, target_repo, ontology_rel_path, useremail, g_local=None):
     """
     To publish the ontology via github.
     :param name:
@@ -971,6 +978,13 @@ def publish(name, target_repo, ontology_rel_path, useremail):
     :param user:
     :return: error message, it will return an empty string if everything went ok
     """
+    global g
+    if g_local is None:
+        if g is None:
+            g = init_g()
+        gg = g
+    else:
+        gg = g_local
     try:
         OUser.objects.all()
     except:
@@ -1048,7 +1062,7 @@ def publish(name, target_repo, ontology_rel_path, useremail):
             dolog(new_htaccess)
             update_file(target_repo=target_repo, path=os.path.join('OnToology', ontology_rel_path, 'documentation',
                                                                    '.htaccess'),
-                        content=new_htaccess, branch='gh-pages', message='OnToology Publish')
+                        content=new_htaccess, branch='gh-pages', message='OnToology Publish', g_local=gg)
             comm = 'mkdir "%s"' % os.path.join(publish_dir, name)
             dolog("publish> " + comm)
             call(comm, shell=True)

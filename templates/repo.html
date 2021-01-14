@@ -17,6 +17,10 @@
           <p>branch: <span class="datafont">{{branch}}</span></p>
           <a class="btn btn-primary float-right" href="/generateforall?repo={{repo.url}}&branch={{branch}}">Generate Resources</a>
           <button class="btn btn-primary float-right" id="load">Load processed ontologies</button>
+
+          {%for pn in repo.publishnames.all%}
+            {{pn.name}},
+          {%endfor%}
       </div>
 
  </div>
@@ -34,14 +38,36 @@
 
 
 
+<div class="modal" tabindex="-1" id="publish-modal">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Publish</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <p>Reserve a relative w3id (e.g., w3id.org/def/your_reserved_id)</p>
+          <form method="GET" action="/publish" class="form-inline">
+                <div class="form-group">
+                  <input type="text" name="name" class="form-control"/>
+                  <input type="hidden" name="repo" value="{{repo.url}}"/>
+                  <input type="hidden" name="ontology" value="" id="ontology-input"/>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Reserve</button>
+                </div>
+          </form>
 
-<!-- <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">-->
-<!--    <div class="card">-->
-<!--      <div class="card-body">-->
-<!--        <h5 class="card-title">{{repo.url}}</h5>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+<!--        <button type="button" class="btn btn-primary">Save changes</button>-->
+      </div>
+    </div>
+  </div>
+</div>
 
 
 <div class="row" id="content">
@@ -85,6 +111,7 @@
                     tagid = tagid.replace(/\./g, "-");
                     card_html_body = collapse_html(tagid,card_html_body);
                     html_list+=card_html_body;
+                    html_list+=publish_html(resp.ontologies[i].ontology);
                     html_list+=card_html_post;
                 }
                 if(resp.ontologies.length == 0){
@@ -184,34 +211,26 @@
         //button collapse
         var btnhtml = '<button class="btn btn-primary collapse-btn" type="button" data-toggle="collapse" data-target="#'+tag_id+'" aria-expanded="false" aria-controls="'+tag_id+'">Show configuration</button>'
         var chtml = '<div class="collapse show" id="'+tag_id+'">';
-
         chtml += inner_html;
         chtml += '</div>';
-
         return btnhtml+chtml;
     }
 
-
-
-
     function update_collapse_listener(){
         $('.collapse').collapse({'toggle': true});
-        /*
-        $(".collapse-btn").each(function(index){
-            console.log("Each: "+index);
-            $(this).on('click', function(){
-                console.log("clicked");
-                var coll_target_sel = $(this).attr("data-target");
-                console.log('coll_target_sel: ');
-                console.log(coll_target_sel);
-                $(coll_target_sel).collapse('toggle');
-                $('#abc').collapse('toggle');
-            });
-        });
-        */
-
-
     }
+
+    function publish_html(ontology){
+        var publish_btn='<button class="btn btn-primary" onclick="publish_click(\''+ontology+'\')">publish</button>'
+        console.log(publish_btn);
+        return publish_btn;
+    }
+
+    function publish_click(ontology){
+        $('#ontology-input').val(ontology);
+        $('#publish-modal').modal('show');
+    }
+
 
 
 

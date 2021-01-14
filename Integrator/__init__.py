@@ -208,7 +208,7 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
             #     repo.save()
         except Exception as e:
             dolog("Exception in running ar2dtool.draw_diagrams: "+str(e))
-            dolog("changed_file: <"+changed_file++">")
+            dolog("changed_file: <"+changed_file+">")
             otask = task_reporter(otask=otask, desc="Error generating the diagrams: <%s>" % str(e), success=True, finished=True, orun=orun)
     repo.progress += progress_inc
     repo.save()
