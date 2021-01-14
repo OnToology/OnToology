@@ -349,7 +349,7 @@ def update_file(target_repo, path, message, content, branch=None, g_local=None):
             gg = g
     else:
         gg = g_local
-    print("get user: "+string(gg.get_user().name))
+    print("get user: "+string(gg.get_user()))
     clean_path = path[0]
     if path[0] == '/':
         clean_path = clean_path[1:]
