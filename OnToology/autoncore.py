@@ -349,6 +349,7 @@ def update_file(target_repo, path, message, content, branch=None, g_local=None):
             gg = g
     else:
         gg = g_local
+    print("get user: "+string(gg.get_user().name))
     clean_path = path[0]
     if path[0] == '/':
         clean_path = clean_path[1:]
@@ -378,7 +379,7 @@ def update_file(target_repo, path, message, content, branch=None, g_local=None):
         except:
             dolog('chance #%d file update' % i)
             time.sleep(3)
-    dolog('after 10 changes, still could not update ')
+    dolog('after x chances, still could not update ')
     # so if there is a problem it will raise an exception which will be captured by the calling function
     repo.update_file(apath, message, content, sha)
 
