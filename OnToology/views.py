@@ -862,7 +862,6 @@ def delete_published(request):
     elif p[0].user.id == request.user.id:
         pp = p[0]
         pp.delete()
-        #pp.save()
         comm = 'rm -Rf ' + os.path.join(publish_dir, name)
         call(comm, shell=True)
         msg = "The reserved name is deleted successfully"
