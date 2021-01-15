@@ -617,19 +617,19 @@ def profile(request):
         except Exception as e:
             print('exception: ' + str(e))
 
-    elif 'delete-name' in request.GET:
-        name = request.GET['delete-name']
-        p = PublishName.objects.filter(name=name)
-        if len(p) == 0:
-            error_msg += 'This name is not reserved'
-        elif p[0].user.id == user.id:
-            pp = p[0]
-            pp.delete()
-            pp.save()
-            comm = 'rm -Rf ' + os.path.join(publish_dir, name)
-            call(comm, shell=True)
-        else:
-            error_msg += 'You are trying to delete a name that does not belong to you'
+    # elif 'delete-name' in request.GET:
+    #     name = request.GET['delete-name']
+    #     p = PublishName.objects.filter(name=name)
+    #     if len(p) == 0:
+    #         error_msg += 'This name is not reserved'
+    #     elif p[0].user.id == user.id:
+    #         pp = p[0]
+    #         pp.delete()
+    #         pp.save()
+    #         comm = 'rm -Rf ' + os.path.join(publish_dir, name)
+    #         call(comm, shell=True)
+    #     else:
+    #         error_msg += 'You are trying to delete a name that does not belong to you'
     print('testing redirect')
     repos = user.repos.all()
     for r in repos:
@@ -816,33 +816,59 @@ def superadmin(request):
 
 @login_required
 def get_bundle(request):
-    ontology = request.GET['ontology']
-    repo = request.GET['repo']
-    r = Repo.objects.filter(url=repo)
-    if len(r) == 0:
-        return render(request, 'msg.html', {'msg': 'Invalid repo'})
-    elif r[0] not in request.user.repos.all():
-        return render(request, 'msg.html', {'msg': 'Please add this repo first'})
-    r[0].notes = ''
-    r[0].save()
-    sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(3)])
-    folder_name = 'bundle-' + sec
-    repo_dir = os.path.join(autoncore.home, folder_name)
-    if os.path.exists(repo_dir):
-        shutil.rmtree(repo_dir)
-    os.makedirs(repo_dir)
-    if ontology[0] == '/':
-        ontology = ontology[1:]
-    oo = os.path.join('OnToology', ontology)
-    print('oo: %s' % oo)
-    zip_dir = generate_bundle(base_dir=repo_dir, target_repo=repo, ontology_bundle=oo)
-    if zip_dir is None:
-        return render(request, 'msg.html', {'msg': 'error generating the bundle'})
+    if 'ontology' in request.GET and 'repo' in request.GET and 'branch' in request.GET:
+        try:
+            ontology = request.GET['ontology']
+            repo = request.GET['repo']
+            branch = request.GET['branch']
+            r = Repo.objects.filter(url=repo)
+            if len(r) == 0:
+                return render(request, 'msg.html', {'msg': 'Invalid repo'})
+            elif r[0] not in request.user.repos.all():
+                return render(request, 'msg.html', {'msg': 'Please add this repo first'})
+            r[0].notes = ''
+            r[0].save()
+            sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(3)])
+            folder_name = 'bundle-' + sec
+            repo_dir = os.path.join(autoncore.home, folder_name)
+            if os.path.exists(repo_dir):
+                shutil.rmtree(repo_dir)
+            os.makedirs(repo_dir)
+            if ontology[0] == '/':
+                ontology = ontology[1:]
+            oo = os.path.join('OnToology', ontology)
+            print('oo: %s' % oo)
+            zip_dir = generate_bundle(base_dir=repo_dir, target_repo=repo, ontology_bundle=oo, branch=branch)
+            if zip_dir is None:
+                return render(request, 'msg.html', {'msg': 'error generating the bundle'})
+            else:
+                with open(zip_dir, 'rb') as f:
+                    response = HttpResponse(f.read(), content_type='application/zip')
+                    response['Content-Disposition'] = 'attachment; filename="%s"' % zip_dir.split('/')[-1]
+                return response
+        except Exception as e:
+            print("Exception in get_bundle> "+str(e))
+            traceback.print_exc()
+            return render(request, 'msg.html', {'msg': 'Error getting the bundle. You can contact us to resolve this issue'})
     else:
-        with open(zip_dir, 'r') as f:
-            response = HttpResponse(f.read(), content_type='application/zip')
-            response['Content-Disposition'] = 'attachment; filename="%s"' % zip_dir.split('/')[-1]
-        return response
+        return render(request, 'msg.html', {'msg': 'Expects the repo, the branch, and the ontology'})
+
+@login_required
+def delete_published(request):
+    name = request.GET['name']
+    p = PublishName.objects.filter(name=name)
+    if len(p) == 0:
+        msg = 'This name is not reserved'
+    elif p[0].user.id == request.user.id:
+        pp = p[0]
+        pp.delete()
+        #pp.save()
+        comm = 'rm -Rf ' + os.path.join(publish_dir, name)
+        call(comm, shell=True)
+        msg = "The reserved name is deleted successfully"
+    else:
+        msg = 'You are trying to delete a name that does not belong to you'
+    return render(request,'msg.html', {'msg': msg})
 
 
 @login_required

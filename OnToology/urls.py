@@ -55,6 +55,7 @@ urlpatterns = [
     url(r'^show_repos_list', views.show_repos_list),
     url(r'^get_repos_list_file', views.get_repos_list_file),
     url(r'^publish', views.publish_view),
+    url(r'^delete_published', views.delete_published),
     url(r'^update_stats', views.update_stats_view),
     url(r'^syntax', views.syntax_check_view),
     url(r'show_stats', views.show_stats),

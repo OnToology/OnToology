@@ -909,11 +909,12 @@ def get_file_content(target_repo, path, branch=None):
         return repo.get_contents(path, branch).decoded_content
 
 
-def generate_bundle(base_dir, target_repo, ontology_bundle):
+def generate_bundle(base_dir, target_repo, ontology_bundle, branch):
     """
     :param base_dir: e.g. /home/user/temp/random-folder-xyz
     :param target_repo:  user/reponame
     :param ontology_bundle: OnToology/abc/alo.owl
+    :param branch: e.g., master
     :return: the bundle zip file dir if successful, or None otherwise
     """
     global g
@@ -922,23 +923,30 @@ def generate_bundle(base_dir, target_repo, ontology_bundle):
     try:
         print('ontology bundle: ' + ontology_bundle)
         repo = g.get_repo(target_repo)
-        sha = repo.get_commits()[0].sha
+        branch = repo.get_branch(branch)
+        sha = branch.commit.sha
+        # sha = repo.get_commits()[0].sha
         files = repo.get_git_tree(sha=sha, recursive=True).tree
         print('num of files: ' + str(len(files)))
         for f in files:
             try:
                 for i in range(3):
                     try:
-                        print('f: ' + str(f))
-                        print('next: ' + str(f.path))
+                        # print('f: ' + str(f))
+                        # print('next: ' + str(f.path))
                         p = f.path
+                        # print("generate_bundle> got p = f.path")
                         break
-                    except:
+                    except Exception as e:
                         time.sleep(2)
+                        print("generate_bundle> Exception "+str(e))
+                        traceback.print_exc()
                 p = f.path
                 if p[0] == '/':
                     p = p[1:]
                 abs_path = os.path.join(base_dir, p)
+                # print("abs_path: "+abs_path)
+                # print("p: "+str(p))
                 if p[:len(ontology_bundle)] == ontology_bundle:
                     print('true: ' + str(p))
                     if f.type == 'tree':
@@ -948,26 +956,32 @@ def generate_bundle(base_dir, target_repo, ontology_bundle):
                         if parent_folder != base_dir:  # not in the top level of the repo
                             try:
                                 os.makedirs(parent_folder)
-                            except:
+                            except Exception as e:
+                                # An exception may occur the file parents has already been generated
                                 pass
-                        with open(abs_path, 'w') as fii:
+                                #print("generate_bundle> Exception2: "+str(e))
+                                #traceback.print_exc()
+                        with open(abs_path, 'wb') as fii:
                             file_content = repo.get_contents(f.path).decoded_content
                             fii.write(file_content)
-                            print('file %s content: %s' % (f.path, file_content[:10]))
+                            print("file %s" % str(f.path))
+                            #print('file %s content: %s' % (f.path, file_content[:10]))
                     else:
                         print('unknown type in generate bundle')
                 else:
-                    print('not: ' + p)
+                    pass
+                    #print('not: ' + p)
             except Exception as e:
-                print('exception: ' + str(e))
+                print('generate_bundle> Exception3: ' + str(e))
+                traceback.print_exc()
         zip_file = os.path.join(base_dir, '%s.zip' % ontology_bundle.split('/')[-1])
         comm = "cd %s; zip -r '%s' OnToology" % (base_dir, zip_file)
         print('comm: %s' % comm)
         call(comm, shell=True)
         return os.path.join(base_dir, zip_file)
-        # return None
     except Exception as e:
-        print('error in generate_bundle: ' + str(e))
+        print('generate_bundle> Exception3: ' + str(e))
+        traceback.print_exc()
         return None
 
 
