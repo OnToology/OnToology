@@ -10,13 +10,24 @@ from .milestone import *
 
 user = "ahmad88me"
 repo_name = "ontoology-auto-test-no-res"
+repo_name_with_res = "ontoology-auto-test-with-res"
 repo = user + "/" + repo_name
+repo_with_res = user + "/" + repo_name_with_res
+ontology_name = "alo.owl"
+branch = "master"
+
 
 mock_dict_success = {
     "/repos/%s" % repo: {
         "GET": {
             "status": 200,
             "body": get_repo_dict(repo)
+        }
+    },
+    "/repos/%s" % repo_with_res: {
+        "GET": {
+            "status": 200,
+            "body": get_repo_dict(repo_with_res)
         }
     },
     "/user": {
@@ -71,6 +82,16 @@ mock_dict_success = {
         "PUT": {
             "status": 201,
             "body": get_add_collaborator_dict(repo)
+        }
+    },
+    "/repos/%s/contents/OnToology/%s/documentation/.htaccess" % (repo_with_res, ontology_name): {
+        "GET": {
+            "status": 200,
+            "body": get_file_content_dict(repo_with_res, branch, "OnToology/%s/documentation/.htaccess" % ontology_name)
+        },
+        "PUT": {
+            "status": 200,
+            "body": get_update_content_dict(repo_with_res, branch, "OnToology/%s/documentation/.htaccess" % ontology_name)
         }
     },
     "/user/repository_invitations/%s" % "1" :{

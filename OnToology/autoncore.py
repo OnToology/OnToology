@@ -340,23 +340,51 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
     otask.save()
 
 
-def update_file(target_repo, path, message, content, branch=None):
+def update_file(target_repo, path, message, content, branch=None, g_local=None):
+    """
+    Update the file on GitHub
+    :param target_repo:
+    :param path:
+    :param message:
+    :param content:
+    :param branch:
+    :param g_local:
+    :return:
+    """
     global g
-    clean_path = path[0]
+    if g_local is None:
+        gg = init_g()
+        # if g is None:
+        #     gg = init_g()
+        # else:
+        #     gg = g
+        print("update_file> get g from init_g")
+    else:
+        gg = g_local
+        print("update_file> g local")
+    print("*****\n\n\n\n\n\n\nupdate_file> gg: "+str(gg))
+    print("vget user: "+str(gg.get_user()))
+    print("\n\n\nupdate_file> *** branch: "+str(branch))
+    print("path: "+path)
+    clean_path = path
     if path[0] == '/':
         clean_path = clean_path[1:]
-    username = os.environ['github_username']
-    password = os.environ['github_password']
-    g = Github(username, password)
-    repo = g.get_repo(target_repo)
+    # username = os.environ['github_username']
+    # password = os.environ['github_password']
+    # g = Github(username, password)
+    repo = gg.get_repo(target_repo)
     if branch is None:
         sha = repo.get_contents(path).sha
-        dolog('default branch with file sha: %s' % str(sha))
+        dolog('update_file> default branch with file sha: %s' % str(sha))
     else:
-        sha = repo.get_contents(path, branch).sha
+        print("update_file> get_contents: ")
+        cont = repo.get_contents(path, branch)
+        print(cont)
+        sha = cont.sha
         dolog('branch %s with file %s sha: %s' % (branch, clean_path, str(sha)))
+
     apath = clean_path.strip()
-    dolog("username: " + username)
+    # dolog("username: " + username)
     dolog('will update the file <%s> on repo<%s> with the content <%s>,  sha <%s> and message <%s>' %
           (apath, target_repo, content, sha, message))
     dolog("repo.update_file('%s', '%s', \"\"\"%s\"\"\" , '%s' )" % (apath, message, content, sha))
@@ -371,7 +399,7 @@ def update_file(target_repo, path, message, content, branch=None):
         except:
             dolog('chance #%d file update' % i)
             time.sleep(3)
-    dolog('after 10 changes, still could not update ')
+    dolog('after x chances, still could not update ')
     # so if there is a problem it will raise an exception which will be captured by the calling function
     repo.update_file(apath, message, content, sha)
 
@@ -793,7 +821,7 @@ def add_collaborator(target_repo, user, newg=None):
             print("collaborator already there")
             return {'status': True, 'msg': 'this user is already a collaborator'}
         else:
-            print("going to add collaborator\n\n")
+            print("going to collaborator\n\n")
             invitation = newg.get_repo(target_repo).add_to_collaborators(user)
             print("got a reply")
             print(invitation)
@@ -819,6 +847,7 @@ def add_collaborator(target_repo, user, newg=None):
                     traceback.print_exc()
                     return {'status': False, 'error': 'Could not accept the invitation for becoming a collaborator'}
     except Exception as e:
+        print("add_collaborator> Exception: "+str(e))
         traceback.print_exc()
         return {'status': False, 'error': str(e)}  # e.data}
 
@@ -900,11 +929,12 @@ def get_file_content(target_repo, path, branch=None):
         return repo.get_contents(path, branch).decoded_content
 
 
-def generate_bundle(base_dir, target_repo, ontology_bundle):
+def generate_bundle(base_dir, target_repo, ontology_bundle, branch):
     """
     :param base_dir: e.g. /home/user/temp/random-folder-xyz
     :param target_repo:  user/reponame
     :param ontology_bundle: OnToology/abc/alo.owl
+    :param branch: e.g., master
     :return: the bundle zip file dir if successful, or None otherwise
     """
     global g
@@ -913,23 +943,30 @@ def generate_bundle(base_dir, target_repo, ontology_bundle):
     try:
         print('ontology bundle: ' + ontology_bundle)
         repo = g.get_repo(target_repo)
-        sha = repo.get_commits()[0].sha
+        branch = repo.get_branch(branch)
+        sha = branch.commit.sha
+        # sha = repo.get_commits()[0].sha
         files = repo.get_git_tree(sha=sha, recursive=True).tree
         print('num of files: ' + str(len(files)))
         for f in files:
             try:
                 for i in range(3):
                     try:
-                        print('f: ' + str(f))
-                        print('next: ' + str(f.path))
+                        # print('f: ' + str(f))
+                        # print('next: ' + str(f.path))
                         p = f.path
+                        # print("generate_bundle> got p = f.path")
                         break
-                    except:
+                    except Exception as e:
                         time.sleep(2)
+                        print("generate_bundle> Exception "+str(e))
+                        traceback.print_exc()
                 p = f.path
                 if p[0] == '/':
                     p = p[1:]
                 abs_path = os.path.join(base_dir, p)
+                # print("abs_path: "+abs_path)
+                # print("p: "+str(p))
                 if p[:len(ontology_bundle)] == ontology_bundle:
                     print('true: ' + str(p))
                     if f.type == 'tree':
@@ -939,30 +976,36 @@ def generate_bundle(base_dir, target_repo, ontology_bundle):
                         if parent_folder != base_dir:  # not in the top level of the repo
                             try:
                                 os.makedirs(parent_folder)
-                            except:
+                            except Exception as e:
+                                # An exception may occur the file parents has already been generated
                                 pass
-                        with open(abs_path, 'w') as fii:
+                                #print("generate_bundle> Exception2: "+str(e))
+                                #traceback.print_exc()
+                        with open(abs_path, 'wb') as fii:
                             file_content = repo.get_contents(f.path).decoded_content
                             fii.write(file_content)
-                            print('file %s content: %s' % (f.path, file_content[:10]))
+                            print("file %s" % str(f.path))
+                            #print('file %s content: %s' % (f.path, file_content[:10]))
                     else:
                         print('unknown type in generate bundle')
                 else:
-                    print('not: ' + p)
+                    pass
+                    #print('not: ' + p)
             except Exception as e:
-                print('exception: ' + str(e))
+                print('generate_bundle> Exception3: ' + str(e))
+                traceback.print_exc()
         zip_file = os.path.join(base_dir, '%s.zip' % ontology_bundle.split('/')[-1])
         comm = "cd %s; zip -r '%s' OnToology" % (base_dir, zip_file)
         print('comm: %s' % comm)
         call(comm, shell=True)
         return os.path.join(base_dir, zip_file)
-        # return None
     except Exception as e:
-        print('error in generate_bundle: ' + str(e))
+        print('generate_bundle> Exception3: ' + str(e))
+        traceback.print_exc()
         return None
 
 
-def publish(name, target_repo, ontology_rel_path, useremail):
+def publish(name, target_repo, ontology_rel_path, useremail, g_local=None):
     """
     To publish the ontology via github.
     :param name:
@@ -971,6 +1014,13 @@ def publish(name, target_repo, ontology_rel_path, useremail):
     :param user:
     :return: error message, it will return an empty string if everything went ok
     """
+    global g
+    if g_local is None:
+        if g is None:
+            g = init_g()
+        gg = g
+    else:
+        gg = g_local
     try:
         OUser.objects.all()
     except:
@@ -1048,7 +1098,7 @@ def publish(name, target_repo, ontology_rel_path, useremail):
             dolog(new_htaccess)
             update_file(target_repo=target_repo, path=os.path.join('OnToology', ontology_rel_path, 'documentation',
                                                                    '.htaccess'),
-                        content=new_htaccess, branch='gh-pages', message='OnToology Publish')
+                        content=new_htaccess, branch='gh-pages', message='OnToology Publish', g_local=gg)
             comm = 'mkdir "%s"' % os.path.join(publish_dir, name)
             dolog("publish> " + comm)
             call(comm, shell=True)
@@ -1161,16 +1211,31 @@ enable = %s
     return conf
 
 
-def get_confs_from_repo(target_repo):
+def get_confs_from_repo(target_repo, branch):
     global g
     repo = g.get_repo(target_repo)
-    sha = repo.get_commits()[0].sha
+    branch = repo.get_branch(branch)
+    sha = branch.commit.sha
+    # sha = repo.get_commits()[0].sha
     files = repo.get_git_tree(sha=sha, recursive=True).tree
     conf_files = []
     for f in files:
         if 'OnToology.cfg' in f.path:
             conf_files.append(f)
     return repo, conf_files
+
+
+# old
+# def get_confs_from_repo(target_repo, branch):
+#     global g
+#     repo = g.get_repo(target_repo)
+#     sha = repo.get_commits()[0].sha
+#     files = repo.get_git_tree(sha=sha, recursive=True).tree
+#     conf_files = []
+#     for f in files:
+#         if 'OnToology.cfg' in f.path:
+#             conf_files.append(f)
+#     return repo, conf_files
 
 
 def add_themis_results(target_repo, ontologies):
@@ -1259,15 +1324,16 @@ def compute_themis_results(repo, path):
 #     f.path[-23:] == themis_results_dir
 
 
-def parse_online_repo_for_ontologies(target_repo):
+def parse_online_repo_for_ontologies(target_repo, branch='master'):
     """
         This is parse repositories for ontologies configuration files OnToology.cfg
     """
     global g
     if g is None:
         init_g()
+    #dolog("Parse online repo for ontologies\n\n\n\n")
     print("in parse online repo for ontologies")
-    repo, conf_paths = get_confs_from_repo(target_repo)
+    repo, conf_paths = get_confs_from_repo(target_repo, branch)
     print("repo: %s, conf_paths: %s" % (str(repo), str(conf_paths)))
     ontologies = []
 
@@ -1290,7 +1356,8 @@ def parse_online_repo_for_ontologies(target_repo):
         # o['ontology'] = get_parent_path(cpath.path)[len(get_target_home()):]
         o['ontology'] = get_parent_path(p)[len(get_target_home()):]
         for c in confs:
-            tool = c.replace('_enable', '')
+            #tool = c.replace('_enable', '')
+            tool = c
             o[tool] = confs[c]
         ontologies.append(o)
 
@@ -1327,68 +1394,101 @@ def get_auton_configuration(f=None, abs_folder=None):
 
 
 def get_auton_config(conf_file_abs, from_string=True):
-    dolog('auton config is called: ')
-    ar2dtool_sec_name = 'ar2dtool'
-    widoco_sec_name = 'widoco'
-    oops_sec_name = 'oops'
-    owl2jsonld_sec_name = 'owl2jsonld'
-    ar2dtool_enable = True
-    widoco_enable = True
-    oops_enable = True
-    owl2jsonld_enable = True
+    """
+    :param conf_file_abs:
+    :param from_string:
+    :return:
+    """
     config = ConfigParser.ConfigParser()
     print("config raw parser")
     if from_string:
-        opened_conf_files = config.read_string(conf_file_abs)
+        config_obj = config.read_string(conf_file_abs)
+        print("obj from string")
     else:
-        opened_conf_files = config.read(conf_file_abs)
-    if from_string or len(opened_conf_files) == 1:
-        dolog('auton configuration file exists')
-        try:
-            ar2dtool_enable = config.getboolean(ar2dtool_sec_name, 'enable')
-            dolog('got ar2dtool enable value: ' + str(ar2dtool_enable))
-        except:
-            dolog('ar2dtool enable value doesnot exist')
-            pass
-        try:
-            widoco_enable = config.getboolean(widoco_sec_name, 'enable')
-            dolog('got widoco enable value: ' + str(widoco_enable))
-        except:
-            dolog('widoco enable value doesnot exist')
-            pass
-        try:
-            oops_enable = config.getboolean(oops_sec_name, 'enable')
-            dolog('got oops enable value: ' + str(oops_enable))
-        except:
-            dolog('oops enable value doesnot exist')
-        try:
-            owl2jsonld_enable = config.getboolean(
-                owl2jsonld_sec_name, 'enable')
-            dolog('got owl2jsonld enable value: ' + str(owl2jsonld_enable))
-        except:
-            dolog('owl2jsonld enable value doesnot exist')
-    else:
-        dolog('auton configuration file does not exists')
-        config.add_section(ar2dtool_sec_name)
-        config.set(ar2dtool_sec_name, 'enable', ar2dtool_enable)
-        config.add_section(widoco_sec_name)
-        config.set(widoco_sec_name, 'enable', widoco_enable)
-        config.add_section(oops_sec_name)
-        config.set(oops_sec_name, 'enable', oops_enable)
-        config.add_section(owl2jsonld_sec_name)
-        config.set(owl2jsonld_sec_name, 'enable', owl2jsonld_enable)
-        conff = conf_file_abs
-        dolog('will create conf file: ' + conff)
-        try:
-            with open(conff, 'wb') as configfile:
-                config.write(configfile)
-        except Exception as e:
-            dolog('expection: ')
-            dolog(e)
-    return {'ar2dtool_enable': ar2dtool_enable,
-            'widoco_enable': widoco_enable,
-            'oops_enable': oops_enable,
-            'owl2jsonld_enable': owl2jsonld_enable}
+        config_obj = config.read(conf_file_abs)
+        print("obj from file")
+    print("will ask for get json from conf obj")
+    try:
+        config_res, _ = Integrator.get_json_from_conf_obj(config)
+    except:
+        traceback.print_exc()
+    dolog("\n\n\n**************get_auton_config: ")
+    dolog(str(config_res))
+    return config_res
+
+
+# def get_auton_config(conf_file_abs, from_string=True):
+#     dolog('auton config is called: ')
+#     ar2dtool_sec_name = 'ar2dtool'
+#     widoco_sec_name = 'widoco'
+#     oops_sec_name = 'oops'
+#     owl2jsonld_sec_name = 'owl2jsonld'
+#     themis_sec_name = 'themis'
+#     ar2dtool_enable = True
+#     widoco_enable = True
+#     oops_enable = True
+#     owl2jsonld_enable = True
+#     themis_enable = True
+#     config = ConfigParser.ConfigParser()
+#     print("config raw parser")
+#     if from_string:
+#         opened_conf_files = config.read_string(conf_file_abs)
+#     else:
+#         opened_conf_files = config.read(conf_file_abs)
+#     if from_string or len(opened_conf_files) == 1:
+#         dolog('auton configuration file exists')
+#         try:
+#             ar2dtool_enable = config.getboolean(ar2dtool_sec_name, 'enable')
+#             dolog('got ar2dtool enable value: ' + str(ar2dtool_enable))
+#         except:
+#             dolog('ar2dtool enable value doesnot exist')
+#             pass
+#         try:
+#             widoco_enable = config.getboolean(widoco_sec_name, 'enable')
+#             dolog('got widoco enable value: ' + str(widoco_enable))
+#         except:
+#             dolog('widoco enable value doesnot exist')
+#             pass
+#         try:
+#             oops_enable = config.getboolean(oops_sec_name, 'enable')
+#             dolog('got oops enable value: ' + str(oops_enable))
+#         except:
+#             dolog('oops enable value doesnot exist')
+#         try:
+#             owl2jsonld_enable = config.getboolean(owl2jsonld_sec_name, 'enable')
+#             dolog('got owl2jsonld enable value: ' + str(owl2jsonld_enable))
+#         except:
+#             dolog('owl2jsonld enable value doesnot exist')
+#         try:
+#             themis_enable = config.getboolean(themis_sec_name, 'enable')
+#             dolog('got themis enable value: ' + str(themis_enable))
+#         except:
+#             dolog('themis enable value doesnot exist')
+#     else:
+#         dolog('auton configuration file does not exists')
+#         config.add_section(ar2dtool_sec_name)
+#         config.set(ar2dtool_sec_name, 'enable', ar2dtool_enable)
+#         config.add_section(widoco_sec_name)
+#         config.set(widoco_sec_name, 'enable', widoco_enable)
+#         config.add_section(oops_sec_name)
+#         config.set(oops_sec_name, 'enable', oops_enable)
+#         config.add_section(owl2jsonld_sec_name)
+#         config.set(owl2jsonld_sec_name, 'enable', owl2jsonld_enable)
+#         config.add_section(themis_sec_name)
+#         config.set(themis_sec_name, 'enable', themis_enable)
+#         conff = conf_file_abs
+#         dolog('will create conf file: ' + conff)
+#         try:
+#             with open(conff, 'wb') as configfile:
+#                 config.write(configfile)
+#         except Exception as e:
+#             dolog('expection: ')
+#             dolog(e)
+#     return {'ar2dtool_enable': ar2dtool_enable,
+#             'widoco_enable': widoco_enable,
+#             'oops_enable': oops_enable,
+#             'owl2jsonld_enable': owl2jsonld_enable,
+#             'themis_enable': themis_enable}
 
 
 def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):

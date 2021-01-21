@@ -144,11 +144,11 @@ STATIC_URL = '/static/'
 
 
 try:
-    print("openning the file:")
-    f = open("OnToology/localwsgi.py")
-    print(f.read())
-    f.close()
-    print("closing the file:")
+    # print("openning the file:")
+    # f = open("OnToology/localwsgi.py")
+    # print(f.read())
+    # f.close()
+    # print("closing the file:")
     from OnToology.localwsgi import environ  # as environabc
     print("\\\\*****\\\\\\*****\n\n\n\n\n****")
     for k in environ:
@@ -192,6 +192,11 @@ if DEBUG:
 DATABASES['default']['NAME'] = db_name
 
 DATABASES['default']['ENGINE'] = environ['db_engine']
+if 'db_password' in environ:
+    DATABASES['default']['PASSWORD'] = environ['db_password']
+
+if 'db_username' in environ:
+    DATABASES['default']['USER'] = environ['db_username']
 
 if 'db_host' in environ:
     print("yes db_host in environ")
