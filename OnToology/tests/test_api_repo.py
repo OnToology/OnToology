@@ -11,6 +11,7 @@ from OnToology.models import *
 from  .serializer import Serializer
 
 
+
 class TestRepoAPI(Serializer, TestCase):
     def setUp(self):
         if len(OUser.objects.all()) == 0:
@@ -63,4 +64,4 @@ class TestRepoAPI(Serializer, TestCase):
         create_repo(url=self.url)
         from OnToology.autoncore import add_collaborator
         j = add_collaborator(target_repo=self.url, user=self.url.split('/')[0])
-        self.assertTrue(j['status'], msg="Error adding the collaborator")
+        self.assertTrue(j['status'], msg="Error adding the collaborator: "+str(j['error']))

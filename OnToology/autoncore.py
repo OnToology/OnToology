@@ -847,6 +847,7 @@ def add_collaborator(target_repo, user, newg=None):
                     traceback.print_exc()
                     return {'status': False, 'error': 'Could not accept the invitation for becoming a collaborator'}
     except Exception as e:
+        print("add_collaborator> Exception: "+str(e))
         traceback.print_exc()
         return {'status': False, 'error': str(e)}  # e.data}
 
