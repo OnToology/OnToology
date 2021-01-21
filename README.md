@@ -84,6 +84,24 @@ There are two workflows:
 
 
 ## Dependency notice
-* for the `djongo` library, make sure to install it from github, as the latest version which fixes an important bug is not yet in the release
 * To run the tests, we use the `mock` option for github api. It was rejected by the `PyGithub` maintainers, so make sure to use
-the version in `ahmad88me/PyGithub`. 
+the version in `ahmad88me/PyGithub`.  (see below)
+
+# Local Setup
+## On Linux
+(tested on ubuntu, debian, mint and fedora)
+### To install the tools
+1. Open the terminal and `cd` to the location of choice.
+2. `export PLAYGROUND=$PWD`.
+3. Copy and paste the commands of choice to the terminal from `scripts/setup_docker_base.sh`
+
+## Install Pygithub (not the upstream version)
+### either directly from github
+`pip install git+https://github.com/ahmad88me/PyGithub.git`
+### or locally
+1. `git clone https://github.com/ahmad88me/PyGithub.git' 
+1. `cd OnToology` (assuming both are on the same level/directory)
+1. `pip install -e ../Pygithub` (change this to any directory you want)
+
+### To install the library/dependencies
+1. 

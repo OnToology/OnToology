@@ -125,16 +125,58 @@ def home(request):
 
 
 @login_required
-def repo_view(request):
+def get_ontologies(request):
+    user = request.user
+    if 'branch' in request.GET and 'repo' in request.GET:
+        branch = request.GET['branch'].strip()
+        repo_url = request.GET['repo'].strip()
+        repos = user.repos.filter(url=repo_url)
+        if len(repos) == 0:
+            return JsonReponse({'error': 'This repo does not belong to your user account. Make sure to add it.'}, status=400)
+        else:
+            try:
+                print("going for: parse_online_repo_for_ontologies")
+                ontologies = parse_online_repo_for_ontologies(repo_url, branch)
+                print("ontologies: ")
+                print(ontologies)
+                j = {'ontologies': ontologies}
+                return JsonResponse(j)
+            except Exception as e:
+                #traceback.print_exc()
+                print("Exception: "+str(e))
+                j = {'error': 'Make sure you have the branch and the repository URL are correct'}
+                return JsonResponse(j, status=400)
+    else:
+        return JsonResponse({'error': 'expecting the branch and repo'}, status=400)
+
+@login_required
+def repos_view(request):
+    user = request.user
+    if 'branch' in request.GET and 'repo' in request.GET:
+        branch = request.GET['branch'].strip()
+        repo_url = request.GET['repo'].strip()
+        repos = user.repos.filter(url=repo_url)
+        if len(repos) == 0:
+            return render(request,'msg.html', {'msg': 'This repo does not belong to your user account. Make sure to add it.'})
+        return render(request, 'repo.html', {'repo': repos[0], 'branch': branch})
+    else:
+        return render(request, 'repos.html', {'repos': user.repos.all()})
+
+
+@login_required
+def opub_view(request):
+    return render(request, 'opub.html', {'opubs': PublishName.objects.filter(user=request.user)})
+
+
+@login_required
+def runs_view(request):
     user = request.user
     try:
-        print("in repo view")
+        print("in runs view")
         if 'repo' in request.GET:
             print("in request GET")
             repo_name = request.GET['repo'].strip()
             repos = Repo.objects.filter(url=repo_name)
-            # for r in Repo.objects.all():
-            #     print("repo: <"+r.url+"> ")
             if len(repos) == 1:
                 print("single repo")
                 repo = repos[0]
@@ -142,22 +184,14 @@ def repo_view(request):
                     return render(request,'msg.html', {'msg': 'This repo does not belong to the loggedin user. Try to add it and try again.'})
                 now_timestamp = timezone.now()
                 latest_oruns = ORun.objects.filter(repo=repo)
-                # latest_oruns = ORun.objects.all()
-                # latest_oruns = []
-                # for orun in ORun.objects.filter(user=user, repo=repo).order_by('-timestamp'):
-                #     if (now_timestamp - timedelta(days=7)) > orun.timestamp:
-                #         print("repo_view> delete orun: "+str(orun.id)+"  <"+str(orun.timestamp)+"> ")
-                #         orun.delete()
-                #     else:
-                #         latest_oruns.append(orun)
                 print("going to render")
-                return render(request, 'repo.html', {'oruns': latest_oruns})
+                return render(request, 'runs.html', {'oruns': latest_oruns})
             else:
-                print("repo_view> repo <"+str(repo_name)+"> does not exist for user: "+str(user))
+                print("runs_view> repo <"+str(repo_name)+"> does not exist for user: "+str(user))
         else:
             return render(request, 'user_repos.html', {'repos': user.repos.all()})
     except Exception as e:
-        print("repo_view> exception: "+str(e))
+        print("runs_view> exception: "+str(e))
     return HttpResponseRedirect(reverse('profile'))
 
 
@@ -583,19 +617,19 @@ def profile(request):
         except Exception as e:
             print('exception: ' + str(e))
 
-    elif 'delete-name' in request.GET:
-        name = request.GET['delete-name']
-        p = PublishName.objects.filter(name=name)
-        if len(p) == 0:
-            error_msg += 'This name is not reserved'
-        elif p[0].user.id == user.id:
-            pp = p[0]
-            pp.delete()
-            pp.save()
-            comm = 'rm -Rf ' + os.path.join(publish_dir, name)
-            call(comm, shell=True)
-        else:
-            error_msg += 'You are trying to delete a name that does not belong to you'
+    # elif 'delete-name' in request.GET:
+    #     name = request.GET['delete-name']
+    #     p = PublishName.objects.filter(name=name)
+    #     if len(p) == 0:
+    #         error_msg += 'This name is not reserved'
+    #     elif p[0].user.id == user.id:
+    #         pp = p[0]
+    #         pp.delete()
+    #         pp.save()
+    #         comm = 'rm -Rf ' + os.path.join(publish_dir, name)
+    #         call(comm, shell=True)
+    #     else:
+    #         error_msg += 'You are trying to delete a name that does not belong to you'
     print('testing redirect')
     repos = user.repos.all()
     for r in repos:
@@ -782,33 +816,58 @@ def superadmin(request):
 
 @login_required
 def get_bundle(request):
-    ontology = request.GET['ontology']
-    repo = request.GET['repo']
-    r = Repo.objects.filter(url=repo)
-    if len(r) == 0:
-        return render(request, 'msg.html', {'msg': 'Invalid repo'})
-    elif r[0] not in request.user.repos.all():
-        return render(request, 'msg.html', {'msg': 'Please add this repo first'})
-    r[0].notes = ''
-    r[0].save()
-    sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(3)])
-    folder_name = 'bundle-' + sec
-    repo_dir = os.path.join(autoncore.home, folder_name)
-    if os.path.exists(repo_dir):
-        shutil.rmtree(repo_dir)
-    os.makedirs(repo_dir)
-    if ontology[0] == '/':
-        ontology = ontology[1:]
-    oo = os.path.join('OnToology', ontology)
-    print('oo: %s' % oo)
-    zip_dir = generate_bundle(base_dir=repo_dir, target_repo=repo, ontology_bundle=oo)
-    if zip_dir is None:
-        return render(request, 'msg.html', {'msg': 'error generating the bundle'})
+    if 'ontology' in request.GET and 'repo' in request.GET and 'branch' in request.GET:
+        try:
+            ontology = request.GET['ontology']
+            repo = request.GET['repo']
+            branch = request.GET['branch']
+            r = Repo.objects.filter(url=repo)
+            if len(r) == 0:
+                return render(request, 'msg.html', {'msg': 'Invalid repo'})
+            elif r[0] not in request.user.repos.all():
+                return render(request, 'msg.html', {'msg': 'Please add this repo first'})
+            r[0].notes = ''
+            r[0].save()
+            sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(3)])
+            folder_name = 'bundle-' + sec
+            repo_dir = os.path.join(autoncore.home, folder_name)
+            if os.path.exists(repo_dir):
+                shutil.rmtree(repo_dir)
+            os.makedirs(repo_dir)
+            if ontology[0] == '/':
+                ontology = ontology[1:]
+            oo = os.path.join('OnToology', ontology)
+            print('oo: %s' % oo)
+            zip_dir = generate_bundle(base_dir=repo_dir, target_repo=repo, ontology_bundle=oo, branch=branch)
+            if zip_dir is None:
+                return render(request, 'msg.html', {'msg': 'error generating the bundle'})
+            else:
+                with open(zip_dir, 'rb') as f:
+                    response = HttpResponse(f.read(), content_type='application/zip')
+                    response['Content-Disposition'] = 'attachment; filename="%s"' % zip_dir.split('/')[-1]
+                return response
+        except Exception as e:
+            print("Exception in get_bundle> "+str(e))
+            traceback.print_exc()
+            return render(request, 'msg.html', {'msg': 'Error getting the bundle. You can contact us to resolve this issue'})
     else:
-        with open(zip_dir, 'r') as f:
-            response = HttpResponse(f.read(), content_type='application/zip')
-            response['Content-Disposition'] = 'attachment; filename="%s"' % zip_dir.split('/')[-1]
-        return response
+        return render(request, 'msg.html', {'msg': 'Expects the repo, the branch, and the ontology'})
+
+@login_required
+def delete_published(request):
+    name = request.GET['name']
+    p = PublishName.objects.filter(name=name)
+    if len(p) == 0:
+        msg = 'This name is not reserved'
+    elif p[0].user.id == request.user.id:
+        pp = p[0]
+        pp.delete()
+        comm = 'rm -Rf ' + os.path.join(publish_dir, name)
+        call(comm, shell=True)
+        msg = "The reserved name is deleted successfully"
+    else:
+        msg = 'You are trying to delete a name that does not belong to you'
+    return render(request,'msg.html', {'msg': msg})
 
 
 @login_required
@@ -902,10 +961,13 @@ def get_managers():
 @login_required
 def publish_view(request):
     if 'name' not in request.GET:
+        print("missing name")
         return HttpResponseRedirect('/')
     if 'repo' not in request.GET:
+        print("missing repo")
         return HttpResponseRedirect('/')
     if 'ontology' not in request.GET:
+        print("missing ontology")
         return HttpResponseRedirect('/')
     name = request.GET['name']
     target_repo = request.GET['repo']
