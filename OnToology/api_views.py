@@ -142,6 +142,28 @@ class PublishView(View):
         pns_j = [p.json() for p in pns]
         return JsonResponse({'publishnames': pns_j}, status=200)
 
+    @method_decorator(token_required)
+    def delete(self, request):
+        # print("GET: ")
+        # print(request.GET)
+        # print("DELETE: ")
+        # print(request.DELETE)
+        name = request.GET['name']
+        p = PublishName.objects.filter(name=name)
+        if len(p) == 0:
+            msg = 'This name is not reserved'
+        elif p[0].user.id == request.user.id:
+            pp = p[0]
+            pp.delete()
+            comm = 'rm -Rf ' + os.path.join(publish_dir, name)
+            call(comm, shell=True)
+            msg = "The reserved name is deleted successfully"
+            return JsonResponse({'message': msg}, status=200)
+        else:
+            msg = 'You are trying to delete a name that does not belong to you'
+        return JsonResponse({'message': msg}, status=400)
+
+
 ###################################################################
 #                         Action Level                            #
 ###################################################################
