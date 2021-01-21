@@ -1,149 +1,245 @@
 {% extends "base2.html"%}
 {%block body%}
 
-<script src="https://ahmad88me.github.io/outlinejs/cdn/outline.js"></script>
-<!--<canvas id="myCanvas"  height="200" width="200"  style="border:1px solid #d3d3d3;">-->
-<!--            Your browser does not support the canvas element.-->
-<!--</canvas>-->
-<canvas id="myCanvas"  height="200" width="200" >
-            Your browser does not support the canvas element.
-</canvas>
-
-   {%for orun in oruns reversed%}
-  <div class="card">
-    <div class="card-header" role="tab" >
-      <h4 class="card-title">
-        <a role="button" data-toggle="collapse" href="#coll{{r.id}}">
-          {{orun.timestamp}} ({{orun.repo.url}})
-        </a>
-      </h4>
-    </div>
-      <div class="panel-body" id="coll{{r.id}}">
-            {%for otask in orun.tasks.all%}
-            {%if otask.success%}
-                    <li class="list-group-item " >
-                    {{otask.name}} | {{otask.description}}
-                        <span style="color: green;">
-                        <svg  width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-  <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-</svg>
-                        </span>
-                    </li>
-
-            {%else%}
-                {%if otask.finished%}
-
-
-
-                          <li class="list-group-item alert alert-danger" role="alert">{{otask.name}} | {{otask.description}}
-                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-  <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
-</svg>
-                          </li>
-
-            {%else%}
-                                    <li class="list-group-item alert alert-info" role="alert">{{otask.name}} | {{otask.description}}
-                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-repeat" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-  <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
-  <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>
-</svg>
-</li>
-            {%endif%}
-          {%endif%}
-            {%endfor%}
-      </div>
-  </div>
-    {%endfor%}
-
-
-
-
-
- <script>
-        var canvas = document.getElementById("myCanvas");
-        var ctx = canvas.getContext("2d");
-        ctx.canvas.width = window.innerWidth * 0.95;
-
-        var g = new OutlineGraph(ctx, {"title_color": "black",
-                                 "items_color": "blue",
-                                 "inner_color": "#3498DB",
-                                 "title_font": "15px Helvetica",
-                                 "items_font": "10px Comic Sans MS",
-                                 "points": [
-                                    {"title": "Pending", "items": []},
-                                    {"title": "Diagrams", "items": []},
-                                    {"title": "Documentation", "items": []},
-                                    {"title": "Evaluation", "items": []},
-                                    {"title": "JSON-LD", "items": []},
-                                    {"title": "Validation", "items": []},
-                                    {"title": "Finished", "items": []},
-                                 ]});
-
-            /* testing
-                 var g = new OutlineGraph(ctx, {"title_color": "black",
-                                 "items_color": "blue",
-                                 "inner_color": "#3498DB",
-                                 "title_font": "15px Helvetica",
-                                 "items_font": "10px Comic Sans MS",
-                                 "points": [
-                                        {"title": "Pending", "items": ["abc", "def"]},
-                                        {"title": "Diagrams", "items": ["xyz1"]},
-                                        {"title": "Documentation", "items": ["xyz22"]},
-                                        {"title": "Evaluation", "items": ["xyz33"]},
-                                        {"title": "JSON-LD", "items": ["xyz44"]},
-                                        {"title": "Validation", "items": ["xyz55"]},
-                                        {"title": "Finished", "items": ["finals"]}
-                                 ]});
-        */
-        g.draw();
-        g.draw_inner(0);
-
-function compute_index(j){
-   return 2;
+<style>
+.datafont {
+  font-family: 'Courier New', monospace;
 }
+</style>
 
 
-var outline_function = function(){
-
-    var graph_data = {
-                 "title_color": "black",
-                 "items_color": "blue",
-                 "inner_color": "#3498DB",
-                 "title_font": "15px Helvetica",
-                 "items_font": "10px Comic Sans MS",
-                 "points": [
-                 ]
-     }
 
 
-    $.getJSON('get_outline', function(data){
-        var stages = Object.keys(data["stages"]);
-        var i;
-        var points = [];
-        for(i=0;i<stages.length;i++){
-            p = {"title": stages[i], "items": data["stages"][stages[i]]}
-            points.push(p);
-        }
-        graph_data["points"] = points
-        graph_data["points"] = [
-            {"title": "Pending", "items": data["stages"]["pending"]},
-            {"title": "Diagrams", "items": data["stages"]["diagram"]},
-            {"title": "Documentation", "items": data["stages"]["documentation"]},
-            {"title": "Evaluation", "items": data["stages"]["evaluation"]},
-            {"title": "JSON-LD", "items": data["stages"]["jsonld"]},
-            {"title": "Validation", "items": data["stages"]["validation"]},
-            {"title": "Finished", "items": data["stages"]["finished"]}
-        ]
-        delete window.g;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        g = new OutlineGraph(ctx, graph_data);
-        g.draw();
-        g.draw_inner(data["inner"]);
+<div class="container">
+ <div class="card">
+      <div class="card-body">
+          <h5 class="card-title">Repo: <span class="datafont">{{repo.url}}</span></h5>
+          <p>branch: <span class="datafont">{{branch}}</span></p>
+          <a class="btn btn-primary float-right" href="/generateforall?repo={{repo.url}}&branch={{branch}}">Generate Resources</a>
+          <button class="btn btn-primary float-right" id="load">Load processed ontologies</button>
+
+          {%for pn in repo.publishnames.all%}
+            {{pn.name}},
+          {%endfor%}
+      </div>
+
+ </div>
+    <br>
+
+</div>
+
+<div class="clearfix alert alert-info" id="spinner">
+     <strong>Loading ...</strong>
+  <div class="spinner-border float-right text-light" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+
+
+
+
+<div class="modal" tabindex="-1" id="publish-modal">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Publish</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <p>Reserve a relative w3id (e.g., w3id.org/def/your_reserved_id)</p>
+          <form method="GET" action="/publish" class="form-inline">
+                <div class="form-group">
+                  <input type="text" name="name" class="form-control"/>
+                  <input type="hidden" name="repo" value="{{repo.url}}"/>
+                  <input type="hidden" name="ontology" value="" id="ontology-input"/>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Reserve</button>
+                </div>
+          </form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+<!--        <button type="button" class="btn btn-primary">Save changes</button>-->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="row" id="content">
+</div>
+
+<script>
+    var card_html_pre='<div class="col-lg-4 col-md-6 col-sm-6 col-xs-12"><div class="alert-info card"><div class="card-body">';
+    var card_html_post='</div></div></div>';
+    var ont_url = "/ontologies?repo={{repo.url}}&branch={{branch}}"
+    $(document).on('click', '#load', function(){
+        console.log('load is clicked');
+        $("#spinner").show();
+
+        $.ajax({
+			  method: "GET",
+			  url: ont_url,
+			}).fail(function(resp){
+                	alert("error loading the data for this ontology.");
+					console.log(resp.error);
+					$("#spinner").hide();
+			}).done(function(resp){
+			    var tagid;
+			    var card_html_body;
+			    var html_list='';
+			    html_list='<div class="container-fluid"><div class="col-sm-12 col-md-8 offset-md-2 col-lg-8 offset-lg-2">';
+			    html_list+='<br><div class="alert alert-secondary" role="alert">';
+			    html_list+='These configurations are <strong>read-only</strong>.';
+			    html_list+='You can change the configuration for each ontology by changing the values in the file "Ontology.cfg" for';
+			    html_list+=' each of these ontologies. These configuration files are located in "/OnToology" ';
+			    html_list+='folder in your repo.</div></div></div>';
+
+                for(var i=0;i<resp.ontologies.length;i++){
+                    html_list+=card_html_pre;
+                    html_list+='<h5 class="card-title">';
+                    html_list+=resp.ontologies[i].ontology;
+                    html_list+='</h5>';
+                    card_html_body=get_card_body(resp.ontologies[i]);
+                    console.log('getting tagid');
+                    console.log(resp.ontologies[i].ontology);
+                    tagid = resp.ontologies[i].ontology.substring(1,)+"-coll";
+                    tagid = tagid.replace(/\./g, "-");
+                    card_html_body = collapse_html(tagid,card_html_body);
+                    html_list+=card_html_body;
+                    html_list+=publish_html(resp.ontologies[i].ontology);
+                    html_list+=card_html_post;
+                }
+                if(resp.ontologies.length == 0){
+                    html_list='<div class="container-fluid"><div class="col-sm-12 col-md-8 offset-md-2 col-lg-8 offset-lg-2"><br><div class="alert alert-warning" role="alert">This repo does not have ontologies with generated resources</div></div></div>';
+                }
+                $("#content").html(html_list);
+                update_collapse_listener();
+                $("#spinner").hide();
+
+		});
+
+
     });
 
-}
-setInterval(outline_function, 4000);
-outline_function();
+
+    function get_card_body(ont_j){
+        var i;
+        var conf_html="";
+        var j;
+        var conf_pre="<li class='list-group-item'>";
+        var conf_post="</li>";
+        var ks=Object.keys(ont_j);
+        console.log('ont_j: ');
+        console.log(ont_j);
+        console.log("keys: ")
+        for(i=0;i<ks.length;i++){
+            if(ks[i]!='ontology'){
+                console.log(ks[i])
+                console.log(ont_j[ks[i]])
+                console.log('get j>');
+                j = ont_j[ks[i]]
+                console.log('j: ');
+                console.log(j);
+                conf_html += get_tool_html(ont_j['ontology'].substring(1),ks[i],j)
+                //conf_html += conf_pre+ks[i]+": "+ont_j[ks[i]]+conf_post;
+            }
+        }
+        console.log("conf html: ");
+        console.log(conf_html);
+        return conf_html;
+    }
+
+    function get_tool_html(ontology,k,jobj){
+        // k is the tool
+        // jobj is the json including the attributes of the tools
+        console.log('jobj: ');
+        console.log(jobj)
+        console.log('key k: ');
+        console.log(k)
+
+        var attrs=Object.keys(jobj);
+        var conf_pre="<li class='list-group-item'>";
+        var conf_post="</li>";
+        var boolsvals = [true, false]
+        var i
+        var tool_html="";
+        console.log('in get_tool_html> ');
+        for(i=0;i<attrs.length;i++){
+            console.log('attrs[i]: ');
+            console.log(attrs[i]);
+            if(boolsvals.includes(jobj[attrs[i]])){
+                 tool_html += conf_pre + bool_html(ontology,k+'-'+attrs[i],k+'-'+attrs[i], jobj[attrs[i]])
+            }
+            else{
+                 tool_html += conf_pre + txtval_html(ontology,k+'-'+attrs[i],k+'-'+attrs[i], jobj[attrs[i]])
+            }
+        }
+        return tool_html;
+    }
+
+    function bool_html(ontology,label, name, val){
+        var ch_html="";
+        var check_txt="";
+        var lab_html="";
+        var tag_id = ontology+'-'+name;
+        if(val){
+            check_txt = "checked"
+        }
+        lab_html = '<label class="form-check-label" for="'+tag_id+'">'+label+'</label>'
+        ch_html = '<input type="checkbox" class="form-check-input" name="'+name+'" id="'+ tag_id +'" ' + check_txt + '/>'
+        ch_html += lab_html
+        ch_html = '<div class="form-check">' + ch_html +'</div>'
+        return ch_html
+    }
+
+    function txtval_html(ontology,label, name, val){
+        var t_html="";
+        var tag_id = ontology+'-'+name;
+        v_html='<code>'+val+'</code>';
+        t_html=label + ": " + v_html;
+        return t_html;
+    }
+
+    function collapse_html(tag_id, inner_html){
+        //a collapse
+        //var btnhtml = '<a type="button" data-toggle="collapse" href="#'+tag_id+'" role="button" aria-expanded="false" aria-controls="'+tag_id+'">show configuration</a>'
+        //button collapse
+        var btnhtml = '<button class="btn btn-primary collapse-btn" type="button" data-toggle="collapse" data-target="#'+tag_id+'" aria-expanded="false" aria-controls="'+tag_id+'">Show configuration</button>'
+        var chtml = '<div class="collapse show" id="'+tag_id+'">';
+        chtml += inner_html;
+        chtml += '</div>';
+        return btnhtml+chtml;
+    }
+
+    function update_collapse_listener(){
+        $('.collapse').collapse({'toggle': true});
+    }
+
+    function publish_html(ontology){
+        var publish_btn='<button class="btn btn-primary" onclick="publish_click(\''+ontology+'\')">publish</button>'
+        console.log(publish_btn);
+        return publish_btn;
+    }
+
+    function publish_click(ontology){
+        $('#ontology-input').val(ontology);
+        $('#publish-modal').modal('show');
+    }
+
+
+
+
+
+
+    $("#spinner").hide();
 </script>
+
+
+
 
 {% endblock %}
