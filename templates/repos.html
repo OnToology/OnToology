@@ -1,0 +1,99 @@
+{% extends "base2.html"%}
+{%block body%}
+
+<div class="clearfix alert alert-info" id="spinner">
+     <strong>Loading ...</strong>
+  <div class="spinner-border float-right text-light" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+
+
+<div class="row">
+    {%for repo in repos%}
+  <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">{{repo.url}}</h5>
+<!--         <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>-->
+        <a href="runs?repo={{repo.url}}" class="btn btn-primary">Show History</a>
+        <span repo="{{repo.url}}" class="btn btn-primary manipulate-btn">Manipulate Repo</span>
+<!--        <button class="btn btn-primary"></button>-->
+      </div>
+    </div>
+  </div>
+    {%endfor%}
+</div>
+
+
+
+<div class="modal" tabindex="-1" id="branches-modal">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Choose a branch</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Click on the branch you like to generate resources for</p>
+          <div id="branches-div"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+<!--        <button type="button" class="btn btn-primary">Save changes</button>-->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+    var chosen_repo = "";
+        $(document).on('click', '.manipulate-btn', function(){
+        console.log("manipulate btn is clicked");
+        chosen_repo = $(this).attr('repo');
+        //$("#spinner").hide();
+        $("#spinner").show();
+        var html_list=""
+        $.ajax({
+			  method: "GET",
+			  url: "/get_branches?repo="+chosen_repo,
+			}).fail(function(resp){
+                	alert("error getting the branches");
+					console.log(resp.error);
+					$("#spinner").hide();
+			}).done(function(resp){
+				    for(var i=0;i<resp.branches.length;i++){
+                        html_list+="<li class='list-group-item branch btn'>"+resp.branches[i]+"</li>"
+                        console.log(resp.branches[i])
+                    }
+                    $("#branches-div").html(html_list);
+                    $('#branches-modal').modal('show');
+                    set_branch_listeners();
+                    $("#spinner").hide();
+		});
+
+        //alert($(this).attr('repo'));
+        //$.get("generateforall", {"repo": $(this).attr('repo')});
+    });
+
+function set_branch_listeners(){
+    console.log("in branch listeners")
+    $(document).on('click', '.branch', function(){
+        var clicked_branch = $(this).html();
+        console.log("clicked branch: "+clicked_branch)
+        $('#branches-modal').modal('hide');
+        $("#spinner").show();
+        console.log("chosen_repo: "+chosen_repo);
+        location.href="/repos?repo="+chosen_repo+"&branch="+clicked_branch
+    });//set branch listeners
+}
+$("#spinner").hide();
+</script>
+
+
+
+{% endblock %}

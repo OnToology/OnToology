@@ -37,7 +37,7 @@
       <tbody>
     {%for r in repos%}
     <tr>
-        <td><a href="/repo?repo={{r.url}}">{{r.url}}</a></td>
+        <td><a href="/runs?repo={{r.url}}">{{r.url}}</a></td>
         <td>{{r.state}}</td>
         <td>{{r.notes}}</td>
         <td>
@@ -55,17 +55,20 @@
                                              class="img-circle" height="25px"></a>
         </td>
         <td>
-            <span class="generateall-btn btn" repo="{{r.url}}"
-                                                  title="Generate documentation, diagrams and evaluation">
-                                                <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/regenerate_all.png"
+            <span class="generateall-btn btn" repo="{{r.url}}" title="Generate documentation, diagrams and evaluation">
+                 <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/regenerate_all.png"
                                                      height="20px">
-                                            </span>
+            </span>
         </td>
     </tr>
       </tbody>
     {%endfor%}
+
 </table>
 
+{%if not repos%}
+<p>has previous runs</p>
+{%endif%}
 
 <div class="modal" tabindex="-1" id="branches-modal">
   <div class="modal-dialog modal-dialog-scrollable">
@@ -138,7 +141,7 @@ function set_branch_listeners(){
 					$("#spinner").hide();
 			}).done(function(resp){
                     $("#spinner").hide();
-                    location.href="/repo?repo="+chosen_repo
+                    location.href="/runs?repo="+chosen_repo
 		});// ajax
 
     });//set branch listeners

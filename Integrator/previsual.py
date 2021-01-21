@@ -86,8 +86,8 @@ def generate_previsual(repo_dir, target_repo):
     if error_msg != "":
         return "Error while generating the previsualization, unable to move the files to gh-pages"
     comm = "cd "+repo_dir
-    comm += ';git config user.email "%s"' % ToolEmail
-    comm += ';git config user.name "%s"' % ToolUser
+    # comm += ';git config user.email "%s"' % ToolEmail
+    # comm += ';git config user.name "%s"' % ToolUser
     comm += ';git add .'
     comm += ';git commit -m "ontoology generated"'
     comm += ";git push -f origin "+branch_name
