@@ -208,7 +208,7 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
             #     repo.save()
         except Exception as e:
             dolog("Exception in running ar2dtool.draw_diagrams: "+str(e))
-            dolog("changed_file: <"+changed_file++">")
+            dolog("changed_file: <"+changed_file+">")
             otask = task_reporter(otask=otask, desc="Error generating the diagrams: <%s>" % str(e), success=True, finished=True, orun=orun)
     repo.progress += progress_inc
     repo.save()
@@ -286,29 +286,7 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
     repo.save()
 
 
-def create_of_get_conf(ofile, base_dir):
-    """
-    :param ofile: relative directory of the file e.g. dir1/dir2/my.owl
-    :return:
-    """
-    ofile_config_file_rel = os.path.join(config_folder_name, ofile, config_file_name)
-    ofile_config_file_abs = os.path.join(base_dir, ofile_config_file_rel)
-    build_path(ofile_config_file_abs)
-    dolog('config is called')
-    ar2dtool_sec_name = 'ar2dtool'
-    widoco_sec_name = 'widoco'
-    oops_sec_name = 'oops'
-    owl2jsonld_sec_name = 'owl2jsonld'
-    themis_sec_name = 'themis'
-    config = configparser.ConfigParser()
-    # import subprocess
-    # subprocess.call('echo "terminal output: "', shell=True)
-    # comm = 'cat %s'%ofile_config_file_abs
-    # subprocess.call(comm, shell=True)
-    # par_file = "/".join(ofile_config_file_abs.split('/')[:-1])
-    # comm = "ls %s" % par_file
-    # subprocess.call(comm, shell=True)
-    conf_file = config.read(ofile_config_file_abs)
+def get_default_conf():
     config_result = {
         'widoco': {
             'enable': True,
@@ -328,8 +306,48 @@ def create_of_get_conf(ofile, base_dir):
             'enable': False
         }
     }
-    if len(conf_file) == 1:
-        dolog(ofile+' configuration file exists')
+    return config_result
+
+
+
+
+
+def create_of_get_conf(ofile, base_dir):
+    """
+    :param ofile: relative directory of the file e.g. dir1/dir2/my.owl
+    :return:
+    """
+    ofile_config_file_rel = os.path.join(config_folder_name, ofile, config_file_name)
+    ofile_config_file_abs = os.path.join(base_dir, ofile_config_file_rel)
+    build_path(ofile_config_file_abs)
+    dolog('config is called')
+    config = configparser.ConfigParser()
+    config.read(ofile_config_file_abs)
+    # Will get the updated config for the new file
+    j, config = get_json_from_conf_obj(config)
+    try:
+        with open(ofile_config_file_abs, 'w') as configfile:
+            config.write(configfile)
+    except Exception as e:
+        dolog('exception: ')
+        dolog(e)
+        raise e
+    return j
+
+
+def get_json_from_conf_obj(config):
+    """
+    :param config:
+    :return:
+    """
+    ar2dtool_sec_name = 'ar2dtool'
+    widoco_sec_name = 'widoco'
+    oops_sec_name = 'oops'
+    owl2jsonld_sec_name = 'owl2jsonld'
+    themis_sec_name = 'themis'
+    config_result = get_default_conf()
+    if len(config) == 1:
+        dolog(' configuration file exists')
         # ar2dtool
         try:
             config_result['ar2dtool']['enable'] = config.getboolean(ar2dtool_sec_name, 'enable')
@@ -365,12 +383,13 @@ def create_of_get_conf(ofile, base_dir):
             dolog('got themis enable value: ' + str(config_result['themis']['enable']))
         except:
             dolog('themis enable value does not exist')
-
     else:
-        dolog(ofile+' configuration file does not exists (not an error)')
-        dolog('full path is: '+ofile_config_file_abs)
+        dolog("configuration file does not exists (not an error)")
+        # dolog(ofile+' configuration file does not exists (not an error)')
+        # dolog('full path is: '+ofile_config_file_abs)
         for sec in config_result.keys():
-            config.add_section(sec)
+            if not config.has_section(sec):
+                config.add_section(sec)
             for k in config_result[sec].keys():
                 if k != 'languages':
                     dolog("config res: <%s> <%s> " % (sec, k))
@@ -381,15 +400,8 @@ def create_of_get_conf(ofile, base_dir):
                         str_v = config_result[sec][k]
                     config.set(sec, k, str_v)
         config.set(widoco_sec_name, 'languages', ",".join(config_result[widoco_sec_name]['languages']))
-        dolog('will create conf file: ' + ofile_config_file_abs)
-        try:
-            with open(ofile_config_file_abs, 'w') as configfile:
-                config.write(configfile)
-        except Exception as e:
-            dolog('exception: ')
-            dolog(e)
-            raise e
-    return config_result
+
+    return config_result, config
 
 
 #######################
@@ -475,11 +487,11 @@ def call_and_get_log(comm):
 # disable the timeout for now
 timeout_comm = ""
 
-error_msg, output_msg = call_and_get_log(timeout_comm+" echo 'testing timeout command'")
-if error_msg.strip() != "":
-    timeout_comm = "gtimeout 300;"  # for mac os
-    error_msg, output_msg = call_and_get_log(timeout_comm+" echo 'testing gtimeout command'")
-    if error_msg.strip() != "":  # incase timeout and gtimeout are not installed
-        timeout_comm = "echo "
+# error_msg, output_msg = call_and_get_log(timeout_comm+" echo 'testing timeout command'")
+# if error_msg.strip() != "":
+#     timeout_comm = "gtimeout 300;"  # for mac os
+#     error_msg, output_msg = call_and_get_log(timeout_comm+" echo 'testing gtimeout command'")
+#     if error_msg.strip() != "":  # incase timeout and gtimeout are not installed
+#         timeout_comm = "echo "
 
 

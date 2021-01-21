@@ -29,32 +29,60 @@ class TestPublishAPI(Serializer, TestCase):
         delete_all_repos_from_db()
         create_repo(url=self.url_no_res, user=self.user)
         create_repo(url=self.url_with_res, user=self.user)
+        self.name = 'myalotest'
+        self.ontology = '/alo.owl'
 
     def test_add_publishname_no_doc(self):
         delete_all_publishnames()
         c = Client()
-        response = c.post('/api/publishnames', {'name': 'myalo', 'repo': self.url_no_res, 'ontology': '/alo.owl'},
+        response = c.post('/api/publishnames', {'name': self.name, 'repo': self.url_no_res, 'ontology': self.ontology},
                           HTTP_AUTHORIZATION='Token ' + self.user.token)
-        # print "repos no doc of user"
-        # print self.user.repos
         self.assertEqual(response.status_code, 400, msg='status code is not 400> '+str(response.content))
         self.assertEqual(len(PublishName.objects.all()), 0, msg='It should not be added')
 
-    # def test_add_publishname_with_doc(self):
-    #     delete_all_publishnames()
-    #     c = Client()
-    #     # print "repos of user with doc"
-    #     # print self.user.repos
-    #     response = c.post('/api/publishnames', {'name': 'myaloautotest', 'repo': self.url_with_res, 'ontology': '/alo.owl'},
-    #                       HTTP_AUTHORIZATION='Token ' + self.user.token)
-    #     self.assertEqual(response.status_code, 200, msg='status code is not 200> '+str(response.content))
-    #     self.assertEqual(len(PublishName.objects.all()), 1, msg='PublishName is not added')
+    def test_delete_publishname_existing(self):
+        delete_all_publishnames()
+        create_publishname(name=self.name, user=self.user, repo=Repo.objects.get(url=self.url_no_res), ontology=self.ontology)
+        c = Client()
+        response = c.delete('/api/publishnames?name=%s&repo=%s&ontology=%s' % (self.name, self.url_no_res,self.ontology),
+                          HTTP_AUTHORIZATION='Token ' + self.user.token)
+        self.assertEqual(response.status_code, 200, msg='status code is not 200: '+str(response.content))
+        self.assertEqual(len(PublishName.objects.all()), 0, msg='It should be deleted')
 
-    # def test_list_publishname(self):
-    #     delete_all_publishnames()
-    #     create_publishname(name='myalo', user=self.user, repo=Repo.objects.all()[0], ontology='/alo.owl')
-    #     c = Client()
-    #     response = c.get('/api/publishnames', HTTP_AUTHORIZATION='Token ' + self.user.token)
-    #     self.assertEqual(response.status_code, 200, msg='status code is not 200> '+response.content)
-    #     jresponse = json.loads(response.content)
-    #     self.assertEqual(len(jresponse['publishnames']), 1, msg='list does not return')
+    def test_delete_publishname_invalid_no_others(self):
+        delete_all_publishnames()
+        c = Client()
+        response = c.delete('/api/publishnames?name=%s&repo=%s&ontology=%s' % (self.name, self.url_no_res,self.ontology),
+                          HTTP_AUTHORIZATION='Token ' + self.user.token)
+        self.assertEqual(response.status_code, 400, msg='status code is not 400: '+str(response.content))
+        self.assertEqual(len(PublishName.objects.all()), 0, msg='There should be no publishnames')
+
+    def test_delete_publishname_invalid_with_unrelated_ontology(self):
+        delete_all_publishnames()
+        invalid_ontology = self.ontology+"a"
+        invalid_name = self.name+"a"
+        c = Client()
+        create_publishname(name=invalid_name, user=self.user, repo=Repo.objects.get(url=self.url_no_res), ontology=invalid_ontology)
+        response = c.delete('/api/publishnames?name=%s&repo=%s&ontology=%s' % (self.name, self.url_no_res, self.ontology),
+                          HTTP_AUTHORIZATION='Token ' + self.user.token)
+        self.assertEqual(response.status_code, 400, msg='status code is not 400: '+str(response.content))
+        self.assertEqual(len(PublishName.objects.all()), 1, msg='There should be one unrelated publishedname')
+
+    def test_add_publishname_with_doc(self):
+        delete_all_publishnames()
+        # create_publishname(name=self.name+"-new", user=self.user, repo=Repo.objects.get(url=self.url_no_res), ontology=self.ontology+"new")
+        c = Client()
+        response = c.post('/api/publishnames', {'name': self.name, 'repo': self.url_with_res, 'ontology': self.ontology},
+                          HTTP_AUTHORIZATION='Token ' + self.user.token)
+        self.assertEqual(response.status_code, 200, msg='status code is not 200> '+str(response.content))
+        self.assertEqual(len(PublishName.objects.all()), 1, msg='PublishName is not added')
+
+    def test_list_publishname(self):
+        delete_all_publishnames()
+        create_publishname(name=self.name, user=self.user, repo=Repo.objects.get(url=self.url_no_res), ontology=self.ontology)
+        c = Client()
+        response = c.get('/api/publishnames', HTTP_AUTHORIZATION='Token ' + self.user.token)
+        self.assertEqual(response.status_code, 200, msg='status code is not 200> '+str(response.content))
+        jresponse = response.json()
+        self.assertEqual(len(jresponse['publishnames']), 1, msg='list does not return')
+

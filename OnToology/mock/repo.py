@@ -371,3 +371,95 @@ def get_add_collaborator_dict(repo):
     }
     return coll_dict
 
+
+def get_file_content_dict(repo, branch, f_relative_dir):
+    """
+    :param repo: owner/repo_name
+    :param branch: master
+    :param f_relative_dir: e.g., OnToology/abc.conf
+    :return:
+    """
+    sha = "3d21ec53a331a6f037a91c368710b99387d012c1"
+    d = {
+        "type": "file",
+        "encoding": "base64",
+        "size": 5362,
+        "name": f_relative_dir.split('/')[-1],
+        "path": f_relative_dir,
+        "content": "encoded content ...",
+        "sha": sha,
+        "url": "https://api.github.com/repos/%s/contents/%s" % (repo, f_relative_dir) ,
+        "git_url": "https://api.github.com/repos/%s/git/blobs/%s" %(repo, sha),
+        "html_url": "https://github.com/%s/blob/%s/%s" % (repo, branch, f_relative_dir),
+        "download_url": "https://raw.githubusercontent.com/%s/%s/%s" % (repo, branch, f_relative_dir),
+        "_links": {
+            "git": "https://api.github.com/repos/%s/git/blobs/%s" % (repo,sha),
+            "self": "https://api.github.com/repos/%s/contents/%s" % (repo, f_relative_dir),
+            "html": "https://github.com/%s/blob/%s/%s" % (repo, branch, f_relative_dir)
+        }
+    }
+    return d
+
+def get_update_content_dict(repo, branch, f_relative_dir):
+    """
+    Updating a file content
+    :param repo: owner/repo_name
+    :param branch: master
+    :param f_relative_dir: e.g., OnToology/abc.conf
+
+    :return:
+    """
+    sha = "a56507ed892d05a37c6d6128c260937ea4d287bd"
+    d = {
+        "content": {
+            "name": f_relative_dir.split('/')[-1],
+            "path": f_relative_dir,
+            "sha": "%s" % sha,
+            "size": 9,
+            "url": "https://api.github.com/repos/%s/contents/%s" % (repo, f_relative_dir),
+            "html_url": "https://github.com/%s/blob/%s/%s" % (repo, branch, f_relative_dir),
+            "git_url": "https://api.github.com/repos/%s/git/blobs/%s" % (repo, sha),
+            "download_url": "https://raw.githubusercontent.com/%s/%s/%s" % (repo, branch, f_relative_dir),
+            "type": "file",
+            "_links": {
+                "self": "https://api.github.com/repos/%s/contents/%s" % (repo,f_relative_dir),
+                "git": "https://api.github.com/repos/%s/git/blobs/%s" % (repo,sha),
+                "html": "https://github.com/%s/blob/%s/%s" % (repo, branch, f_relative_dir)
+            }
+        },
+        "commit": {
+            "sha": "18a43cd8e1e3a79c786e3d808a73d23b6d212b16",
+            "node_id": "MDY6Q29tbWl0MThhNDNjZDhlMWUzYTc5Yzc4NmUzZDgwOGE3M2QyM2I2ZDIxMmIxNg==",
+            "url": "https://api.github.com/repos/octocat/Hello-World/git/commits/18a43cd8e1e3a79c786e3d808a73d23b6d212b16",
+            "html_url": "https://github.com/octocat/Hello-World/git/commit/18a43cd8e1e3a79c786e3d808a73d23b6d212b16",
+            "author": {
+                "date": "2014-11-07T22:01:45Z",
+                "name": "Monalisa Octocat",
+                "email": "octocat@github.com"
+            },
+            "committer": {
+                "date": "2014-11-07T22:01:45Z",
+                "name": "Monalisa Octocat",
+                "email": "octocat@github.com"
+            },
+            "message": "my commit message",
+            "tree": {
+                "url": "https://api.github.com/repos/octocat/Hello-World/git/trees/9a21f8e2018f42ffcf369b24d2cd20bc25c9e66f",
+                "sha": "9a21f8e2018f42ffcf369b24d2cd20bc25c9e66f"
+            },
+            "parents": [
+                {
+                    "url": "https://api.github.com/repos/octocat/Hello-World/git/commits/da5a433788da5c255edad7979b328b67d79f53f6",
+                    "html_url": "https://github.com/octocat/Hello-World/git/commit/da5a433788da5c255edad7979b328b67d79f53f6",
+                    "sha": "da5a433788da5c255edad7979b328b67d79f53f6"
+                }
+            ],
+            "verification": {
+                "verified": False,
+                "reason": "unsigned",
+                "signature": None,
+                "payload": None
+            }
+        }
+    }
+    return d
