@@ -32,7 +32,7 @@ blocks:
             - 'echo "content of the file: "'
             - cat ssh/id_rsa.pub
             - echo "running docker compose"
-            - docker-compose build
+            - docker-compose build --no-cache
             - echo "Images are built"
             - echo "Running the tests"
             - sh scripts/run_docker_tests.sh
