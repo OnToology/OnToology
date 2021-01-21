@@ -341,17 +341,32 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
 
 
 def update_file(target_repo, path, message, content, branch=None, g_local=None):
+    """
+    Update the file on GitHub
+    :param target_repo:
+    :param path:
+    :param message:
+    :param content:
+    :param branch:
+    :param g_local:
+    :return:
+    """
     global g
     if g_local is None:
-        if g is None:
-            gg = init_g()
-        else:
-            gg = g
+        gg = init_g()
+        # if g is None:
+        #     gg = init_g()
+        # else:
+        #     gg = g
+        print("update_file> get g from init_g")
     else:
         gg = g_local
-    print("gg: "+str(gg))
-    print("get user: "+str(gg.get_user()))
-    clean_path = path[0]
+        print("update_file> g local")
+    print("*****\n\n\n\n\n\n\nupdate_file> gg: "+str(gg))
+    print("vget user: "+str(gg.get_user()))
+    print("\n\n\nupdate_file> *** branch: "+str(branch))
+    print("path: "+path)
+    clean_path = path
     if path[0] == '/':
         clean_path = clean_path[1:]
     # username = os.environ['github_username']
@@ -360,10 +375,14 @@ def update_file(target_repo, path, message, content, branch=None, g_local=None):
     repo = gg.get_repo(target_repo)
     if branch is None:
         sha = repo.get_contents(path).sha
-        dolog('default branch with file sha: %s' % str(sha))
+        dolog('update_file> default branch with file sha: %s' % str(sha))
     else:
-        sha = repo.get_contents(path, branch).sha
+        print("update_file> get_contents: ")
+        cont = repo.get_contents(path, branch)
+        print(cont)
+        sha = cont.sha
         dolog('branch %s with file %s sha: %s' % (branch, clean_path, str(sha)))
+
     apath = clean_path.strip()
     # dolog("username: " + username)
     dolog('will update the file <%s> on repo<%s> with the content <%s>,  sha <%s> and message <%s>' %
