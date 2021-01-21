@@ -917,7 +917,6 @@ def update_g(token):
 
 
 def get_file_content(target_repo, path, branch=None):
-    global g
     username = os.environ['github_username']
     password = os.environ['github_password']
     g = Github(username, password)
