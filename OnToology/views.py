@@ -969,9 +969,13 @@ def publish_view(request):
     if 'ontology' not in request.GET:
         print("missing ontology")
         return HttpResponseRedirect('/')
-    name = request.GET['name']
-    target_repo = request.GET['repo']
-    ontology_rel_path = request.GET['ontology']
+    name = request.GET['name'].strip()
+    target_repo = request.GET['repo'].strip()
+    ontology_rel_path = request.GET['ontology'].strip()
+    print("name: "+name)
+    pns = PublishName.objects.filter(name=name)
+    if len(pns)> 0:
+        return JsonResponse({'msg': 'This name is already taken, try to choose another name'}, status=400)
     try:
         j = {
             'action': 'publish',
@@ -983,14 +987,14 @@ def publish_view(request):
         }
         rabbit.send(j)
         msg = '''<i>%s</i> will be published soon. This might take a few minutes for the published ontology to be
-            available for GitHub pages. In the image below we show how to enable it for the first time. 
-            If you re-published it, do you not need to do anything.''' % ontology_rel_path[1:]
-        return render(request, 'msg.html', {'msg': msg, 'img': 'https://github.com/OnToology/OnToology/raw/master/media/misc/gh-pages.png'})
+            available for GitHub pages.''' % ontology_rel_path[1:]
+        return JsonResponse({'msg': msg})
+        # return render(request, 'msg.html', {'msg': msg, 'img': 'https://github.com/OnToology/OnToology/raw/master/media/misc/gh-pages.png'})
     except Exception as e:
         print("publish_view> error : %s" % str(e))
         msg = "Error publishing your ontology. Please contact us to fix it."
-        return render(request, 'msg.html', {'msg': msg})
-
+        # return render(request, 'msg.html', {'msg': msg})
+        return JsonResponse({'msg': msg}, status=500)
 
 @login_required
 def syntax_check_view(request):
