@@ -1057,7 +1057,17 @@ def publish(name, target_repo, ontology_rel_path, useremail, g_local=None):
         dolog("publish> " + error_msg)
         return error_msg
 
-    pns_ontology = PublishName.objects.filter(user=user, ontology=ontology, repo=repo)
+    print("ontology: "+ontology)
+    print("repo: "+target_repo)
+    print("user: "+user.email)
+    pns_ontology = PublishName.objects.filter(user=user, ontology=ontology, repo=target_repo)
+
+    if len(pns_ontology) == 0 and name.strip()=='':
+        error_msg = 'can not reserver an empty name'
+        dolog('publish> '+error_msg)
+        return error_msg
+    else:
+        name = pns_ontology[0].name
 
     # If the ontology is published with another name
     if len(pns_name) == 0 and len(pns_ontology) > 0:
