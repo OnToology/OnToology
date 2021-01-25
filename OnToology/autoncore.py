@@ -1007,6 +1007,7 @@ def generate_bundle(base_dir, target_repo, ontology_bundle, branch):
 def publish(name, target_repo, ontology_rel_path, useremail, g_local=None):
     """
     To publish the ontology via github.
+
     :param name:
     :param target_repo:
     :param ontology_rel_path:
@@ -1040,6 +1041,7 @@ def publish(name, target_repo, ontology_rel_path, useremail, g_local=None):
         dolog("publish>"+error_msg)
         return error_msg
 
+    repo = repos[0]
         # error_msg = """This repository is not register under your account. If you are the owner, you can add it to OnToology,
         #  Or you can fork it to your GitHub account and register the fork to OnToology"""
         # dolog("publish> " + error_msg)
@@ -1058,22 +1060,24 @@ def publish(name, target_repo, ontology_rel_path, useremail, g_local=None):
         return error_msg
 
     print("ontology: "+ontology)
-    print("repo: "+target_repo)
+    print("repo: "+repo.url)
     print("user: "+user.email)
-    pns_ontology = PublishName.objects.filter(user=user, ontology=ontology, repo=target_repo)
+    pns_ontology = PublishName.objects.filter(user=user, ontology=ontology, repo=repo)
 
     if len(pns_ontology) == 0 and name.strip()=='':
-        error_msg = 'can not reserver an empty name'
+        error_msg = 'can not reserve an empty name'
         dolog('publish> '+error_msg)
         return error_msg
-    else:
-        name = pns_ontology[0].name
-
-    # If the ontology is published with another name
-    if len(pns_name) == 0 and len(pns_ontology) > 0:
+    elif len(pns_ontology) > 0 and name.strip()!='':  # If the ontology is published with another name
         error_msg = 'can not reserve multiple names for the same ontology'
         dolog("publish> " + error_msg)
         return error_msg
+    # name can be empty, which means a republish. pname can't be empty. So if name is empty, it will fetch the
+    # the correct name from the database
+    elif len(pns_ontology) > 0 and name.strip()=='':
+        pname = pns_ontology[0].name
+    else:
+        pname = name
 
     # If the publication name is taken
     if len(pns_name) == 1 and len(pns_ontology) == 0:
@@ -1081,18 +1085,16 @@ def publish(name, target_repo, ontology_rel_path, useremail, g_local=None):
         dolog("publish> " + error_msg)
         return error_msg
 
-    # new name and ontology is not published or old name and ontology published with the same name
-    if (len(pns_name) == 0 and len(pns_ontology) == 0) or (pns_ontology[0].name == name):
+    # new name and ontology is not published or republish
+    if (len(pns_name) == 0 and len(pns_ontology) == 0) or (name.strip() == ''):
+        rel_htaccess_path = os.path.join('OnToology', ontology[1:], 'documentation/.htaccess')
         try:
-            htaccess = get_file_content(target_repo=target_repo,
-                                        path=os.path.join('OnToology', ontology, 'documentation/.htaccess'),
-                                        branch='gh-pages')
+            htaccess = get_file_content(target_repo=target_repo, path=rel_htaccess_path, branch='gh-pages')
             dolog("publish> gotten the htaccess successfully")
         except Exception as e:
             if '404' in str(e):
                 # return "documentation of the ontology has to be generated first."
-                error_msg = """documentation of the ontology has to be generated first. 
-                %s""" % os.path.join('OnToology', ontology_rel_path, 'documentation/.htaccess')
+                error_msg = """documentation of the ontology has to be generated first (%s)""" % rel_htaccess_path
                 dolog("publish> " + error_msg)
                 return error_msg
             else:
@@ -1107,11 +1109,11 @@ def publish(name, target_repo, ontology_rel_path, useremail, g_local=None):
         dolog(str(type(htaccess)))
         # dolog(htaccess)
         new_htaccess = htaccess_github_rewrite(target_repo=target_repo, htaccess_content=htaccess,
-                                               ontology_rel_path=ontology_rel_path)
+                                               ontology_rel_path=ontology[1:])
         dolog("new htaccess: ")
         # dolog(new_htaccess)
         update_file(target_repo=target_repo,
-                    path=os.path.join('OnToology', ontology_rel_path, 'documentation', '.htaccess'),
+                    path=rel_htaccess_path,
                     content=new_htaccess, branch='gh-pages', message='OnToology Publish', g_local=gg)
         comm = 'mkdir -p "%s"' % os.path.join(publish_dir, name)
         dolog("publish> " + comm)
@@ -1119,7 +1121,7 @@ def publish(name, target_repo, ontology_rel_path, useremail, g_local=None):
         f = open(os.path.join(publish_dir, name, '.htaccess'), 'w')
         f.write(new_htaccess)
         f.close()
-        if len(pns_name) == 0:
+        if name.strip() != '':
             p = PublishName(name=name, user=user, repo=repo, ontology=ontology)
             p.save()
         dolog("publish> published correctly")
