@@ -18,11 +18,8 @@
           <a class="btn btn-primary float-right" href="/generateforall?repo={{repo.url}}&branch={{branch}}">Generate Resources</a>
           <button class="btn btn-primary float-right" id="load">Load processed ontologies</button>
 
-          {%for pn in repo.publishnames.all%}
-            {{pn.name}},
-          {%endfor%}
-      </div>
 
+      </div>
  </div>
     <br>
 
@@ -48,20 +45,24 @@
         </button>
       </div>
       <div class="modal-body">
+          <div id="publish-div-msg">
+
+          </div>
           <p>Reserve a relative w3id (e.g., w3id.org/def/your_reserved_id)</p>
-          <form method="GET" action="/publish" class="form-inline">
+<!--          <form method="GET" action="/publish" class="form-inline">-->
                 <div class="form-group">
-                  <input type="text" name="name" class="form-control"/>
-                  <input type="hidden" name="repo" value="{{repo.url}}"/>
-                  <input type="hidden" name="ontology" value="" id="ontology-input"/>
+                  <input id="publish-name-input" type="text" name="name" class="form-control"/>
+                  <input id="publish-repo-input" type="hidden" name="repo" value="{{repo.url}}"/>
+                  <input id="publish-ontology-input" type="hidden" name="ontology" value=""/>
                 </div>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Reserve</button>
-                </div>
-          </form>
+<!--                <div class="form-group">-->
+<!--                    <button onclick="send_publish()" class="btn btn-primary">Reserve</button>-->
+<!--                </div>-->
+<!--          </form>-->
 
       </div>
       <div class="modal-footer">
+        <button onclick="send_publish()" class="btn btn-primary">Reserve</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 <!--        <button type="button" class="btn btn-primary">Save changes</button>-->
       </div>
@@ -74,6 +75,10 @@
 </div>
 
 <script>
+    var pnames = [{%for pn in repo.publishnames.all%}
+            "{{pn.ontology}}",
+          {%endfor%}
+     ];
     var card_html_pre='<div class="col-lg-4 col-md-6 col-sm-6 col-xs-12"><div class="alert-info card"><div class="card-body">';
     var card_html_post='</div></div></div>';
     var ont_url = "/ontologies?repo={{repo.url}}&branch={{branch}}"
@@ -104,14 +109,14 @@
                     html_list+='<h5 class="card-title">';
                     html_list+=resp.ontologies[i].ontology;
                     html_list+='</h5>';
-                    card_html_body=get_card_body(resp.ontologies[i]);
+                    card_html_body = get_card_body(resp.ontologies[i]);
                     console.log('getting tagid');
                     console.log(resp.ontologies[i].ontology);
                     tagid = resp.ontologies[i].ontology.substring(1,)+"-coll";
                     tagid = tagid.replace(/\./g, "-");
                     card_html_body = collapse_html(tagid,card_html_body);
                     html_list+=card_html_body;
-                    html_list+=publish_html(resp.ontologies[i].ontology);
+                    html_list+=re_publish_html(resp.ontologies[i].ontology);
                     html_list+=card_html_post;
                 }
                 if(resp.ontologies.length == 0){
@@ -120,12 +125,8 @@
                 $("#content").html(html_list);
                 update_collapse_listener();
                 $("#spinner").hide();
-
 		});
-
-
     });
-
 
     function get_card_body(ont_j){
         var i;
@@ -220,6 +221,23 @@
         $('.collapse').collapse({'toggle': true});
     }
 
+    function re_publish_html(ontology){
+        if(!publish_exists(ontology)){
+            return publish_html(ontology);
+        }
+        var republish_btn='<button class="btn btn-primary" onclick="republish_click(\''+ontology+'\')">republish</button>';
+        return republish_btn;
+    }
+
+    function publish_exists(ontology){
+        for(var i=0;i<pnames.length;i++){
+            if(ontology==pnames[i]){
+                return true;
+            }
+        }
+        return false;
+    }
+
     function publish_html(ontology){
         var publish_btn='<button class="btn btn-primary" onclick="publish_click(\''+ontology+'\')">publish</button>'
         console.log(publish_btn);
@@ -227,14 +245,40 @@
     }
 
     function publish_click(ontology){
-        $('#ontology-input').val(ontology);
+        $('#publish-ontology-input').val(ontology);
+        $("#publish-div-msg").html("");
         $('#publish-modal').modal('show');
     }
 
+    function republish_click(ontology){
+        alert("OnToology would take a few minutes to complete the republication");
+        $('#publish-ontology-input').val(ontology);
+        $('#publish-name-input').val('');
+        send_publish();
+    }
 
-
-
-
+    function send_publish(){
+        var ontology = $("#publish-ontology-input").val();
+        var name = $("#publish-name-input").val();
+        var repo = "{{repo.url}}";
+        $("#publish-div-msg").html("");
+        $.ajax({
+			  method: "GET",
+			  url: "/publish?repo="+repo+"&name="+name+"&ontology="+ontology,
+			}).fail(function(resp){
+                	//alert("error reserving a name");
+                	//console.log(resp);
+                	var err_msg = '<div class="alert alert-danger" role="alert">This name is already reserved</div>';
+					$("#publish-div-msg").html(err_msg);
+					console.log(resp.msg);
+					$("#spinner").hide();
+			}).done(function(resp){
+			    console.log(resp.msg);
+			    var msg = '<div class="alert alert-success" role="alert">'+resp.msg+'</div>';
+				$("#publish-div-msg").html(msg);
+                $("#spinner").hide();
+		});
+    }
 
     $("#spinner").hide();
 </script>
