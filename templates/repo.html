@@ -20,9 +20,6 @@
 
 
       </div>
-{%for pn in repo.publishnames.all%}
-            "{{pn.ontology}}",
-          {%endfor%}
  </div>
     <br>
 
@@ -254,6 +251,7 @@
     }
 
     function republish_click(ontology){
+        alert("OnToology would take a few minutes to complete the republication");
         $('#publish-ontology-input').val(ontology);
         $('#publish-name-input').val('');
         send_publish();

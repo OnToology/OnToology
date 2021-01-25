@@ -385,7 +385,7 @@ def update_file(target_repo, path, message, content, branch=None, g_local=None):
 
     apath = clean_path.strip()
     # dolog("username: " + username)
-    dolog('will update the file <%s> on repo<%s> with the content <%s>,  sha <%s> and message <%s>' %
+    dolog('will update the file <%s> on repo <%s> with the content <%s>,  sha <%s> and message <%s>' %
           (apath, target_repo, content, sha, message))
     dolog("repo.update_file('%s', '%s', \"\"\"%s\"\"\" , '%s' )" % (apath, message, content, sha))
     for i in range(3):
