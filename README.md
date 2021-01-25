@@ -25,6 +25,8 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 4. Run the automated tests script `sh scripts/run_tests.sh` 
 
 
+
+
 # Run Locally
 ## via script
 1. `sh scripts/run_web.sh`

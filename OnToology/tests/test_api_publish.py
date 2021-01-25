@@ -77,6 +77,24 @@ class TestPublishAPI(Serializer, TestCase):
         self.assertEqual(response.status_code, 200, msg='status code is not 200> '+str(response.content))
         self.assertEqual(len(PublishName.objects.all()), 1, msg='PublishName is not added')
 
+    def test_add_publishname_with_doc_reserved_ontology(self):
+        delete_all_publishnames()
+        create_publishname(name=self.name+"-new", user=self.user, repo=Repo.objects.get(url=self.url_with_res), ontology=self.ontology)
+        c = Client()
+        response = c.post('/api/publishnames', {'name': self.name+"a", 'repo': self.url_with_res, 'ontology': self.ontology},
+                          HTTP_AUTHORIZATION='Token ' + self.user.token)
+        self.assertEqual(response.status_code, 400, msg='status code is not 400> '+str(response.content))
+        self.assertEqual(len(PublishName.objects.all()), 1, msg='PublishName is not added')
+
+    def test_add_publishname_with_doc_republish(self):
+        delete_all_publishnames()
+        create_publishname(name=self.name, user=self.user, repo=Repo.objects.get(url=self.url_with_res), ontology=self.ontology)
+        c = Client()
+        response = c.post('/api/publishnames', {'name': "", 'repo': self.url_with_res, 'ontology': self.ontology},
+                          HTTP_AUTHORIZATION='Token ' + self.user.token)
+        self.assertEqual(response.status_code, 200, msg='status code is not 200> '+str(response.content))
+        self.assertEqual(len(PublishName.objects.all()), 1, msg='PublishName is not added')
+
     def test_list_publishname(self):
         delete_all_publishnames()
         create_publishname(name=self.name, user=self.user, repo=Repo.objects.get(url=self.url_no_res), ontology=self.ontology)

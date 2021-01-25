@@ -122,18 +122,25 @@ class PublishView(View):
     def post(self, request):
         user = request.user
         if 'name' in request.POST and 'repo' in request.POST and 'ontology' in request.POST:
-            name = request.POST['name']
-            target_repo = request.POST['repo']
-            ontology_rel_path = request.POST['ontology']
-            print("going to previsual")
-            error_msg = previsual(useremail=request.user.email, target_repo=target_repo)
-            if error_msg != "":
+            try:
+                name = request.POST['name']
+                target_repo = request.POST['repo']
+                ontology_rel_path = request.POST['ontology']
+                print("going to previsual")
+                error_msg = previsual(useremail=request.user.email, target_repo=target_repo)
+                if error_msg != "":
+                    return JsonResponse({'message': error_msg}, status=400)
+                print("going to publish")
+                error_msg = publish(name=name, target_repo=target_repo, ontology_rel_path=ontology_rel_path, useremail=request.user.email)
+                if error_msg != "":
+                    return JsonResponse({'message': error_msg}, status=400)
+                return JsonResponse({'message': 'The ontology is published successfully'}, status=200)
+            except Exception as e:
+                print("PublishView> Exception :"+str(e))
+                traceback.print_exc()
+                error_msg = "Error in publishing"
                 return JsonResponse({'message': error_msg}, status=400)
-            print("going to publish")
-            error_msg = publish(name=name, target_repo=target_repo, ontology_rel_path=ontology_rel_path, useremail=request.user.email)
-            if error_msg != "":
-                return JsonResponse({'message': error_msg}, status=400)
-            return JsonResponse({'message': 'The ontology is published successfully'}, status=200)
+
 
     @method_decorator(token_required)
     def get(self, request):
