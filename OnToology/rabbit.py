@@ -350,7 +350,7 @@ def handle_publish(j, logger):
         logger.debug('handle_publish> going for publish')
         try:
             autoncore.publish(name=j['name'], target_repo=j['repo'], ontology_rel_path=j['ontology_rel_path'],
-                              useremail=j['useremail'], orun=orun)
+                              useremail=j['useremail'], branch=j['branch'], orun=orun)
         except Exception as e:
             traceback.print_exc()
             logger.error('handle_publish> ERROR in publication: '+str(e))

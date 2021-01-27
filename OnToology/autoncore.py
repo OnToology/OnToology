@@ -874,15 +874,15 @@ def previsual(useremail, target_repo, branch):
     orun = None
     otask = None
     try:
-        dolog("trying the previsual")
-        user = OUser.objects.filter(email=useremail)
-        if len(user) != 1:
-            error_msg = "%s is invalid email %s" % useremail
+        dolog("previsual> trying the previsual")
+        users = OUser.objects.filter(email=useremail)
+        if len(users) != 1:
+            error_msg = "%s is invalid email" % useremail
             dolog("previsual> " + error_msg)
             return error_msg, None
-        user = user[0]
+        user = users[0]
         repo = None
-        repos = Repo.objects.filter(user=user, repo=target_repo)
+        repos = Repo.objects.filter(ousers=user, url=target_repo)
         # for r in user.repos.all():
         #     if target_repo == r.url:
         #         found = True
@@ -890,7 +890,7 @@ def previsual(useremail, target_repo, branch):
         #         break
         if len(repos) > 0:
             repo = repos[0]
-            orun = ORun(user=ouser, repo=repo, branch=branch)
+            orun = ORun(user=user, repo=repo, branch=branch)
             orun.save()
             dolog("previsual> created the orun")
             otask = OTask(name='Previsualization', finished=False, success=False, description="prepaaring the previsualization", orun=orun)
@@ -941,12 +941,12 @@ def previsual(useremail, target_repo, branch):
                 otask.save()
                 return msg, orun
         else:  # not found
-            repo.state = 'Ready'
-            repo.save()
+            # repo.state = 'Ready'
+            # repo.save()
             error_msg = 'You should add the repo while you are logged in before the revisual renewal'
             dolog("previsual> " + error_msg)
-            otask.description = "The repo is not found or does not belog to this user"
-            otask.save()
+            # otask.description = "The repo is not found or does not belog to this user"
+            # otask.save()
             return error_msg, None
     except Exception as e:
         dolog("autoncore.previsual exception: <%s>" % str(e))
