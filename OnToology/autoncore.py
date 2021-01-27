@@ -553,7 +553,7 @@ def get_ontologies_from_submodules_tree(tree, repo):
         #     o[tool] = confs[c]
         # ontologies.append(o)
         file_content = file_content.replace('\t', '')  # because it was containing \t
-        config_obj = config.read_string(conf_file_abs)
+        config_obj = config_parser.read_string(conf_file_abs)
         # config_parser.readfp(io.BytesIO(file_content))
         sections = config_parser.sections()
         for sec in sections:
