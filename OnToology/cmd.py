@@ -76,6 +76,10 @@ def get_stats():
         ontologies_per_repo = sorted(ontologies_per_repo)
         if num_corr_repos % 2 == 0:  # even
             idx = (num_corr_repos-1)/2
+            print("original idx: ")
+            print(idx)
+            idx = int(idx)
+            print("int idx: %d" % idx)
             stats['median'] = (ontologies_per_repo[idx] + ontologies_per_repo[idx+1]) / 2
         else:
             idx = num_corr_repos/2
@@ -96,7 +100,7 @@ def update_stats():
     dt = datetime.now()
 
     stats_html = """
-{%% extends "base.html"%%}
+{%% extends "base2.html"%%}
 {%%block body%%}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
     
