@@ -126,12 +126,15 @@ class PublishView(View):
                 name = request.POST['name']
                 target_repo = request.POST['repo']
                 ontology_rel_path = request.POST['ontology']
+                branch = request.POST['branch']
                 print("going to previsual")
-                error_msg = previsual(useremail=request.user.email, target_repo=target_repo)
+                error_msg, orun = previsual(useremail=request.user.email, target_repo=target_repo, branch=branch)
+                print(error_msg)
                 if error_msg != "":
                     return JsonResponse({'message': error_msg}, status=400)
                 print("going to publish")
-                error_msg = publish(name=name, target_repo=target_repo, ontology_rel_path=ontology_rel_path, useremail=request.user.email)
+                error_msg = publish(name=name, target_repo=target_repo, ontology_rel_path=ontology_rel_path,
+                                    useremail=request.user.email, branch=branch, orun=orun)
                 if error_msg != "":
                     return JsonResponse({'message': error_msg}, status=400)
                 return JsonResponse({'message': 'The ontology is published successfully'}, status=200)
