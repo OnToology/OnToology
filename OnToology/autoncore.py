@@ -925,7 +925,7 @@ def previsual(useremail, target_repo, branch):
             orun = ORun(user=user, repo=repo, branch=branch)
             orun.save()
             dolog("previsual> created the orun")
-            otask = OTask(name='Previsualization', finished=False, success=False, description="prepaaring the previsualization", orun=orun)
+            otask = OTask(name='Cloning the repo', finished=False, success=False, description="prepaaring the previsualization", orun=orun)
             dolog("previsual> otask is init")
             otask.save()
 
@@ -944,10 +944,16 @@ def previsual(useremail, target_repo, branch):
                 otask.description = "Cloning the repo"
                 otask.save()
                 clone_repo(cloning_repo, folder_name, dosleep=True, branch=branch)
+                otask.description = "Cloning is complete"
+                otask.save()
+
             else:
                 otask.description="Skip cloning"
                 otask.save()
-
+            otask.success=True
+            otask.finished=True
+            otask = OTask(name='Previsualization', finished=False, success=False, description="preparing the previsualization", orun=orun)
+            otask.save()
             repo_dir = os.path.join(home, folder_name)
             dolog("previsual> will call start previsual")
             otask.description = "Generating the previsualization"
@@ -1243,7 +1249,7 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         otask.save()
         update_file(target_repo=target_repo,
                     path=rel_htaccess_path,
-                    content=new_htaccess, branch=branch, message='OnToology Publish', g_local=gg)
+                    content=new_htaccess, branch='gh-pages', message='OnToology Publish', g_local=gg)
 
         otask.success=True
         otask.finished=True
