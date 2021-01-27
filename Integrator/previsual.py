@@ -63,7 +63,8 @@ def generate_previsual(repo_dir, target_repo):
     # from_branch_name = 'master'
     comm_cd = "cd "+repo_dir
     comm1 = comm_cd + ";git branch -D "+branch_name
-    comm2 = comm_cd + ";git checkout --orphan "+branch_name
+    # comm2 = comm_cd + ";git checkout --orphan "+branch_name
+    comm2 = comm_cd + ";git checkout -B "+branch_name
     comm2 += ";git rm -rf ."
     dolog("comm1: "+comm1)
     dolog("comm2: " + comm2)
