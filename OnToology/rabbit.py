@@ -164,7 +164,6 @@ def get_num_of_processes_of_rabbit():
     return -1
 
 
-
 def direct_call(j):
     """
     Consume messages from the ready queue
@@ -200,7 +199,6 @@ def direct_call(j):
         return False
 
 
-
 def callback_consumer(lock, sender, receiver, logger, j):
     # lock = extra['lock']
     # logger = extra['logger']
@@ -230,6 +228,7 @@ def callback_consumer(lock, sender, receiver, logger, j):
     sender.send(locked_repos)
     lock.release()
     logger.debug("")
+
 
 def callback2(extra, ch, method, properties, body):
     """
@@ -339,16 +338,19 @@ def handle_publish(j, logger):
         print("set logger")
         logger.debug('handle_publish> going for previsual')
         try:
-            err = autoncore.previsual(useremail=j['useremail'], target_repo=j['repo'])
+            err, orun = autoncore.previsual(useremail=j['useremail'], target_repo=j['repo'], branch=j['branch'])
             logger.debug("handle_publish> prev error: %s" % str(err))
         except Exception as e:
             logger.debug('handle_publish> Error in previsualisation')
             logger.error('handle_publish> ERROR in previsualisation: '+str(e))
             return
+        if err.strip() != "":
+            logger.debug('handle_publish> Error in previsual and will stop')
+            return
         logger.debug('handle_publish> going for publish')
         try:
             autoncore.publish(name=j['name'], target_repo=j['repo'], ontology_rel_path=j['ontology_rel_path'],
-                              useremail=j['useremail'])
+                              useremail=j['useremail'], branch=j['branch'], orun=orun)
         except Exception as e:
             traceback.print_exc()
             logger.error('handle_publish> ERROR in publication: '+str(e))

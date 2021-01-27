@@ -969,9 +969,13 @@ def publish_view(request):
     if 'ontology' not in request.GET:
         print("missing ontology")
         return HttpResponseRedirect('/')
+    if 'branch' not in request.GET:
+        print("missing branch")
+        return HttpResponseRedirect('/')
     name = request.GET['name'].strip()
     target_repo = request.GET['repo'].strip()
     ontology_rel_path = request.GET['ontology'].strip()
+    branch = request.GET['branch'].strip()
     print("name: "+name)
     pns = PublishName.objects.filter(name=name)
     if len(pns)> 0:
@@ -980,6 +984,7 @@ def publish_view(request):
         j = {
             'action': 'publish',
             'repo': target_repo,
+            'branch': branch,
             'useremail': request.user.email,
             'ontology_rel_path': ontology_rel_path,
             'name': name,
