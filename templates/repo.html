@@ -53,6 +53,7 @@
                 <div class="form-group">
                   <input id="publish-name-input" type="text" name="name" class="form-control"/>
                   <input id="publish-repo-input" type="hidden" name="repo" value="{{repo.url}}"/>
+                    <input id="publish-branch-input" type="hidden" name="branch" value="{{branch}}">
                   <input id="publish-ontology-input" type="hidden" name="ontology" value=""/>
                 </div>
 <!--                <div class="form-group">-->
@@ -260,11 +261,12 @@
     function send_publish(){
         var ontology = $("#publish-ontology-input").val();
         var name = $("#publish-name-input").val();
+        var branch = $("#publish-branch-input").val();
         var repo = "{{repo.url}}";
         $("#publish-div-msg").html("");
         $.ajax({
 			  method: "GET",
-			  url: "/publish?repo="+repo+"&name="+name+"&ontology="+ontology,
+			  url: "/publish?repo="+repo+"&name="+name+"&ontology="+ontology+"&branch="+branch,
 			}).fail(function(resp){
                 	//alert("error reserving a name");
                 	//console.log(resp);

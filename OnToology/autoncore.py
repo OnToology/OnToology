@@ -193,7 +193,7 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
             drepo.save()
             otask.description = 'Clone the repo'
             otask.save()
-            clone_repo(cloning_url, user)
+            clone_repo(cloning_url, user, branch=branch)
             dolog('repo cloned')
             drepo.progress = 20.0
         files_to_verify = []
@@ -628,7 +628,16 @@ def fork_repo(target_repo):
     return forked_repo
 
 
-def clone_repo(cloning_url, parent_folder, dosleep=True):
+def clone_repo(cloning_url, parent_folder, dosleep=True, branch=None):
+    """
+    :param cloning_url:
+    :param parent_folder:
+    :param dosleep:
+    :param branch:
+    :return:
+    """
+    if branch is None:
+        raise Exception("clone_repo> branch is not passed")
     global g
     if g is None:
         init_g()
@@ -648,7 +657,7 @@ def clone_repo(cloning_url, parent_folder, dosleep=True):
     except Exception as e:
         dolog('rm failed: ' + str(e))
     # comm = "git" + " clone" + " " + cloning_repo + " " + home + parent_folder
-    comm = "git clone --recurse-submodules  " + cloning_url + " " + os.path.join(home, parent_folder)
+    comm = "git clone "+"--single-branch --branch "+branch+" --recurse-submodules  " + cloning_url + " " + os.path.join(home, parent_folder)
     # if not settings.test_conf['local']:
     #     comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
@@ -852,27 +861,43 @@ def add_collaborator(target_repo, user, newg=None):
         return {'status': False, 'error': str(e)}  # e.data}
 
 
-def previsual(useremail, target_repo):
+def previsual(useremail, target_repo, branch):
+    """
+    :param useremail: email of the repo owner
+    :param target_repo: owner/reponame
+    :param branch: e.g., master
+    :return: error, orun
+    """
     from Integrator.previsual import start_previsual
     prepare_logger(useremail+"-prev-")
     dolog("starting previsual function with ontology: %s" % target_repo)
+    orun = None
+    otask = None
     try:
         dolog("trying the previsual")
         user = OUser.objects.filter(email=useremail)
         if len(user) != 1:
             error_msg = "%s is invalid email %s" % useremail
             dolog("previsual> " + error_msg)
-            return error_msg
+            return error_msg, None
         user = user[0]
-        found = False
         repo = None
-        for r in user.repos.all():
-            if target_repo == r.url:
-                found = True
-                repo = r
-                break
-        if found:
-            dolog("previsual> " + "repo is found and now generating previsualization")
+        repos = Repo.objects.filter(user=user, repo=target_repo)
+        # for r in user.repos.all():
+        #     if target_repo == r.url:
+        #         found = True
+        #         repo = r
+        #         break
+        if len(repos) > 0:
+            repo = repos[0]
+            orun = ORun(user=ouser, repo=repo, branch=branch)
+            orun.save()
+            dolog("previsual> created the orun")
+            otask = OTask(name='Previsualization', finished=False, success=False, description="prepaaring the previsualization", orun=orun)
+            dolog("previsual> otask is init")
+            otask.save()
+
+            dolog("previsual> repo is found and now generating previsualization")
             repo.state = 'Generating Previsualization'
             repo.notes = ''
             # repo.previsual_page_available = True
@@ -884,32 +909,54 @@ def previsual(useremail, target_repo):
             folder_name = 'prevclone-' + sec
 
             if not settings.test_conf['local'] or settings.test_conf['clone']:
-                clone_repo(cloning_repo, folder_name, dosleep=True)
+                otask.description = "Cloning the repo"
+                otask.save()
+                clone_repo(cloning_repo, folder_name, dosleep=True, branch=branch)
+            else:
+                otask.description="Skip cloning"
+                otask.save()
 
             repo_dir = os.path.join(home, folder_name)
             dolog("previsual> will call start previsual")
+            otask.description = "Generating the previsualization"
+            otask.save()
             msg = start_previsual(repo_dir, target_repo)
-            if msg == "":  # not errors
+            if msg == "":  # no errors
                 dolog("previsual> completed successfully")
+                otask.description="The previsualization is generated without errors"
+                otask.success=True
+                otask.finished=True
+                otask.save()
                 repo.state = 'Ready'
                 repo.save()
                 dolog("previsual> test state: %s" % repo.state)
-                return ""
+                return "", orun
             else:
                 repo.notes = msg
                 repo.state = 'Ready'
                 repo.save()
-                return msg
+                otask.description="Error generating the previsualization: "+msg
+                otask.success=False
+                otask.finished=True
+                otask.save()
+                return msg, orun
         else:  # not found
             repo.state = 'Ready'
             repo.save()
             error_msg = 'You should add the repo while you are logged in before the revisual renewal'
             dolog("previsual> " + error_msg)
-            return error_msg
+            otask.description = "The repo is not found or does not belog to this user"
+            otask.save()
+            return error_msg, None
     except Exception as e:
         dolog("autoncore.previsual exception: <%s>" % str(e))
         dolog(traceback.format_exc())
-        return str(e)
+        if otask is not None:
+            otask.description = "Exception generating the previsualization: " + str(e)
+            otask.success = False
+            otask.finished = True
+        return str(e), orun
+
 
 def update_g(token):
     global g
@@ -1004,14 +1051,16 @@ def generate_bundle(base_dir, target_repo, ontology_bundle, branch):
         return None
 
 
-def publish(name, target_repo, ontology_rel_path, useremail, g_local=None):
+def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_local=None):
     """
     To publish the ontology via github.
 
     :param name:
     :param target_repo:
     :param ontology_rel_path:
-    :param user:
+    :param useremail:
+    :param branch:
+    :param orun:
     :return: error message, it will return an empty string if everything went ok
     """
     global g
@@ -1046,6 +1095,11 @@ def publish(name, target_repo, ontology_rel_path, useremail, g_local=None):
         #  Or you can fork it to your GitHub account and register the fork to OnToology"""
         # dolog("publish> " + error_msg)
 
+    otask = OTask(name='Name Reservation', finished=False, success=False, description="Look for published names",
+                  orun=orun)
+    dolog("publish> otask is init")
+    otask.save()
+
     ontology = ontology_rel_path
     if ontology[0] == '/':
         ontology = ontology[1:]
@@ -1057,6 +1111,10 @@ def publish(name, target_repo, ontology_rel_path, useremail, g_local=None):
     if len(pns_name) > 1:
         error_msg = 'a duplicate published names, please contact us ASAP to fix it'
         dolog("publish> " + error_msg)
+        otask.success=False
+        otask.finished=True
+        otask.description=error_msg
+        otask.save()
         return error_msg
 
     print("ontology: "+ontology)
@@ -1064,13 +1122,24 @@ def publish(name, target_repo, ontology_rel_path, useremail, g_local=None):
     print("user: "+user.email)
     pns_ontology = PublishName.objects.filter(user=user, ontology=ontology, repo=repo)
 
+    otask.description = "Verify ontology publication"
+    otask.save()
+
     if len(pns_ontology) == 0 and name.strip()=='':
         error_msg = 'can not reserve an empty name'
         dolog('publish> '+error_msg)
+        otask.success=False
+        otask.finished=True
+        otask.description=error_msg
+        otask.save()
         return error_msg
     elif len(pns_ontology) > 0 and name.strip()!='':  # If the ontology is published with another name
         error_msg = 'can not reserve multiple names for the same ontology'
         dolog("publish> " + error_msg)
+        otask.success=False
+        otask.finished=True
+        otask.description=error_msg
+        otask.save()
         return error_msg
     # name can be empty, which means a republish. pname can't be empty. So if name is empty, it will fetch the
     # the correct name from the database
@@ -1083,23 +1152,47 @@ def publish(name, target_repo, ontology_rel_path, useremail, g_local=None):
     if len(pns_name) == 1 and len(pns_ontology) == 0:
         error_msg = "This name is already taken, please choose a different one"
         dolog("publish> " + error_msg)
+        otask.success=False
+        otask.finished=True
+        otask.description=error_msg
+        otask.save()
         return error_msg
+
+    otask.success = True
+    otask.finished=True
+    otask.description="Name reservation has been validated"
+    otask.save()
+    otask = OTask(name='.htaccess Preparation', finished=False, success=False, description="Get .htaccess",
+                  orun=orun)
+    dolog("publish> otask is init")
+    otask.save()
+
 
     # new name and ontology is not published or republish
     if (len(pns_name) == 0 and len(pns_ontology) == 0) or (name.strip() == ''):
         rel_htaccess_path = os.path.join('OnToology', ontology[1:], 'documentation/.htaccess')
         try:
-            htaccess = get_file_content(target_repo=target_repo, path=rel_htaccess_path, branch='gh-pages')
+            htaccess = get_file_content(target_repo=target_repo, path=rel_htaccess_path, branch=branch)
+            otask.description=".htaccess content is fetched successfully"
+            otask.save()
             dolog("publish> gotten the htaccess successfully")
         except Exception as e:
             if '404' in str(e):
                 # return "documentation of the ontology has to be generated first."
                 error_msg = """documentation of the ontology has to be generated first (%s)""" % rel_htaccess_path
                 dolog("publish> " + error_msg)
+                otask.success = False
+                otask.finished = True
+                otask.description = error_msg
+                otask.save()
                 return error_msg
             else:
                 error_msg = "github error: %s" % str(e)
                 dolog("publish> " + error_msg)
+                otask.success = False
+                otask.finished = True
+                otask.description = error_msg
+                otask.save()
                 return error_msg
         dolog("publish> htaccess content: ")
         # dolog(str(type(htaccess)))
@@ -1108,23 +1201,46 @@ def publish(name, target_repo, ontology_rel_path, useremail, g_local=None):
         # htaccess = str(htaccess)
         dolog(str(type(htaccess)))
         # dolog(htaccess)
+        otask.description="rewriting .htaccess with redirects to GitHub"
+        otask.save()
         new_htaccess = htaccess_github_rewrite(target_repo=target_repo, htaccess_content=htaccess,
                                                ontology_rel_path=ontology[1:])
         dolog("new htaccess: ")
         # dolog(new_htaccess)
+        otask.description="updating the .htaccess on GitHub"
+        otask.save()
         update_file(target_repo=target_repo,
                     path=rel_htaccess_path,
-                    content=new_htaccess, branch='gh-pages', message='OnToology Publish', g_local=gg)
+                    content=new_htaccess, branch=branch, message='OnToology Publish', g_local=gg)
+
+        otask.success=True
+        otask.finished=True
+        otask.description = "The .htaccess is updated successfully"
+
+        otask = OTask(name='Redirection', finished=False, success=False, description="setup the .htaccess file on OnToogy server",
+                      orun=orun)
+        dolog("publish> otask is init")
+        otask.save()
+
         comm = 'mkdir -p "%s"' % os.path.join(publish_dir, name)
         dolog("publish> " + comm)
         call(comm, shell=True)
+        otask.description = "writing the new .htaccess on OnToology server"
+        otask.save()
         f = open(os.path.join(publish_dir, name, '.htaccess'), 'w')
         f.write(new_htaccess)
         f.close()
         if name.strip() != '':
+            otask.description = "Reserving the new w3id name"
+            otask.save()
             p = PublishName(name=name, user=user, repo=repo, ontology=ontology)
             p.save()
+
         dolog("publish> published correctly")
+        otask.success=True
+        otask.finished=True
+        otask.description="The ontology is published correctly"
+        otask.save()
         return ""  # means it is published correctly
 
 
