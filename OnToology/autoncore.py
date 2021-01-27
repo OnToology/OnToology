@@ -516,14 +516,46 @@ def get_ontologies_from_submodules_tree(tree, repo):
     ontologies = []
     submodule_tree_elements = [f for f in tree if f.path == '.gitmodules']
     if len(submodule_tree_elements) == 1:
-        config_parser = ConfigParser.RawConfigParser()
-        file_content = repo.get_contents(submodule_tree_elements[0].path).decoded_content
+        config_parser = ConfigParser.ConfigParser()
+        subm_tree_ele = submodule_tree_elements[0]
+        print("tree ele: ")
+        print(subm_tree_ele)
+        print("path: ")
+        print(subm_tree_ele.path)
+        file_content = repo.get_contents(subm_tree_ele.path).decoded_content
         print("file_content")
+        file_content = file_content.decode('utf-8')
         print(file_content)
-        file_content = file_content.replace('\t', '')  # because it was containing \t
-        config_parser.readfp(io.BytesIO(file_content))
-        sections = config_parser.sections()
 
+
+### GOBACK
+        #
+        # config = ConfigParser.ConfigParser()
+        # print("config raw parser")
+        # if from_string:
+        #     config_obj = config.read_string(conf_file_abs)
+        #
+        # file_content = repo.get_contents(p).decoded_content
+        # print("type: "+str(type(file_content)))
+        # # file_content = str(file_content)
+        # file_content = file_content.decode('utf-8')
+        # print("file_content: " + file_content)
+        # # buffile = StringIO(file_content)
+        # print("will get the config")
+        # confs = get_auton_config(file_content, from_string=True)
+        # print("gotten confs: " + str(confs))
+        # o = {}
+        # # o['ontology'] = get_parent_path(cpath.path)[len(get_target_home()):]
+        # o['ontology'] = get_parent_path(p)[len(get_target_home()):]
+        # for c in confs:
+        #     #tool = c.replace('_enable', '')
+        #     tool = c
+        #     o[tool] = confs[c]
+        # ontologies.append(o)
+        file_content = file_content.replace('\t', '')  # because it was containing \t
+        config_obj = config.read_string(conf_file_abs)
+        # config_parser.readfp(io.BytesIO(file_content))
+        sections = config_parser.sections()
         for sec in sections:
             p = config_parser.get(sec, "path")
             u = config_parser.get(sec, "url")
