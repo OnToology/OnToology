@@ -1216,7 +1216,7 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         otask.success=True
         otask.finished=True
         otask.description = "The .htaccess is updated successfully"
-
+        otask.save()
         otask = OTask(name='Redirection', finished=False, success=False, description="setup the .htaccess file on OnToogy server",
                       orun=orun)
         dolog("publish> otask is init")
