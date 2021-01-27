@@ -952,6 +952,7 @@ def previsual(useremail, target_repo, branch):
                 otask.save()
             otask.success=True
             otask.finished=True
+            otask.save()
             otask = OTask(name='Previsualization', finished=False, success=False, description="preparing the previsualization", orun=orun)
             otask.save()
             repo_dir = os.path.join(home, folder_name)
