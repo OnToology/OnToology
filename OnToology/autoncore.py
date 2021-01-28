@@ -1437,7 +1437,8 @@ def compute_themis_results(repo, path):
     :param path:
     :return: score (0-100)
     """
-    p = quote(path)
+    #p = quote(path)
+    p = path
     print("get file content: %s" % (str(path)))
     print("after quote: %s" % p)
     print("now get the decoded content")
@@ -1505,7 +1506,8 @@ def parse_online_repo_for_ontologies(target_repo, branch='master'):
     ontologies = []
 
     for cpath in conf_paths:
-        p = quote(cpath.path)
+        #p = quote(cpath.path)
+        p = cpath.path
         print("get file content: %s" % (str(cpath.path)))
         print("after quote: %s" % p)
         print("now get the decoded content")
