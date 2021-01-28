@@ -220,7 +220,7 @@ function GetURLParameter(sParam)
 <p class="red">{{error}}</p>
 
 
-<div class="alert alert-warning">
+<div class="alert alert-danger">
     Note that the majority of the functionalities are moved to the <a href="/repos">repos</a> and the <a href="/runs">runs</a>
     . Soon the configuration in the page will be removed.
 </div>
@@ -545,18 +545,11 @@ $( document ).ready(function() {
 		    if(ontologies.length>0){
             	temp += '<input type="hidden" name="repo" value="'+current_url+'"/>';
             	temp += '<input type="hidden" name="csrfmiddlewaretoken" value="'+'{{csrf_token}}'+'"/>';
-
 		    	temp += '<input type="submit" class="btn color7back color0 col-md-10 col-xs-10" value="Update Configuration">';
-
                 temp += '<div class="col-md-2 col-xs-2 ">'
-
 		    	temp += '<a class="closee btn color0 red1back col-md-12 col-xs-12" url="'+current_url+'" >Stop Watching</a>';
-
 		    	temp += '</div>'
-
 		    	console.log(current_url)
-
-
 		    }
 		    else{
 			    temp = '<a class="closee btn btn-danger color3 col-md-12 col-xs-12 " url="'+current_url+'" >Stop Watching</a>';
@@ -594,20 +587,8 @@ $( document ).ready(function() {
 				    }
 				});
 	});
-
-
-
 });
 
-/*
- var v;
- $.ajax({
-		  method: "GET",
-		  url: "http://127.0.0.1:8000/profile?repo=ahmad88me/target",
-		}).done(function( resp ) {
-		    v = resp;
-		});
-*/
 
 
 </script>
@@ -718,13 +699,6 @@ $( document ).ready(function() {
         //$.post("get_bundle", {"repo": $(this).attr('repo'), "ontology": $(this).attr('ontology'), csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value });
     });
 
-/*
-    $(document).on('click', '.generateall-btn', function(){
-        alert($(this).attr('repo'));
-        $.get("generateforall", {"repo": $(this).attr('repo')});
-    });
-*/
-
 
 
 
@@ -781,9 +755,6 @@ function refresh_easy_pie_chart(){
             <div class="modal-header btn-primary">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
-                <!--<h4 class="modal-title">Reserve a name</h4>-->
-                <!--<h4 align="left">Reserve a name</h4>-->
-                <!--<p align="left " alt="left">Reserve a name</p>-->
                 Reserve a name
             </div>
             <div class="modal-body highl">
@@ -809,10 +780,6 @@ function refresh_easy_pie_chart(){
 
 
             </div>
-            <!--<div class="modal-footer">-->
-            <!--<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>-->
-            <!--<button type="button" class="btn btn-primary">Save changes</button>-->
-            <!--</div>-->
         </div>
         <!-- /.modal-content -->
     </div>

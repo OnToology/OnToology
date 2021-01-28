@@ -60,14 +60,17 @@ def generate_previsual(repo_dir, target_repo):
         return msg
     # Create branch for Github pages
     branch_name = 'gh-pages'
-    from_branch_name = 'master'
-    comm = "cd "+repo_dir
-    comm += ";git branch -D "+branch_name
-    comm += ";git checkout --orphan "+branch_name
-    comm += ";git rm -rf ."
-    dolog("comm: "+comm)
+    # from_branch_name = 'master'
+    comm_cd = "cd "+repo_dir
+    comm1 = comm_cd + ";git branch -D "+branch_name
+    # comm2 = comm_cd + ";git checkout --orphan "+branch_name
+    comm2 = comm_cd + ";git checkout -B "+branch_name
+    comm2 += ";git rm -rf ."
+    dolog("comm1: "+comm1)
+    dolog("comm2: " + comm2)
     # call(comm, shell=True)
-    error_msg, msg = call_and_get_log(comm)
+    error_msg, msg = call_and_get_log(comm1)
+    error_msg, msg = call_and_get_log(comm2)
     # dolog(msg+error_msg)
     # if error_msg != "":
     #     return "Error while generating the previsualization"
