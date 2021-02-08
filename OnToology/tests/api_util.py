@@ -8,6 +8,15 @@ from subprocess import call
 user_password = os.environ['test_user_token']
 
 
+class PrintLogger():
+    def error(self, msg):
+        print(msg)
+    def debug(self, msg):
+        print(msg)
+    def info(self, msg):
+        print(msg)
+
+
 def delete_all_repos_from_db():
     # OUser.objects.all().delete()
     # for u in OUser.objects.all():

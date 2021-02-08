@@ -663,10 +663,10 @@ def fork_repo(target_repo):
 def clone_repo(cloning_url, parent_folder, dosleep=True, branch=None):
     """
     :param cloning_url:
-    :param parent_folder:
+    :param parent_folder: just the name of the new direct folder name to be created if it does not exists
     :param dosleep:
     :param branch:
-    :return:
+    :return: the abs path
     """
     if branch is None:
         raise Exception("clone_repo> branch is not passed")
@@ -1579,7 +1579,14 @@ def get_auton_config(conf_file_abs, from_string=True):
     print("will ask for get json from conf obj")
     try:
         config_res, _ = Integrator.get_json_from_conf_obj(config)
-    except:
+        if not from_string:
+            try:
+                with open(conf_file_abs, 'wb') as configfile:
+                    config.write(configfile)
+            except Exception as e:
+                dolog('expection: '+str(e))
+    except Exception as e:
+        dolog("Exception: "+str(e))
         traceback.print_exc()
     dolog("\n\n\n**************get_auton_config: ")
     dolog(str(config_res))
