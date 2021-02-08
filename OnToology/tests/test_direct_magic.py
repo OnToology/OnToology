@@ -54,7 +54,6 @@ def get_logger(name, logdir="", level=logging.INFO):
 #     "info": print
 # }
 logger = PrintLogger()
-logger =
 
 def get_pending_messages():
     print("get pending messages")
