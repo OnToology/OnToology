@@ -16,8 +16,8 @@ blocks:
         - name: Built docker and run tests
           commands:
             - ls -ltr
-            - checkout
-            - echo "check secrets"
+            - 'checkout '
+            - echo "check secrets "
             - ls ../*
             - echo "check OnToology content"
             - ls
@@ -34,7 +34,8 @@ blocks:
             - echo "running docker compose"
             - docker-compose build
             - echo "Images are built"
-            - '#echo "Running the tests"'
+            - echo "Running the tests"
+            - sh scripts/run_docker_tests.sh
             - '#docker-compose run web .venv/bin/python manage.py test OnToology'
             - echo "Running Coverage"
             - docker-compose run -e CODECOV_TOKEN=$CODECOV_TOKEN web sh semaphoreci.sh
