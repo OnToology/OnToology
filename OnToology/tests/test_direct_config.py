@@ -35,12 +35,13 @@ class TestDirectConf(Serializer, TestCase):
         self.url_original_case = 'ahmad88me/Test-ontoology-Demo'
         self.url_lower_case = self.url_original_case.lower()
         self.user = OUser.objects.all()[0]
+        self.cloning_url = 'git@github.com:%s.git' % self.url_lower_case
 
     def test_create_new_conf(self):
         """
         :return:
         """
-        cloning_url = 'git@github.com:%s.git' % self.url_lower_case
+        cloning_url = self.cloning_url
         sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
         folder_name = 'newconf-' + sec
         # delete the folder if it exists
@@ -63,10 +64,57 @@ class TestDirectConf(Serializer, TestCase):
         self.assertTrue(os.path.exists(os.path.join(abs_repo_dir,"OnToology","GeO","geoLinkedData.owl","OnToology.cfg")))
         t_alo = open(os.path.join(abs_repo_dir,"OnToology","ALo","aLo.owl","OnToology.cfg")).read()
         t_geo = open(os.path.join(abs_repo_dir,"OnToology","GeO","geoLinkedData.owl","OnToology.cfg")).read()
-        print("t_alo: \n"+t_alo)
-        print("t_geo: \n"+t_geo)
+        # print("t_alo: \n"+t_alo)
+        # print("t_geo: \n"+t_geo)
         self.assertFalse(t_alo.strip() == "")
         self.assertFalse(t_geo.strip() == "")
+
+
+    def test_widoco_lang_conf(self):
+        sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
+        folder_name = 'newconf-wlang-' + sec
+        # delete the folder if it exists
+        comm = "rm" + " -Rf " + os.path.join(autoncore.home, folder_name)
+        print(comm)
+        call(comm, shell=True)
+        abs_repo_dir = autoncore.clone_repo(self.cloning_url, folder_name, dosleep=True, branch="main")
+        self.assertTrue(os.path.exists(os.path.join(abs_repo_dir,"ALo","aLo.owl")))
+        self.assertTrue(os.path.exists(os.path.join(abs_repo_dir,"GeO","geoLinkedData.owl")))
+        self.assertFalse(os.path.exists(os.path.join(abs_repo_dir,"OnToology","ALo","aLo.owl")))
+        self.assertFalse(os.path.exists(os.path.join(abs_repo_dir,"OnToology","GeO","geoLinkedData.owl")))
+        conf_content = """
+[owl2jsonld]
+enable = false
+
+[widoco]
+enable = true
+webvowl = false
+languages = en,es
+
+[themis]
+enable = false
+
+[ar2dtool]
+enable = false
+
+[oops]
+enable = false
+
+"""
+        conf_alo = Integrator.create_of_get_conf(os.path.join("ALo","aLo.owl"), abs_repo_dir)
+        conf_file_abs_alo = os.path.join(abs_repo_dir,"OnToology","ALo","aLo.owl", "OnToology.cfg")
+        # print("abs alo dir: "+conf_file_abs_alo)
+        f = open(conf_file_abs_alo, 'w')
+        f.write(conf_content)
+        f.close()
+
+        conf_alo = Integrator.create_of_get_conf(os.path.join("ALo","aLo.owl"), abs_repo_dir)
+        # print("\n\n conf alo: ")
+        print(conf_alo)
+        self.assertEqual('en,es', ",".join(conf_alo['widoco']['languages']))
+
+
+
 
 
 
