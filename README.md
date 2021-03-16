@@ -17,20 +17,25 @@ Team: Ahmad Alobaid, Daniel Garijo, Maria Poveda, Idafen Santa, Oscar Corcho, Al
 
 License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 
+If you want to cite Ontoology in a scientific paper or technical report, you can use the following [Bibtex citation](/media/references/ontoology.bib) or directly this text: Alobaid A, Garijo D, Poveda-Villalón M, Santana-Pérez I, Fernández-Izquierdo A, Corcho O (2019) Automating ontology engineering support activities with OnToology. Journal of Web Semantics 57:100472, https://doi.org/10.1016/j.websem.2018.09.003
 
-# To run automated tests
+# Documentation for users
+If you are an ontology engineering willing to use Ontoology, you can check our [step by step documentation](http://ontoology.linkeddata.es/stepbystep). Please check also our list of [Frequently Asked Questions](http://ontoology.linkeddata.es/faqs)
+
+# Documentation for developers
+Next we provide some documentation for developers who want to contribute to the further development Ontoology or for those who are interested in deploying Ontoology locally or in their servers. Feel free to contact us if you are interested in contributing of fixing some functionality
+
+## To run automated tests
 1. You should have [docker](https://docs.docker.com/) and [docker-compose](https://docs.docker.com/compose/) installed
 2. You need to have a GitHub user to act as "OnToologyUser" (you can choose any username you like).
 3. Add the details as in the *secret setup* section below.
 4. Run the automated tests script `sh scripts/run_tests.sh` 
 
 
-
-
-# Run Locally
-## via script
+## Run Locally
+### via script
 1. `sh scripts/run_web.sh`
-## manual
+### manual
 1. `cp -Rf ~/.ssh/ ssh` (assuming you have a *nix and that you already have an ssh key)
 1. `mkdir -p .git`
 1. `docker-compose build --no-cache`
@@ -42,17 +47,17 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 1. Now, this is run automatically. But, make sure that the environment variable `rabbit_processes` is set to a value > 0
 
 
-# Development
+## Development
 For development, you can run the db `sh scripts/run_db.sh`. And then locally, 
 you can access that db. Or you can install mongo db locally on your machine.
 
 
-# To access the command line
+## To access the command line
 `sh scripts/run_docker.sh`
 
 
 
-## Secret setup
+### Secret setup
 This file should be added in `scripts/secret_setup.sh`
 ```
 #!/bin/sh
@@ -68,42 +73,42 @@ export test_user_email=""
 export rabbit_host=""
 ```
 
-## Environment variables
+### Environment variables
 Here we describe some of the main ones
 * `rabbit_processes` : The number of rabbit processes to automatically run (0 means do not run it automatically).
 
 
-## How to contribute
+### How to contribute
 There are two workflows:
 
-#### Case 1: If you are a contributor:
+##### Case 1: If you are a contributor:
 1. Create a new branch from the current live one (now it is `master`). Make sure to give it a presentive name. In case it is for a specific issue, include the issue number in the branch name, e.g. change-spinner-123.
 2. Once you push your changes on the new branch, **create a pull request** and one of the admins will check your code base and will merge if it is ok.
 
-#### Case 2: If you are not added as a contributor yet (or you are a contributor who prefers this workflow):
+##### Case 2: If you are not added as a contributor yet (or you are a contributor who prefers this workflow):
 1. Fork from the current live branch (now it is `master`).
 2. Create a pull request, we will review it and merge if it is ok.
 
 
-## Dependency notice
+### Dependency notice
 * To run the tests, we use the `mock` option for github api. It was rejected by the `PyGithub` maintainers, so make sure to use
 the version in `ahmad88me/PyGithub`.  (see below)
 
-# Local Setup
-## On Linux
+## Local Setup
+### On Linux
 (tested on ubuntu, debian, mint and fedora)
-### To install the tools
+#### To install the tools
 1. Open the terminal and `cd` to the location of choice.
 2. `export PLAYGROUND=$PWD`.
 3. Copy and paste the commands of choice to the terminal from `scripts/setup_docker_base.sh`
 
-## Install Pygithub (not the upstream version)
-### either directly from github
+### Install Pygithub (not the upstream version)
+#### either directly from github
 `pip install git+https://github.com/ahmad88me/PyGithub.git`
-### or locally
+#### or locally
 1. `git clone https://github.com/ahmad88me/PyGithub.git' 
 1. `cd OnToology` (assuming both are on the same level/directory)
 1. `pip install -e ../Pygithub` (change this to any directory you want)
 
-### To install the library/dependencies
+#### To install the library/dependencies
 1. 
