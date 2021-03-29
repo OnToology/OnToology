@@ -8,12 +8,13 @@
 [![Build Status](https://ahmad88me.semaphoreci.com/badges/OnToology/branches/master.svg)](https://ahmad88me.semaphoreci.com/projects/OnToology) 
 [![codecov](https://codecov.io/gh/OnToology/OnToology/branch/master/graph/badge.svg?token=PJgHWaaa9l)](https://codecov.io/gh/OnToology/OnToology)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1317786.svg)](https://doi.org/10.5281/zenodo.1317786)
+[![Twitter](https://img.shields.io/twitter/follow/OnToology.svg?style=social&label=@OnToology)](https://twitter.com/OnToology)
 
 A system for collaborative ontology development process. Given a repository with an owl file, **OnToology** will survey it and produce diagrams, a complete documentation and validation based on common pitfalls.
 
 You can find a live version of OnToology online: http://ontoology.linkeddata.es.
 
-Team: Ahmad Alobaid, Daniel Garijo, Maria Poveda, Idafen Santa, Oscar Corcho, Alba Fernandez Izquierdo
+Team: Ahmad Alobaid, Daniel Garijo, Maria Poveda, Idafen Santa, Alba Fernandez Izquierdo, Oscar Corcho
 
 License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 
@@ -110,5 +111,3 @@ the version in `ahmad88me/PyGithub`.  (see below)
 1. `cd OnToology` (assuming both are on the same level/directory)
 1. `pip install -e ../Pygithub` (change this to any directory you want)
 
-#### To install the library/dependencies
-1. 

@@ -32,6 +32,31 @@
     <meta name="msapplication-TileImage" content="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/favicon/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
 
+    <style>
+        .color0back{background-color: #000000 !important;}
+        .color0{color: #000000 !important;}
+        .color1back{background-color: #3498DB !important;}
+        .color1{color: #3498DB !important;}
+        .color2{color: #1d63db !important;}
+        .color2back{background-color: #1d63db !important;}
+        .color3{color: #FFFFFF !important;}
+        .color3back{background-color: #FFFFFF !important;}
+        .color4{ color: #AED6F1 !important;}
+        .color4back{background-color: #AED6F1 !important;}
+        .color5{ color: #D6EAF8 !important;}
+        .color5back{background-color: #D6EAF8 !important;}
+        .color6{ color: #EBF5FB !important;}
+        .color6back{background-color: #EBF5FB !important;}
+        .color7{color: #d9edf7 !important;}
+        .color7back{background-color: #d9edf7 !important;}
+        .color8{color: #337ab7 !important;}
+        .color8back{background-color: #337ab7 !important;}
+
+                .justify {
+            text-align: justify;
+            text-justify: inter-word;
+        }
+    </style>
 
 
 </head>
@@ -78,6 +103,13 @@
 <!--<div class="container">-->
 {%block body%}
 {%endblock%}
+<div class="container">
+  <div class="offset-md-1 col-md-10">
+
+
+    {%block slim%}
+{%endblock%}
+  </div></div>
 <!--</div>-->
 <br><br><br><br><br>
 <br><br><br><br><br>
@@ -85,7 +117,7 @@
 <div id="footer" class="fixed-bottom" style="background-color: #FFFFFF;">
 <!--    <div class="container">-->
         <div class="row ">
-            <div class="col-md-6 col-xs-6 " align="left">
+            <div class="offset-md-1 col-md-5 col-xs-6 " align="left">
                 <p>
                     <!--Latest revision November, 2017<br>-->
                     Ontology Engineering Group<br>
