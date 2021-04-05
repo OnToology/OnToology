@@ -80,16 +80,33 @@
         <li><a class="nav-link" href="/syntax">Syntax Validator</a></li>
 
          {% if request.user.is_authenticated %}
-            <li><a class="nav-link" href="/opub">Opub</a></li>
-            <li><a class="nav-link" href="/repos">Repos</a></li>
-            <li><a class="nav-link" href="/runs">Runs</a></li>
-              <li class="nav-item">
-                <a class="nav-link" href="/profile">Profile
-                                <img src="{{request.session.avatar_url}}" class="rounded" style="height: 20px;vertical-align: top;transform: translateY(0%);"/>
 
-                </a>
-              </li>
-              <li class="nav-item"><a class="nav-link" href="/logout">Logout </a></li>
+            <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Profile
+            <img src="{{request.session.avatar_url}}" class="rounded" style="height: 20px;vertical-align: top;transform: translateY(0%);"/>
+
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="/opub">My Published Ontologies</a>
+            <a class="dropdown-item" href="/repos">My Repositories</a>
+            <a class="dropdown-item" href="/runs">Runs (see what is going on)</a>
+            <a class="dropdown-item" href="/profile">Profile</a>
+            <a class="dropdown-item" href="/logout">Logout </a>
+
+        </div>
+      </li>
+
+<!--            <li><a class="nav-link" href="/opub">Opub</a></li>-->
+<!--            <li><a class="nav-link" href="/repos">Repos</a></li>-->
+<!--            <li><a class="nav-link" href="/runs">Runs</a></li>-->
+<!--              <li class="nav-item">-->
+<!--                <a class="nav-link" href="/profile">Profile-->
+<!--                                <img src="{{request.session.avatar_url}}" class="rounded" style="height: 20px;vertical-align: top;transform: translateY(0%);"/>-->
+
+<!--                </a>-->
+<!--              </li>-->
+<!--              <li class="nav-item"><a class="nav-link" href="/logout">Logout </a></li>-->
         {%else%}
 
                                 <li>
