@@ -315,7 +315,7 @@ def get_default_conf():
 def create_of_get_conf(ofile, base_dir):
     """
     :param ofile: relative directory of the file e.g. dir1/dir2/my.owl
-    :return:
+    :return: dict of the configurations
     """
     ofile_config_file_rel = os.path.join(config_folder_name, ofile, config_file_name)
     ofile_config_file_abs = os.path.join(base_dir, ofile_config_file_rel)
@@ -325,6 +325,11 @@ def create_of_get_conf(ofile, base_dir):
     config.read(ofile_config_file_abs)
     # Will get the updated config for the new file
     j, config = get_json_from_conf_obj(config)
+    print("create_of_get_conf: ")
+    print(j)
+    # print("\n\n\n\n\n=========================config: ")
+    # print(j)
+    # print("dir: "+ofile_config_file_abs)
     try:
         with open(ofile_config_file_abs, 'w') as configfile:
             config.write(configfile)
@@ -337,7 +342,7 @@ def create_of_get_conf(ofile, base_dir):
 
 def get_json_from_conf_obj(config):
     """
-    :param config:
+    :param config: a config object
     :return:
     """
     ar2dtool_sec_name = 'ar2dtool'
@@ -346,60 +351,81 @@ def get_json_from_conf_obj(config):
     owl2jsonld_sec_name = 'owl2jsonld'
     themis_sec_name = 'themis'
     config_result = get_default_conf()
-    if len(config) == 1:
-        dolog(' configuration file exists')
-        # ar2dtool
-        try:
-            config_result['ar2dtool']['enable'] = config.getboolean(ar2dtool_sec_name, 'enable')
-            dolog('got ar2dtool enable value: ' + str(config_result['ar2dtool']['enable']))
-        except:
-            dolog('ar2dtool enable value doesnot exist')
-        # widoco
-        try:
-            config_result['widoco']['enable'] = config.getboolean(widoco_sec_name, 'enable')
-            config_result['widoco']['languages'] = config.get(widoco_sec_name, 'languages').replace(' ','').replace('"','').replace("'", '').split(',')
-            config_result['widoco']['webVowl'] = config.getboolean(widoco_sec_name, 'webVowl')
-            dolog('got widoco enable value: ' + str(config_result['widoco']['enable']))
-            dolog('includes webVowl: ' + str(config_result['widoco']['webVowl']))
-            dolog('languages: ')
-            dolog(config_result['widoco']['languages'])
-        except:
-            dolog('widoco enable value does not exist')
-        # oops
-        try:
-            config_result['oops']['enable'] = config.getboolean(oops_sec_name, 'enable')
-            dolog('got oops enable value: ' + str(config_result['oops']['enable']))
-        except:
-            dolog('oops enable value does not exist')
-        # jsonld
-        try:
-            config_result['owl2jsonld']['enable'] = config.getboolean(owl2jsonld_sec_name, 'enable')
-            dolog('got owl2jsonld enable value: ' + str(config_result['owl2jsonld']['enable']))
-        except:
-            dolog('owl2jsonld enable value does not exist')
-        # themis
-        try:
-            config_result['themis']['enable'] = config.getboolean(themis_sec_name, 'enable')
-            dolog('got themis enable value: ' + str(config_result['themis']['enable']))
-        except:
-            dolog('themis enable value does not exist')
-    else:
-        dolog("configuration file does not exists (not an error)")
-        # dolog(ofile+' configuration file does not exists (not an error)')
-        # dolog('full path is: '+ofile_config_file_abs)
-        for sec in config_result.keys():
-            if not config.has_section(sec):
-                config.add_section(sec)
-            for k in config_result[sec].keys():
-                if k != 'languages':
-                    dolog("config res: <%s> <%s> " % (sec, k))
-                    dolog(config_result[sec][k])
-                    if type(config_result[sec][k]) == bool:
-                        str_v = str(config_result[sec][k]).lower()
-                    else:
-                        str_v = config_result[sec][k]
-                    config.set(sec, k, str_v)
-        config.set(widoco_sec_name, 'languages', ",".join(config_result[widoco_sec_name]['languages']))
+    # dolog("#######################################################\n\n\n")
+    # # if len(config) == 1:
+    # dolog("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    # dolog('get_json_from_conf_obj> configuration exists')
+    # ar2dtool
+    try:
+        config_result['ar2dtool']['enable'] = config.getboolean(ar2dtool_sec_name, 'enable')
+        dolog('got ar2dtool enable value: ' + str(config_result['ar2dtool']['enable']))
+    except:
+        dolog('ar2dtool enable value doesnot exist and will get the default')
+    # widoco
+    try:
+        config_result['widoco']['enable'] = config.getboolean(widoco_sec_name, 'enable')
+        config_result['widoco']['languages'] = config.get(widoco_sec_name, 'languages').replace(' ','').replace('"','').replace("'", '').split(',')
+        config_result['widoco']['webVowl'] = config.getboolean(widoco_sec_name, 'webVowl')
+        dolog('got widoco enable value: ' + str(config_result['widoco']['enable']))
+        dolog('includes webVowl: ' + str(config_result['widoco']['webVowl']))
+        dolog('languages: ')
+        dolog(config_result['widoco']['languages'])
+        dolog("cofig original : ")
+        dolog(config.get(widoco_sec_name, 'languages'))
+    except:
+        dolog('widoco enable value does not exist')
+    # oops
+    try:
+        config_result['oops']['enable'] = config.getboolean(oops_sec_name, 'enable')
+        dolog('got oops enable value: ' + str(config_result['oops']['enable']))
+    except:
+        dolog('oops enable value does not exist')
+    # jsonld
+    try:
+        config_result['owl2jsonld']['enable'] = config.getboolean(owl2jsonld_sec_name, 'enable')
+        dolog('got owl2jsonld enable value: ' + str(config_result['owl2jsonld']['enable']))
+    except:
+        dolog('owl2jsonld enable value does not exist')
+    # themis
+    try:
+        config_result['themis']['enable'] = config.getboolean(themis_sec_name, 'enable')
+        dolog('got themis enable value: ' + str(config_result['themis']['enable']))
+    except:
+        dolog('themis enable value does not exist')
+    # In case some configurations are missing
+    # dolog("configuration file does not exists (not an error)")
+    # dolog(ofile+' configuration file does not exists (not an error)')
+    # dolog('full path is: '+ofile_config_file_abs)
+    for sec in config_result.keys():
+        if not config.has_section(sec):
+            config.add_section(sec)
+        for k in config_result[sec].keys():
+            if k != 'languages':
+                dolog("config res: <%s> <%s> " % (sec, k))
+                dolog(config_result[sec][k])
+                if type(config_result[sec][k]) == bool:
+                    str_v = str(config_result[sec][k]).lower()
+                else:
+                    str_v = config_result[sec][k]
+                config.set(sec, k, str_v)
+    config.set(widoco_sec_name, 'languages', ",".join(config_result[widoco_sec_name]['languages']))
+    # else:
+    #     dolog("configuration file does not exists (not an error)")
+    #     # dolog(ofile+' configuration file does not exists (not an error)')
+    #     # dolog('full path is: '+ofile_config_file_abs)
+    #     for sec in config_result.keys():
+    #         if not config.has_section(sec):
+    #             config.add_section(sec)
+    #         for k in config_result[sec].keys():
+    #             if k != 'languages':
+    #                 dolog("config res: <%s> <%s> " % (sec, k))
+    #                 dolog(config_result[sec][k])
+    #                 if type(config_result[sec][k]) == bool:
+    #                     str_v = str(config_result[sec][k]).lower()
+    #                 else:
+    #                     str_v = config_result[sec][k]
+    #                 config.set(sec, k, str_v)
+    #     config.set(widoco_sec_name, 'languages', ",".join(config_result[widoco_sec_name]['languages']))
 
     return config_result, config
 
