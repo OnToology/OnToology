@@ -20,11 +20,24 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 
 If you want to cite Ontoology in a scientific paper or technical report, you can use the following [Bibtex citation](/media/references/ontoology.bib) or directly this text: Alobaid A, Garijo D, Poveda-Villalón M, Santana-Pérez I, Fernández-Izquierdo A, Corcho O (2019) Automating ontology engineering support activities with OnToology. Journal of Web Semantics 57:100472, https://doi.org/10.1016/j.websem.2018.09.003
 
+
+# Tools
+Here is a list of tools being used by OnToology.
+* [owl2jsonld](https://github.com/stain/owl2jsonld) ( [zenodo](http://dx.doi.org/10.5281/zenodo.10565) )
+* [Widoco](https://github.com/dgarijo/Widoco) ( [zenodo](https://zenodo.org/badge/latestdoi/11427075) )
+* [OOPS!](http://oops.linkeddata.es)
+* [AR2DTool](https://github.com/idafensp/ar2dtool)
+* [oops-report](https://github.com/OnToology/oops-report)
+* [Themis](https://github.com/oeg-upm/Themis)
+
+
 # Documentation for users
 If you are an ontology engineering willing to use Ontoology, you can check our [step by step documentation](http://ontoology.linkeddata.es/stepbystep). Please check also our list of [Frequently Asked Questions](http://ontoology.linkeddata.es/faqs)
 
+
 # Documentation for developers
 Next we provide some documentation for developers who want to contribute to the further development Ontoology or for those who are interested in deploying Ontoology locally or in their servers. Feel free to contact us if you are interested in contributing of fixing some functionality
+
 
 ## To run automated tests
 1. You should have [docker](https://docs.docker.com/) and [docker-compose](https://docs.docker.com/compose/) installed
@@ -57,7 +70,6 @@ you can access that db. Or you can install mongo db locally on your machine.
 `sh scripts/run_docker.sh`
 
 
-
 ### Secret setup
 This file should be added in `scripts/secret_setup.sh`
 ```
@@ -82,9 +94,11 @@ Here we describe some of the main ones
 ### How to contribute
 There are two workflows:
 
+
 ##### Case 1: If you are a contributor:
 1. Create a new branch from the current live one (now it is `master`). Make sure to give it a presentive name. In case it is for a specific issue, include the issue number in the branch name, e.g. change-spinner-123.
 2. Once you push your changes on the new branch, **create a pull request** and one of the admins will check your code base and will merge if it is ok.
+
 
 ##### Case 2: If you are not added as a contributor yet (or you are a contributor who prefers this workflow):
 1. Fork from the current live branch (now it is `master`).
@@ -95,6 +109,7 @@ There are two workflows:
 * To run the tests, we use the `mock` option for github api. It was rejected by the `PyGithub` maintainers, so make sure to use
 the version in `ahmad88me/PyGithub`.  (see below)
 
+
 ## Local Setup
 ### On Linux
 (tested on ubuntu, debian, mint and fedora)
@@ -103,11 +118,12 @@ the version in `ahmad88me/PyGithub`.  (see below)
 2. `export PLAYGROUND=$PWD`.
 3. Copy and paste the commands of choice to the terminal from `scripts/setup_docker_base.sh`
 
+
 ### Install Pygithub (not the upstream version)
 #### either directly from github
 `pip install git+https://github.com/ahmad88me/PyGithub.git`
 #### or locally
-1. `git clone https://github.com/ahmad88me/PyGithub.git' 
+1. `git clone https://github.com/ahmad88me/PyGithub.git`
 1. `cd OnToology` (assuming both are on the same level/directory)
 1. `pip install -e ../Pygithub` (change this to any directory you want)
 

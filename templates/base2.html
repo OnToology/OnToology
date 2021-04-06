@@ -61,7 +61,9 @@
 
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<!--<nav class="navbar navbar-expand-lg navbar-light bg-light   ">-->
 <!--  <a class="navbar-brand" href="#">Navbar</a>-->
                         <a class="navbar-brand" href="/"><img style="height: 30px;"
                                                           src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/logoprop1.png"/></a>
@@ -73,25 +75,27 @@
       <li class="nav-item active">
         <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
       </li>
-    <li><a class="nav-link" href="/stepbystep">Step by Step </a></li>
+    <li><a class="nav-link" href="/tutorial">Tutorial</a></li>
     <li><a class="nav-link" href="/about">About </a></li>
     <li><a class="nav-link" href="/faqs">FAQ </a></li>
-    <li><a class="nav-link" href="/publications">Publications</a></li>
+<!--    <li><a class="nav-link" href="/publications">Publications</a></li>-->
         <li><a class="nav-link" href="/syntax">Syntax Validator</a></li>
 
          {% if request.user.is_authenticated %}
 
             <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Profile
+        <a class="nav-link dropdown-toggle" href="/repos" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          My Repositories
             <img src="{{request.session.avatar_url}}" class="rounded" style="height: 20px;vertical-align: top;transform: translateY(0%);"/>
 
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="/opub">My Published Ontologies</a>
             <a class="dropdown-item" href="/repos">My Repositories</a>
-            <a class="dropdown-item" href="/runs">Runs (see what is going on)</a>
+            <a class="dropdown-item" href="/opub">My Published Ontologies</a>
+            <a class="dropdown-item" href="/runs">Past Jobs (see what is going on)</a>
+            {%if manager%}
             <a class="dropdown-item" href="/profile">Profile</a>
+            {%endif%}
             <a class="dropdown-item" href="/logout">Logout </a>
 
         </div>
@@ -127,39 +131,45 @@
             <a href="https://github.com/OnToology/OnToology"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png"></a>
  </div>
 <!--<div class="container">-->
-{%block body%}
-{%endblock%}
 <div class="container">
+    <div class="row">
+  <div class="col-md-12">
+{%block body%}
+
+{%endblock%}
+  </div></div></div>
+
+<div class="container">
+    <div class="row">
   <div class="offset-md-1 col-md-10">
-
-
     {%block slim%}
 {%endblock%}
-  </div></div>
+  </div></div></div>
 <!--</div>-->
 <br><br><br><br><br>
 <br><br><br><br><br>
 
-<div id="footer" class="fixed-bottom" style="background-color: #FFFFFF;">
+<div id="footer" class="fixed-bottom bg-footer" style="background-color: #F9F9F9; bottom: 0; height:40px">
+<!--    <hr>-->
 <!--    <div class="container">-->
-        <div class="row ">
+        <div class="row">
             <div class="offset-md-1 col-md-5 col-xs-6 " align="left">
-                <p>
+                <p style="font-size: small">
                     <!--Latest revision November, 2017<br>-->
                     Ontology Engineering Group<br>
-                    Contact: ontoology (at) delicias.dia.fi.upm.es<br>
-                    Powered by <a class="color1 underline" href="https://github.com/dgarijo/Widoco">Widoco</a>, <a
-                        class="color1 underline" href="https://github.com/idafensp/ar2dtool">AR2DTool</a> and <a
-                        class="color1 underline" href="http://oops.linkeddata.es/">OOPS!</a>
+                    Need help? contact us at: ontoology (at) delicias.dia.fi.upm.es
+<!--                    Powered by <a class="color1 underline" href="https://github.com/dgarijo/Widoco">Widoco</a>, <a-->
+<!--                        class="color1 underline" href="https://github.com/idafensp/ar2dtool">AR2DTool</a> and <a-->
+<!--                        class="color1 underline" href="http://oops.linkeddata.es/">OOPS!</a>-->
                 </p>
             </div>
             <div class="col-md-6 col-xs-6 " align="right">
                 <a href="https://oeg.fi.upm.es/" target="_blank">
-                    <img height="65px"
+                    <img height="35px"
                         src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/home/oeg.gif"
                         alt="OEG logo" class="img-rounded" class="img-responsive"/></a>
-                <img height="70px" src="https://www.upm.es/sfs/Rectorado/Gabinete%20del%20Rector/Logos/FAC_INFORMATICA/FacInformatica.jpg"/>
-                <img height="90px" src="https://www.upm.es/sfs/Rectorado/Gabinete%20del%20Rector/Logos/UPM/CEI/LOGOTIPO%20leyenda%20color%20JPG.jpg"/>
+                <img height="35px" src="https://www.upm.es/sfs/Rectorado/Gabinete%20del%20Rector/Logos/FAC_INFORMATICA/FacInformatica.jpg"/>
+                <img height="45px" src="https://www.upm.es/sfs/Rectorado/Gabinete%20del%20Rector/Logos/UPM/CEI/LOGOTIPO%20leyenda%20color%20JPG.jpg"/>
             </div>
 
         </div>

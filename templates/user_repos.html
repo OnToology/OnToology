@@ -1,6 +1,8 @@
 {% extends "base2.html"%}
 {%block body%}
 
+<h2>Past Jobs</h2>
+
 <!--  <strong>Loading...</strong>-->
 <!--<div class="d-flex justify-content-center">-->
 <!--  <div class="spinner-border text-info" role="status">-->
@@ -57,10 +59,12 @@
             </div>
         </td>
         <td>
+            <span class="btn" >
             <a href="http://www.github.com/{{r.url}}" target="_blank"
                title="Go to repo in GitHub">
                 <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/GitHub-Mark-32px.png"
-                     class="img-circle" height="25px"></a>
+                     class="img-circle" height="20px"></a>
+            </span>
         </td>
         <td>
             <span class="generateall-btn btn" repo="{{r.url}}" title="Generate documentation, diagrams and evaluation">

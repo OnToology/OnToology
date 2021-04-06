@@ -120,8 +120,12 @@ def home(request):
     repos = Repo.objects.order_by('-last_used')[:10]
     num_of_users = len(OUser.objects.all())
     num_of_repos = len(Repo.objects.all())
+    try:
+        is_manager =  request.user.email in get_managers()
+    except:
+        is_manager = False
     return render(request, 'home.html', {'repos': repos, 'user': request.user, 'num_of_users': num_of_users,
-                                         'num_of_repos': num_of_repos})
+                                         'num_of_repos': num_of_repos, 'manager': is_manager})
 
 
 @login_required
