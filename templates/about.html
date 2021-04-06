@@ -1,5 +1,5 @@
-{% extends "base.html"%}
-{%block body%}
+{% extends "base2.html"%}
+{%block slim%}
 
 
 <!--
@@ -30,7 +30,49 @@ Maria Poveda<br><br>
 
 <div class="container-fluid">
 
-    <div class="col-md-6">
+    <div class="col-md-12">
+
+
+        <h4>Publications</h4>
+        To cite OnToology please use the first reference of the list below
+
+        <ul>
+            <li><a href="https://www.sciencedirect.com/science/article/pii/S1570826818300465">
+                <strong><cite>Automating ontology engineering support activities with OnToology</cite>.
+                    Alobaid, A., Garijo,
+                    D., Poveda-Villalón, M., Santana-Pérez, I., Fernández-Izquierdo, A., &
+                    Corcho, O. (2018). Journal of
+                    Web Semantics.
+                </strong>
+            </a>
+                <p>You can download the bib entry <a
+                        href="https://raw.githubusercontent.com/OnToology/OnToology/master/media/references/ontoology.bib">
+                    (here)</a>
+                </p>
+            </li>
+            </li>
+            <li><a href="https://pdfs.semanticscholar.org/85c2/adf7263c0e001c7929e10ad21774a2e7d34a.pdf">
+                <cite>OnToology, a tool for collaborative development of ontologies</cite>.
+                Alobaid, A.,
+                Garijo, D., Poveda-Villalón, M., Pérez, I. S., & Corcho, O. (2015, July). In ICBO.</a></li>
+            <li><a href="http://oa.upm.es/41331/">
+                <cite>OnToology: An online tool for ontology
+                    documentation and evaluation</cite>
+                Alobaid, A. (2015). (Master
+                dissertation, ETSI_Informatica).</a></li>
+        </ul>
+
+
+        <h4>Software</h4>
+        To cite the latest software version of OnToology, please use the following reference
+        <ul>
+            <li><a href="https://doi.org/10.5281/zenodo.1317785">Alobaid, Ahmad, Garijo, Daniel, Poveda-Villalón, María,
+                Santana-Pérez, Idafen, Fernández-Izquierdo,
+                Alba, & Corcho, Oscar. (2018, July 20). OnToology. Zenodo.
+                http://doi.org/10.5281/zenodo.1317785</a>
+            </li>
+        </ul>
+
 
         <h3>What does OnToology generate</h3>
 
@@ -57,7 +99,8 @@ Maria Poveda<br><br>
                 which is
                 an evaluation of ontology showing pitfalls in a nice organized HTML.
             </li>
-            <li align="justify" class="">Create an issue in Github with evaluation summary.</li>
+            <li align="justify" class="">Generate JSON-LD Context using <a href="https://github.com/stain/owl2jsonld">owl2jsonld</a>.</li>
+<!--            <li align="justify" class="">Create an issue in Github with evaluation summary.</li>-->
             <li align="justify" class="">Default configuration file for each ontology, to enable/disable the
                 generation of documentation,
                 diagrams and/or evaluation report.
@@ -68,16 +111,16 @@ Maria Poveda<br><br>
                 of these tools.<!--  (see <a href="https://github.com/dgarijo/Widoco">Widoco configuration guide</a> and
 	 <a href="https://github.com/idafensp/ar2dtool">AR2DTool configuration guide</a>) --></li>
             <li align="justify">Generate a landing page for a chosen repository (previsualization) with all ontologies
-            in that repository</li>
+                in that repository
+            </li>
             <li align="justify">A downloadable bundle for an ontology including documentation, diagrams, evaluation and
-            .htaccess for hosting the ontology</li>
+                .htaccess for hosting the ontology
+            </li>
             <li align="justify">Publish an ontology with permanent id (w3id.org) hosted on our server with redirection
             </li>
         </ul>
         </p>
         <br>
-
-
 
 
         <h3>Configuration file</h3>
@@ -100,11 +143,12 @@ Maria Poveda<br><br>
         <br>
 
         <h3>Sequence Diagram</h3>
-        <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/home/sequence_diagram.png" width="100%" class="img-rounded"/>
+        <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/home/sequence_diagram.png"
+             width="100%" class="img-rounded"/>
 
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-12">
 
         <h3>What does OnToology do</h3>
 
@@ -142,12 +186,8 @@ Maria Poveda<br><br>
         <h3>Permission and Security</h3>
 
         <p align="justify">
-            OnToology will ask for permission depends on the added repository, if the added repository is public, then
-            it will ask permission to access public info, and if the added reposity is private, then it will ask
-            permission
-            to access private information. Also note that OnToology does not store/keep access tokens, it askes
-            permission
-            from GitHub everytime.
+            OnToology will ask permission to access added user repository. OnToology will only ask permission to access
+            public repositories. If you need to use OnToology for your private repository, you can contact us via email (see the footer below).
         </p>
         <!--
         <ul class="" align="justify">
@@ -180,7 +220,7 @@ Maria Poveda<br><br>
         <ul class="" align="justify">
             <li align="justify" class="">Does not support OWL functional-style syntax</li>
             <li align="justify" class="">Does not support repositories under a Github organization</li>
-            <li align="justify" class="">Only works with the master branch</li>
+<!--            <li align="justify" class="">Only works with the master branch</li>-->
             <li align="justify" class="">Limited by Github repository size</li>
             <li align="justify" class="">Evaluation of large ontologies may not work due to OOPS! webservice timing
                 out (but will still generate documentation and diagrams)

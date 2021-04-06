@@ -6,7 +6,7 @@ import os
 import pika
 from subprocess import call
 from .api_util import create_user, create_repo, delete_all_repos_from_db, get_repo_resource_dir, clone_if_not, delete_all_users
-from .api_util import prepare_resource_dir
+from .api_util import prepare_resource_dir, PrintLogger
 import logging
 from OnToology import rabbit
 from multiprocessing import Process
@@ -41,19 +41,19 @@ def get_logger(name, logdir="", level=logging.INFO):
 
 #logger = get_logger(__name__, level=logging.DEBUG)
 
-class ABC():
-    def error(self, msg):
-        print(msg)
-    def debug(self, msg):
-        print(msg)
-    def info(self, msg):
-        print(msg)
+# class ABC():
+#     def error(self, msg):
+#         print(msg)
+#     def debug(self, msg):
+#         print(msg)
+#     def info(self, msg):
+#         print(msg)
 # logger = {
 #     "error": print,
 #     "debug": print,
 #     "info": print
 # }
-logger = ABC()
+logger = PrintLogger()
 
 def get_pending_messages():
     print("get pending messages")

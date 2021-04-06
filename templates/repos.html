@@ -1,6 +1,8 @@
 {% extends "base2.html"%}
 {%block body%}
 
+<h2>My Repositories</h2>
+
 <div class="clearfix alert alert-info" id="spinner">
      <strong>Loading ...</strong>
   <div class="spinner-border float-right text-light" role="status">
@@ -16,8 +18,8 @@
       <div class="card-body">
         <h5 class="card-title">{{repo.url}}</h5>
 <!--         <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>-->
-        <a href="runs?repo={{repo.url}}" class="btn btn-primary">Show History</a>
-        <span repo="{{repo.url}}" class="btn btn-primary manipulate-btn">Manipulate Repo</span>
+        <a href="runs?repo={{repo.url}}" class="btn btn-primary">Past jobs</a>
+        <span repo="{{repo.url}}" class="btn btn-primary manipulate-btn">Select Repo</span>
 <!--        <button class="btn btn-primary"></button>-->
       </div>
     </div>

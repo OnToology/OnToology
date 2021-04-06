@@ -16,7 +16,7 @@
           <h5 class="card-title">Repo: <span class="datafont">{{repo.url}}</span></h5>
           <p>branch: <span class="datafont">{{branch}}</span></p>
           <a class="btn btn-primary float-right" href="/generateforall?repo={{repo.url}}&branch={{branch}}">Generate Resources</a>
-          <button class="btn btn-primary float-right" id="load">Load processed ontologies</button>
+          <button class="btn btn-primary float-right mr-2" id="load">Load processed ontologies</button>
 
 
       </div>
@@ -211,7 +211,7 @@
         //a collapse
         //var btnhtml = '<a type="button" data-toggle="collapse" href="#'+tag_id+'" role="button" aria-expanded="false" aria-controls="'+tag_id+'">show configuration</a>'
         //button collapse
-        var btnhtml = '<button class="btn btn-primary collapse-btn" type="button" data-toggle="collapse" data-target="#'+tag_id+'" aria-expanded="false" aria-controls="'+tag_id+'">Show configuration</button>'
+        var btnhtml = '<button class="btn btn-primary collapse-btn mr-2" type="button" data-toggle="collapse" data-target="#'+tag_id+'" aria-expanded="false" aria-controls="'+tag_id+'">Show configuration</button>'
         var chtml = '<div class="collapse show" id="'+tag_id+'">';
         chtml += inner_html;
         chtml += '</div>';
