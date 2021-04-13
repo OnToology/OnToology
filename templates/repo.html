@@ -17,12 +17,9 @@
           <p>branch: <span class="datafont">{{branch}}</span></p>
           <a class="btn btn-primary float-right" href="/generateforall?repo={{repo.url}}&branch={{branch}}">Generate Resources</a>
           <button class="btn btn-primary float-right mr-2" id="load">Load processed ontologies</button>
-
-
       </div>
  </div>
     <br>
-
 </div>
 
 <div class="clearfix alert alert-info" id="spinner">
@@ -114,7 +111,8 @@
                     console.log('getting tagid');
                     console.log(resp.ontologies[i].ontology);
                     tagid = resp.ontologies[i].ontology.substring(1,)+"-coll";
-                    tagid = tagid.replace(/\./g, "-");
+                    tagid = tagid.replace(/\./g, "--");
+                    tagid = tagid.replace(/\//g, "---");
                     card_html_body = collapse_html(tagid,card_html_body);
                     html_list+=card_html_body;
                     html_list+=re_publish_html(resp.ontologies[i].ontology);
