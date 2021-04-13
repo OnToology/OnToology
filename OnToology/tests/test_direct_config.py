@@ -113,8 +113,42 @@ enable = false
         print(conf_alo)
         self.assertEqual('en,es', ",".join(conf_alo['widoco']['languages']))
 
+    def test_fix_old_conf(self):
+        """
+        :return:
+        """
+        sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
+        folder_name = 'fix-old-conf-' + sec
+        # delete the folder if it exists
+        comm = "rm" + " -Rf " + os.path.join(autoncore.home, folder_name)
+        print(comm)
+        call(comm, shell=True)
+        abs_repo_dir = autoncore.clone_repo(self.cloning_url, folder_name, dosleep=True, branch="main")
+        self.assertTrue(os.path.exists(os.path.join(abs_repo_dir, "ALo", "aLo.owl")))
+        self.assertTrue(os.path.exists(os.path.join(abs_repo_dir, "GeO", "geoLinkedData.owl")))
+        self.assertFalse(os.path.exists(os.path.join(abs_repo_dir, "OnToology", "ALo", "aLo.owl")))
+        self.assertFalse(os.path.exists(os.path.join(abs_repo_dir, "OnToology", "GeO", "geoLinkedData.owl")))
+        conf_content = """
+[widoco]
+enable = false
 
+[ar2dtool]
+enable = false
 
+[oops]
+enable = false
+
+        """
+        conf_alo = Integrator.create_of_get_conf(os.path.join("ALo", "aLo.owl"), abs_repo_dir)
+        conf_file_abs_alo = os.path.join(abs_repo_dir, "OnToology", "ALo", "aLo.owl", "OnToology.cfg")
+        f = open(conf_file_abs_alo, 'w')
+        f.write(conf_content)
+        f.close()
+
+        conf_alo = Integrator.create_of_get_conf(os.path.join("ALo", "aLo.owl"), abs_repo_dir)
+        print(conf_alo)
+        self.assertEqual(['en'], conf_alo['widoco']['languages'])
+        self.assertIn('themis', conf_alo)
 
 
 
