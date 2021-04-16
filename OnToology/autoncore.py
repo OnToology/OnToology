@@ -120,6 +120,7 @@ def init_g():
         print("init_g> No mock id")
     return g
 
+
 def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
     """
     :param target_repo: user/reponame
