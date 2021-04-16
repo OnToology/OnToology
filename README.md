@@ -75,6 +75,7 @@ This file should be added in `scripts/secret_setup.sh`
 ```
 #!/bin/sh
 export github_password=""
+export github_email=""
 export client_id_login=""
 export client_id_public=""
 export client_id_private=""
