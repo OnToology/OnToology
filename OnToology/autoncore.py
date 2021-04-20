@@ -61,7 +61,9 @@ from urllib.parse import quote
 
 use_database = True
 
-ToolUser = 'OnToologyUser'
+#ToolUser = 'OnToologyUser'
+ToolUser = os.environ['github_username']
+ToolEmail = os.environ['github_email']
 
 parent_folder = None
 
@@ -120,6 +122,7 @@ def init_g():
         print("init_g> No mock id")
     return g
 
+
 def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
     """
     :param target_repo: user/reponame
@@ -133,6 +136,9 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
     global log_file_dir
 
     print("\n\n\n In gitmagic print")
+    print("printing test_conf from magic")
+    print(settings.test_conf)
+
     logger_fname = prepare_logger(user)
     parent_folder = user
     if not settings.test_conf['local']:
@@ -710,7 +716,8 @@ def commit_changes():
     global g
     if g is None:
         init_g()
-    gu = 'git config  user.email "ontoology' + '@delicias.dia.fi.upm.es";'
+    # gu = 'git config  user.email "ontoology' + '@delicias.dia.fi.upm.es";'
+    gu = 'git config  user.email "%s" ; ' % ToolEmail
     gu += 'git config  user.name "%s" ;' % (ToolUser)
     # comm = "cd " + home + parent_folder + ";" + gu + " git add . "
     comm = "cd " + os.path.join(home, parent_folder) + ";" + gu + " git add . "
