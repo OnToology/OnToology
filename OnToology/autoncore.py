@@ -1399,19 +1399,6 @@ def get_confs_from_repo(target_repo, branch):
     return repo, conf_files
 
 
-# old
-# def get_confs_from_repo(target_repo, branch):
-#     global g
-#     repo = g.get_repo(target_repo)
-#     sha = repo.get_commits()[0].sha
-#     files = repo.get_git_tree(sha=sha, recursive=True).tree
-#     conf_files = []
-#     for f in files:
-#         if 'OnToology.cfg' in f.path:
-#             conf_files.append(f)
-#     return repo, conf_files
-
-
 def add_themis_results(target_repo, ontologies):
     """
       get all themis results from a given repo,

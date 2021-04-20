@@ -2,7 +2,7 @@ from collections import Counter
 import rdflib
 from rdflib.namespace import RDF, RDFS, OWL
 import requests
-from collections import Set
+import traceback
 import os
 
 from . import dolog, get_file_from_path, tools_conf, build_path_all, get_target_home, get_parent_path, log_file_dir, g
@@ -60,7 +60,7 @@ def generate_test_class_type(g):
     :param g: rdflib graph
     :return:
     """
-    classes_set = Set()
+    classes_set = set()
     try:
         # for rdf_type, _ in g.subject_objects(predicate=RDF.type):
         # for _, rdf_type in g.subject_objects(predicate=RDFS.Class):
@@ -88,9 +88,12 @@ def generate_tests(file_abs_dir):
         try:
             g.parse(file_abs_dir, format=a_format)
             tests = generate_test_class_type(g)
+            print("tests: ")
+            print(tests)
             return tests
         except Exception as e:
-            pass
+            print("generate_tests> Exception: "+str(e))
+            traceback.print_exc()
     return []
 
 
