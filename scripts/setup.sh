@@ -28,7 +28,7 @@ echo $PLAYGROUND/OnToology/OnToology/localwsgi.py
 cat <<EOT >> /playground/OnToology/OnToology/localwsgi.py
 import os
 environ = os.environ
-environ['github_username']="OnToologyTestUser"
+environ['github_username']="$github_username"
 environ['github_repos_dir']="$PLAYGROUND/repos/"
 environ['ar2dtool_dir']="$PLAYGROUND/ar2dtool/"
 environ['ar2dtool_config']="$PLAYGROUND/config/"
