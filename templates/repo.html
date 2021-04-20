@@ -5,67 +5,66 @@
 .datafont {
   font-family: 'Courier New', monospace;
 }
+
+
 </style>
 
 
-
-
 <div class="container">
- <div class="card">
-      <div class="card-body">
-          <h5 class="card-title">Repo: <span class="datafont">{{repo.url}}</span></h5>
-          <p>branch: <span class="datafont">{{branch}}</span></p>
-          <a class="btn btn-primary float-right" href="/generateforall?repo={{repo.url}}&branch={{branch}}">Generate Resources</a>
-          <button class="btn btn-primary float-right mr-2" id="load">Load processed ontologies</button>
-      </div>
- </div>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Repo: <span class="datafont">{{repo.url}}</span></h5>
+            <p>branch: <span class="datafont">{{branch}}</span></p>
+            <a class="btn btn-primary float-right" href="/generateforall?repo={{repo.url}}&branch={{branch}}">Generate
+                Resources</a>
+            <button class="btn btn-primary float-right mr-2" id="load">Load processed ontologies</button>
+        </div>
+    </div>
     <br>
 </div>
 
 <div class="clearfix alert alert-info" id="spinner">
-     <strong>Loading ...</strong>
-  <div class="spinner-border float-right text-light" role="status">
-    <span class="sr-only">Loading...</span>
-  </div>
+    <strong>Loading ...</strong>
+    <div class="spinner-border float-right text-light" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
 </div>
 
 
-
-
 <div class="modal" tabindex="-1" id="publish-modal">
-  <div class="modal-dialog modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Publish</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-          <div id="publish-div-msg">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Publish</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="publish-div-msg">
 
-          </div>
-          <p>Reserve a relative w3id (e.g., w3id.org/def/your_reserved_id)</p>
-<!--          <form method="GET" action="/publish" class="form-inline">-->
-                <div class="form-group">
-                  <input id="publish-name-input" type="text" name="name" class="form-control"/>
-                  <input id="publish-repo-input" type="hidden" name="repo" value="{{repo.url}}"/>
-                    <input id="publish-branch-input" type="hidden" name="branch" value="{{branch}}">
-                  <input id="publish-ontology-input" type="hidden" name="ontology" value=""/>
                 </div>
-<!--                <div class="form-group">-->
-<!--                    <button onclick="send_publish()" class="btn btn-primary">Reserve</button>-->
-<!--                </div>-->
-<!--          </form>-->
+                <p>Reserve a relative w3id (e.g., w3id.org/def/your_reserved_id)</p>
+                <!--          <form method="GET" action="/publish" class="form-inline">-->
+                <div class="form-group">
+                    <input id="publish-name-input" type="text" name="name" class="form-control"/>
+                    <input id="publish-repo-input" type="hidden" name="repo" value="{{repo.url}}"/>
+                    <input id="publish-branch-input" type="hidden" name="branch" value="{{branch}}">
+                    <input id="publish-ontology-input" type="hidden" name="ontology" value=""/>
+                </div>
+                <!--                <div class="form-group">-->
+                <!--                    <button onclick="send_publish()" class="btn btn-primary">Reserve</button>-->
+                <!--                </div>-->
+                <!--          </form>-->
 
-      </div>
-      <div class="modal-footer">
-        <button onclick="send_publish()" class="btn btn-primary">Reserve</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-<!--        <button type="button" class="btn btn-primary">Save changes</button>-->
-      </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="send_publish()" class="btn btn-primary">Reserve</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <!--        <button type="button" class="btn btn-primary">Save changes</button>-->
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 
@@ -80,6 +79,54 @@
     var card_html_pre='<div class="col-lg-4 col-md-6 col-sm-6 col-xs-12"><div class="alert-info card"><div class="card-body">';
     var card_html_post='</div></div></div>';
     var ont_url = "/ontologies?repo={{repo.url}}&branch={{branch}}"
+
+
+    function get_themis_score_html(ont_j){
+        var i
+        var themis_score;
+        var htm1='<div class="container-fluid"><div class="row"><div class="col-md-6 col-sm-6">Themis:</div> <div class="col-md-6 col-sm-6"> <div class="progress" style="height: 20px;"><div class="progress-bar" role="progressbar" style="width: ';
+        var htm2='%;" aria-valuenow="';
+        var htm3='" aria-valuemin="0" aria-valuemax="100">';
+        var htm4='%</div></div></div></div></div>';
+        var htm_final = '';
+        var ks=Object.keys(ont_j);
+
+        for(i=0;i<ks.length;i++){
+            //console.log("ks[i] "+ks[i]);
+            if(ks[i]=="themis_results"){
+                console.log("123");
+                 themis_score= ont_j[ks[i]];
+                 htm_final = htm1+themis_score+htm2+themis_score+htm3+themis_score+htm4;
+                 console.log("finale");
+                 console.log(htm_final);
+                 return htm_final;
+            }
+            /*
+            if(ks[i]==="themis_results"){
+
+                 themis_score= ont_j[ks[i]]
+                 htm_final = htm1+themis_score+htm2+themis_score+htm3;
+                 console.log("html_finale: ")
+                 console.log(htm_final)
+                return htm_final;
+
+            }
+             */
+            /*
+            else{
+                console('TARGET123: '+ks[i]);
+            }
+            */
+
+        }
+
+        return "";
+    }
+
+
+
+
+
     $(document).on('click', '#load', function(){
         console.log('load is clicked');
         $("#spinner").show();
@@ -107,9 +154,10 @@
                     html_list+='<h5 class="card-title">';
                     html_list+=resp.ontologies[i].ontology;
                     html_list+='</h5>';
+                    html_list+= get_themis_score_html(resp.ontologies[i]);
                     card_html_body = get_card_body(resp.ontologies[i]);
-                    console.log('getting tagid');
-                    console.log(resp.ontologies[i].ontology);
+                    //console.log('getting tagid');
+                    //console.log(resp.ontologies[i].ontology);
                     tagid = resp.ontologies[i].ontology.substring(1,)+"-coll";
                     tagid = tagid.replace(/\./g, "--");
                     tagid = tagid.replace(/\//g, "---");
@@ -134,33 +182,33 @@
         var conf_pre="<li class='list-group-item'>";
         var conf_post="</li>";
         var ks=Object.keys(ont_j);
-        console.log('ont_j: ');
-        console.log(ont_j);
-        console.log("keys: ")
+        //console.log('ont_j: ');
+        //console.log(ont_j);
+        //console.log("keys: ")
         for(i=0;i<ks.length;i++){
             if(ks[i]!='ontology'){
-                console.log(ks[i])
-                console.log(ont_j[ks[i]])
-                console.log('get j>');
+                //console.log(ks[i])
+                //console.log(ont_j[ks[i]])
+               // console.log('get j>');
                 j = ont_j[ks[i]]
-                console.log('j: ');
-                console.log(j);
+                //console.log('j: ');
+                //console.log(j);
                 conf_html += get_tool_html(ont_j['ontology'].substring(1),ks[i],j)
                 //conf_html += conf_pre+ks[i]+": "+ont_j[ks[i]]+conf_post;
             }
         }
-        console.log("conf html: ");
-        console.log(conf_html);
+        //console.log("conf html: ");
+        //console.log(conf_html);
         return conf_html;
     }
 
     function get_tool_html(ontology,k,jobj){
         // k is the tool
         // jobj is the json including the attributes of the tools
-        console.log('jobj: ');
-        console.log(jobj)
-        console.log('key k: ');
-        console.log(k)
+        //console.log('jobj: ');
+        //console.log(jobj)
+       // console.log('key k: ');
+       // console.log(k)
 
         var attrs=Object.keys(jobj);
         var conf_pre="<li class='list-group-item'>";
@@ -170,8 +218,8 @@
         var tool_html="";
         console.log('in get_tool_html> ');
         for(i=0;i<attrs.length;i++){
-            console.log('attrs[i]: ');
-            console.log(attrs[i]);
+           // console.log('attrs[i]: ');
+           // console.log(attrs[i]);
             if(boolsvals.includes(jobj[attrs[i]])){
                  tool_html += conf_pre + bool_html(ontology,k+'-'+attrs[i],k+'-'+attrs[i], jobj[attrs[i]])
             }
@@ -204,6 +252,8 @@
         t_html=label + ": " + v_html;
         return t_html;
     }
+
+
 
     function collapse_html(tag_id, inner_html){
         //a collapse
@@ -239,7 +289,7 @@
 
     function publish_html(ontology){
         var publish_btn='<button class="btn btn-primary" onclick="publish_click(\''+ontology+'\')">publish</button>'
-        console.log(publish_btn);
+       // console.log(publish_btn);
         return publish_btn;
     }
 
@@ -281,9 +331,9 @@
     }
 
     $("#spinner").hide();
+
+
 </script>
-
-
 
 
 {% endblock %}

@@ -1399,31 +1399,23 @@ def get_confs_from_repo(target_repo, branch):
     return repo, conf_files
 
 
-# old
-# def get_confs_from_repo(target_repo, branch):
-#     global g
-#     repo = g.get_repo(target_repo)
-#     sha = repo.get_commits()[0].sha
-#     files = repo.get_git_tree(sha=sha, recursive=True).tree
-#     conf_files = []
-#     for f in files:
-#         if 'OnToology.cfg' in f.path:
-#             conf_files.append(f)
-#     return repo, conf_files
-
-
-def add_themis_results(target_repo, ontologies):
+def add_themis_results(target_repo, branch, ontologies):
     """
       get all themis results from a given repo,
       then, cross reference them with the ontologies list,
       then, add the themis results to the ontologies list
     :param target_repo:
+    :param branch:
     :param ontologies: a list of dicts of ontologies and tools
     :return: list of pairs of the form (ontology path in the repo, themis results path in the repo)
     """
     global g
     repo = g.get_repo(target_repo)
-    sha = repo.get_commits()[0].sha
+    branch = repo.get_branch(branch)
+    sha = branch.commit.sha
+    #
+    # repo = g.get_repo(target_repo)
+    # sha = repo.get_commits()[0].sha
     files = repo.get_git_tree(sha=sha, recursive=True).tree
     ontology_results_d = dict()  # of [ontology_rel_path] = results_path
     themis_results_dir = "/" + Integrator.tools_conf['themis']['folder_name'] + "/" + \
@@ -1434,13 +1426,14 @@ def add_themis_results(target_repo, ontologies):
 
     for o in ontologies:
         if o['ontology'] in ontology_results_d:
-            o['themis_results'] = compute_themis_results(repo, ontology_results_d[o['ontology']])
+            o['themis_results'] = compute_themis_results(repo, branch , ontology_results_d[o['ontology']])
     return ontologies
 
 
-def compute_themis_results(repo, path):
+def compute_themis_results(repo, branch ,path):
     """
     :param repo:
+    :param branch:
     :param path:
     :return: score (0-100)
     """
@@ -1451,6 +1444,13 @@ def compute_themis_results(repo, path):
     print("now get the decoded content")
     # file_content = repo.get_contents(cpath.path).decoded_content
     file_content = repo.get_contents(p).decoded_content
+    file_content = file_content.decode('utf-8')
+    # print("file_content: ")
+    # print(file_content)
+    # print("file_content str: ")
+    # file_content = str(file_content)
+    # print(file_content)
+
     passed = 0
     failed = 0
     for line in file_content.split('\n'):
@@ -1458,8 +1458,10 @@ def compute_themis_results(repo, path):
         if line == "":
             continue
         else:
+            print("line: <%s> " % line)
             comp = line.split('\t')
-            if comp[1].strip() == "passed":
+            print(comp)
+            if comp[1].strip().lower() == "passed":
                 passed += 1
             else:
                 failed += 1
