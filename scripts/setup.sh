@@ -2,6 +2,7 @@
 export PLAYGROUND=/playground
 # The below needs to be filled in the secret_setup.sh file
 export github_password=""
+export github_email=""
 export client_id_login=""
 export client_id_public=""
 export client_id_private=""
@@ -48,6 +49,7 @@ environ['email_server']=""
 environ['email_from']=""
 environ['email_username']=""
 environ['email_password']=""
+environ['github_email']="$github_email"
 environ['github_password']="$github_password"
 environ['client_id_login']="$client_id_login"
 environ['client_id_public']="$client_id_public"
