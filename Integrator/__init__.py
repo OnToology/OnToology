@@ -21,7 +21,7 @@ tools_conf = {
     'widoco': {'folder_name': 'documentation'},
     'oops': {'folder_name': 'evaluation'},
     'owl2jsonld': {'folder_name': 'context'},
-    'themis': {'folder_name': 'validation', 'c': 'tests.txt', 'results_file_name': 'results.tsv'}
+    'themis': {'folder_name': 'validation', 'tests_file_name': 'tests.txt', 'results_file_name': 'results.tsv'}
 }
 
 #
