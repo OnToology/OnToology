@@ -143,6 +143,8 @@ def get_ontologies(request):
                 ontologies = parse_online_repo_for_ontologies(repo_url, branch)
                 print("ontologies: ")
                 print(ontologies)
+                print("add themis results")
+                add_themis_results(repo_url, branch, ontologies)
                 j = {'ontologies': ontologies}
                 return JsonResponse(j)
             except Exception as e:
