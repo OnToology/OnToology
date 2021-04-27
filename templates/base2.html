@@ -149,6 +149,20 @@
 <br><br><br><br><br>
 <br><br><br><br><br>
 
+<script>
+$(document).ready(function(){
+    $(".dropdown").hover(function(){
+        //console.log('hover');
+        $('.dropdown-toggle').dropdown('show');
+    },
+    function(){
+        //console.log('unhover');
+        $('.dropdown-toggle').dropdown('hide');
+    }
+    );
+});
+</script>
+
 <div id="footer" class="fixed-bottom bg-footer" style="background-color: #F9F9F9; bottom: 0; height:40px">
 <!--    <hr>-->
 <!--    <div class="container">-->

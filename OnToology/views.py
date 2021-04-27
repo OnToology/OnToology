@@ -423,7 +423,7 @@ def generateforall_view(request):
         return render(request, 'msg.html', {'msg':  'Internal error in generating the resources'})
     if res['status'] is True:
         return render(request, 'msg.html',  {
-            'msg': 'Soon you will find generated files included in a pull request in your repository'},)
+            'msg': 'Soon you will find generated files included in a pull request in your repository. Once the pull request is generated, you can merge it using GitHub Merge function. If the resources (e.g., documentation, evaluation, ...) are not generated within a few minutes, you can contact us.'},)
     else:
         return render(request, 'msg.html', {'msg': res['error']})
 
@@ -1002,7 +1002,7 @@ def publish_view(request):
         }
         rabbit.send(j)
         msg = '''<i>%s</i> will be published soon. This might take a few minutes for the published ontology to be
-            available for GitHub pages.''' % ontology_rel_path[1:]
+            available for GitHub pages. If it is not published within a few minutes you can contact us.''' % ontology_rel_path[1:]
         return JsonResponse({'msg': msg})
         # return render(request, 'msg.html', {'msg': msg, 'img': 'https://github.com/OnToology/OnToology/raw/master/media/misc/gh-pages.png'})
     except Exception as e:
