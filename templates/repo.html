@@ -14,10 +14,30 @@
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">Repo: <span class="datafont">{{repo.url}}</span></h5>
-            <p>branch: <span class="datafont">{{branch}}</span></p>
+                        <div class="form-group custom-control-inline">branch:
+            <select class="custom-select" onchange="if (this.value) window.location.href='/repos?repo={{repo.url}}&branch='+this.value">
+                {%if branch == "" %}
+                    <option selected disabled hidden>Select a branch</option>
+                {%endif%}
+                {%for b in branches%}
+                    {%if b == branch%}
+                      <option value="{{b}}" selected>{{b}}</option>
+                    {%else%}
+                      <option value="{{b}}">{{b}}</option>
+                    {%endif%}
+                {%endfor%}
+
+            </select>
+<!--                            <span style="font-size: 14px"> select a branch</span>-->
+        </div>
+<br>
+
+<!--            <p>branch: <span class="datafont">{{branch}}</span></p>-->
+            {%if branch != "" %}
             <a class="btn btn-primary float-right" href="/generateforall?repo={{repo.url}}&branch={{branch}}">Generate
                 Resources</a>
             <button class="btn btn-primary float-right mr-2" id="load">Load processed ontologies</button>
+            {%endif%}
         </div>
     </div>
     <br>

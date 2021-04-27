@@ -158,13 +158,17 @@ def get_ontologies(request):
 @login_required
 def repos_view(request):
     user = request.user
-    if 'branch' in request.GET and 'repo' in request.GET:
-        branch = request.GET['branch'].strip()
+    if 'repo' in request.GET:
+        if 'branch' in request.GET:
+            branch = request.GET['branch'].strip()
+        else:
+            branch = ''
         repo_url = request.GET['repo'].strip()
+        branches = get_repo_branches(repo_url)
         repos = user.repos.filter(url=repo_url)
         if len(repos) == 0:
             return render(request,'msg.html', {'msg': 'This repo does not belong to your user account. Make sure to add it.'})
-        return render(request, 'repo.html', {'repo': repos[0], 'branch': branch})
+        return render(request, 'repo.html', {'repo': repos[0], 'branch': branch, 'branches': branches})
     else:
         return render(request, 'repos.html', {'repos': user.repos.all()})
 
