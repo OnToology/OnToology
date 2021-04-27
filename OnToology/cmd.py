@@ -27,7 +27,7 @@ from OnToology import settings
 
 from datetime import datetime
 from collections import Counter
-
+import json
 
 def llog(msg):
     """
@@ -100,7 +100,7 @@ def update_stats():
     dt = datetime.now()
 
     stats_html = """
-{%% extends "base.html"%%}
+{%% extends "base2.html"%%}
 {%%block body%%}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
     
@@ -188,6 +188,9 @@ def update_stats():
     stats_dir = os.path.join(settings.BASE_DIR, 'templates', 'stats.html')
     f = open(stats_dir, 'w')
     f.write(stats_html)
+    stats_dir = os.path.join(settings.BASE_DIR, 'templates', 'stats.js')
+    f = open(stats_dir, 'w')
+    f.write("var stats = "+json.dumps(stats))
     f.close()
 
 
