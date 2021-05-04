@@ -34,7 +34,7 @@ Maria Poveda<br><br>
 
 
         <h4>Publications</h4>
-        To cite OnToology please use the first reference of the list below
+        To cite OnToology please use the first reference listed below:
 
         <ul>
             <li><a href="https://www.sciencedirect.com/science/article/pii/S1570826818300465">
@@ -49,7 +49,6 @@ Maria Poveda<br><br>
                         href="https://raw.githubusercontent.com/OnToology/OnToology/master/media/references/ontoology.bib">
                     (here)</a>
                 </p>
-            </li>
             </li>
             <li><a href="https://pdfs.semanticscholar.org/85c2/adf7263c0e001c7929e10ad21774a2e7d34a.pdf">
                 <cite>OnToology, a tool for collaborative development of ontologies</cite>.
@@ -73,160 +72,44 @@ Maria Poveda<br><br>
             </li>
         </ul>
 
-
-        <h3>What does OnToology generate</h3>
-
+        <h4>Team</h4>
         <p>
-
-        <p align="justify">
-            Once you push changes to Github, OnToology will do the below for each changed ontology
+          OnToology in maintained by the Ahmad Alobaid, María Poveda, Daniel Garijo, Idafen Santana and Oscar Corcho of the <a href="https://oeg.fi.upm.es//">Ontology Engineering Group</a> at Universidad Politécnica de Madrid
         </p>
-        <ul align="justify" class="">
-            <li align="justify" class="">Generate documentation into HTML using <a class="emph"
-                                                                                   href="https://github.com/dgarijo/Widoco">Widoco.</a>
-            </li>
-            <li align="justify" class="">Generate diagrams using <a class="emph"
-                                                                    href="https://github.com/idafensp/ar2dtool">AR2DTool</a>.
-                It will generate two kinds
-                of diagrams:
-                <ul>
-                    <li>Class diagram.</li>
-                    <li>Taxonomy diagram.</li>
-                </ul>
-            </li>
-            <li align="justify" class="">Generate evaluation report using <a class="emph"
-                                                                             href="http://oops.linkeddata.es/">OOPS!</a>
-                which is
-                an evaluation of ontology showing pitfalls in a nice organized HTML.
-            </li>
-            <li align="justify" class="">Generate JSON-LD Context using <a href="https://github.com/stain/owl2jsonld">owl2jsonld</a>.</li>
-<!--            <li align="justify" class="">Create an issue in Github with evaluation summary.</li>-->
-            <li align="justify" class="">Default configuration file for each ontology, to enable/disable the
-                generation of documentation,
-                diagrams and/or evaluation report.
-            </li>
-            <li align="justify" class="">Default configuration files for Widoco and AR2DTool. It also allows you
-                to
-                modify the configuration
-                of these tools.<!--  (see <a href="https://github.com/dgarijo/Widoco">Widoco configuration guide</a> and
-	 <a href="https://github.com/idafensp/ar2dtool">AR2DTool configuration guide</a>) --></li>
-            <li align="justify">Generate a landing page for a chosen repository (previsualization) with all ontologies
-                in that repository
-            </li>
-            <li align="justify">A downloadable bundle for an ontology including documentation, diagrams, evaluation and
-                .htaccess for hosting the ontology
-            </li>
-            <li align="justify">Publish an ontology with permanent id (w3id.org) hosted on our server with redirection
-            </li>
-        </ul>
+
+        <h4>Projects using OnToology</h4>
+
+        <p class="justify">
+            <strong>VICINITY</strong> is an European project that contains a network of ontologies in the domain of
+            Internet of Things. The project has a GitHub repository for each ontology in the network, which is used to
+            store the ontology and to track all the issues related to it. In order to propose changes, the ontology
+            development team has to create a branch where all the proposed changes are made. Once OnToology generates
+            all the resources for this new branch, the developers create a pull request to the master branch to discuss
+            the modifications done to the ontology. If the ontology development team agrees on the changes the pull
+            request is accepted and the changes are merged to the master branch. Users also propose changes through the
+            GitHub issue tracker.
+            The ontologies are published under the domain <a href="http://vicinity.iot.linkeddata.es"><i>http://vicinity.iot.linkeddata.es</i></a>
+            and, therefore, the publication is not done with OnToology. However, the documentation
+            generated by OnToology is used for the publication of the ontologies.
+            <!--The Figure below shows the VICINITY portal where all the ontologies for VICINITY project are listed.
+            <br>
+            <img width="100%"
+                 src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/misc/vicinity.png"/>
+            <img width="100%" src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/misc/gh-pages.png"/>-->
         </p>
-        <br>
 
 
-        <h3>Configuration file</h3>
-
-        <p align="justify">
-            The configuation file is per ontology (a repository can has multiple ontologies). It will be created
-            automatically if it does not exist.
-            It is used to enable/disable the generation of documentation, diagrams and/or evaluation.The configuration
-            file
-            has three sections, "widoco",
-            "ar2dtool" and "oops", for documentation, diagrams and evaluation, respectivly. Each of the sections has a
-            key
-            called "enable" and can
-            has the values "true" or "false".
+        <p class="justify">
+            <strong>ETSI Specialist Task Force 513</strong> is a project endorsed by ETSI and European Commission in
+            which context the <a href="https://w3id.org/def/saref4bldg"><i>SAREF4BLDG</i></a> and <a
+                href="https://w3id.org/def/saref4envi"><i>SAREF4ENVI</i></a> ontologies were developed. These two
+            ontologies are stored in the same <a href="https://github.com/mariapoveda/saref-ext">repository</a>, and the
+            ontology developers contribute to their implementation collaboratively. Both ontologies have been published
+            with OnToology, which automatically publish the ontologies with persistent URI using w3id.
         </p>
-        <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/home/configuration.png"
-             width="480px" class="img-rounded">
 
-        <p>A sample configuration file</p>
-        <br>
 
-        <h3>Sequence Diagram</h3>
-        <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/home/sequence_diagram.png"
-             width="100%" class="img-rounded"/>
 
-    </div>
-
-    <div class="col-md-12">
-
-        <h3>What does OnToology do</h3>
-
-        <p align="justify">
-            It generates documentation, diagrams and evaluation report for your ontologies. It also creates an issue in
-            Github with evaluation summary.Once you register your repository OnToology will track your ontologies (in
-            the registered repository) for changes. Whenever a change in an ontology is pushed, OnToology will generate
-            documentation, diagrams and evaluation report for the changed ontologies. After that, OnToology will create
-            a pull request with the generated files. You can enable/disable documentation, visualization or/and
-            evaluation via a configuration file.
-        </p>
-        <br>
-
-        <h3>Output Structure</h3>
-
-        <p align="justify">
-            OnToology will create a folder named "OnToology" in the top level. Inside this folder, in will create the
-            same
-            structure of the repository.
-            Inside the folder that is named after ontology file, there will be three folders, "documentation",
-            "diagrams"
-            and "evaluation". There will
-            be configuration file "OnToology.cfg" beside these folders.
-        </p>
-        <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/home/structure_before.png"
-             width="480px" class="img-rounded">
-
-        <p>An example of a repository before OnToology is triggered</p>
-        <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/home/structure_after.png"
-             width="480px" class="img-rounded">
-
-        <p>After OnToology is triggered</p>
-        <br>
-
-        <h3>Permission and Security</h3>
-
-        <p align="justify">
-            OnToology will ask permission to access added user repository. OnToology will only ask permission to access
-            public repositories. If you need to use OnToology for your private repository, you can contact us via email (see the footer below).
-        </p>
-        <!--
-        <ul class="" align="justify">
-            <li align="justify" class="">
-                <h4 align="justify" class="">For Logged-in Users</h4>
-                <ul class="">
-                    <li align="justify" class="">OnToology will asks for a permission for public info if all the
-                        repositories that you registered are public
-                    </li>
-                    <li align="justify" class="">In case you register at least a single private repository, OnToology
-                        will ask for a permission to access public and private repositories
-                    </li>
-                </ul>
-            </li>
-            <li>
-                <h4 align="justify" class="">Use OnToology Without Login</h4>
-                <ul class="">
-                    <li align="justify" class="">OnToology will ask for a permission to access public and private
-                        repositories
-                    </li>
-                </ul>
-            </li>
-
-        </ul>
-        -->
-
-        <br>
-
-        <h3>Limitations</h3>
-        <ul class="" align="justify">
-            <li align="justify" class="">Does not support OWL functional-style syntax</li>
-            <li align="justify" class="">Does not support repositories under a Github organization</li>
-<!--            <li align="justify" class="">Only works with the master branch</li>-->
-            <li align="justify" class="">Limited by Github repository size</li>
-            <li align="justify" class="">Evaluation of large ontologies may not work due to OOPS! webservice timing
-                out (but will still generate documentation and diagrams)
-            </li>
-        </ul>
-        <br>
 
     </div>
 
