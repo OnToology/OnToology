@@ -18,9 +18,9 @@
 
 {% if manager%}
 <h4>Number of pending requests: {{num_pending_msgs}}</h4>
-<p>This shows the number of requests (e.g., Configuration Change, Resources Generation) that are in the queue, waiting to be processed. Requests which are under processes are not shown here</p>
+<p>Number of requests (e.g., Configuration Change, Resources Generation) that are in the queue, waiting to be processed. Requests which are under processes are not shown here</p>
 <h4>Number of running rabbit processes: {{num_of_rabbit_processes}}</h4>
-<p>The number of worker processes responsible to handle 'consume' the requests in the queue</p>
+<p>Number of worker processes responsible to handle 'consume' the requests in the queue</p>
 <a href="show_repos_list"><div class="btn btn-primary form-control">See live repos list</div></a><br><br>
 <a href="show_stats"><div class="btn btn-primary form-control">Show stats</div></a><br><br>
 <a href="update_stats"><div class="btn btn-warning form-control">Update stats (Takes a couple of minutes to update)</div></a><br><br>
@@ -42,8 +42,8 @@
       <div class="card-body">
         <h5 class="card-title"><span class="btn btn-primary">My repositories</span></h5>
           <p>
-              This page contains a list of your repositories. You can view them and manipulate the repo and the
-              ontologies within (e.g., force the generation of documentation, diagrams, and evaluation reports).
+              This page contains a list of your repositories. You can view and manipulate them, together with the
+              ontologies contained within (e.g., force the generation of documentation, diagrams, and evaluation reports).
           </p>
       </div>
     </div>
@@ -54,7 +54,7 @@
       <div class="card-body">
         <h5 class="card-title"><span class="btn btn-primary">Previous runs</span></h5>
           <p>
-              This page contains the history of your previous runs and the details of the previous generations of documentaion, diagrams,
+              History of your previous runs and the details of the previous generations of documentaion, diagrams,
               and evaluation reports.
           </p>
       </div>
