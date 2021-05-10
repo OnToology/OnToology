@@ -159,12 +159,14 @@ def get_ontologies(request):
 def repos_view(request):
     user = request.user
     if 'repo' in request.GET:
+        repo_url = request.GET['repo'].strip()
+        branches = get_repo_branches(repo_url)
+        if 'gh-pages' in branches:
+            branches.remove('gh-pages')
         if 'branch' in request.GET:
             branch = request.GET['branch'].strip()
         else:
-            branch = ''
-        repo_url = request.GET['repo'].strip()
-        branches = get_repo_branches(repo_url)
+            branch = branches[0]
         repos = user.repos.filter(url=repo_url)
         if len(repos) == 0:
             return render(request,'msg.html', {'msg': 'This repo does not belong to your user account. Make sure to add it.'})
