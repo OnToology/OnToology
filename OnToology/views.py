@@ -125,7 +125,17 @@ def home(request):
     except:
         is_manager = False
     return render(request, 'home.html', {'repos': repos, 'user': request.user, 'num_of_users': num_of_users,
-                                         'num_of_repos': num_of_repos, 'manager': is_manager})
+                                         'num_of_repos': num_of_repos, 'manager': is_manager, 'stats': read_stats()})
+
+def read_stats():
+    stats_dir = os.path.join(settings.BASE_DIR, 'templates', 'stats.js')
+    f = open(stats_dir)
+    j = json.loads(f.read().replace('var stats =', ''))
+    return {
+        'users' : j['num_of_reg_users'],
+        'repos': j['num_of_repos'],
+        'pubs': j['num_of_pub']
+    }
 
 
 @login_required

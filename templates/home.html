@@ -1,206 +1,159 @@
-{% extends "base2.html"%}
-
-{%block slim%}
-
+{% extends "base2.html"%} {%block slim%}
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>-->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.7.0/dist/Chart.min.js"></script>
 <!--<script src="https://ciprianciurea.github.io/chartjs-plugin-doughnutlabel/chartjs-plugin-doughnutlabel.js"></script>-->
 <!--<script src="https://github.com/ciprianciurea/chartjs-plugin-doughnutlabel/releases/download/2.0.3/chartjs-plugin-doughnutlabel.min.js"></script>-->
 <!--<script src="/media/js/chartjs-plugin-doughnutlabel.min.js"></script>-->
-</br></br>
-
-
+</br>
+</br>
 <br>
 <form action="" method="GET" style="color: #999">
-    <div class="form-group">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-9">
-                    <input type="text" name="target_repo" id="target_repo_select" class="form-control input-lg"
-                           placeholder="user/repo"/></br>
-                </div>
-                <div class="col-md-3">
-                    <input type="submit" class="form-control color1back color3 input-lg" value="Watch this repo"/>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="form-group">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-9">
+					<input class="form-control input-lg" id="target_repo_select" name="target_repo" placeholder="user/repo" type="text" />
+					</br>
+				</div>
+				<div class="col-md-3">
+					<input class="form-control color1back color3 input-lg" type="submit" value="Watch this repo" /> </div>
+			</div>
+		</div>
+	</div>
 </form>
-
-
 </br>
-
 <div class="container-fluid ">
-    <div class="row">
-        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-            <canvas id="reposChart"></canvas>
-        </div>
-        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-            <canvas id="usersChart"></canvas>
-        </div>
-        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-            <canvas id="ontologiesChart"></canvas>
-        </div>
-<!--        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">-->
-<!--            <canvas id="publishedChart"></canvas>-->
-<!--        </div>-->
-    </div>
+	<div class="row">
+		<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+			<canvas id="usersChart"></canvas>
+		</div>
+		<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+			<canvas id="reposChart"></canvas>
+		</div>
+		<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+			<canvas id="publishedChart"></canvas>
+		</div>
+		<!--        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">-->
+		<!--            <canvas id="ontologiesChart"></canvas>-->
+		<!--        </div>-->
+		<!--        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">-->
+		<!--            <canvas id="publishedChart"></canvas>-->
+		<!--        </div>-->
+	</div>
 </div>
 <script>
-    var data = [1];
-    var labels = []//["One", "Ten", "hundr"];
-    var colors = [
-        'rgb(54, 162, 235)',
-        'rgb(255, 99, 132)',
-        'rgb(255, 159, 64)',
-        'rgb(153, 102, 255)',
-        'rgb(255, 205, 86)',
-        'rgb(75, 192, 192)',
-        '#4dc9f6',
-        '#f67019',
-        '#f53794',
-        '#537bc4',
-        '#acc236',
-        '#166a8f',
-        '#00a950',
-        '#58595b',
-        '#8549ba',
-    ]
-    var canvases = []
-    var ctxes = []
-    var charts = ["reposChart", "usersChart", "ontologiesChart" ]//, "publishedChart"]
-    for(var i=0;i<charts.length;i++){
-    var canvas = document.getElementById(charts[i])
-    var ctx = canvas.getContext('2d');
-        var myPieChart = new Chart(ctx,{
-          type: 'doughnut',
-            data: {
-                datasets: [{
-                    label: '',
-                    data: data,
-                    backgroundColor: colors,
-
-                }],
-        // These labels appear in the legend and in the tooltips when hovering different arcs
-        labels: labels,
-    },
-    options: {
-    responsive: true,
-//    legend: {
-//    position: 'top',
-//    },
-    title: {
-    display: true,
-    text: 'ontologies per repository'
-    },
-    animation: {
-    animateScale: true,
-    animateRotate: true
-    }
-    }
-    });
-
-//ctx.font="36px verdana";
-//ctx.fillText("76",150,100);
-//var textString = "Hello look at me!!!",
- //   textWidth = ctx.measureText(textString ).width;
-//ctx.fillText(textString , (canvas.width/2) - (textWidth / 2), 100);
 
 
-Chart.pluginService.register({
-  beforeDraw: function(chart) {
-    var width = chart.chart.width,
-        height = chart.chart.height,
-        ctx = chart.chart.ctx;
 
-    ctx.restore();
-    var fontSize = (height / 114).toFixed(2);
-    ctx.font = fontSize + "em sans-serif";
-    ctx.textBaseline = "middle";
+var data = [1];
+var labels = [] //["One", "Ten", "hundr"];
+var colors = ['rgb(54, 162, 235)', 'rgb(255, 99, 132)', 'rgb(255, 159, 64)', 'rgb(153, 102, 255)', 'rgb(255, 205, 86)', 'rgb(75, 192, 192)', '#4dc9f6', '#f67019', '#f53794', '#537bc4', '#acc236', '#166a8f', '#00a950', '#58595b', '#8549ba', ]
+var canvases = []
+var ctxes = []
+	//    var charts = ["reposChart", "usersChart", "ontologiesChart" ]//, "publishedChart"]
+var charts = ["usersChart", "reposChart", "publishedChart"]
+var titles = ["Registered Users", "Registered Repositories", "Published Ontologies"]
+var vals = ["{{stats.users}}", "{{stats.repos}}", "{{stats.pubs}}"];
+for(var i = 0; i < charts.length; i++) {
+	var canvas = document.getElementById(charts[i])
+	var ctx = canvas.getContext('2d');
+	var myPieChart = new Chart(ctx, {
+		type: 'doughnut',
+		data: {
+			datasets: [{
+				label: '',
+				data: data,
+				backgroundColor: colors,
+			}],
+			// These labels appear in the legend and in the tooltips when hovering different arcs
+			labels: labels,
+		},
+		options: {
+			responsive: true,
+			//    legend: {
+			//    position: 'top',
+			//    },
+			title: {
+				display: true,
+				text: titles[i] //'ontologies per repository'
+			},
+			animation: {
+				animateScale: true,
+				animateRotate: true
+			}
+		}
+	});
+	//ctx.font="36px verdana";
+	//ctx.fillText("76",150,100);
+	//var textString = "Hello look at me!!!",
+	//   textWidth = ctx.measureText(textString ).width;
+	//ctx.fillText(textString , (canvas.width/2) - (textWidth / 2), 100);
+	console.debug('i: '+i);
+	//var aaa = titles[i];
+	Chart.pluginService.register({
+		beforeDraw: function(chart) {
+			var width = chart.chart.width,
+				height = chart.chart.height,
+				ctx = chart.chart.ctx;
+			ctx.restore();
+			var fontSize = (height / 114).toFixed(2);
+			ctx.font = fontSize + "em sans-serif";
+			ctx.textBaseline = "middle";
+			console.log('i2: '+i);
+			var text = vals[chart.id]; //getT();//i + '  '; //"75%",
+			var textX = Math.round((width - ctx.measureText(text).width) / 2);
+			var textY = height / 2 + 20;
+			ctx.fillText(text, textX, textY);
+			ctx.save();
+		}
+	});
+} // end for
 
-    var text = "75%",
-        textX = Math.round((width - ctx.measureText(text).width) / 2),
-        textY = height / 2 + 20;
-    ctx.fillText(text, textX, textY);
-    ctx.save();
-  }
-});
-}// end for
+
+
 
 </script>
 </br>
-
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-md-12">
-            <h3>
+	<div class="row">
+		<div class="col-md-12">
+			<h3>
                 What is OnToology
             </h3>
-            <p class="curfont" align="justify">
-                A system to automate part of the collaborative ontology development process. Given a repository with an
-                owl
-                file,
-                OnToology will survey it and produce diagrams, a complete documentation and validation based on common
-                pitfalls.
-            </p>
-
-            <p align="justify">
-                OnToology can handle <span class="underline">OWL</span> and <span class="underline">RDFS</span>
-                vocabularies in
-                <span class="underline">RDF+XML</span> and <span class="underline">Turtle</span> serialization.
-            </p>
-            <br>
-
-        </div>
-    </div>
+			<p align="justify" class="curfont"> A system to automate part of the collaborative ontology development process. Given a repository with an owl file, OnToology will survey it and produce diagrams, a complete documentation and validation based on common pitfalls. </p>
+			<p align="justify"> OnToology can handle <span class="underline">OWL</span> and <span class="underline">RDFS</span> vocabularies in <span class="underline">RDF+XML</span> and <span class="underline">Turtle</span> serialization. </p>
+			<br> </div>
+	</div>
 </div>
-
-
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-md-12">
-            <h3 class="curfont">How to use OnToology</h3>
-            <p align="justify" class="">1. Enter your GitHub repository as user/repo i.e. myuser/myrepo (repositories in organizations are not currently supported).</p>
-            <p align="justify" class="">2. You will be redirected to Github to authorize OnToology to access your
-                repository.</p>
-            <p align="justify" class="">3. Update your ontology and push.</p>
-            <p align="justify" class="">4. OnToology will create pull request including generated files (documentation,
-                diagrams
-                and evaluation)</p>
-            <p align="justify" class="">5. Merge the pull request created by OnToology</p>
-
-            You can also see the tutorial <a href="/tutorial">here</a>
-            <br>
-
-        </div>
-    </div>
+	<div class="row">
+		<div class="col-md-12">
+			<h3 class="curfont">How to use OnToology</h3>
+			<p align="justify" class="">1. Enter your GitHub repository as user/repo i.e. myuser/myrepo (repositories in organizations are not currently supported).</p>
+			<p align="justify" class="">2. You will be redirected to Github to authorize OnToology to access your repository.</p>
+			<p align="justify" class="">3. Update your ontology and push.</p>
+			<p align="justify" class="">4. OnToology will create pull request including generated files (documentation, diagrams and evaluation)</p>
+			<p align="justify" class="">5. Merge the pull request created by OnToology</p> You can also see the tutorial <a href="/tutorial">here</a>
+			<br> </div>
+	</div>
 </div>
-<br><br>
-
+<br>
+<br>
 <!--<div class="row">-->
 <!--    <a class="twitter-timeline" href="https://twitter.com/OnToology?ref_src=twsrc%5Etfw" height="450px">Tweets by-->
 <!--        OnToology</a>-->
 <!--    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>-->
-
 <!--</div>-->
-
-
-<h3>Latest Repositories</h3><br>
+<h3>Latest Repositories</h3>
+<br>
 <table class="table table-striped">
-    <tr class="highl">
-        <td>Repository</td>
-        <td>Status</td>
-        <td>Last used</td>
-
-    </tr>
-    {%for r in repos%}
-    <tr>
-        <td><a class="color1" href="http://github.com/{{r.url}}">{{r.url}}</a></td>
-        <td>{{r.state}}</td>
-
-        <td>{{r.last_used}}</td>
-    <tr>
-        {%endfor%}
-</table>
-
-{% endblock %}
+	<tr class="highl">
+		<td>Repository</td>
+		<td>Status</td>
+		<td>Last used</td>
+	</tr> {%for r in repos%}
+	<tr>
+		<td><a class="color1" href="http://github.com/{{r.url}}">{{r.url}}</a></td>
+		<td>{{r.state}}</td>
+		<td>{{r.last_used}}</td>
+		<tr> {%endfor%} </table> {% endblock %}
