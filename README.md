@@ -20,6 +20,8 @@ License: Apache License v2 (http://www.apache.org/licenses/LICENSE-2.0)
 
 If you want to cite Ontoology in a scientific paper or technical report, you can use the following [Bibtex citation](/media/references/ontoology.bib) or directly this text: Alobaid A, Garijo D, Poveda-Villalón M, Santana-Pérez I, Fernández-Izquierdo A, Corcho O (2019) Automating ontology engineering support activities with OnToology. Journal of Web Semantics 57:100472, https://doi.org/10.1016/j.websem.2018.09.003
 
+# Funding
+The development of OnToology has been supported by the Spanish national project Datos 4.0 (TIN2016-78011-C4-4-R)
 
 # Tools
 Here is a list of tools being used by OnToology.
