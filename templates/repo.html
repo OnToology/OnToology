@@ -97,7 +97,7 @@
             "{{pn.ontology}}",
           {%endfor%}
      ];
-    var card_html_pre='<div class="col-lg-4 col-md-6 col-sm-6 col-xs-12"><div class="alert-info card"><div class="card-body">';
+    var card_html_pre='<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12"><div class="alert-info card"><div class="card-body">';
     var card_html_post='</div></div></div>';
     var ont_url = "/ontologies?repo={{repo.url}}&branch={{branch}}"
 
@@ -230,7 +230,8 @@
         //console.log(jobj)
        // console.log('key k: ');
        // console.log(k)
-
+		var key_label
+		var view_label
         var attrs=Object.keys(jobj);
         var conf_pre="<li class='list-group-item'>";
         var conf_post="</li>";
@@ -241,15 +242,30 @@
         for(i=0;i<attrs.length;i++){
            // console.log('attrs[i]: ');
            // console.log(attrs[i]);
+           key_label = k+'-'+attrs[i];
+           view_label = get_new_label(key_label)
             if(boolsvals.includes(jobj[attrs[i]])){
-                 tool_html += conf_pre + bool_html(ontology,k+'-'+attrs[i],k+'-'+attrs[i], jobj[attrs[i]])
+                 tool_html += conf_pre + bool_html(ontology,view_label,key_label, jobj[attrs[i]])
             }
             else{
-                 tool_html += conf_pre + txtval_html(ontology,k+'-'+attrs[i],k+'-'+attrs[i], jobj[attrs[i]])
+                 tool_html += conf_pre + txtval_html(ontology,view_label,key_label, jobj[attrs[i]])
             }
         }
         return tool_html;
     }
+
+	function get_new_label(label){
+		var d={
+			"widoco-enable": "Documentation (Widoco)",
+			"widoco-languages": "Documentation Language (Widoco)",
+			"widoco-webVowl": "Visualisation (WebVowl)",
+			"ar2dtool-enable": "Visualisation (AR2DTool)",
+			"oops-enable": "Evaluation (OOPS!)",
+			"owl2jsonld-enable": "JSON-LD Context (owl2jsonld)",
+			"themis-enable": "Validation (Themis)"
+		}
+		return d[label];
+	}
 
     function bool_html(ontology,label, name, val){
         var ch_html="";
