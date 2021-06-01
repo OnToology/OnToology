@@ -94,10 +94,10 @@ def generate_previsual(repo_dir, target_repo):
     comm += ';git add .'
     comm += ';git commit -m "ontoology generated"'
     comm += ";git push -f origin "+branch_name
-    dolog('will call: '+comm)
+    dolog('2will call: '+comm)
     error_msg, msg = call_and_get_log(comm)
     # return_code = call(comm, shell=True)
-    # dolog(msg+error_msg)
+    dolog(msg+error_msg)
     # if error_msg != "":
     #     return "error pushing the generated files into"
     return ""
