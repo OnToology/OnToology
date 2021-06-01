@@ -30,8 +30,8 @@ dolog = dolog_logg
 # def dolog(msg):
 #     print(msg)
 
-ToolUser = 'OnToologyUser'
-ToolEmail = 'ontoology@delicias.dia.fi.upm.es'
+# ToolUser = 'OnToologyUser'
+# ToolEmail = 'ontoology@delicias.dia.fi.upm.es'
 previsual_dir = os.environ['previsual_dir']
 
 temp_dir = os.environ['github_repos_dir']
@@ -89,15 +89,17 @@ def generate_previsual(repo_dir, target_repo):
     if error_msg != "":
         return "Error while generating the previsualization, unable to move the files to gh-pages"
     comm = "cd "+repo_dir
-    # comm += ';git config user.email "%s"' % ToolEmail
-    # comm += ';git config user.name "%s"' % ToolUser
+    ToolEmail = os.environ['github_email']
+    ToolUser = os.environ['github_username']
+    comm += ';git config user.email "%s"' % ToolEmail
+    comm += ';git config user.name "%s"' % ToolUser
     comm += ';git add .'
     comm += ';git commit -m "ontoology generated"'
     comm += ";git push -f origin "+branch_name
     dolog('will call: '+comm)
     error_msg, msg = call_and_get_log(comm)
     # return_code = call(comm, shell=True)
-    # dolog(msg+error_msg)
+    dolog(msg+error_msg)
     # if error_msg != "":
     #     return "error pushing the generated files into"
     return ""
