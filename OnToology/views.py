@@ -165,6 +165,19 @@ def get_ontologies(request):
     else:
         return JsonResponse({'error': 'expecting the branch and repo'}, status=400)
 
+def get_pub_page(repo):
+    """
+    :param repo: owner/repo-name
+    :return:
+    """
+    wgets_dir = os.environ['wget_dir']
+    owner_name, repo_name = repo.split('/')
+    pub_page = 'http://%s.github.io/%s/index.html' % (owner_name, repo_name)
+    if call('cd %s; wget %s;' % (wgets_dir, pub_page), shell=True) == 0:
+        return pub_page
+    return None
+
+
 @login_required
 def repos_view(request):
     user = request.user
@@ -177,10 +190,13 @@ def repos_view(request):
             branch = request.GET['branch'].strip()
         else:
             branch = branches[0]
+        pub_page = get_pub_page(repo_url)
+        if not pub_page:
+            pub_page = ""
         repos = user.repos.filter(url=repo_url)
         if len(repos) == 0:
             return render(request,'msg.html', {'msg': 'This repo does not belong to your user account. Make sure to add it.'})
-        return render(request, 'repo.html', {'repo': repos[0], 'branch': branch, 'branches': branches})
+        return render(request, 'repo.html', {'repo': repos[0], 'branch': branch, 'branches': branches, 'pub_url': pub_page})
     else:
         return render(request, 'repos.html', {'repos': user.repos.all()})
 

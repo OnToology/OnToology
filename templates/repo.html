@@ -34,10 +34,15 @@
 
 <!--            <p>branch: <span class="datafont">{{branch}}</span></p>-->
             {%if branch != "" %}
-
+				{%if pub_url != ""%}
+Landing Page:
+			<a target="_blank" href="{{pub_url}}">{{pub_url}}</a>
+			<a class="btn btn-primary float-right ml-2"  data-toggle="tooltip" title="The repo GitHub page which contains the list of your ontologies" href="{{pub_url}}">Go to Landing page</a> <span> </span>
+				{%endif%}
             <a class="btn btn-primary float-right"  data-toggle="tooltip" title="To generate documentation, diagrams, evaluation report, and JSON-LD context" href="/generateforall?repo={{repo.url}}&branch={{branch}}">Generate
                 Resources</a>
             <button class="btn btn-primary float-right mr-2" id="load"  data-container="body" title="To parse the repository and find all ontologies which are processed with OnToology.">Load processed ontologies</button>
+
             {%endif%}
         </div>
     </div>
