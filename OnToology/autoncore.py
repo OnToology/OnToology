@@ -309,8 +309,8 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
                 print("exception: " + str(e))
                 traceback.print_exc()
                 exception_if_exists = str(e)
-                dolog('failed to create pull request: ' + exception_if_exists)
-                drepo.notes = 'failed to create a pull request'
+                dolog('We have not been able to create the pull request. Please contact us to analyze the issue. ' + exception_if_exists)
+                drepo.notes = 'We have not been able to create the pull request. Please contact us to analyze the issue.'
                 drepo.progress = 100
                 drepo.state = 'Ready'
                 drepo.save()
