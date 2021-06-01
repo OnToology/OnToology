@@ -97,7 +97,7 @@ def generate_previsual(repo_dir, target_repo):
     dolog('will call: '+comm)
     error_msg, msg = call_and_get_log(comm)
     # return_code = call(comm, shell=True)
-    # dolog(msg+error_msg)
+    dolog(msg+error_msg)
     # if error_msg != "":
     #     return "error pushing the generated files into"
     return ""
