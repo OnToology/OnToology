@@ -73,7 +73,8 @@ def get_repo_name_from_url(url):
     :return: user/repo (or None if invalid)
     """
     url = url.replace(' ', '')
-    url = url.lower().strip()
+    #url = url.lower().strip()
+    url = url.strip()
     if url[:19] == "https://github.com/":
         name = url[19:]
     else:
