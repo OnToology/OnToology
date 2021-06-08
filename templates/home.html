@@ -27,16 +27,41 @@
 	</div>
 </form>
 </br>
+
+
+
+
 <div class="container-fluid ">
 	<div class="row">
-		<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-			<canvas id="usersChart"></canvas>
+		<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 text-center">
+
+
+			<div class="counter-box">
+			<img src="https://github.com/OnToology/OnToology/raw/master/media/icons/icons8-user-96.png"/>
+				<span class="counter">{{stats.users}}</span>
+                <p>Registered Users</p>
+            </div>
+			<!--			<canvas id="usersChart"></canvas>-->
 		</div>
-		<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-			<canvas id="reposChart"></canvas>
+		<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 text-center">
+
+			<div class="counter-box">
+			<img src="https://github.com/OnToology/OnToology/raw/master/media/icons/icons8-repository-96.png"/>
+				<span class="counter">{{stats.repos}}</span>
+                <p>Registered Repositories</p>
+            </div>
+
+			<!--			<canvas id="reposChart"></canvas>-->
 		</div>
-		<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-			<canvas id="publishedChart"></canvas>
+		<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 text-center">
+
+
+						<div class="counter-box">
+			<img src="https://github.com/OnToology/OnToology/raw/master/media/icons/icons8-connect-96.png"/>
+				<span class="counter">{{stats.pubs}}</span>
+                <p>Published Ontologies</p>
+            </div>
+<!--			<canvas id="publishedChart"></canvas>-->
 		</div>
 		<!--        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">-->
 		<!--            <canvas id="ontologiesChart"></canvas>-->
@@ -46,11 +71,106 @@
 		<!--        </div>-->
 	</div>
 </div>
+
+
+<style>
+/*sources:
+https://csshint.com/bootstrap-counters/
+https://bbbootstrap.com/snippets/swing-counter-font-awesome-73778739
+*/
+.counter-box {
+    display: block;
+    background: #f6f6f6;
+    padding: 40px 20px 37px;
+    text-align: center
+}
+
+.counter-box p {
+    margin: 5px 0 0;
+    padding: 0;
+    color: #909090;
+    font-size: 18px;
+    font-weight: 500
+}
+
+.counter-box i {
+    font-size: 60px;
+    margin: 0 0 15px;
+    color: #d2d2d2
+}
+
+.counter {
+    display: block;
+    font-size: 32px;
+    font-weight: 700;
+    color: #666;
+    line-height: 28px
+}
+
+.counter-box.colored {
+    background: #3acf87
+}
+
+.counter-box.colored p,
+.counter-box.colored i,
+.counter-box.colored .counter {
+    color: #fff
+}
+</style>
+
+
 <script>
+/*sources:
+https://csshint.com/bootstrap-counters/
+https://bbbootstrap.com/snippets/swing-counter-font-awesome-73778739
+*/
+	$(document).ready(function() {
+
+$('.counter').each(function () {
+$(this).prop('Counter',0).animate({
+Counter: $(this).text()
+}, {
+duration: 2000,
+easing: 'swing',
+step: function (now) {
+$(this).text(Math.ceil(now));
+}
+});
+});
+
+});
+</script>
+
+<!-- sample stats theme -->
+<!--<div class="container">-->
+<!--    <div class="row">-->
+<!--        <div class="four col-md-3">-->
+<!--            <div class="counter-box colored"> <i class="fa fa-thumbs-o-up"></i> <span class="counter">2147</span>-->
+<!--                <p>Happy Customers</p>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="four col-md-3">-->
+<!--            <div class="counter-box"> <i class="fa fa-group"></i> <span class="counter">3275</span>-->
+<!--                <p>Registered Members</p>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="four col-md-3">-->
+<!--            <div class="counter-box"> <i class="fa fa-shopping-cart"></i> <span class="counter">289</span>-->
+<!--                <p>Available Products</p>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="four col-md-3">-->
+<!--            <div class="counter-box"> <i class="fa fa-user"></i> <span class="counter">1563</span>-->
+<!--                <p>Saved Trees</p>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
 
 
-
-var data = [1];
+<script>
+/*
+var data = [0.5];
 var labels = [] //["One", "Ten", "hundr"];
 var colors = ['rgb(54, 162, 235)', 'rgb(255, 99, 132)', 'rgb(255, 159, 64)', 'rgb(153, 102, 255)', 'rgb(255, 205, 86)', 'rgb(75, 192, 192)', '#4dc9f6', '#f67019', '#f53794', '#537bc4', '#acc236', '#166a8f', '#00a950', '#58595b', '#8549ba', ]
 var canvases = []
@@ -75,9 +195,6 @@ for(var i = 0; i < charts.length; i++) {
 		},
 		options: {
 			responsive: true,
-			//    legend: {
-			//    position: 'top',
-			//    },
 			title: {
 				display: true,
 				text: titles[i] //'ontologies per repository'
@@ -88,13 +205,7 @@ for(var i = 0; i < charts.length; i++) {
 			}
 		}
 	});
-	//ctx.font="36px verdana";
-	//ctx.fillText("76",150,100);
-	//var textString = "Hello look at me!!!",
-	//   textWidth = ctx.measureText(textString ).width;
-	//ctx.fillText(textString , (canvas.width/2) - (textWidth / 2), 100);
 	console.debug('i: '+i);
-	//var aaa = titles[i];
 	Chart.pluginService.register({
 		beforeDraw: function(chart) {
 			var width = chart.chart.width,
@@ -105,7 +216,7 @@ for(var i = 0; i < charts.length; i++) {
 			ctx.font = fontSize + "em sans-serif";
 			ctx.textBaseline = "middle";
 			console.log('i2: '+i);
-			var text = vals[chart.id]; //getT();//i + '  '; //"75%",
+			var text = vals[chart.id];
 			var textX = Math.round((width - ctx.measureText(text).width) / 2);
 			var textY = height / 2 + 20;
 			ctx.fillText(text, textX, textY);
@@ -113,11 +224,9 @@ for(var i = 0; i < charts.length; i++) {
 		}
 	});
 } // end for
-
-
-
-
+*/
 </script>
+
 </br>
 <div class="container-fluid">
 	<div class="row">
