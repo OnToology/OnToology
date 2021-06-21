@@ -1,6 +1,8 @@
 {% extends "base2.html"%}
 {%block body%}
 
+
+
 <h2>My Repositories</h2>
 
 <div class="clearfix alert alert-info" id="spinner">
@@ -10,6 +12,23 @@
   </div>
 </div>
 <br><br>
+
+
+<form action="/" method="GET" style="color: #999">
+	<div class="form-group">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-9">
+					<input class="form-control input-lg" id="target_repo_select" name="target_repo" placeholder="user/repo" type="text" />
+					</br>
+				</div>
+				<div class="col-md-3">
+					<input class="form-control btn btn-primary input-lg" type="submit" value="Watch this repo" /> </div>
+			</div>
+		</div>
+	</div>
+</form>
+
 
 <div class="row">
     {%for repo in repos%}
