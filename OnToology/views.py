@@ -1029,9 +1029,11 @@ def publish_view(request):
             'name': name,
             'created': str(timezone.now()),
         }
+        w3id_url = "https://w3id.org/def/%s" % name
         rabbit.send(j)
-        msg = '''<i>%s</i> will be published soon. This might take a few minutes for the published ontology to be
-            available for GitHub pages. If it is not published within a few minutes you can contact us.''' % ontology_rel_path[1:]
+        msg = '''<i>%s</i> will be published soon at <a href="%s">%s</a>. This might take a few minutes for 
+        the published ontology to be available for GitHub pages. If it is not published within a few minutes 
+        you can contact us.''' % (ontology_rel_path[1:], w3id_url, w3id_url)
         return JsonResponse({'msg': msg})
         # return render(request, 'msg.html', {'msg': msg, 'img': 'https://github.com/OnToology/OnToology/raw/master/media/misc/gh-pages.png'})
     except Exception as e:
