@@ -97,6 +97,11 @@ Landing Page:
 </div>
 
 <script>
+	var ont_pnames = {
+		{%for pn in repo.publishnames.all%}
+			"{{pn.ontology}}": "{{pn.name}}",
+		{%endfor%}
+	}
     var pnames = [{%for pn in repo.publishnames.all%}
             "{{pn.ontology}}",
           {%endfor%}
@@ -182,7 +187,7 @@ Landing Page:
                     html_list+= get_themis_score_html(resp.ontologies[i]);
                     card_html_body = get_card_body(resp.ontologies[i]);
                     //console.log('getting tagid');
-                    //console.log(resp.ontologies[i].ontology);
+                    console.log(resp.ontologies[i]);
                     tagid = resp.ontologies[i].ontology.substring(1,)+"-coll";
                     tagid = tagid.replace(/\./g, "--");
                     tagid = tagid.replace(/\//g, "---");
@@ -315,7 +320,17 @@ Landing Page:
         if(!publish_exists(ontology)){
             return publish_html(ontology);
         }
+
         var republish_btn='<button class="btn btn-primary" onclick="republish_click(\''+ontology+'\')">republish</button>';
+        var onames = Object.keys(ont_pnames);
+        for(var i=0;i<onames.length;i++){
+        	console.debug('oname: '+onames[i]);
+            if(ontology==onames[i]){
+            	console.debug('if oname: '+onames[i]);
+		        republish_btn += '<a class="btn btn-primary ml-2" href="/delete_published?name='+ont_pnames[onames[i]]+'">unpublish</a>';
+            	break;
+            }//if
+        }//for
         return republish_btn;
     }
 
