@@ -64,7 +64,7 @@ def run_rabbit():
             if 'virtual_env_dir' in os.environ:
                 comm = "nohup %s %s %s %s" % (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
                                               os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rabbit.py'),
-                                              str(num), ' &')
+                                              str(num), os.environ['setting_module'], ' &')
             else:
                 comm = "nohup python %s %s %s" % (
                 os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rabbit.py'), str(num),
@@ -520,13 +520,16 @@ def single_worker(worker_id, lock, sender, receiver, logger):
 
 
 if __name__ == '__main__':
-    from localwsgi import *
-    print("\n\nrabbit __main__: .........................environ:")
-    print(environ)
     print("In rabbit\n\n")
-    import autoncore
     if len(sys.argv) > 1:
         start_pool(int(sys.argv[1]))
+        if len(sys.argv) > 2:
+            from .djangoperpmodfunc import load
+            load(sys.argv[2])
+            import autoncore
+            from .localwsgi import *
+            print("\n\nrabbit __main__: .........................environ:")
+            print(environ)
     else:
         start_pool()
 

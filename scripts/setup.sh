@@ -72,7 +72,7 @@ environ['test_fork']="false"
 environ['test_clone']="true"
 environ['test_push']="false"
 environ['test_pull']="false"
-print("--------------\n\n\nxyz are loaded\n\n\n")
+print("--------------\n\n\nxyz - localwsgi are loaded\n\n\n")
 EOT
 
 
