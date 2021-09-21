@@ -15,6 +15,7 @@
 #
 # @author Ahmad Alobaid
 #
+#
 from django.utils import timezone
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, UserManager
 from django.contrib.auth.models import AbstractUser as User
@@ -143,7 +144,6 @@ class OntologyStatusPair(models.Model):
 
     def __unicode__(self):
         return self.name + ' - ' + self.status
-
 
 
 class PublishName(models.Model):

@@ -103,4 +103,3 @@ class TestPublishAPI(Serializer, TestCase):
         self.assertEqual(response.status_code, 200, msg='status code is not 200> '+str(response.content))
         jresponse = response.json()
         self.assertEqual(len(jresponse['publishnames']), 1, msg='list does not return')
-
