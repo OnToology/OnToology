@@ -8,4 +8,6 @@ from OnToology.models import *
 def suite():
     return unittest.TestLoader().discover("OnToology.tests", pattern="test*.py")
 
+# def suite():
+#     return unittest.TestLoader().discover("OnToology.tests", pattern="test*publish.py")
 
