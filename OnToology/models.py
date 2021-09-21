@@ -178,9 +178,6 @@ class ORun(models.Model):
 
 
 
-
-
-
 class OTask(models.Model):
     name = models.TextField()
     description = models.TextField()
