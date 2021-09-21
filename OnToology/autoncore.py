@@ -653,7 +653,7 @@ def fork_repo(target_repo):
         dolog("deleted %s/%s" % (user.name,repo.name))
     except:
         dolog("did not delete %s/%s" % (user.name,repo.name))
-    for i in range(1,3):
+    for i in range(1, 3):
         try:
             gg.get_repo("%s/%s-%d" % (user.name,repo.name,i)).delete()
             dolog("deleted %s/%s-%d" % (user.name,repo.name,i))

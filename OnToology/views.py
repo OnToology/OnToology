@@ -73,7 +73,8 @@ def get_repo_name_from_url(url):
     :return: user/repo (or None if invalid)
     """
     url = url.replace(' ', '')
-    url = url.lower().strip()
+    #url = url.lower().strip()
+    url = url.strip()
     if url[:19] == "https://github.com/":
         name = url[19:]
     else:
@@ -125,7 +126,17 @@ def home(request):
     except:
         is_manager = False
     return render(request, 'home.html', {'repos': repos, 'user': request.user, 'num_of_users': num_of_users,
-                                         'num_of_repos': num_of_repos, 'manager': is_manager})
+                                         'num_of_repos': num_of_repos, 'manager': is_manager, 'stats': read_stats()})
+
+def read_stats():
+    stats_dir = os.path.join(settings.BASE_DIR, 'templates', 'stats.js')
+    f = open(stats_dir)
+    j = json.loads(f.read().replace('var stats =', ''))
+    return {
+        'users' : j['num_of_reg_users'],
+        'repos': j['num_of_repos'],
+        'pubs': j['num_of_pub']
+    }
 
 
 @login_required
@@ -155,16 +166,38 @@ def get_ontologies(request):
     else:
         return JsonResponse({'error': 'expecting the branch and repo'}, status=400)
 
+def get_pub_page(repo):
+    """
+    :param repo: owner/repo-name
+    :return:
+    """
+    wgets_dir = os.environ['wget_dir']
+    owner_name, repo_name = repo.split('/')
+    pub_page = 'http://%s.github.io/%s/index.html' % (owner_name, repo_name)
+    if call('cd %s; wget %s;' % (wgets_dir, pub_page), shell=True) == 0:
+        return pub_page
+    return None
+
+
 @login_required
 def repos_view(request):
     user = request.user
-    if 'branch' in request.GET and 'repo' in request.GET:
-        branch = request.GET['branch'].strip()
+    if 'repo' in request.GET:
         repo_url = request.GET['repo'].strip()
+        branches = get_repo_branches(repo_url)
+        if 'gh-pages' in branches:
+            branches.remove('gh-pages')
+        if 'branch' in request.GET:
+            branch = request.GET['branch'].strip()
+        else:
+            branch = branches[0]
+        pub_page = get_pub_page(repo_url)
+        if not pub_page:
+            pub_page = ""
         repos = user.repos.filter(url=repo_url)
         if len(repos) == 0:
             return render(request,'msg.html', {'msg': 'This repo does not belong to your user account. Make sure to add it.'})
-        return render(request, 'repo.html', {'repo': repos[0], 'branch': branch})
+        return render(request, 'repo.html', {'repo': repos[0], 'branch': branch, 'branches': branches, 'pub_url': pub_page})
     else:
         return render(request, 'repos.html', {'repos': user.repos.all()})
 
@@ -419,7 +452,7 @@ def generateforall_view(request):
         return render(request, 'msg.html', {'msg':  'Internal error in generating the resources'})
     if res['status'] is True:
         return render(request, 'msg.html',  {
-            'msg': 'Soon you will find generated files included in a pull request in your repository'},)
+            'msg': 'Soon you will find generated files included in a pull request in your repository. Once the pull request is generated, you can merge it using GitHub Merge function. If the resources (e.g., documentation, evaluation, ...) are not generated within a few minutes, you can contact us.'},)
     else:
         return render(request, 'msg.html', {'msg': res['error']})
 
@@ -996,9 +1029,11 @@ def publish_view(request):
             'name': name,
             'created': str(timezone.now()),
         }
+        w3id_url = "https://w3id.org/def/%s" % name
         rabbit.send(j)
-        msg = '''<i>%s</i> will be published soon. This might take a few minutes for the published ontology to be
-            available for GitHub pages.''' % ontology_rel_path[1:]
+        msg = '''<i>%s</i> will be published soon at <a href="%s">%s</a>. This might take a few minutes for 
+        the published ontology to be available for GitHub pages. If it is not published within a few minutes 
+        you can contact us.''' % (ontology_rel_path[1:], w3id_url, w3id_url)
         return JsonResponse({'msg': msg})
         # return render(request, 'msg.html', {'msg': msg, 'img': 'https://github.com/OnToology/OnToology/raw/master/media/misc/gh-pages.png'})
     except Exception as e:

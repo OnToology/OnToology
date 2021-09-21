@@ -1,12 +1,13 @@
 FROM ahmad88me/ontoology:openjdk
 WORKDIR /playground/OnToology
 
-COPY ssh/id_rsa /root/.ssh/
-COPY ssh/id_rsa.pub /root/.ssh/
+# COPY ssh/id_rsa /root/.ssh/
+# COPY ssh/id_rsa.pub /root/.ssh/
+COPY ssh/id_ed25519  /root/.ssh/
+COPY ssh/id_ed25519.pub /root/.ssh/
 # Generate the ssh key from the docker
 # RUN ssh-keygen -b 2048 -t rsa -f /root/.ssh/ -q -N ""
 RUN chmod 400 /root/.ssh/*
-
 
 #ARG db_host=db
 #ARG db_port=27017
@@ -65,7 +66,6 @@ COPY config/ar2dtool-class.conf $PLAYGROUND/config/ar2dtool-class.conf
 COPY config/ar2dtool-taxonomy.conf $PLAYGROUND/config/ar2dtool-taxonomy.conf
 #COPY ssh/id_rsa ~/.ssh/
 #COPY ssh/id_rsa.pub ~/.ssh/
-
 
 #RUN echo "Docker> Pre SETUP"; cat OnToology/localwsgi.py
 RUN sh scripts/setup.sh
