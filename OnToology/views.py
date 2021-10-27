@@ -49,6 +49,7 @@ from OnToology import autoncore
 from OnToology.settings import host
 from Integrator import previsual
 from OnToology import rabbit
+from OnToology import sqclient
 
 
 client_id_login = os.environ['client_id_login']  # 'e2ea731b481438fd1675'
@@ -404,7 +405,7 @@ def add_hook(request):
             'changedfiles': changed_files,
             'created': str(timezone.now()),
         }
-        rabbit.send(j)
+        sqclient.send(j)
     except Exception as e:
         error_msg = str(e)
         print('error running generall all subprocess: ' + error_msg)
@@ -478,7 +479,9 @@ def generateforall(target_repo, user_email, branch):
             'changedfiles': changed_files,
             'created': str(timezone.now()),
         }
-        rabbit.send(j)
+        print("sending: ")
+        print(j)
+        sqclient.send(j)
     else:
         try:
             j = {
@@ -489,7 +492,9 @@ def generateforall(target_repo, user_email, branch):
                 'changedfiles': changed_files,
                 'created': str(timezone.now()),
             }
-            rabbit.send(j)
+            print("sending: ")
+            print(j)
+            sqclient.send(j)
         except Exception as e:
             sys.stdout.flush()
             sys.stderr.flush()
@@ -688,7 +693,7 @@ def profile(request):
     sys.stderr.flush()
 
     if request.user.email in get_managers():
-        num_pending_msgs = rabbit.get_pending_messages()
+        num_pending_msgs = sqclient.get_pending_messages()
         num_of_rabbit_processes = get_num_of_processes_of_rabbit()
     else:
         num_pending_msgs = -2
@@ -741,7 +746,7 @@ def update_conf(request):
         'data': data,
         'created': str(timezone.now()),
     }
-    rabbit.send(j)
+    sqclient.send(j)
     return HttpResponseRedirect('/profile')
 
 
@@ -1030,7 +1035,7 @@ def publish_view(request):
             'created': str(timezone.now()),
         }
         w3id_url = "https://w3id.org/def/%s" % name
-        rabbit.send(j)
+        sqclient.send(j)
         msg = '''<i>%s</i> will be published soon at <a href="%s">%s</a>. This might take a few minutes for 
         the published ontology to be available for GitHub pages. If it is not published within a few minutes 
         you can contact us.''' % (ontology_rel_path[1:], w3id_url, w3id_url)

@@ -87,8 +87,6 @@ class TestDirectMagic(Serializer, TestCase):
         num_of_msgs = get_pending_messages()
         logger.debug("test> number of messages in the queue is: " + str(num_of_msgs))
 
-
-# For the jongo test
     def test_generate_all_slash_direct_but_doc(self):
         print("######################test_generate_all_slash_direct_but_doc###############\n\n")
         logger.error("testing the logger\n\n\n\n\n")
@@ -174,7 +172,6 @@ enable = False
         stream = os.popen(cmd)
         output = stream.read()
         logger.debug(output)
-
 
         # os.system(cmd)
         eval_files = ['oops.html']

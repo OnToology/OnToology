@@ -1,5 +1,4 @@
 import json
-import pika
 import os
 import subprocess
 import sys
@@ -14,6 +13,37 @@ from TPool.TPool import Pool
 from multiprocessing import Process, Pipe, Lock
 import multiprocessing
 import traceback
+
+
+from stiqueue.sqclient import SQClient
+
+
+locked_repos = []
+lock = Lock()
+
+host = "127.0.0.1"
+port = 1234
+
+if 'stiq_host' in os.environ:
+    host = os.environ['stiq_host']
+if 'stiq_port' in os.environ:
+    port = int(os.environ['stiq_port'])
+
+if __name__ == "__main__":
+    print("CLIENT started")
+    from djangoperpmodfunc import load
+    load("OnToology.settings")
+    import autoncore
+    from localwsgi import *
+    cc = SQClient(host=host, port=port)
+    while True:
+        time.sleep(1)
+        # print(b"CLIENT> get num ")
+        v = cc.deq()
+        if v == b"":
+            continue
+        print("CLIENT: Getting value: %s" % str(v))
+
 
 def set_config(logger, logdir=""):
     """
@@ -58,56 +88,39 @@ def run_rabbit():
     Run the rabbit consumer
     :return:
     """
-    if 'rabbit_processes' in os.environ:
-        try:
-            num = int(os.environ['rabbit_processes'])
-            if 'virtual_env_dir' in os.environ:
-                comm = "nohup %s %s %s %s" % (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
-                                              os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rabbit.py'),
-                                              str(num), os.environ['setting_module'], ' &')
-            else:
-                comm = "nohup python %s %s %s" % (
-                os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rabbit.py'), str(num),
-                '&')
-            logger.debug("run_rabbit> comm: " + comm)
-            print("run_rabbit> comm: " + comm)
-            subprocess.Popen(comm, shell=True)
-        except:
-            logger.error('run_rabbit> The rabbit_processes is: <%s>' % str(os.environ['rabbit_processes']))
-    else:
-        logger.debug('run_rabbit> rabbit_processes is not in environ')
+    pass
+    # if 'rabbit_processes' in os.environ:
+    #     try:
+    #         num = int(os.environ['rabbit_processes'])
+    #         if 'virtual_env_dir' in os.environ:
+    #             comm = "nohup %s %s %s %s" % (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
+    #                                           os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rabbit.py'),
+    #                                           str(num), os.environ['setting_module'], ' &')
+    #         else:
+    #             comm = "nohup python %s %s %s" % (
+    #             os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rabbit.py'), str(num), '&')
+    #         logger.debug("run_rabbit> comm: " + comm)
+    #         print("run_rabbit> comm: " + comm)
+    #         subprocess.Popen(comm, shell=True)
+    #     except:
+    #         logger.error('run_rabbit> The rabbit_processes is: <%s>' % str(os.environ['rabbit_processes']))
+    # else:
+    #     logger.debug('run_rabbit> rabbit_processes is not in environ')
 
-# def send(message_json):
-#     """
-#     :param message:
-#     :return:
-#     """
-#     return direct_call(message_json)
 
 def send(message_json):
     """
-    :param message:
+    :param message_json: dict
     :return:
+        None
     """
     global logger
-    connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
-    channel = connection.channel()
-    queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
-    logger.debug("send> number of messages in the queue is: "+str(queue.method.message_count))
     message = json.dumps(message_json)
     logger.debug("send> sending message: "+str(message))
-    # logger.debug(message)
-    channel.basic_publish(exchange='',
-                          routing_key=queue_name,
-                          body=message,
-                          properties=pika.BasicProperties(
-                              delivery_mode=2,  # make message persistent
-                          ))
-    connection.close()
-    num = get_num_of_processes_of_rabbit()
-    if num < 1:
-        logger.warning("send> RESTART -- number of processes were: "+str(num))
-        run_rabbit()
+    print("Sending: ")
+    print(message)
+    c = SQClient(host=host, port=port)
+    c.enq(str.encode(message))
 
 
 def get_pending_messages():
@@ -115,23 +128,27 @@ def get_pending_messages():
     get number of pending messages
     :return:
     """
-    global logger
-    try:
-        connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
-    except:
-        msg = "exception 1 in connecting"
-        logger.debug(msg)
-        # print(msg)
-        time.sleep(3)
-        try:
-            connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
-        except:
-            logger.debug(msg+" for the second time")
-            return -1
-    channel = connection.channel()
-    queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
-    num = queue.method.message_count
-    connection.close()
+    c = SQClient(host=host, port=port)
+    num = int(c.cnt())
+    print("Number of elements in the queue are: %d" % num)
+    # global logger
+    # try:
+    #     connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
+    # except:
+    #     msg = "exception 1 in connecting"
+    #     logger.debug(msg)
+    #     # print(msg)
+    #     time.sleep(3)
+    #     try:
+    #         connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
+    #     except:
+    #         logger.debug(msg+" for the second time")
+    #         return -1
+    # channel = connection.channel()
+    # queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
+    # num = queue.method.message_count
+    # connection.close()
+
     return num
 
 
@@ -164,39 +181,39 @@ def get_num_of_processes_of_rabbit():
     return -1
 
 
-def direct_call(j):
-    """
-    Consume messages from the ready queue
-    :param j:
-    :return:
-    """
-    global logger
-    try:
-        if j['action'] in ['magic', 'change_conf', 'publish']:
-            repo_name = j['repo']
-            logger.debug(" ---  Consuming: " + repo_name + "\n" + str(j))
-            if j['action'] == 'magic':
-                logger.debug('starting a magic process')
-                handle_action(j, logger)
-            elif j['action'] == 'change_conf':
-                logger.debug('starting a config change process')
-                handle_conf_change(j, logger)
-            elif j['action'] == 'publish':
-                logger.debug('starting a publish process')
-                handle_publish(j, logger)
-            else:
-                logger.debug("starting nothing")
-            logger.debug(repo_name+" Completed!")
-            return True
-
-    except Exception as e:
-        print("ERROR: "+str(e))
-        print("Message: "+str(j))
-        logger.debug("dERROR: "+str(e))
-        logger.debug("dMessage: "+str(j))
-        logger.error("ERROR: "+str(e))
-        logger.error("Message: "+str(j))
-        return False
+# def direct_call(j):
+#     """
+#     Consume messages from the ready queue
+#     :param j:
+#     :return:
+#     """
+#     global logger
+#     try:
+#         if j['action'] in ['magic', 'change_conf', 'publish']:
+#             repo_name = j['repo']
+#             logger.debug(" ---  Consuming: " + repo_name + "\n" + str(j))
+#             if j['action'] == 'magic':
+#                 logger.debug('starting a magic process')
+#                 handle_action(j, logger)
+#             elif j['action'] == 'change_conf':
+#                 logger.debug('starting a config change process')
+#                 handle_conf_change(j, logger)
+#             elif j['action'] == 'publish':
+#                 logger.debug('starting a publish process')
+#                 handle_publish(j, logger)
+#             else:
+#                 logger.debug("starting nothing")
+#             logger.debug(repo_name+" Completed!")
+#             return True
+#
+#     except Exception as e:
+#         print("ERROR: "+str(e))
+#         print("Message: "+str(j))
+#         logger.debug("dERROR: "+str(e))
+#         logger.debug("dMessage: "+str(j))
+#         logger.error("ERROR: "+str(e))
+#         logger.error("Message: "+str(j))
+#         return False
 
 
 def callback_consumer(lock, sender, receiver, logger, j):
@@ -278,40 +295,6 @@ def callback2(extra, ch, method, properties, body):
                 p.start()
                 ch.basic_ack(delivery_tag=method.delivery_tag)
 
-                # logger.debug(" ---  Consuming: " + repo_name + "\n" + str(body))
-                # # logger.debug(body)
-                # if j['action'] == 'magic':
-                #     logger.debug('starting a magic process')
-                #     # p = Process(target=handle_action, args=(j, logger))
-                #     # p.start()
-                #     # p.join()
-                #     handle_action(j, logger)
-                # elif j['action'] == 'change_conf':
-                #     logger.debug('starting a config change process')
-                #     # p = Process(target=handle_conf_change, args=(j, logger))
-                #     # p.start()
-                #     # p.join()
-                #     handle_conf_change(j, logger)
-                # elif j['action'] == 'publish':
-                #     logger.debug('starting a publish process')
-                #     # p = Process(target=handle_publish, args=(j, logger))
-                #     # p.start()
-                #     # p.join()
-                #     handle_publish(j, logger)
-                # else:
-                #     logger.debug("starting nothing")
-                # logger.debug(repo_name+" Completed!")
-                # lock.acquire()
-                # locked_repos = receiver.recv()
-                # logger.debug(repo_name+" to remove it from locked repos")
-                # locked_repos.remove(repo_name)
-                # logger.debug(repo_name+" is removed")
-                # logger.debug("locked repos: ")
-                # logger.debug(str(locked_repos))
-                # sender.send(locked_repos)
-                # lock.release()
-                # logger.debug(repo_name+" is sending the ack")
-                # ch.basic_ack(delivery_tag=method.delivery_tag)
 
     except Exception as e:
         print("ERROR: "+str(e))
@@ -453,83 +436,17 @@ def handle_conf_change(j, logger):
     logger.debug("finished handle_conf_change: "+str(j))
 
 
-def ack_message(channel, delivery_tag):
-    """Note that `channel` must be the same pika channel instance via which
-    the message being ACKed was retrieved (AMQP protocol constraint).
-    """
-    global logger
-    if channel.is_open:
-        channel.basic_ack(delivery_tag)
-        logger.debug("Channel is acked!")
-    else:
-        # Channel is already closed, so we can't ACK this message;
-        # log and/or do something that makes sense for your app in this case.
-        logger.debug("Channel is closed!")
-
-
-def start_pool(num_of_processes=1):
-    """
-    :param num_of_processes:
-    :return:
-    """
-    global logger
-    processes = []
-    lock = Lock()
-    sender, receiver = Pipe()
-    sender.send([])
-    for i in range(num_of_processes):
-        th = Process(target=single_worker, args=(i, lock, sender, receiver, logger))
-        th.start()
-        logger.debug("spawn: "+str(i))
-        processes.append(th)
-    logger.debug("total spawned: "+str(processes))
-    for idx, th in enumerate(processes):
-        th.join()
-        logger.info("Process is closed: "+str(idx))
-    logger.error("ALL ARE CONSUMED ..")
-
-
-def single_worker(worker_id, lock, sender, receiver, logger):
-    """
-    :param worker_id:
-    :return:
-    """
-    logger.debug('worker_id: '+str(worker_id))
-    # heartbeat=0 disable timeout
-    # heartbeat= 60 * 60 * 3 (3 hours)
-    # connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host, heartbeat=0))
-    worker_connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
-    channel = worker_connection.channel()
-    queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
-    channel.basic_qos(prefetch_count=1)
-
-    abc = {
-            'lock': lock,
-            'sender': sender,
-            'receiver': receiver,
-            'logger': logger
-    }
-    abc_callback = partial(callback2, abc)
-    channel.basic_consume(queue=queue_name, on_message_callback=abc_callback)
-    print("Rabbit consuming is started ... "+str(worker_id))
-    logger.debug("Setting the logger ..."+str(worker_id))
-    logger.debug("test connection ..."+str(channel.is_open))
-    logger.debug("single_worker> number of messages in the queue is: " + str(queue.method.message_count))
-    channel.start_consuming()
-    logger.debug("single_worker> completed worker")
-
-
-if __name__ == '__main__':
-    print("In rabbit\n\n")
-    if len(sys.argv) > 1:
-        start_pool(int(sys.argv[1]))
-        if len(sys.argv) > 2:
-            from .djangoperpmodfunc import load
-            load(sys.argv[2])
-            import autoncore
-            from .localwsgi import *
-            print("\n\nrabbit __main__: .........................environ:")
-            print(environ)
-    else:
-        start_pool()
+# if __name__ == '__main__':
+#     print("In rabbit\n\n")
+#     if len(sys.argv) > 1:
+#         start_pool(int(sys.argv[1]))
+#         if len(sys.argv) > 2:
+#             from .djangoperpmodfunc import load
+#             load(sys.argv[2])
+#             import autoncore
+#             from .localwsgi import *
+#             print("\n\nrabbit __main__: .........................environ:")
+#             print(environ)
+#     else:
+#         start_pool()
 
