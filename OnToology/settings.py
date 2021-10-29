@@ -175,7 +175,7 @@ except Exception as e:
                  'pull': False,  # to create a pull request from the forked on
     }
     try:
-        from localwsgi import *
+        from OnToology.localwsgi import *
     except Exception as e:
         print("settings> no2 local_wsgi")
         raise Exception("Force local wsgi load")
@@ -183,29 +183,29 @@ except Exception as e:
 environ = os.environ
 print("environ: ")
 
+if 'db_name' in environ:
+    db_name = environ['db_name']
+    if DEBUG:
+        db_name_parts = db_name.split('.')
+        db_name = ".".join(db_name_parts[:-1] + ["test"] + [db_name_parts[-1]])
+        # db_name += "test"
+    DATABASES['default']['NAME'] = db_name
 
-db_name = environ['db_name']
-if DEBUG:
-    db_name_parts = db_name.split('.')
-    db_name = ".".join(db_name_parts[:-1] + ["test"] + [db_name_parts[-1]])
-    # db_name += "test"
-DATABASES['default']['NAME'] = db_name
+    DATABASES['default']['ENGINE'] = environ['db_engine']
+    if 'db_password' in environ:
+        DATABASES['default']['PASSWORD'] = environ['db_password']
 
-DATABASES['default']['ENGINE'] = environ['db_engine']
-if 'db_password' in environ:
-    DATABASES['default']['PASSWORD'] = environ['db_password']
+    if 'db_username' in environ:
+        DATABASES['default']['USER'] = environ['db_username']
 
-if 'db_username' in environ:
-    DATABASES['default']['USER'] = environ['db_username']
-
-if 'db_host' in environ:
-    print("yes db_host in environ")
-    host_db = environ['db_host']
-    DATABASES['default']['HOST'] = host_db
-    if 'db_port' in environ:
-        DATABASES['default']['PORT'] = environ['db_port']
-else:
-    print("db_host is not in environ")
+    if 'db_host' in environ:
+        print("yes db_host in environ")
+        host_db = environ['db_host']
+        DATABASES['default']['HOST'] = host_db
+        if 'db_port' in environ:
+            DATABASES['default']['PORT'] = environ['db_port']
+    else:
+        print("db_host is not in environ")
 
 
 GITHUB_LOCAL_APP_ID = '3995f5db01f035de44c6'
@@ -215,16 +215,13 @@ GITHUB_LOCAL_API_SECRET = '141f896e53db4a4427db177f1ef2c9975e8a3c1f'
 host = 'http://ontoology.linkeddata.es'
 if 'host' in os.environ:
     host = os.environ['host']
-local = False
-if 'OnToology_home' in os.environ and os.environ['OnToology_home'].lower() == "true":
-    local = True
-    host = 'http://127.0.0.1:8000'
-    client_id = GITHUB_LOCAL_APP_ID
-    client_secret = GITHUB_LOCAL_API_SECRET
-    print("Going local")
-else:
-    print("Going remote")
-    print(os.environ)
 
+os.environ['OnToology_home'] = "false"
+local = False
+
+print("Going remote")
+print(os.environ)
 
 AUTH_USER_MODEL = 'OnToology.OUser'
+
+environ['setting_module'] = "OnToology.settings"
