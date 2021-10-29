@@ -6,6 +6,8 @@ agent:
     os_image: ubuntu1804
   containers:
     - name: main
+      image: 'registry.semaphoreci.com/python:3.9'
+    - name: web
       image: 'ahmad88me/ontoology:openjdk'
     - name: stiqueue
       image: 'ahmad88me/stiqueue:latest'
