@@ -1,8 +1,8 @@
 FROM ahmad88me/ontoology:openjdk
 WORKDIR /playground/OnToology
 
-COPY ssh/id_rsa /root/.ssh/
-COPY ssh/id_rsa.pub /root/.ssh/
+COPY ssh/id_ed25519 /root/.ssh/
+COPY ssh/id_ed25519.pub /root/.ssh/
 # Generate the ssh key from the docker
 # RUN ssh-keygen -b 2048 -t rsa -f /root/.ssh/ -q -N ""
 RUN chmod 400 /root/.ssh/*
@@ -24,8 +24,8 @@ ARG test_user_email
 ENV debug "True"
 ENV db_host db
 ENV db_port 27017
-ENV rabbit_host rabbitmq
-ENV rabbit_host rabbitmq
+ENV stiq_host stiqueue
+ENV stiq_port 1234
 ENV rabbit_log_dir /playground/rabbit.log
 
 
@@ -53,6 +53,7 @@ COPY media media
 #COPY OnToology/wsgi.py OnToology/
 
 
+
 COPY OnToology OnToology
 COPY templates templates
 COPY util util
@@ -63,8 +64,7 @@ COPY *.txt ./
 COPY .coveragerc ./
 COPY config/ar2dtool-class.conf $PLAYGROUND/config/ar2dtool-class.conf
 COPY config/ar2dtool-taxonomy.conf $PLAYGROUND/config/ar2dtool-taxonomy.conf
-#COPY ssh/id_rsa ~/.ssh/
-#COPY ssh/id_rsa.pub ~/.ssh/
+
 
 
 #RUN echo "Docker> Pre SETUP"; cat OnToology/localwsgi.py
