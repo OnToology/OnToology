@@ -5,7 +5,6 @@ services:
   stiqueue:
     image: ahmad88me/stiqueue:latest
     ports:
-      # The standard AMQP protocol port
       - '1234:1234'
   web:
     build: .
