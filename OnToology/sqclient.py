@@ -9,11 +9,10 @@ import threading
 from functools import partial
 import functools
 from TPool.TPool import Pool
-# from threading import Lock
-from multiprocessing import Process, Pipe, Lock
+from threading import Lock
+from multiprocessing import Process, Pipe
 import multiprocessing
 import traceback
-
 
 from stiqueue.sqclient import SQClient
 
@@ -23,26 +22,6 @@ lock = Lock()
 
 host = "127.0.0.1"
 port = 1234
-
-if 'stiq_host' in os.environ:
-    host = os.environ['stiq_host']
-if 'stiq_port' in os.environ:
-    port = int(os.environ['stiq_port'])
-
-if __name__ == "__main__":
-    print("CLIENT started")
-    from djangoperpmodfunc import load
-    load("OnToology.settings")
-    import autoncore
-    from localwsgi import *
-    cc = SQClient(host=host, port=port)
-    while True:
-        time.sleep(1)
-        # print(b"CLIENT> get num ")
-        v = cc.deq()
-        if v == b"":
-            continue
-        print("CLIENT: Getting value: %s" % str(v))
 
 
 def set_config(logger, logdir=""):
@@ -62,50 +41,90 @@ def set_config(logger, logdir=""):
     return logger
 
 
-queue_name = 'ontoology'
+if 'stiq_host' in os.environ:
+    host = os.environ['stiq_host']
+if 'stiq_port' in os.environ:
+    port = int(os.environ['stiq_port'])
 
-print("Will check the rabbit host \n\n\n")
-if 'rabbit_host' in os.environ:
-    rabbit_host = os.environ['rabbit_host']
-    print("rabbit_host: "+rabbit_host)
-else:
-    rabbit_host = 'localhost'
-    print("rabbit_host: "+rabbit_host)
 
-if 'rabbit_log_dir' in os.environ:
-    log_dir = os.environ['rabbit_log_dir']
+if 'stiq_log_dir' in os.environ:
+    log_dir = os.environ['stiq_log_dir']
     logger = multiprocessing.get_logger()
-    # logger = logging.getLogger(__name__)
     logger = set_config(logger, log_dir)
 else:
-    # logger = logging.getLogger(__name__)
     logger = multiprocessing.get_logger()
     logger = set_config(logger)
 
 
-def run_rabbit():
-    """
-    Run the rabbit consumer
-    :return:
-    """
-    pass
-    # if 'rabbit_processes' in os.environ:
-    #     try:
-    #         num = int(os.environ['rabbit_processes'])
-    #         if 'virtual_env_dir' in os.environ:
-    #             comm = "nohup %s %s %s %s" % (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
-    #                                           os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rabbit.py'),
-    #                                           str(num), os.environ['setting_module'], ' &')
-    #         else:
-    #             comm = "nohup python %s %s %s" % (
-    #             os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rabbit.py'), str(num), '&')
-    #         logger.debug("run_rabbit> comm: " + comm)
-    #         print("run_rabbit> comm: " + comm)
-    #         subprocess.Popen(comm, shell=True)
-    #     except:
-    #         logger.error('run_rabbit> The rabbit_processes is: <%s>' % str(os.environ['rabbit_processes']))
-    # else:
-    #     logger.debug('run_rabbit> rabbit_processes is not in environ')
+def client_loop(host, port):
+    print("client_loop: %s %d" % (host, port))
+    cc = SQClient(host=host, port=port)
+    while True:
+        time.sleep(1)
+        # print(b"CLIENT> get num ")
+        v = cc.deq()
+        if v == b"":
+            continue
+        body = v.decode()
+        print("CLIENT: Getting value: %s" % body)
+        if can_proceed(body):
+            print("body: %s" % body)
+            th = threading.Thread(target=consume, args=(body,))
+        else:
+            th = threading.Thread(target=send_with_delay, args=(cc, v, 10))
+        th.start()
+
+
+def send_with_delay(client, data_bytes, delay):
+    time.sleep(delay)
+    client.enq(data_bytes)
+
+
+
+# queue_name = 'ontoology'
+#
+# print("Will check the rabbit host \n\n\n")
+# if 'rabbit_host' in os.environ:
+#     rabbit_host = os.environ['rabbit_host']
+#     print("rabbit_host: "+rabbit_host)
+# else:
+#     rabbit_host = 'localhost'
+#     print("rabbit_host: "+rabbit_host)
+#
+# if 'rabbit_log_dir' in os.environ:
+#     log_dir = os.environ['rabbit_log_dir']
+#     logger = multiprocessing.get_logger()
+#     # logger = logging.getLogger(__name__)
+#     logger = set_config(logger, log_dir)
+# else:
+#     # logger = logging.getLogger(__name__)
+#     logger = multiprocessing.get_logger()
+#     logger = set_config(logger)
+
+
+# def run_rabbit():
+#     """
+#     Run the rabbit consumer
+#     :return:
+#     """
+#     pass
+#     # if 'rabbit_processes' in os.environ:
+#     #     try:
+#     #         num = int(os.environ['rabbit_processes'])
+#     #         if 'virtual_env_dir' in os.environ:
+#     #             comm = "nohup %s %s %s %s" % (os.path.join(os.environ['virtual_env_dir'], 'bin', 'python'),
+#     #                                           os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rabbit.py'),
+#     #                                           str(num), os.environ['setting_module'], ' &')
+#     #         else:
+#     #             comm = "nohup python %s %s %s" % (
+#     #             os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rabbit.py'), str(num), '&')
+#     #         logger.debug("run_rabbit> comm: " + comm)
+#     #         print("run_rabbit> comm: " + comm)
+#     #         subprocess.Popen(comm, shell=True)
+#     #     except:
+#     #         logger.error('run_rabbit> The rabbit_processes is: <%s>' % str(os.environ['rabbit_processes']))
+#     # else:
+#     #     logger.debug('run_rabbit> rabbit_processes is not in environ')
 
 
 def send(message_json):
@@ -114,9 +133,9 @@ def send(message_json):
     :return:
         None
     """
-    global logger
+    # global logger
     message = json.dumps(message_json)
-    logger.debug("send> sending message: "+str(message))
+    # logger.debug("send> sending message: "+str(message))
     print("Sending: ")
     print(message)
     c = SQClient(host=host, port=port)
@@ -128,57 +147,40 @@ def get_pending_messages():
     get number of pending messages
     :return:
     """
+    print("sqclient> get_pending_messages> %s %d" % (host, port))
     c = SQClient(host=host, port=port)
     num = int(c.cnt())
-    print("Number of elements in the queue are: %d" % num)
-    # global logger
-    # try:
-    #     connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
-    # except:
-    #     msg = "exception 1 in connecting"
-    #     logger.debug(msg)
-    #     # print(msg)
-    #     time.sleep(3)
-    #     try:
-    #         connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
-    #     except:
-    #         logger.debug(msg+" for the second time")
-    #         return -1
-    # channel = connection.channel()
-    # queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
-    # num = queue.method.message_count
-    # connection.close()
-
+    print("SQClient> get_pending_messages> Number of elements in the queue are: %d" % num)
     return num
 
 
-def get_num_of_processes_of_rabbit():
-    """
-    :return:
-    """
-    import os
-    out = os.popen('ps -ef | grep rabbit.py').read()
-    lines = out.split('\n')
-    one = False
-    for line in lines:
-        if 'python' in line and 'rabbit.py' in line:
-            print("line: ")
-            print(line)
-            p_tokens = line.split('rabbit.py')
-            if len(p_tokens) > 1:
-                tokens = p_tokens[1].strip().split(' ')
-                if tokens[0].strip().isdigit():
-                    return int(tokens[0].strip())
-                else:
-                    print("ptokens: ")
-                    print(p_tokens)
-                    print("tokens: ")
-                    print(tokens)
-                    # return 1
-                    one = True
-    if one:
-        return 1
-    return -1
+# def get_num_of_processes_of_rabbit():
+#     """
+#     :return:
+#     """
+#     import os
+#     out = os.popen('ps -ef | grep rabbit.py').read()
+#     lines = out.split('\n')
+#     one = False
+#     for line in lines:
+#         if 'python' in line and 'rabbit.py' in line:
+#             print("line: ")
+#             print(line)
+#             p_tokens = line.split('rabbit.py')
+#             if len(p_tokens) > 1:
+#                 tokens = p_tokens[1].strip().split(' ')
+#                 if tokens[0].strip().isdigit():
+#                     return int(tokens[0].strip())
+#                 else:
+#                     print("ptokens: ")
+#                     print(p_tokens)
+#                     print("tokens: ")
+#                     print(tokens)
+#                     # return 1
+#                     one = True
+#     if one:
+#         return 1
+#     return -1
 
 
 # def direct_call(j):
@@ -216,11 +218,14 @@ def get_num_of_processes_of_rabbit():
 #         return False
 
 
-def callback_consumer(lock, sender, receiver, logger, j):
-    # lock = extra['lock']
-    # logger = extra['logger']
-    # receiver = extra['receiver']
-    # sender = extra['sender']
+def consume(body):
+    """
+    Consume the request.
+
+    body: json string.
+
+    """
+    j = json.loads(body)
     repo_name = j['repo']
     logger.debug(" ---  Consuming: " + repo_name + "\n" + str(j))
     if j['action'] == 'magic':
@@ -236,73 +241,59 @@ def callback_consumer(lock, sender, receiver, logger, j):
         logger.debug("starting nothing")
     logger.debug(repo_name + " Completed!")
     lock.acquire()
-    locked_repos = receiver.recv()
     logger.debug(repo_name + " to remove it from locked repos")
+    logger.debug("locked repos: %s" % str(locked_repos))
     locked_repos.remove(repo_name)
     logger.debug(repo_name + " is removed")
     logger.debug("locked repos: ")
     logger.debug(str(locked_repos))
-    sender.send(locked_repos)
     lock.release()
-    logger.debug("")
 
 
-def callback2(extra, ch, method, properties, body):
+def can_proceed(body):
     """
     Consume messages from the ready queue
-    :param extra:
-    :param ch:
-    :param method:
-    :param properties:
     :param body:
-    :return:
+    :return: bool
     """
 
-    lock = extra['lock']
-    logger = extra['logger']
-    receiver = extra['receiver']
-    sender = extra['sender']
-
-    try:
-        j = json.loads(body)
-        if j['action'] in ['magic', 'change_conf', 'publish']:
-            repo_name = j['repo']
-            #logger.debug('callback repo: '+repo_name)
-            lock.acquire()
-            locked_repos = receiver.recv()
-            busy = repo_name in locked_repos
-            if not busy:
-                repo_pure_name = repo_name.split('/')[1]
-                pure_locked = [r.split('/')[1] for r in locked_repos]
-                pure_busy = repo_pure_name in pure_locked
-            else:
-                pure_busy = busy
-            if not pure_busy:
-                logger.debug('not busy repo: ' + repo_name + " (" + str(method.delivery_tag) + ")")
-                locked_repos.append(repo_name)
-                logger.debug("start locked repos: "+str(locked_repos))
-            else:
-                logger.debug('is busy repo: ' + repo_name + " (" + str(method.delivery_tag) + ")")
-                #logger.debug("busy ones: "+str(locked_repos))
-            sender.send(locked_repos)
-            lock.release()
-            if busy:
-                #logger.debug(repo_name+" is busy --- ")
-                time.sleep(5)
-                ch.basic_nack(delivery_tag=method.delivery_tag, multiple=False, requeue=True)
-            else:
-                p = Process(target=callback_consumer, args=(lock, sender, receiver, logger, j))
-                p.start()
-                ch.basic_ack(delivery_tag=method.delivery_tag)
-
-
-    except Exception as e:
-        print("ERROR: "+str(e))
-        print("Message: "+str(body))
-        logger.debug("dERROR: "+str(e))
-        logger.debug("dMessage: "+str(body))
-        logger.error("ERROR: "+str(e))
-        logger.error("Message: "+str(body))
+    j = json.loads(body)
+    if j['action'] in ['magic', 'change_conf', 'publish']:
+        repo_name = j['repo']
+        lock.acquire()
+        busy = repo_name in locked_repos
+        if not busy:
+            repo_pure_name = repo_name.split('/')[1]
+            pure_locked = [r.split('/')[1] for r in locked_repos]
+            pure_busy = repo_pure_name in pure_locked
+        else:
+            pure_busy = busy
+        if not pure_busy:
+            logger.debug('not busy repo: ' + repo_name)
+            locked_repos.append(repo_name)
+            logger.debug("start locked repos: "+str(locked_repos))
+        else:
+            logger.debug('is busy repo: ' + repo_name)
+        # sender.send(locked_repos)
+        lock.release()
+        return not pure_busy
+    #         # if busy:
+    #         #     #logger.debug(repo_name+" is busy --- ")
+    #         #     time.sleep(5)
+    #         #     # ch.basic_nack(delivery_tag=method.delivery_tag, multiple=False, requeue=True)
+    #         # else:
+    #         #     p = Process(target=callback_consumer, args=(lock, sender, receiver, logger, j))
+    #         #     p.start()
+    #         #     ch.basic_ack(delivery_tag=method.delivery_tag)
+    #
+    # except Exception as e:
+    #     print("ERROR: "+str(e))
+    #     print("Message: "+str(body))
+    #     logger.debug("dERROR: "+str(e))
+    #     logger.debug("dMessage: "+str(body))
+    #     logger.error("ERROR: "+str(e))
+    #     logger.error("Message: "+str(body))
+    #
 
 
 def handle_publish(j, logger):
@@ -418,8 +409,8 @@ def handle_conf_change(j, logger):
         logger.debug("handle_conf_change> ")
         data = j['data']
         if j['action'] == 'change_conf':
-            autoncore.change_configuration(user_email=j['useremail'],
-                                           target_repo=j['repo'], data=data, ontologies=j['ontologies'])
+            autoncore.change_configuration(user_email=j['useremail'], target_repo=j['repo'], data=data,
+                                           ontologies=j['ontologies'])
             logger.debug("handle_conf_change> configuration is changed: "+str(j))
         else:
             logger.debug("handle_conf_change> invalid action: "+str(j))
@@ -449,4 +440,13 @@ def handle_conf_change(j, logger):
 #             print(environ)
 #     else:
 #         start_pool()
+
+
+if __name__ == "__main__":
+    print("CLIENT started")
+    from djangoperpmodfunc import load
+    load("OnToology.settings")
+    import autoncore
+    from localwsgi import *
+    client_loop(host, port)
 
