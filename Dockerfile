@@ -1,8 +1,9 @@
 FROM ahmad88me/ontoology:openjdk
 WORKDIR /playground/OnToology
 
-COPY ssh/id_ed25519 /root/.ssh/
-COPY ssh/id_ed25519.pub /root/.ssh/
+COPY ssh/* /root/.ssh/
+#COPY ssh/id_ed25519 /root/.ssh/
+#COPY ssh/id_ed25519.pub /root/.ssh/
 # Generate the ssh key from the docker
 # RUN ssh-keygen -b 2048 -t rsa -f /root/.ssh/ -q -N ""
 RUN chmod 400 /root/.ssh/*
