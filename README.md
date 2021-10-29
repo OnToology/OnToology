@@ -130,3 +130,14 @@ the version in `ahmad88me/PyGithub`.  (see below)
 1. `cd OnToology` (assuming both are on the same level/directory)
 1. `pip install -e ../Pygithub` (change this to any directory you want)
 
+
+
+### NEW: Running OnToology Locally
+1. create a new github user (not your personal account, another account).
+1. create ssh key for that user [here](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#generating-a-new-ssh-key).
+1. copy the ssh key `id_ed25519` and `id_ed25519.pub` to `ssh` (*copy to the ssh folder located inside the OnToology folder*).
+
+
+# To DEBUG 
+docker ps
+docker exec -it <container name> /bin/sh 

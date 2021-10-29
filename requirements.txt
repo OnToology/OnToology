@@ -12,9 +12,10 @@ PyJWT==1.6.0
 pyparsing==2.2.0
 pytz==2019.1
 rdflib==4.2.2
-requests==2.22.0
+requests==2.25.1
 selenium==2.52.0
 six==1.9.0
 sqlparse==0.2.4
 TPool==1.2
 urllib3==1.26.5
+stiqueue==1.0.0
