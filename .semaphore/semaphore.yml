@@ -5,7 +5,7 @@ agent:
     type: e1-standard-2
     os_image: ubuntu1804
   containers:
-    - name: web
+    - name: main
       image: 'ahmad88me/ontoology:openjdk'
     - name: stiqueue
       image: 'ahmad88me/stiqueue:latest'
