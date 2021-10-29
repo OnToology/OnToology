@@ -18,4 +18,4 @@ six==1.9.0
 sqlparse==0.2.4
 TPool==1.2
 urllib3==1.26.5
-stiqueue==1.0.0
+stiqueue==1.0.1
