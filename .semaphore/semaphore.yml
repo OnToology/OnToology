@@ -9,6 +9,13 @@ agent:
       image: 'semaphoreci/node:10'
     - name: database
       image: 'postgres:11'
+#    - name: main
+#        image: 'semaphoreci/python:3.9'
+#      image: 'registry.semaphoreci.com/python:3.9'
+#    - name: web
+#      image: 'ahmad88me/ontoology:openjdk'
+#    - name: stiqueue
+#      image: 'ahmad88me/stiqueue:latest'
 blocks:
   - name: Build and Run tests
     task:

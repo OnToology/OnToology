@@ -52,7 +52,21 @@ def login(request):
             return JsonResponse({'message': 'username or password is missing'}, status=400)
         username = request.POST['username']
         token = request.POST['password']  # or token
-        g = Github(username, token)
+        # g = Github(username, token)
+        from OnToology.mock import mock_dict
+        if 'mock_id' in os.environ and os.environ['mock_id'].strip() != "":
+            print("login> mock_id in environ: ")
+            mock_id = os.environ['mock_id']
+            m = mock_dict[mock_id]
+            print("login>  mock: ")
+            # import pprint
+            # pp = pprint.PrettyPrinter(indent=1)
+            # pp.pprint(m)
+            print(m.keys())
+            g = Github(username, token, mock=m)
+        else:
+            print("login> mock_id is not in environ")
+            g = Github(username, token)
         try:
             g.get_user().login
             try:
