@@ -9,10 +9,13 @@ user_password = os.environ['test_user_token']
 
 
 class PrintLogger():
+
     def error(self, msg):
         print(msg)
+
     def debug(self, msg):
         print(msg)
+
     def info(self, msg):
         print(msg)
 
@@ -97,6 +100,7 @@ def clone_if_not(resources_dir, repo):
         comm = "git clone --recurse-submodules  " + cloning_url + " " + repo_dir
         print("comm: %s" % comm)
         call(comm, shell=True)
+
 
 def prepare_resource_dir(resources_dir, fname):
     """
