@@ -5,7 +5,13 @@ services:
   stiqueue:
     image: ahmad88me/stiqueue:latest
     ports:
-      - '1234:1234'
+      - '27017:27017'
+#      - '1234:1234'
+    environment:
+      - PYTHONUNBUFFERED=1
+      - stiq_host="0.0.0.0"
+      - stiq_port=27017
+      - debug=true
   web:
     build: .
     depends_on:
@@ -14,6 +20,10 @@ services:
       - "8000:8000"
     stdin_open: true
     tty: true
+    environment:
+      - PYTHONUNBUFFERED=1
+      - stiq_host="stiqueue"
+      - stiq_port=27017
     #: .venv/bin/coverage run manage.py test OnToology;  .venv/bin/coverage report
 
 
