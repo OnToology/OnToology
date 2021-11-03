@@ -16,13 +16,8 @@ from django.test.testcases import SerializeMixin
 from OnToology.models import OUser, Repo
 # from OnToology.rabbit import start_pool
 from time import sleep
-from  .serializer import Serializer
+from .serializer import Serializer
 import Integrator
-
-
-
-rabbit_host = os.environ['rabbit_host']
-queue_name = 'ontoology'
 
 
 class TestDirectConf(Serializer, TestCase):
@@ -68,7 +63,6 @@ class TestDirectConf(Serializer, TestCase):
         # print("t_geo: \n"+t_geo)
         self.assertFalse(t_alo.strip() == "")
         self.assertFalse(t_geo.strip() == "")
-
 
     def test_widoco_lang_conf(self):
         sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(4)])
