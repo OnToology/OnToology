@@ -3,23 +3,20 @@ import string
 import random
 import shutil
 import os
-import pika
 from subprocess import call
 from .api_util import create_user, create_repo, delete_all_repos_from_db, get_repo_resource_dir, clone_if_not, delete_all_users
 from .api_util import prepare_resource_dir, PrintLogger
 import logging
-from OnToology import rabbit
 from multiprocessing import Process
 from django.test import Client
 from unittest import TestCase
 from django.test.testcases import SerializeMixin
 from OnToology.models import OUser, Repo
-# from OnToology.rabbit import start_pool
+from OnToology import sqclient
 from time import sleep
-from  .serializer import Serializer
+from .serializer import Serializer
 
 
-rabbit_host = os.environ['rabbit_host']
 queue_name = 'ontoology'
 
 
@@ -56,20 +53,7 @@ def get_logger(name, logdir="", level=logging.INFO):
 logger = PrintLogger()
 
 def get_pending_messages():
-    print("get pending messages")
-    try:
-        connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
-    except:
-        print("exception 1 in connecting")
-        sleep(3)
-        connection = pika.BlockingConnection(pika.ConnectionParameters(rabbit_host))
-
-    channel = connection.channel()
-    queue = channel.queue_declare(queue=queue_name, durable=True, auto_delete=False)
-    num = queue.method.message_count
-    connection.close()
-    sleep(0.1)
-    return num
+    return sqclient.get_pending_messages()
 
 
 class TestDirectMagic(Serializer, TestCase):
@@ -83,12 +67,9 @@ class TestDirectMagic(Serializer, TestCase):
         self.url = 'ahmad88me/ontoology-auto-test-no-res'
         self.user = OUser.objects.all()[0]
 
-        logger.debug("rabbit host in test: "+rabbit_host)
         num_of_msgs = get_pending_messages()
         logger.debug("test> number of messages in the queue is: " + str(num_of_msgs))
 
-
-# For the jongo test
     def test_generate_all_slash_direct_but_doc(self):
         print("######################test_generate_all_slash_direct_but_doc###############\n\n")
         logger.error("testing the logger\n\n\n\n\n")
@@ -154,9 +135,7 @@ enable = False
             "branch": "master",
             "action": "magic"
         }
-        print("going to rabbit: ")
-        rabbit.handle_action(j, logger, raise_exp=True)
-        print("returned from rabbit")
+        sqclient.handle_action(j, logger, raise_exp=True)
         self.assertEqual(1, len(Repo.objects.all()))
         repo = Repo.objects.all()[0]
 
@@ -174,7 +153,6 @@ enable = False
         stream = os.popen(cmd)
         output = stream.read()
         logger.debug(output)
-
 
         # os.system(cmd)
         eval_files = ['oops.html']
