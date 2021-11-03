@@ -38,8 +38,36 @@ If you are an ontology engineering willing to use Ontoology, you can check our [
 
 
 # Documentation for developers
-Next we provide some documentation for developers who want to contribute to the further development Ontoology or for those who are interested in deploying Ontoology locally or in their servers. Feel free to contact us if you are interested in contributing of fixing some functionality
+Next we provide some documentation for developers who want to contribute to the further development Ontoology or for those who are interested in deploying Ontoology locally or in their servers. Feel free to contact us if you are interested in contributing to the project.
 
+
+## Test workflow
+There are two kinds of tests:
+1. Using mock. These kinds of tests uses a list of stored requests expected from GitHub APIs. These are fast and do not need GitHub keys or setup.
+2. Using real GitHub repos. These kinds of tests uses GitHub APIs. These tests can take some time and needs special keys to accesses the relevant test repos. For this reason, these are not available for the public. However, they are executed automatically for each GitHub push.
+
+## Run Tests on Real GitHub Repo
+*This is only available for certain people*
+1. Copy they keys into the folder `ssh`
+2. Create a file `scripts/secret_setup.sh`
+3. Write the following and fill the missing values (currently the private app is not added in the tests, so it can be left empty).
+```
+#!/bin/sh
+export github_password=""
+export github_email="a"
+export client_id_login=""
+export client_id_public=""
+export client_id_private=""
+export client_secret_login=""
+export client_secret_public=""
+export client_secret_private=""
+export test_user_token=""
+export test_user_email=""
+```
+4. Run the tests on docker
+```
+sh scripts/run_docker_tests.sh
+```
 
 ## To run automated tests
 1. You should have [docker](https://docs.docker.com/) and [docker-compose](https://docs.docker.com/compose/) installed
@@ -130,3 +158,14 @@ the version in `ahmad88me/PyGithub`.  (see below)
 1. `cd OnToology` (assuming both are on the same level/directory)
 1. `pip install -e ../Pygithub` (change this to any directory you want)
 
+
+
+### NEW: Running OnToology Locally
+1. create a new github user (not your personal account, another account).
+1. create ssh key for that user [here](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#generating-a-new-ssh-key).
+1. copy the ssh key `id_ed25519` and `id_ed25519.pub` to `ssh` (*copy to the ssh folder located inside the OnToology folder*).
+
+
+# To DEBUG 
+docker ps
+docker exec -it <container name> /bin/sh 
