@@ -31,7 +31,12 @@ test_conf = {'local': False,  # doing test
              'pull': False,  # to create a pull request from the forked on
              }
 
+
 GITHUB_LOCAL_APP_ID = '3995f5db01f035de44c6'
 GITHUB_LOCAL_API_SECRET = '141f896e53db4a4427db177f1ef2c9975e8a3c1f'
 
 environ['setting_module'] = "OnToology.settings-local"
+
+
+
+os.environ['test_local'] = "false"

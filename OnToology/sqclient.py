@@ -445,8 +445,15 @@ def handle_conf_change(j, logger):
 if __name__ == "__main__":
     print("CLIENT started")
     from djangoperpmodfunc import load
-    load("OnToology.settings")
+    if len(sys.argv) == 1:
+        load("OnToology.settings")
+    else:
+        print("load settings: %s" % sys.argv[1])
+        load(sys.argv[1])
     import autoncore
     from localwsgi import *
+    from OnToology.models import *
+    print(OUser.objects.all())
+    print(Repo.objects.all())
     client_loop(host, port)
 

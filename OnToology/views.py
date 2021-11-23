@@ -276,17 +276,32 @@ def get_access_token(request):
         request.session['state'] = state
         return HttpResponseRedirect(webhook_access_url)
 
-    rpy_wh = add_webhook(request.session['target_repo'], host + "/add_hook")
-    rpy_coll = add_collaborator(request.session['target_repo'], ToolUser)
+    if 'skip_add_collaborator' in os.environ and os.environ['skip_add_collaborator']=="true":
+        print("is local********\n\n\n\n\n\n")
+        rpy_wh = {
+            'status': True
+        }
+        rpy_coll = {
+            'status': True,
+            'msg': 'Ignoring collaborator adding'
+        }
+    else:
+        print("NOTNOTNOT local********\n\n\n\n\n\n")
+        rpy_wh = add_webhook(request.session['target_repo'], host + "/add_hook")
+        rpy_coll = add_collaborator(request.session['target_repo'], ToolUser)
+
     error_msg = ""
+
     if rpy_wh['status'] == False:
         error_msg += str(rpy_wh['error'])
         print('error adding webhook: ' + error_msg)
+
     if rpy_coll['status'] == False:
         error_msg += str(rpy_coll['error'])
         print('error adding collaborator: ' + rpy_coll['error'])
     else:
         print('adding collaborator: ' + rpy_coll['msg'])
+
     if error_msg != "":
         if 'Hook already exists on this repository' in error_msg:
             error_msg = 'This repository already watched'
@@ -294,6 +309,20 @@ def get_access_token(request):
             error_msg = """You don\'t have permission to add collaborators and create webhooks to this repo or this
             repo does not exist. Note that if you can fork this repo, you can add it here"""
             return render(request, 'msg.html', {'msg': error_msg})
+            # if settings.local:
+            #     if request.user.is_authenticated:
+            #         ouser = OUser.objects.get(email=request.user.email)
+            #         if repo not in ouser.repos.all():
+            #             ouser.repos.add(repo)
+            #             ouser.save()
+            #         msg = 'The repo is added because local variable is True'
+            #     else:
+            #         msg = 'Local is true but the user is not authenticated'
+            #     return render(request, 'msg.html', {'msg': msg})
+            # else:
+            #     error_msg = """You don\'t have permission to add collaborators and create webhooks to this repo or this
+            #     repo does not exist. Note that if you can fork this repo, you can add it here"""
+            #     return render(request, 'msg.html', {'msg': error_msg})
         else:
             print("error message not hook and not 404: " + error_msg)
             print("target repo: " + request.session['target_repo'])

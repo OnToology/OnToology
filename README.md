@@ -63,6 +63,8 @@ export client_secret_public=""
 export client_secret_private=""
 export test_user_token=""
 export test_user_email=""
+export github_username=""
+
 ```
 4. Run the tests on docker
 ```
