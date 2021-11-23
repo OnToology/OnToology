@@ -50,11 +50,19 @@ There are two kinds of tests:
 *This is only available for certain people*
 1. Copy they keys into the folder `ssh`
 2. Create a file `scripts/secret_setup.sh`
-3. Write the following and fill the missing values (currently the private app is not added in the tests, so it can be left empty).
+3. Write the following and fill the missing values (currently the private app is not added in the tests, so it can be left empty). (see secret setup section below)
+
+4. Run the tests on docker
+```
+sh scripts/run_docker_tests.sh
+```
+
+
+## Secret Setup
 ```
 #!/bin/sh
 export github_password=""
-export github_email="a"
+export github_email=""
 export client_id_login=""
 export client_id_public=""
 export client_id_private=""
@@ -64,13 +72,14 @@ export client_secret_private=""
 export test_user_token=""
 export test_user_email=""
 export github_username=""
-
-```
-4. Run the tests on docker
-```
-sh scripts/run_docker_tests.sh
 ```
 
+## Run Locally
+1. Setup (see Run Tests on Real GitHub Repo section [here](https://github.com/OnToology/OnToology/tree/docker#run-tests-on-real-github-repo))
+2. Run the following: `sh scripts/run_docker.sh`
+3. Go to `127.0.0.1:8000` and start using OnToology.
+
+<!--
 ## To run automated tests
 1. You should have [docker](https://docs.docker.com/) and [docker-compose](https://docs.docker.com/compose/) installed
 2. You need to have a GitHub user to act as "OnToologyUser" (you can choose any username you like).
@@ -124,6 +133,7 @@ Here we describe some of the main ones
 * `rabbit_processes` : The number of rabbit processes to automatically run (0 means do not run it automatically).
 
 
+
 ### How to contribute
 There are two workflows:
 
@@ -171,3 +181,6 @@ the version in `ahmad88me/PyGithub`.  (see below)
 # To DEBUG 
 docker ps
 docker exec -it <container name> /bin/sh 
+
+
+-->
