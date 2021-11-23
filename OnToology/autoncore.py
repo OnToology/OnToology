@@ -105,7 +105,7 @@ def init_g():
         print("init_g> debug")
         from OnToology.mock import mock_dict
         if 'mock_id' in os.environ and os.environ['mock_id'].strip() != "":
-            print("init_g> mock_id in environ: ")
+            print("init_g> mock_id in environ: <%s>" % os.environ['mock_id'])
             mock_id = os.environ['mock_id']
             m = mock_dict[mock_id]
             print("init_g>  mock: ")
