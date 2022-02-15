@@ -105,7 +105,7 @@ def init_g():
         print("init_g> debug")
         from OnToology.mock import mock_dict
         if 'mock_id' in os.environ and os.environ['mock_id'].strip() != "":
-            print("init_g> mock_id in environ: ")
+            print("init_g> mock_id in environ: <%s>" % os.environ['mock_id'])
             mock_id = os.environ['mock_id']
             m = mock_dict[mock_id]
             print("init_g>  mock: ")
@@ -879,13 +879,14 @@ def add_collaborator(target_repo, user, newg=None):
             else:
                 print("invitation exists")
                 try:
-                    print("go to init")
-                    init_g()
-                    print("try to acceept invitation")
+                    # print("go to init")
+                    g = init_g()
+                    print("try to accept invitation (new g)")
                     # username = os.environ['github_username']
                     # password = os.environ['github_password']
                     # g_ontoology_user = Github(username, password)
                     # g_ontoology_user.get_user().accept_invitation(invitation)
+                    print("accepting user: %s" % str(g.get_user().name))
                     g.get_user().accept_invitation(invitation)
                     print("invitation accepted: " + str(invitation))
                     return {'status': True, 'msg': 'added as a new collaborator'}

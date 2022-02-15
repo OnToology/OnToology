@@ -8,8 +8,7 @@ from .api_util import create_user, delete_all_repos_from_db, create_repo
 from django.test import Client
 from unittest import TestCase
 from OnToology.models import *
-from  .serializer import Serializer
-
+from .serializer import Serializer
 
 
 class TestRepoAPI(Serializer, TestCase):
