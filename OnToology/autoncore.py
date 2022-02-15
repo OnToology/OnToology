@@ -880,12 +880,13 @@ def add_collaborator(target_repo, user, newg=None):
                 print("invitation exists")
                 try:
                     # print("go to init")
-                    # init_g()
-                    print("try to accept invitation")
+                    g = init_g()
+                    print("try to accept invitation (new g)")
                     # username = os.environ['github_username']
                     # password = os.environ['github_password']
                     # g_ontoology_user = Github(username, password)
                     # g_ontoology_user.get_user().accept_invitation(invitation)
+                    print("accepting user: %s" % str(g.get_user().name))
                     g.get_user().accept_invitation(invitation)
                     print("invitation accepted: " + str(invitation))
                     return {'status': True, 'msg': 'added as a new collaborator'}
