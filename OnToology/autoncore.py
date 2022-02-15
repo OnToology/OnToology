@@ -879,9 +879,9 @@ def add_collaborator(target_repo, user, newg=None):
             else:
                 print("invitation exists")
                 try:
-                    print("go to init")
-                    init_g()
-                    print("try to acceept invitation")
+                    # print("go to init")
+                    # init_g()
+                    print("try to accept invitation")
                     # username = os.environ['github_username']
                     # password = os.environ['github_password']
                     # g_ontoology_user = Github(username, password)
