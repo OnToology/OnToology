@@ -11,6 +11,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
 
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+
+	    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" ></script>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
 
 
@@ -72,14 +76,14 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
-      <li class="nav-item active">
+      <li class="nav-item {%block nav-home%}  {%endblock%}">
         <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
       </li>
-    <li><a class="nav-link" href="/tutorial">Tutorial</a></li>
-    <li><a class="nav-link" href="/about">About </a></li>
-    <li><a class="nav-link" href="/faqs">FAQ </a></li>
+    <li class="nav-item {%block nav-tut%}  {%endblock%}"><a class="nav-link" href="/tutorial">Tutorial</a></li>
+    <li class="nav-item {%block nav-about%}  {%endblock%}"><a class="nav-link" href="/about">About </a></li>
+    <li class="nav-item {%block nav-faq%}  {%endblock%}"><a class="nav-link" href="/faqs">FAQ </a></li>
 <!--    <li><a class="nav-link" href="/publications">Publications</a></li>-->
-        <li><a class="nav-link" href="/syntax">Syntax Validator</a></li>
+<!--        <li><a class="nav-link" href="/syntax">Syntax Validator</a></li>-->
 
          {% if request.user.is_authenticated %}
 
@@ -89,10 +93,12 @@
             <img src="{{request.session.avatar_url}}" class="rounded" style="height: 20px;vertical-align: top;transform: translateY(0%);"/>
 
         </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown" style="top: 30px">
             <a class="dropdown-item" href="/repos">My Repositories</a>
             <a class="dropdown-item" href="/opub">My Published Ontologies</a>
             <a class="dropdown-item" href="/runs">Past Jobs (see what is going on)</a>
+			<a class="dropdown-item" href="/syntax">Syntax Validator</a>
+
             {%if manager%}
             <a class="dropdown-item" href="/profile">Profile</a>
             {%endif%}
@@ -149,7 +155,21 @@
 <br><br><br><br><br>
 <br><br><br><br><br>
 
-<div id="footer" class="fixed-bottom bg-footer" style="background-color: #F9F9F9; bottom: 0; height:40px">
+<script>
+$(document).ready(function(){
+    $(".dropdown").hover(function(){
+        //console.log('hover');
+        $('.dropdown-toggle').dropdown('show');
+    },
+    function(){
+        //console.log('unhover');
+        $('.dropdown-toggle').dropdown('hide');
+    }
+    );
+});
+</script>
+
+<div id="footer" class="fixed-bottom bg-footer" style="background-color: #F9F9F9; bottom: 0; height:60px">
 <!--    <hr>-->
 <!--    <div class="container">-->
         <div class="row">
@@ -158,6 +178,9 @@
                     <!--Latest revision November, 2017<br>-->
                     Ontology Engineering Group<br>
                     Need help? contact us at: ontoology (at) delicias.dia.fi.upm.es
+					<br> <img height="15px"
+                        src="https://raw.githubusercontent.com/OnToology/OnToology/dev/media/icons/twitter.svg"
+                        alt="Twitter logo " class="img-rounded" class="img-responsive"/> Follow us <a href="twitter.com/ontoology">@OnToology</a>
 <!--                    Powered by <a class="color1 underline" href="https://github.com/dgarijo/Widoco">Widoco</a>, <a-->
 <!--                        class="color1 underline" href="https://github.com/idafensp/ar2dtool">AR2DTool</a> and <a-->
 <!--                        class="color1 underline" href="http://oops.linkeddata.es/">OOPS!</a>-->
