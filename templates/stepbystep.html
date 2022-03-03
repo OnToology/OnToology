@@ -18,9 +18,11 @@
 
     <div class="col-md-12">
 
+        <h2>1. Authorizing Ontoology</h2>
+
 
         <div class="stepbox">
-            <h3>1. Enter your repository i.e. myuser/myrepo</h3>
+            <h3>1.1. Enter your repository i.e. myuser/myrepo</h3>
             <img class="img-rounded" width="100%" style="height: width;"
                  src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/stepbystep/step1.png">
             <p align="justify">
@@ -33,8 +35,8 @@
         <br>
 
         <div class="stepbox">
-            <h3>2. Github redirects</h3>
-            <img class="img-rounded" width="100%"
+            <h3>1.2. Github redirects</h3>
+            <img class="img-rounded" width="80%"
                  src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/stepbystep/step2_1.png">
             <p align="justify">
                 If it is your first time, OnToology will redirect you to GitHub. This step is needed to authorize OnToology to
@@ -46,20 +48,57 @@
 
 
         <div class="stepbox">
-            <h3>3. Authorize OnToology to access your repository by clicking on "Authorize Application"</h3>
-            <img class="img-rounded" width="100%"
+            <h3>1.3. Authorize OnToology to access your repository by clicking on "Authorize Application"</h3>
+            <img class="img-rounded" width="80%"
                  src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/stepbystep/step2_2.png">
             <p align="justify">
-                By clicking on "Authorize Application", you authorize OnToology to track your repository.
+                By clicking on "Authorize Application", you authorize OnToology to track your repository. DOn't worry, OnToology will never modify your code or ontologies.
             </p>
         </div>
 
             <br>
 
 
+      <h2>2. Managing your repositories in Ontoology</h2>
+
         <div class="stepbox">
-            <h3>4. Click on the pull requests</h3>
-            <img class="img-rounded" width="100%"
+          <h3>2.1 Repository overview </h3>
+          <p align="justify">
+              To check your tracked repositories, click on the "My Repositories" tab:
+          </p>
+          <img class="img-rounded" width="20%"
+               src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/stepbystep/my_repos.png">
+
+          <p>By selecting a repository (click on "Select Repo"), you will see a screen with the individual configuration of all the ontologies present in that repository.
+          </p>
+
+          <img class="img-rounded" width="80%"
+               src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/stepbystep/repo_insight.png">
+          <p>
+            By clicking on "show configuration" in one of them, a menu with its current configuration will be displayed. The configuration includes the options which are selected when OnToology is contributing materials to your repository. For example, in the image below OnToology is configured to push documentation, diagrams, evaluation reports and JSON-LD contexts, but not validation or WebVowl diagrams.
+          </p>
+          <img class="img-rounded" width="40%"
+               src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/stepbystep/config.png">
+
+
+        </div>
+
+        <div class="stepbox">
+          <h3>2.2 Check repository status and past jobs</h3>
+          <p align="justify">
+              You can also check your past jobs by clicking on "My Repositories -> Past Jobs". You will see the status of your current repositories (in case OnToology is still processing some of them) and a history of your past jobs.
+          </p>
+          <img class="img-rounded" width="60%"
+               src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/stepbystep/past_jobs_full.png">
+
+        </div>
+
+        <h2>3. Accepting Ontoology changes</h2>
+        Once OnToology finishes processing your ontologies, you will receive a pull request on your repository. In order to accept the proposed changes, just follow the steps below:
+
+        <div class="stepbox">
+            <h3>3.1 Click on the pull requests</h3>
+            <img class="img-rounded" width="80%"
                  src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/stepbystep/step3_1.png">
             <p align="justify">
                 Once you make a change to any of your ontologies (in the tracked repository) and push these changes,
@@ -72,7 +111,7 @@
 
 
         <div class="stepbox">
-            <h3>5. Click on OnToology pull request</h3>
+            <h3>3.2 Click on the pull request from OnToology</h3>
             <img class="img-rounded" width="100%"
                  src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/stepbystep/step3_2.png">
             <p align="justify">
@@ -85,7 +124,7 @@
 
 
         <div class="stepbox">
-            <h3>6. Merge this pull request</h3>
+            <h3>3.3 Merge the pull request</h3>
             <img class="img-rounded" width="100%"
                  src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/stepbystep/step3_3.png">
             <p align="justify">
@@ -97,7 +136,7 @@
 
 
         <div class="stepbox">
-            <h3>7. Confirm to merge the pull request</h3>
+            <h3>3.4 Confirm to merge the pull request</h3>
             <img class="img-rounded" width="100%"
                  src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/stepbystep/step3_4.png">
             <p align="justify">
@@ -110,15 +149,42 @@
 
 
         <div class="stepbox">
-            <h3>8. Now it is merged and you will see OnToology folder with all generated files inside</h3>
+            <h3>3.5 Now the pull is merged and you will see an OnToology folder with all generated files inside</h3>
             <img class="img-rounded" width="100%"
                  src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/stepbystep/step4.png">
             <p align="justify">
-                All the generated resources are located under a folder called "OnToology" in your repository,
+                All generated resources are located under a folder called "OnToology" in your repository,
                 the structured of your repository is mimicked inside the "OnToology" folder.
             </p>
         </div>
 
+
+        <h2>4. Publishing OnToologies using a permanent identifier</h2>
+        <div class="stepbox">
+            A unique feature of OnToology is the ability to publish an ontology with a w3id permanent identifier. To publish an ontology with a permanent identifier, you first have to reserve its URI. Go to "My Repositories", select your target repository and then click on the "publish" button of the ontology you want to publish. You will see the following menu:
+            <img class="img-rounded" width="40%" style="height: width;"
+                 src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/stepbystep/reserve.png">
+            <p align="justify">
+                Select the identifier you want to give to your ontology. For example, if you select "alojamiento", the w3id will be "https://w3id.org/def/alojamiento". Identifiers are unique, so OnToology will not allow repeated identifiers. Once you have reserved an id, you can go to "My Repositories -> My Published Ontologies". You should see a screen similar to the one below. The available actions are to "unpublish" a published ontology; or download a bundle in case you prefer to publish it somewhere else.
+            </p>
+            <img class="img-rounded" width="80%" style="height: width;"
+                 src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/stepbystep/published_ontologies.png">
+            <p>
+
+            </p>
+        </div>
+
+        <h2>5. Validating ontology syntax</h2>
+        <div class="stepbox">
+          <p align="justify">
+              If there are any problems processing your ontologies, you may validate them using the custom syntax validator in OnToology.
+              To use it, just click on "My Repositories" and select "Syntax Validator". You will see a screen like the one in the figure below.
+              Simply add your ontology URI and serialization, and OnToology will tell you whether there are errors parsing it or not.
+          </p>
+            <img class="img-rounded" width="60%" style="height: width;"
+                 src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/stepbystep/validation.png">
+
+        </div>
 
     </div>
 
