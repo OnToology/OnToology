@@ -1,1 +1,1 @@
-var stats = {"mean": 10, "median": 12, "num_of_ontologies": 100, "num_of_repos": 20, "num_of_pub": 8, "num_of_reg_users": 20, "onto_per_repo": {"data": [], "labels": []}}
+var stats = {"mean": 4.673846153846154, "median": 1, "num_of_ontologies": 1519, "num_of_repos": 424, "num_of_pub": 100, "num_of_reg_users": 246, "onto_per_repo": {"data": [198, 42, 23, 11, 6, 5, 1, 2, 4, 2, 4, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 3, 1, 1, 1, 3, 2, 1, 1, 1, 1], "labels": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19, 20, 24, 26, 27, 28, 29, 34, 38, 41, 43, 44, 54, 62, 163]}}
