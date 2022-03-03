@@ -22,12 +22,12 @@ from djangoperpmod import *
 # application = get_wsgi_application()
 
 from OnToology.models import *
-from autoncore import get_ontologies_in_online_repo
+from OnToology.autoncore import get_ontologies_in_online_repo
 from OnToology import settings
 
 from datetime import datetime
 from collections import Counter
-
+import json
 
 def llog(msg):
     """
@@ -71,10 +71,13 @@ def get_stats():
                     llog(msg)
 
     num_of_ontologies = sum(ontologies_per_repo)
-    stats['mean'] = num_of_ontologies/num_corr_repos
+    stats['mean'] = 0
     if num_corr_repos > 0:
-        ontologies_per_repo = sorted(ontologies_per_repo)
+        stats['mean'] = num_of_ontologies / num_corr_repos
+        ontologies_per_repo.sort()
+        # ontologies_per_repo = sorted(ontologies_per_repo)
         if num_corr_repos % 2 == 0:  # even
+            print("even")
             idx = (num_corr_repos-1)/2
             print("original idx: ")
             print(idx)
@@ -82,7 +85,12 @@ def get_stats():
             print("int idx: %d" % idx)
             stats['median'] = (ontologies_per_repo[idx] + ontologies_per_repo[idx+1]) / 2
         else:
+            print("odd")
             idx = num_corr_repos/2
+            idx = int(idx)
+            print("idx: %d" % idx)
+            print("ontologies per repo: ")
+            print(ontologies_per_repo)
             stats['median'] = ontologies_per_repo[idx]
     stats['num_of_ontologies'] = num_of_ontologies
     stats['num_of_repos'] = len(repos)
@@ -100,7 +108,7 @@ def update_stats():
     dt = datetime.now()
 
     stats_html = """
-{%% extends "base.html"%%}
+{%% extends "base2.html"%%}
 {%%block body%%}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
     
@@ -188,6 +196,9 @@ def update_stats():
     stats_dir = os.path.join(settings.BASE_DIR, 'templates', 'stats.html')
     f = open(stats_dir, 'w')
     f.write(stats_html)
+    stats_dir = os.path.join(settings.BASE_DIR, 'templates', 'stats.js')
+    f = open(stats_dir, 'w')
+    f.write("var stats = "+json.dumps(stats))
     f.close()
 
 
