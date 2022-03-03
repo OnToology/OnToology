@@ -152,6 +152,7 @@ def task_reporter(name=None, desc=None, success=None, finished=None, orun=None, 
     t.save()
     return t
 
+
 def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo=None, progress_inc=0.0, orun=None):
     """
     assuming the change_file is an ontology file
@@ -309,9 +310,6 @@ def get_default_conf():
     return config_result
 
 
-
-
-
 def create_of_get_conf(ofile, base_dir):
     """
     :param ofile: relative directory of the file e.g. dir1/dir2/my.owl
@@ -319,10 +317,17 @@ def create_of_get_conf(ofile, base_dir):
     """
     ofile_config_file_rel = os.path.join(config_folder_name, ofile, config_file_name)
     ofile_config_file_abs = os.path.join(base_dir, ofile_config_file_rel)
+    if os.path.exists(ofile_config_file_abs):
+        dolog("config file exists: %s" % ofile_config_file_abs)
+    else:
+        dolog("config file does not exist: %s" % ofile_config_file_abs)
     build_path(ofile_config_file_abs)
     dolog('config is called')
     config = configparser.ConfigParser()
     config.read(ofile_config_file_abs)
+    dolog("prev content: ")
+    with open(ofile_config_file_abs) as f:
+        dolog(f.read())
     # Will get the updated config for the new file
     j, config = get_json_from_conf_obj(config)
     print("create_of_get_conf: ")
@@ -333,6 +338,9 @@ def create_of_get_conf(ofile, base_dir):
     try:
         with open(ofile_config_file_abs, 'w') as configfile:
             config.write(configfile)
+        dolog("post content: ")
+        with open(ofile_config_file_abs) as f:
+            dolog(f.read())
     except Exception as e:
         dolog('exception: ')
         dolog(e)
@@ -351,10 +359,6 @@ def get_json_from_conf_obj(config):
     owl2jsonld_sec_name = 'owl2jsonld'
     themis_sec_name = 'themis'
     config_result = get_default_conf()
-    # dolog("#######################################################\n\n\n")
-    # # if len(config) == 1:
-    # dolog("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-    # dolog('get_json_from_conf_obj> configuration exists')
     # ar2dtool
     try:
         config_result['ar2dtool']['enable'] = config.getboolean(ar2dtool_sec_name, 'enable')
@@ -364,7 +368,7 @@ def get_json_from_conf_obj(config):
     # widoco
     try:
         config_result['widoco']['enable'] = config.getboolean(widoco_sec_name, 'enable')
-        config_result['widoco']['languages'] = config.get(widoco_sec_name, 'languages').replace(' ','').replace('"','').replace("'", '').split(',')
+        config_result['widoco']['languages'] = config.get(widoco_sec_name, 'languages').replace(' ', '').replace('"', '').replace("'", '').split(',')
         config_result['widoco']['webVowl'] = config.getboolean(widoco_sec_name, 'webVowl')
         dolog('got widoco enable value: ' + str(config_result['widoco']['enable']))
         dolog('includes webVowl: ' + str(config_result['widoco']['webVowl']))
@@ -398,6 +402,7 @@ def get_json_from_conf_obj(config):
     # dolog('full path is: '+ofile_config_file_abs)
     for sec in config_result.keys():
         if not config.has_section(sec):
+            dolog("section %s will be added" % sec)
             config.add_section(sec)
         for k in config_result[sec].keys():
             if k != 'languages':
