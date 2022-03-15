@@ -450,6 +450,22 @@ if __name__ == "__main__":
     else:
         print("load settings: %s" % sys.argv[1])
         load(sys.argv[1])
+
+    import os
+
+    if 'stiq_host' in os.environ:
+        host = os.environ['stiq_host']
+    if 'stiq_port' in os.environ:
+        port = int(os.environ['stiq_port'])
+
+    if 'stiq_log_dir' in os.environ:
+        log_dir = os.environ['stiq_log_dir']
+        logger = multiprocessing.get_logger()
+        logger = set_config(logger, log_dir)
+    else:
+        logger = multiprocessing.get_logger()
+        logger = set_config(logger)
+
     import autoncore
     from localwsgi import *
     from OnToology.models import *
