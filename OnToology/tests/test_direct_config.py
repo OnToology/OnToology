@@ -3,12 +3,12 @@ import string
 import random
 import shutil
 import os
-import pika
+# import pika
 from subprocess import call
 from .api_util import create_user, create_repo, delete_all_repos_from_db, get_repo_resource_dir, clone_if_not, delete_all_users
 from .api_util import prepare_resource_dir, PrintLogger
 import logging
-from OnToology import rabbit, autoncore
+from OnToology import autoncore
 from multiprocessing import Process
 from django.test import Client
 from unittest import TestCase
