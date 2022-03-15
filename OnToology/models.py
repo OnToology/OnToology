@@ -22,8 +22,6 @@ from django.db import models
 from datetime import datetime, timedelta
 
 
-
-
 class Repo(models.Model):
     url = models.CharField(max_length=200, default='Not set yet')
     last_used = models.DateTimeField(default=timezone.now)
@@ -175,9 +173,6 @@ class ORun(models.Model):
 
     def __unicode__(self):
         return "run <"+str(self.id)+"> " + self.user.email + " - " + self.repo.url + " - " + str(self.timestamp)
-
-
-
 
 
 

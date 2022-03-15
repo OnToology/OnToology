@@ -1,21 +1,22 @@
 from django.test import Client
 from unittest import TestCase
 from django.test.testcases import SerializeMixin
-from  .serializer import Serializer
+from .serializer import Serializer
 from OnToology.models import OUser, Repo
 from .api_util import create_user, create_repo, delete_all_repos_from_db, get_repo_resource_dir, clone_if_not, delete_all_users
 import json
+
 
 class TestOutline(Serializer, TestCase):
     def setUp(self):
         print("setup TestActionAPIs")
         delete_all_users()
+        delete_all_repos_from_db()
         if len(OUser.objects.all()) == 0:
             create_user()
         self.url = 'ahmad88me/ontoology-auto-test-no-res'
         self.user = OUser.objects.all()[0]
 
-        delete_all_repos_from_db()
 
     def test_outline_no_status(self):
         delete_all_repos_from_db()

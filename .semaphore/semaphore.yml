@@ -22,9 +22,8 @@ blocks:
             - echo "check OnToology content"
             - ls
             - echo "moving secrets"
-            - mv ../id_rsa ssh/
-            - mv ../id_rsa.pub ssh/
-            - mv ../secret_setup.sh scripts/
+            - mv /root/id_rsa* ssh/
+            - mv /root/secret_setup.sh scripts/
             - echo "content of ssh folder"
             - 'ls ssh/* '
             - 'echo "content of the file: "'
