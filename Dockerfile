@@ -13,6 +13,8 @@ RUN chmod 400 /root/.ssh/*
 #ARG db_port=27017
 #ARG rabbit_host=rabbitmq
 ARG github_password
+ARG github_email
+ARG github_user
 ARG client_id_login
 ARG client_id_public
 ARG client_id_private
