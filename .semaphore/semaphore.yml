@@ -17,11 +17,12 @@ blocks:
           commands:
             - ls -ltr
             - 'checkout '
-            - echo "check secrets "
+            - echo "check secrets"
             - ls ../*
             - echo "check OnToology content"
             - ls
             - echo "moving secrets"
+            - mkdir -p ssh
             - mv /root/id_ed25519* ssh/
             - mv /root/secret_setup.sh scripts/
             - echo "content of ssh folder"
