@@ -14,10 +14,35 @@
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">Repo: <span class="datafont">{{repo.url}}</span></h5>
-            <p>branch: <span class="datafont">{{branch}}</span></p>
-            <a class="btn btn-primary float-right" href="/generateforall?repo={{repo.url}}&branch={{branch}}">Generate
+                        <div class="form-group custom-control-inline">branch:
+            <select class="custom-select" onchange="if (this.value) window.location.href='/repos?repo={{repo.url}}&branch='+this.value">
+                {%if branch == "" %}
+                    <option selected disabled hidden>Select a branch</option>
+                {%endif%}
+                {%for b in branches%}
+                    {%if b == branch%}
+                      <option value="{{b}}" selected>{{b}}</option>
+                    {%else%}
+                      <option value="{{b}}">{{b}}</option>
+                    {%endif%}
+                {%endfor%}
+
+            </select>
+<!--                            <span style="font-size: 14px"> select a branch</span>-->
+        </div>
+<br>
+
+<!--            <p>branch: <span class="datafont">{{branch}}</span></p>-->
+            {%if branch != "" %}
+				{%if pub_url != ""%}
+Landing Page:
+			<a target="_blank" href="{{pub_url}}">{{pub_url}}</a>
+				{%endif%}
+            <a class="btn btn-primary float-right"  data-toggle="tooltip" title="Generate documentation, diagrams, evaluation report, and JSON-LD context" href="/generateforall?repo={{repo.url}}&branch={{branch}}">Generate
                 Resources</a>
-            <button class="btn btn-primary float-right mr-2" id="load">Load processed ontologies</button>
+            <button class="btn btn-primary float-right mr-2" id="load"  data-container="body" title="Find all ontologies in your repositories that are processed with OnToology.">Load processed ontologies</button>
+
+            {%endif%}
         </div>
     </div>
     <br>
@@ -42,7 +67,6 @@
             </div>
             <div class="modal-body">
                 <div id="publish-div-msg">
-
                 </div>
                 <p>Reserve a w3id identifier (e.g., w3id.org/def/your_reserved_id)</p>
                 <!--          <form method="GET" action="/publish" class="form-inline">-->
@@ -72,11 +96,16 @@
 </div>
 
 <script>
+	var ont_pnames = {
+		{%for pn in repo.publishnames.all%}
+			"{{pn.ontology}}": "{{pn.name}}",
+		{%endfor%}
+	}
     var pnames = [{%for pn in repo.publishnames.all%}
             "{{pn.ontology}}",
           {%endfor%}
      ];
-    var card_html_pre='<div class="col-lg-4 col-md-6 col-sm-6 col-xs-12"><div class="alert-info card"><div class="card-body">';
+    var card_html_pre='<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12"><div class="alert-info card"><div class="card-body">';
     var card_html_post='</div></div></div>';
     var ont_url = "/ontologies?repo={{repo.url}}&branch={{branch}}"
 
@@ -157,7 +186,7 @@
                     html_list+= get_themis_score_html(resp.ontologies[i]);
                     card_html_body = get_card_body(resp.ontologies[i]);
                     //console.log('getting tagid');
-                    //console.log(resp.ontologies[i].ontology);
+                    console.log(resp.ontologies[i]);
                     tagid = resp.ontologies[i].ontology.substring(1,)+"-coll";
                     tagid = tagid.replace(/\./g, "--");
                     tagid = tagid.replace(/\//g, "---");
@@ -209,7 +238,8 @@
         //console.log(jobj)
        // console.log('key k: ');
        // console.log(k)
-
+		var key_label
+		var view_label
         var attrs=Object.keys(jobj);
         var conf_pre="<li class='list-group-item'>";
         var conf_post="</li>";
@@ -220,15 +250,30 @@
         for(i=0;i<attrs.length;i++){
            // console.log('attrs[i]: ');
            // console.log(attrs[i]);
+           key_label = k+'-'+attrs[i];
+           view_label = get_new_label(key_label)
             if(boolsvals.includes(jobj[attrs[i]])){
-                 tool_html += conf_pre + bool_html(ontology,k+'-'+attrs[i],k+'-'+attrs[i], jobj[attrs[i]])
+                 tool_html += conf_pre + bool_html(ontology,view_label,key_label, jobj[attrs[i]])
             }
             else{
-                 tool_html += conf_pre + txtval_html(ontology,k+'-'+attrs[i],k+'-'+attrs[i], jobj[attrs[i]])
+                 tool_html += conf_pre + txtval_html(ontology,view_label,key_label, jobj[attrs[i]])
             }
         }
         return tool_html;
     }
+
+	function get_new_label(label){
+		var d={
+			"widoco-enable": "Documentation (Widoco)",
+			"widoco-languages": "Documentation Language (Widoco)",
+			"widoco-webVowl": "Visualisation (WebVowl)",
+			"ar2dtool-enable": "Visualisation (AR2DTool)",
+			"oops-enable": "Evaluation (OOPS!)",
+			"owl2jsonld-enable": "JSON-LD Context (owl2jsonld)",
+			"themis-enable": "Validation (Themis)"
+		}
+		return d[label];
+	}
 
     function bool_html(ontology,label, name, val){
         var ch_html="";
@@ -274,7 +319,17 @@
         if(!publish_exists(ontology)){
             return publish_html(ontology);
         }
+
         var republish_btn='<button class="btn btn-primary" onclick="republish_click(\''+ontology+'\')">republish</button>';
+        var onames = Object.keys(ont_pnames);
+        for(var i=0;i<onames.length;i++){
+        	console.debug('oname: '+onames[i]);
+            if(ontology==onames[i]){
+            	console.debug('if oname: '+onames[i]);
+		        republish_btn += '<a class="btn btn-primary ml-2" href="/delete_published?name='+ont_pnames[onames[i]]+'">unpublish</a>';
+            	break;
+            }//if
+        }//for
         return republish_btn;
     }
 
@@ -331,6 +386,9 @@
     }
 
     $("#spinner").hide();
+    $(document).ready(function(){
+        $("#load").click();
+    });
 
 
 </script>
