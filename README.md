@@ -1,12 +1,8 @@
-# ![alt text](https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/logoprop1_readme.png "OnToology")
-<!--[![Build Status](https://semaphoreci.com/api/v1/ahmad88me/ontoology/branches/master/badge.svg)](https://semaphoreci.com/ahmad88me/ontoology)
--->
-<!--
-[![Build Status](https://ahmad88me.semaphoreci.com/badges/OnToology.svg)](https://ahmad88me.semaphoreci.com/projects/OnToology) 
-[![codecov](https://codecov.io/gh/OnToology/OnToology/branch/master/graph/badge.svg)](https://codecov.io/gh/OnToology/OnToology)
--->
-[![Build Status](https://ahmad88me.semaphoreci.com/badges/OnToology/branches/master.svg)](https://ahmad88me.semaphoreci.com/projects/OnToology) 
-[![codecov](https://codecov.io/gh/OnToology/OnToology/branch/master/graph/badge.svg?token=PJgHWaaa9l)](https://codecov.io/gh/OnToology/OnToology)
+# ![alt text](https://raw.githubusercontent.com/OnToology/OnToology/main/media/icons/logoprop1_readme.png "OnToology")
+
+
+[![Build Status](https://ahmad88me.semaphoreci.com/badges/OnToology/branches/main.svg)](https://ahmad88me.semaphoreci.com/projects/OnToology) 
+[![codecov](https://codecov.io/gh/OnToology/OnToology/branch/main/graph/badge.svg?token=PJgHWaaa9l)](https://codecov.io/gh/OnToology/OnToology)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1317786.svg)](https://doi.org/10.5281/zenodo.1317786)
 [![Twitter](https://img.shields.io/twitter/follow/OnToology.svg?style=social&label=@OnToology)](https://twitter.com/OnToology)
 
@@ -184,3 +180,10 @@ docker exec -it <container name> /bin/sh
 
 
 -->
+
+
+# Deploy
+1. Clone the repo.
+2. Set up the variables in `OnToology/localwsgi.py` (see above for the detauls).
+3. Run the stiqueue server (with the ip and port). 
+4. Run `OnToology/sqclient.py`
