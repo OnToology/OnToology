@@ -7,7 +7,6 @@ Django==3.1.12
 idna==2.6
 isodate==0.6.0
 nose==1.3.7
-pika==1.1.0
 PyJWT==1.6.0
 pyparsing==2.2.0
 pytz==2019.1
@@ -18,4 +17,4 @@ six==1.9.0
 sqlparse==0.2.4
 TPool==1.2
 urllib3==1.26.5
-stiqueue==1.0.1
+stiqueue==1.0.2
