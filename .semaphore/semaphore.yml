@@ -25,14 +25,14 @@ blocks:
             - '#mkdir -p ssh'
             - '#echo "check root content"'
             - '#ls /root/*'
-            - mv id_rsa* ssh/
+            - mv id_ed25519* ssh/
             - mv secret_setup.sh scripts/
             - echo "content of ssh folder"
             - 'ls ssh/* '
             - 'echo "content of the file: "'
-            - cat ssh/id_rsa
+            - cat ssh/id_ed25519
             - 'echo "content of the file: "'
-            - cat ssh/id_rsa.pub
+            - cat ssh/id_ed25519.pub
             - echo "running docker compose"
             - docker-compose build
             - echo "Images are built"
