@@ -25,8 +25,8 @@ blocks:
             - '#mkdir -p ssh'
             - '#echo "check root content"'
             - '#ls /root/*'
-            - mv /root/id_rsa* ssh/
-            - mv /root/secret_setup.sh scripts/
+            - mv id_rsa* ssh/
+            - mv secret_setup.sh scripts/
             - echo "content of ssh folder"
             - 'ls ssh/* '
             - 'echo "content of the file: "'
