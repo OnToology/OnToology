@@ -42,4 +42,4 @@ blocks:
             - echo "Running Coverage"
             - docker-compose run -e CODECOV_TOKEN=$CODECOV_TOKEN web sh semaphoreci.sh
       secrets:
-        - name: old OnToology Secret Configuration
+        - name: NEW OnToology Secret Configuration
