@@ -17,7 +17,7 @@ blocks:
           commands:
             - ls -ltr
             - 'checkout '
-            - echo "check secrets "
+            - echo "check secrets"
             - ls ../*
             - echo "check OnToology content"
             - ls
