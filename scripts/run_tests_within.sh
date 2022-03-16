@@ -18,4 +18,6 @@ export test_clone="true"
 export test_push="false"
 export test_pull="false"
 
+
+#.venv/bin/python manage.py test --pattern="test_direct_magic.py" --settings=OnToology.settings-tests
 .venv/bin/python manage.py test OnToology --settings=OnToology.settings-tests

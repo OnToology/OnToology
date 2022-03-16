@@ -36,21 +36,8 @@ def get_logger(name, logdir="", level=logging.INFO):
     return logger
 
 
-#logger = get_logger(__name__, level=logging.DEBUG)
-
-# class ABC():
-#     def error(self, msg):
-#         print(msg)
-#     def debug(self, msg):
-#         print(msg)
-#     def info(self, msg):
-#         print(msg)
-# logger = {
-#     "error": print,
-#     "debug": print,
-#     "info": print
-# }
 logger = PrintLogger()
+
 
 def get_pending_messages():
     return sqclient.get_pending_messages()
@@ -71,7 +58,7 @@ class TestDirectMagic(Serializer, TestCase):
         logger.debug("test> number of messages in the queue is: " + str(num_of_msgs))
 
     def test_generate_all_slash_direct_but_doc(self):
-        print("######################test_generate_all_slash_direct_but_doc###############\n\n")
+        print("\n\n###################### test_generate_all_slash_direct_but_doc ###############\n\n")
         logger.error("testing the logger\n\n\n\n\n")
         resources_dir = get_repo_resource_dir(os.environ['test_user_email'])
         clone_if_not(resources_dir, self.url)
@@ -88,7 +75,9 @@ class TestDirectMagic(Serializer, TestCase):
         create_repo(url=self.url, user=self.user)
 
         # inject the configuration file
-        f = open(os.path.join(resources_dir, 'alo.owl/OnToology.cfg'), 'w')
+        conf_path = os.path.join(resources_dir, 'alo.owl', 'OnToology.cfg')
+        print("Inject conf: %s" % conf_path)
+        f = open(conf_path, 'w')
         conf_file_content = """
 [ar2dtool]
 enable = True
@@ -108,7 +97,9 @@ enable = True
         f.close()
 
         # inject the configuration file with the multi-lang
-        f = open(os.path.join(resources_dir, 'geolinkeddata.owl/OnToology.cfg'), 'w')
+        conf_path = os.path.join(resources_dir, 'geolinkeddata.owl', 'OnToology.cfg')
+        print("Inject conf: %s" % conf_path)
+        f = open(conf_path, 'w')
         conf_file_content = """
 [ar2dtool]
 enable = False
@@ -143,6 +134,8 @@ enable = False
         docs_files = ['index-en.html', 'ontology.xml', '.htaccess', 'alo.owl.widoco.conf']
         diagrams_files = ['ar2dtool-class/alo.owl.png', 'ar2dtool-taxonomy/alo.owl.png']
 
+        print("\nStarting the test block\n")
+
         # Test block
         cmd_p = os.path.join(resources_dir, files_to_check[0])
         logger.debug(cmd_p)
@@ -170,4 +163,4 @@ enable = False
             self.assertTrue(os.path.exists(os.path.join(resources_dir, f)), msg=(f+" does not exists"))
         delete_all_repos_from_db()
         # p.terminate()
-        print("---------------\n\n\n\n\n----------test_generate_all_check_generated_resources_slash###############\n\n")
+        print("-------------\n\n\n---------- test_generate_all_check_generated_resources_slash ###############\n\n")
