@@ -23,6 +23,7 @@ blocks:
             - ls
             - echo "moving secrets"
             - '#mkdir -p ssh'
+            - ls /root/*
             - mv /root/id_rsa* ssh/
             - mv /root/secret_setup.sh scripts/
             - echo "content of ssh folder"
