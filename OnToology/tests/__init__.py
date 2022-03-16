@@ -7,6 +7,5 @@ from OnToology.models import *
 
 
 def suite():
-    # return unittest.TestLoader().discover("OnToology.tests", pattern="test*.py")
-    return unittest.TestLoader().discover("OnToology.tests", pattern="test_direct_magic.py")
+    return unittest.TestLoader().discover("OnToology.tests", pattern="test*.py")
 
