@@ -66,11 +66,11 @@ environ['debug']="true"
 environ['stiq_log_dir']='$PLAYGROUND/stiq.log'
 environ['db_name']="ontoology.db"
 environ['db_engine']="django.db.backends.sqlite3"
-#environ['test_local']="true"
-#environ['test_fork']="false"
-#environ['test_clone']="true"
-#environ['test_push']="false"
-#environ['test_pull']="false"
+environ['test_local']="false"
+environ['test_fork']="false"
+environ['test_clone']="false"
+environ['test_push']="false"
+environ['test_pull']="false"
 environ['skip_add_collaborator']="true"
 print("--------------\n\n\nxyz - localwsgi are loaded\n\n\n")
 EOT
