@@ -101,11 +101,17 @@ def tools_execution(changed_files, base_dir, logfile, dolog_fname=None, target_r
     global g
     global dolog
     global log_file_dir
+    dolog("tools execution")
     g = g_local
     log_file_dir = logfile
     if dolog_fname is not None:
+        dolog("prepare logger")
         prepare_logger(dolog_fname)
         dolog = dolog_logg
+        dolog("logger prepared")
+
+    dolog("after the logger")
+    # dolog = p # This is to print for debugging only
     repo.notes = ''
     repo.save()
     progress_out_of = 70.0
@@ -318,16 +324,19 @@ def create_of_get_conf(ofile, base_dir):
     ofile_config_file_rel = os.path.join(config_folder_name, ofile, config_file_name)
     ofile_config_file_abs = os.path.join(base_dir, ofile_config_file_rel)
     if os.path.exists(ofile_config_file_abs):
-        dolog("config file exists: %s" % ofile_config_file_abs)
+        dolog("create_of_get_conf> config file exists: %s" % ofile_config_file_abs)
     else:
-        dolog("config file does not exist: %s" % ofile_config_file_abs)
+        dolog("create_of_get_conf> config file does not exist (will be created): %s" % ofile_config_file_abs)
     build_path(ofile_config_file_abs)
     dolog('config is called')
     config = configparser.ConfigParser()
     config.read(ofile_config_file_abs)
     dolog("prev content: ")
-    with open(ofile_config_file_abs) as f:
-        dolog(f.read())
+    if os.path.exists(ofile_config_file_abs):
+        with open(ofile_config_file_abs) as f:
+            dolog(f.read())
+    else:
+        dolog("config path does not exist (it is not an error for new repos)")
     # Will get the updated config for the new file
     j, config = get_json_from_conf_obj(config)
     print("create_of_get_conf: ")

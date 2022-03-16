@@ -48,12 +48,12 @@ There are two kinds of tests:
 *This is only available for certain people*
 1. Copy the keys into the folder `ssh`
 2. Create a file `scripts/secret_setup.sh`
-3. Write the following and fill the missing values (currently the private app is not added in the tests, so it can be left empty). (see secret setup section below)
-
+3. Write the following and fill the missing values (currently the private app is not added in the tests, so it can be left empty). (see secret setup section below).
 4. Run the tests on docker
 ```
 sh scripts/run_docker_tests.sh
 ```
+*Note:* If you made changes, you might need to rebuild the image `docker-compose build`
 
 
 ## Secret Setup

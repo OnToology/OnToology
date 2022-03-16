@@ -204,11 +204,15 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
             drepo.progress = 20.0
         files_to_verify = []
         if log_file_dir is None:
+            dolog("Prepare the log for the user: %s" % user)
             prepare_log(user)
+            dolog("prepared the log")
+        dolog("set success")
         otask.success = True
+        dolog("save otask")
         otask.save()
     except Exception as e:
-        dolog("Exception: "+str(e))
+        dolog("1) Exception: "+str(e))
         traceback.print_exc()
         otask.success = False
         otask.finished = True
@@ -232,7 +236,7 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
                                    target_repo=target_repo, g_local=g, dolog_fname=logger_fname,
                                    change_status=change_status, repo=drepo, orun=orun)
     except Exception as e:
-        dolog("Exception: " + str(e))
+        dolog("2) Exception - tools: " + str(e))
         traceback.print_exc()
         # otask.success = False
         # otask.finished = True
@@ -306,7 +310,7 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
                     drepo.save()
                     raise Exception(r['error'])
             except Exception as e:
-                print("exception: " + str(e))
+                print("3) Exception: " + str(e))
                 traceback.print_exc()
                 exception_if_exists = str(e)
                 dolog('We have not been able to create the pull request. Please contact us to analyze the issue. ' + exception_if_exists)
@@ -333,7 +337,7 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
 
 
     except Exception as e:
-        print("exception: "+str(e))
+        print("4) Exception - generic: "+str(e))
         traceback.print_exc()
         otask.success = False
         otask.description = str(e)
