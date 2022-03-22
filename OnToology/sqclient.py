@@ -256,27 +256,33 @@ def can_proceed(body):
     :param body:
     :return: bool
     """
-
-    j = json.loads(body)
-    if j['action'] in ['magic', 'change_conf', 'publish']:
-        repo_name = j['repo']
-        lock.acquire()
-        busy = repo_name in locked_repos
-        if not busy:
-            repo_pure_name = repo_name.split('/')[1]
-            pure_locked = [r.split('/')[1] for r in locked_repos]
-            pure_busy = repo_pure_name in pure_locked
-        else:
-            pure_busy = busy
-        if not pure_busy:
-            logger.debug('not busy repo: ' + repo_name)
-            locked_repos.append(repo_name)
-            logger.debug("start locked repos: "+str(locked_repos))
-        else:
-            logger.debug('is busy repo: ' + repo_name)
-        # sender.send(locked_repos)
-        lock.release()
-        return not pure_busy
+    try:
+        j = json.loads(body)
+        if j['action'] in ['magic', 'change_conf', 'publish']:
+            repo_name = j['repo']
+            lock.acquire()
+            busy = repo_name in locked_repos
+            if not busy:
+                repo_pure_name = repo_name.split('/')[1]
+                pure_locked = [r.split('/')[1] for r in locked_repos]
+                pure_busy = repo_pure_name in pure_locked
+            else:
+                pure_busy = busy
+            if not pure_busy:
+                logger.debug('not busy repo: ' + repo_name)
+                locked_repos.append(repo_name)
+                logger.debug("start locked repos: "+str(locked_repos))
+            else:
+                logger.debug('is busy repo: ' + repo_name)
+            # sender.send(locked_repos)
+            lock.release()
+            return not pure_busy
+    except Exception as e:
+        print("can_proceed> Exception: ")
+        print(str(e))
+        print(body)
+        traceback.print_exc()
+        return False
     #         # if busy:
     #         #     #logger.debug(repo_name+" is busy --- ")
     #         #     time.sleep(5)
