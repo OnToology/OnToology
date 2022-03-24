@@ -374,6 +374,8 @@ def add_hook(request):
         print("payload: " + s)
         j = json.loads(s, strict=False)
         print("json is loaded")
+        print("keys: ")
+        print(str(j.keys()))
         if "ref" in j:
             branch = j["ref"].split("/")[-1]
             if branch == "gh-pages":
@@ -899,6 +901,7 @@ def get_bundle(request):
     else:
         return render(request, 'msg.html', {'msg': 'Expects the repo, the branch, and the ontology'})
 
+
 @login_required
 def delete_published(request):
     name = request.GET['name']
@@ -949,6 +952,7 @@ def get_outline(request):
         traceback.print_exc()
         # raise Exception(str(e))
         return JsonResponse({'error': 'Internal error'}, status=500)
+
 
 @login_required
 def progress_page(request):
