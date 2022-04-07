@@ -143,7 +143,6 @@ class OntologyStatusPair(models.Model):
         return self.name + ' - ' + self.status
 
 
-
 class PublishName(models.Model):
     name = models.TextField()
     user = models.ForeignKey(OUser, on_delete=models.CASCADE, related_name='publishnames')
