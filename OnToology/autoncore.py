@@ -1135,6 +1135,8 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         dolog("publish> error: %s" % str(e))
         return error_msg
 
+    prepare_logger(useremail+"-publish")
+
     repos = Repo.objects.filter(url=target_repo)
     if len(repos) == 0:
         error_msg = "The repository: <"+target_repo+"> is not found"
@@ -1162,9 +1164,9 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
     if len(pns_name) > 1:
         error_msg = 'a duplicate published names, please contact us ASAP to fix it'
         dolog("publish> " + error_msg)
-        otask.success=False
-        otask.finished=True
-        otask.description=error_msg
+        otask.success = False
+        otask.finished = True
+        otask.description = error_msg
         otask.save()
         return error_msg
 
@@ -1179,17 +1181,17 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
     if len(pns_ontology) == 0 and name.strip()=='':
         error_msg = 'can not reserve an empty name'
         dolog('publish> '+error_msg)
-        otask.success=False
-        otask.finished=True
-        otask.description=error_msg
+        otask.success = False
+        otask.finished = True
+        otask.description = error_msg
         otask.save()
         return error_msg
-    elif len(pns_ontology) > 0 and name.strip()!='':  # If the ontology is published with another name
+    elif len(pns_ontology) > 0 and name.strip() != '':  # If the ontology is published with another name
         error_msg = 'can not reserve multiple names for the same ontology'
         dolog("publish> " + error_msg)
-        otask.success=False
-        otask.finished=True
-        otask.description=error_msg
+        otask.success = False
+        otask.finished = True
+        otask.description = error_msg
         otask.save()
         return error_msg
     # name can be empty, which means a republish. pname can't be empty. So if name is empty, it will fetch the
@@ -1203,15 +1205,15 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
     if len(pns_name) == 1 and len(pns_ontology) == 0:
         error_msg = "This name is already taken, please choose a different one"
         dolog("publish> " + error_msg)
-        otask.success=False
-        otask.finished=True
+        otask.success = False
+        otask.finished = True
         otask.description=error_msg
         otask.save()
         return error_msg
 
     otask.success = True
-    otask.finished=True
-    otask.description="Name reservation has been validated"
+    otask.finished = True
+    otask.description = "Name reservation has been validated"
     otask.save()
     otask = OTask(name='.htaccess Preparation', finished=False, success=False, description="Get .htaccess",
                   orun=orun)
@@ -1258,18 +1260,18 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
                                                ontology_rel_path=ontology[1:])
         dolog("new htaccess: ")
         # dolog(new_htaccess)
-        otask.description="updating the .htaccess on GitHub"
+        otask.description = "updating the .htaccess on GitHub"
         otask.save()
         update_file(target_repo=target_repo,
                     path=rel_htaccess_path,
                     content=new_htaccess, branch='gh-pages', message='OnToology Publish', g_local=gg)
 
-        otask.success=True
-        otask.finished=True
+        otask.success = True
+        otask.finished = True
         otask.description = "The .htaccess is updated successfully"
         otask.save()
-        otask = OTask(name='Redirection', finished=False, success=False, description="setup the .htaccess file on OnToogy server",
-                      orun=orun)
+        otask = OTask(name='Redirection', finished=False, success=False,
+                      description="setup the .htaccess file on OnToogy server", orun=orun)
         dolog("publish> otask is init")
         otask.save()
 
@@ -1293,7 +1295,6 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         otask.description="The ontology is published correctly"
         otask.save()
         return ""  # means it is published correctly
-
 
 
 def change_configuration(user_email, target_repo, data, ontologies):

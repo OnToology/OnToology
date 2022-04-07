@@ -174,7 +174,6 @@ class ORun(models.Model):
         return "run <"+str(self.id)+"> " + self.user.email + " - " + self.repo.url + " - " + str(self.timestamp)
 
 
-
 class OTask(models.Model):
     name = models.TextField()
     description = models.TextField()
