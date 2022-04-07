@@ -416,7 +416,7 @@ def add_hook(request):
                     else:
                         return JsonResponse({'status': True, 'msg': msg})
         else:
-            return JsonResponse({'status': False, 'error': 'No ref in the webhook request'})
+            return JsonResponse({'status': True, 'error': 'No ref is found (not an error).'})
     except Exception as e:
         print("add hook exception: " + str(e))
         traceback.print_exc()
