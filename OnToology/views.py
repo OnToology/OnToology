@@ -366,6 +366,7 @@ def add_hook(request):
     print("header: ")
     print(request.headers)
     changed_files = []
+    target_repo = None
     if settings.test_conf['local']:
         print('We are in test mode')
     try:
@@ -378,7 +379,8 @@ def add_hook(request):
             branch = j["ref"].split("/")[-1]
             if branch == "gh-pages":
                 print("it is just gh-pages")
-                return render(request, 'msg.html', {'msg': 'it is gh-pages, so nothing'})
+                msg = 'it is gh-pages, so nothing'
+                return JsonResponse({'status': True, 'msg': msg})
             else:
                 s = j['repository']['url'] + 'updated files: ' + str(j['head_commit']['modified'])
                 print("just s: " + str(s))
@@ -412,7 +414,9 @@ def add_hook(request):
                         print(msg)
                         return
                     else:
-                        return render(request, 'msg.html', {'msg': msg})
+                        return JsonResponse({'status': True, 'msg': msg})
+        else:
+            return JsonResponse({'status': False, 'error': 'No ref in the webhook request'})
     except Exception as e:
         print("add hook exception: " + str(e))
         traceback.print_exc()
@@ -422,6 +426,9 @@ def add_hook(request):
             return JsonResponse({'status': False, 'error': str(e)})
         else:
             return JsonResponse({'status': False, 'error': str(e)})
+    if target_repo is None:
+        return JsonResponse({'status': False, 'error': 'Unknown'})
+
     try:
         print('##################################################')
         print('changed_files: ' + str(changed_files))
@@ -445,6 +452,8 @@ def add_hook(request):
         else:
             error_msg = 'generic error, please report the problem to us ontoology@delicias.dia.fi.upm.es'
         s = error_msg
+        return JsonResponse({'status': False, 'error': error_msg})
+
     return JsonResponse({'status': True})
     # return render(request, 'msg.html', {'msg': '' + s}, )
 
