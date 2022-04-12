@@ -82,19 +82,40 @@ tools_conf = {
     'owl2jsonld': {'folder_name': 'context'}
 }
 
+logger = logging.getLogger(__name__)
+
+
+def set_config(logger, logdir=""):
+    """
+    :param logger: logger
+    :param logdir: the directory log
+    :return:
+    """
+    if logdir != "":
+        handler = logging.FileHandler(logdir)
+    else:
+        handler = logging.StreamHandler()
+    formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(logging.DEBUG)
+    return logger
+
 
 def prepare_logger(user, ext='.log_new'):
+    global logger
     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
     l = os.path.join(home, 'log', user + sec + ext)
-    f = open(l, 'w')
-    f.close()
-    logging.basicConfig(filename=l, format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
+    logger = set_config(logger, l)
+    # f = open(l, 'w')
+    # f.close()
+    # logging.basicConfig(filename=l, format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
     return l
 
 
 def dolog(msg):
     print("dolog> "+msg)
-    logging.critical(msg)
+    logger.critical(msg)
 
 
 def init_g():
@@ -334,7 +355,6 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
 
         otask.success = True
         otask.save()
-
 
     except Exception as e:
         print("4) Exception - generic: "+str(e))
@@ -1135,7 +1155,7 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         dolog("publish> error: %s" % str(e))
         return error_msg
 
-    prepare_logger(useremail+"-publish")
+    prepare_logger(useremail+"-publish-")
 
     repos = Repo.objects.filter(url=target_repo)
     if len(repos) == 0:

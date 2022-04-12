@@ -122,11 +122,12 @@ def home(request):
     num_of_users = len(OUser.objects.all())
     num_of_repos = len(Repo.objects.all())
     try:
-        is_manager =  request.user.email in get_managers()
+        is_manager = request.user.email in get_managers()
     except:
         is_manager = False
     return render(request, 'home.html', {'repos': repos, 'user': request.user, 'num_of_users': num_of_users,
                                          'num_of_repos': num_of_repos, 'manager': is_manager, 'stats': read_stats()})
+
 
 def read_stats():
     stats_dir = os.path.join(settings.BASE_DIR, 'templates', 'stats.js')
@@ -165,6 +166,7 @@ def get_ontologies(request):
                 return JsonResponse(j, status=400)
     else:
         return JsonResponse({'error': 'expecting the branch and repo'}, status=400)
+
 
 def get_pub_page(repo):
     """
