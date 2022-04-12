@@ -115,7 +115,7 @@ def prepare_logger(user, ext='.log_new'):
 
 def dolog(msg):
     print("dolog> "+msg)
-    logging.critical(msg)
+    logger.critical(msg)
 
 
 def init_g():
@@ -355,7 +355,6 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
 
         otask.success = True
         otask.save()
-
 
     except Exception as e:
         print("4) Exception - generic: "+str(e))
