@@ -122,11 +122,12 @@ def home(request):
     num_of_users = len(OUser.objects.all())
     num_of_repos = len(Repo.objects.all())
     try:
-        is_manager =  request.user.email in get_managers()
+        is_manager = request.user.email in get_managers()
     except:
         is_manager = False
     return render(request, 'home.html', {'repos': repos, 'user': request.user, 'num_of_users': num_of_users,
                                          'num_of_repos': num_of_repos, 'manager': is_manager, 'stats': read_stats()})
+
 
 def read_stats():
     stats_dir = os.path.join(settings.BASE_DIR, 'templates', 'stats.js')
@@ -165,6 +166,7 @@ def get_ontologies(request):
                 return JsonResponse(j, status=400)
     else:
         return JsonResponse({'error': 'expecting the branch and repo'}, status=400)
+
 
 def get_pub_page(repo):
     """
@@ -366,6 +368,7 @@ def add_hook(request):
     print("header: ")
     print(request.headers)
     changed_files = []
+    target_repo = None
     if settings.test_conf['local']:
         print('We are in test mode')
     try:
@@ -378,7 +381,8 @@ def add_hook(request):
             branch = j["ref"].split("/")[-1]
             if branch == "gh-pages":
                 print("it is just gh-pages")
-                return render(request, 'msg.html', {'msg': 'it is gh-pages, so nothing'})
+                msg = 'it is gh-pages, so nothing'
+                return JsonResponse({'status': True, 'msg': msg})
             else:
                 s = j['repository']['url'] + 'updated files: ' + str(j['head_commit']['modified'])
                 print("just s: " + str(s))
@@ -412,7 +416,9 @@ def add_hook(request):
                         print(msg)
                         return
                     else:
-                        return render(request, 'msg.html', {'msg': msg})
+                        return JsonResponse({'status': True, 'msg': msg})
+        else:
+            return JsonResponse({'status': True, 'error': 'No ref is found (not an error).'})
     except Exception as e:
         print("add hook exception: " + str(e))
         traceback.print_exc()
@@ -422,6 +428,9 @@ def add_hook(request):
             return JsonResponse({'status': False, 'error': str(e)})
         else:
             return JsonResponse({'status': False, 'error': str(e)})
+    if target_repo is None:
+        return JsonResponse({'status': False, 'error': 'Unknown'})
+
     try:
         print('##################################################')
         print('changed_files: ' + str(changed_files))
@@ -445,6 +454,8 @@ def add_hook(request):
         else:
             error_msg = 'generic error, please report the problem to us ontoology@delicias.dia.fi.upm.es'
         s = error_msg
+        return JsonResponse({'status': False, 'error': error_msg})
+
     return JsonResponse({'status': True})
     # return render(request, 'msg.html', {'msg': '' + s}, )
 
@@ -1019,12 +1030,13 @@ def publish_view(request):
         print("missing branch")
         return HttpResponseRedirect('/')
     name = request.GET['name'].strip()
+    name = filter_pub_name(name)
     target_repo = request.GET['repo'].strip()
     ontology_rel_path = request.GET['ontology'].strip()
     branch = request.GET['branch'].strip()
     print("name: "+name)
     pns = PublishName.objects.filter(name=name)
-    if len(pns)> 0:
+    if len(pns) > 0:
         return JsonResponse({'msg': 'This name is already taken, try to choose another name'}, status=400)
     try:
         j = {
@@ -1042,12 +1054,11 @@ def publish_view(request):
         the published ontology to be available for GitHub pages. If it is not published within a few minutes 
         you can contact us.''' % (ontology_rel_path[1:], w3id_url, w3id_url)
         return JsonResponse({'msg': msg})
-        # return render(request, 'msg.html', {'msg': msg, 'img': 'https://github.com/OnToology/OnToology/raw/master/media/misc/gh-pages.png'})
     except Exception as e:
         print("publish_view> error : %s" % str(e))
         msg = "Error publishing your ontology. Please contact us to fix it."
-        # return render(request, 'msg.html', {'msg': msg})
         return JsonResponse({'msg': msg}, status=500)
+
 
 @login_required
 def syntax_check_view(request):
@@ -1063,7 +1074,8 @@ def syntax_check_view(request):
     format = request.GET['format']
     url = request.GET['url']
     if format not in valid_formats:
-        return render(request, 'syntax.html', {'error': '<%s> format is not supported'%format, 'formats': valid_formats})
+        return render(request, 'syntax.html', {'error': '<%s> format is not supported' % format,
+                                               'formats': valid_formats})
         # return render(request, 'msg.html', {'msg': '<%s> format is not supported'})
     if 'https://' not in url[:8] and 'http://' not in url[:7]:
         return render(request, 'syntax.html', {'error': 'Invalid URL', 'formats': valid_formats})
@@ -1073,9 +1085,9 @@ def syntax_check_view(request):
         g.parse(url, format=format)
         return render(request, 'syntax.html', {'msg': 'The syntax of the ontology is correct', 'formats': valid_formats})
     except Exception as e:
-        return render(request, 'syntax.html',
-                      {'formats': valid_formats,
-                        'error': 'The syntax of the ontology is incorrect. The error message is: '+str(e)})
+        return render(request, 'syntax.html', {'formats': valid_formats,
+                                               'error': 'The syntax of the ontology is incorrect. The error message is: '+str(e)})
+
 
 def publications(request):
     return render(request, 'publications.html')
