@@ -1201,7 +1201,7 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
     otask.description = "Verify ontology publication"
     otask.save()
 
-    if len(pns_ontology) == 0 and name.strip()=='':
+    if len(pns_ontology) == 0 and name.strip() == '':
         error_msg = 'can not reserve an empty name'
         dolog('publish> '+error_msg)
         otask.success = False
@@ -1249,7 +1249,7 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         rel_htaccess_path = os.path.join('OnToology', ontology[1:], 'documentation/.htaccess')
         try:
             htaccess = get_file_content(target_repo=target_repo, path=rel_htaccess_path, branch=branch)
-            otask.description=".htaccess content is fetched successfully"
+            otask.description = ".htaccess content is fetched successfully"
             otask.save()
             dolog("publish> gotten the htaccess successfully")
         except Exception as e:
