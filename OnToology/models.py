@@ -143,7 +143,6 @@ class OntologyStatusPair(models.Model):
         return self.name + ' - ' + self.status
 
 
-
 class PublishName(models.Model):
     name = models.TextField()
     user = models.ForeignKey(OUser, on_delete=models.CASCADE, related_name='publishnames')
@@ -173,7 +172,6 @@ class ORun(models.Model):
 
     def __unicode__(self):
         return "run <"+str(self.id)+"> " + self.user.email + " - " + self.repo.url + " - " + str(self.timestamp)
-
 
 
 class OTask(models.Model):

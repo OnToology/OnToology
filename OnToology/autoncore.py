@@ -82,19 +82,43 @@ tools_conf = {
     'owl2jsonld': {'folder_name': 'context'}
 }
 
+logger = logging.getLogger(__name__)
+
+
+def set_config(logger, logdir=""):
+    """
+    :param logger: logger
+    :param logdir: the directory log
+    :return:
+    """
+    if logdir != "":
+        handler = logging.FileHandler(logdir)
+    else:
+        handler = logging.StreamHandler()
+    formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+    handler.setFormatter(formatter)
+    logger.handlers = []
+    # while len(logger.handlers) > 0:#logger.hasHandlers():
+    #     logger.removeHandler(logger.handlers[0])
+    logger.addHandler(handler)
+    logger.setLevel(logging.DEBUG)
+    return logger
+
 
 def prepare_logger(user, ext='.log_new'):
+    global logger
     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
     l = os.path.join(home, 'log', user + sec + ext)
-    f = open(l, 'w')
-    f.close()
-    logging.basicConfig(filename=l, format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
+    logger = set_config(logger, l)
+    # f = open(l, 'w')
+    # f.close()
+    # logging.basicConfig(filename=l, format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
     return l
 
 
 def dolog(msg):
     print("dolog> "+msg)
-    logging.critical(msg)
+    logger.critical(msg)
 
 
 def init_g():
@@ -334,7 +358,6 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
 
         otask.success = True
         otask.save()
-
 
     except Exception as e:
         print("4) Exception - generic: "+str(e))
@@ -1102,6 +1125,11 @@ def generate_bundle(base_dir, target_repo, ontology_bundle, branch):
         return None
 
 
+def filter_pub_name(name):
+    name = ''.join(ch for ch in name if ch.isalnum() or ch in ['_', '-'])
+    return name
+
+
 def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_local=None):
     """
     To publish the ontology via github.
@@ -1135,6 +1163,8 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         dolog("publish> error: %s" % str(e))
         return error_msg
 
+    prepare_logger(useremail+"-publish-")
+
     repos = Repo.objects.filter(url=target_repo)
     if len(repos) == 0:
         error_msg = "The repository: <"+target_repo+"> is not found"
@@ -1157,14 +1187,15 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
     if ontology[-1] == '/':
         ontology = ontology[:-1]
     ontology = "/" + ontology
-    name = ''.join(ch for ch in name if ch.isalnum() or ch == '_')
+    # name = ''.join(ch for ch in name if ch.isalnum() or ch in ['_', '-'])
+    name = filter_pub_name(name)
     pns_name = PublishName.objects.filter(name=name)
     if len(pns_name) > 1:
         error_msg = 'a duplicate published names, please contact us ASAP to fix it'
         dolog("publish> " + error_msg)
-        otask.success=False
-        otask.finished=True
-        otask.description=error_msg
+        otask.success = False
+        otask.finished = True
+        otask.description = error_msg
         otask.save()
         return error_msg
 
@@ -1176,20 +1207,20 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
     otask.description = "Verify ontology publication"
     otask.save()
 
-    if len(pns_ontology) == 0 and name.strip()=='':
+    if len(pns_ontology) == 0 and name.strip() == '':
         error_msg = 'can not reserve an empty name'
         dolog('publish> '+error_msg)
-        otask.success=False
-        otask.finished=True
-        otask.description=error_msg
+        otask.success = False
+        otask.finished = True
+        otask.description = error_msg
         otask.save()
         return error_msg
-    elif len(pns_ontology) > 0 and name.strip()!='':  # If the ontology is published with another name
+    elif len(pns_ontology) > 0 and name.strip() != '':  # If the ontology is published with another name
         error_msg = 'can not reserve multiple names for the same ontology'
         dolog("publish> " + error_msg)
-        otask.success=False
-        otask.finished=True
-        otask.description=error_msg
+        otask.success = False
+        otask.finished = True
+        otask.description = error_msg
         otask.save()
         return error_msg
     # name can be empty, which means a republish. pname can't be empty. So if name is empty, it will fetch the
@@ -1203,15 +1234,15 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
     if len(pns_name) == 1 and len(pns_ontology) == 0:
         error_msg = "This name is already taken, please choose a different one"
         dolog("publish> " + error_msg)
-        otask.success=False
-        otask.finished=True
+        otask.success = False
+        otask.finished = True
         otask.description=error_msg
         otask.save()
         return error_msg
 
     otask.success = True
-    otask.finished=True
-    otask.description="Name reservation has been validated"
+    otask.finished = True
+    otask.description = "Name reservation has been validated"
     otask.save()
     otask = OTask(name='.htaccess Preparation', finished=False, success=False, description="Get .htaccess",
                   orun=orun)
@@ -1224,7 +1255,7 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         rel_htaccess_path = os.path.join('OnToology', ontology[1:], 'documentation/.htaccess')
         try:
             htaccess = get_file_content(target_repo=target_repo, path=rel_htaccess_path, branch=branch)
-            otask.description=".htaccess content is fetched successfully"
+            otask.description = ".htaccess content is fetched successfully"
             otask.save()
             dolog("publish> gotten the htaccess successfully")
         except Exception as e:
@@ -1258,18 +1289,18 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
                                                ontology_rel_path=ontology[1:])
         dolog("new htaccess: ")
         # dolog(new_htaccess)
-        otask.description="updating the .htaccess on GitHub"
+        otask.description = "updating the .htaccess on GitHub"
         otask.save()
         update_file(target_repo=target_repo,
                     path=rel_htaccess_path,
                     content=new_htaccess, branch='gh-pages', message='OnToology Publish', g_local=gg)
 
-        otask.success=True
-        otask.finished=True
+        otask.success = True
+        otask.finished = True
         otask.description = "The .htaccess is updated successfully"
         otask.save()
-        otask = OTask(name='Redirection', finished=False, success=False, description="setup the .htaccess file on OnToogy server",
-                      orun=orun)
+        otask = OTask(name='Redirection', finished=False, success=False,
+                      description="setup the .htaccess file on OnToogy server", orun=orun)
         dolog("publish> otask is init")
         otask.save()
 
@@ -1293,7 +1324,6 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         otask.description="The ontology is published correctly"
         otask.save()
         return ""  # means it is published correctly
-
 
 
 def change_configuration(user_email, target_repo, data, ontologies):
