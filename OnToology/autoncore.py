@@ -1125,6 +1125,11 @@ def generate_bundle(base_dir, target_repo, ontology_bundle, branch):
         return None
 
 
+def filter_pub_name(name):
+    name = ''.join(ch for ch in name if ch.isalnum() or ch in ['_', '-'])
+    return name
+
+
 def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_local=None):
     """
     To publish the ontology via github.
@@ -1182,7 +1187,8 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
     if ontology[-1] == '/':
         ontology = ontology[:-1]
     ontology = "/" + ontology
-    name = ''.join(ch for ch in name if ch.isalnum() or ch == '_')
+    # name = ''.join(ch for ch in name if ch.isalnum() or ch in ['_', '-'])
+    name = filter_pub_name(name)
     pns_name = PublishName.objects.filter(name=name)
     if len(pns_name) > 1:
         error_msg = 'a duplicate published names, please contact us ASAP to fix it'

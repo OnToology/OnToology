@@ -1030,12 +1030,13 @@ def publish_view(request):
         print("missing branch")
         return HttpResponseRedirect('/')
     name = request.GET['name'].strip()
+    name = filter_pub_name(name)
     target_repo = request.GET['repo'].strip()
     ontology_rel_path = request.GET['ontology'].strip()
     branch = request.GET['branch'].strip()
     print("name: "+name)
     pns = PublishName.objects.filter(name=name)
-    if len(pns)> 0:
+    if len(pns) > 0:
         return JsonResponse({'msg': 'This name is already taken, try to choose another name'}, status=400)
     try:
         j = {
@@ -1053,12 +1054,11 @@ def publish_view(request):
         the published ontology to be available for GitHub pages. If it is not published within a few minutes 
         you can contact us.''' % (ontology_rel_path[1:], w3id_url, w3id_url)
         return JsonResponse({'msg': msg})
-        # return render(request, 'msg.html', {'msg': msg, 'img': 'https://github.com/OnToology/OnToology/raw/master/media/misc/gh-pages.png'})
     except Exception as e:
         print("publish_view> error : %s" % str(e))
         msg = "Error publishing your ontology. Please contact us to fix it."
-        # return render(request, 'msg.html', {'msg': msg})
         return JsonResponse({'msg': msg}, status=500)
+
 
 @login_required
 def syntax_check_view(request):
@@ -1074,7 +1074,8 @@ def syntax_check_view(request):
     format = request.GET['format']
     url = request.GET['url']
     if format not in valid_formats:
-        return render(request, 'syntax.html', {'error': '<%s> format is not supported'%format, 'formats': valid_formats})
+        return render(request, 'syntax.html', {'error': '<%s> format is not supported' % format,
+                                               'formats': valid_formats})
         # return render(request, 'msg.html', {'msg': '<%s> format is not supported'})
     if 'https://' not in url[:8] and 'http://' not in url[:7]:
         return render(request, 'syntax.html', {'error': 'Invalid URL', 'formats': valid_formats})
@@ -1084,9 +1085,9 @@ def syntax_check_view(request):
         g.parse(url, format=format)
         return render(request, 'syntax.html', {'msg': 'The syntax of the ontology is correct', 'formats': valid_formats})
     except Exception as e:
-        return render(request, 'syntax.html',
-                      {'formats': valid_formats,
-                        'error': 'The syntax of the ontology is incorrect. The error message is: '+str(e)})
+        return render(request, 'syntax.html', {'formats': valid_formats,
+                                               'error': 'The syntax of the ontology is incorrect. The error message is: '+str(e)})
+
 
 def publications(request):
     return render(request, 'publications.html')
