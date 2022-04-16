@@ -51,12 +51,14 @@ class SQServer2(SQServer):
                                 if j['branch'] == req['branch']:
                                     merged = True
                                     print("Merged: <<%s>> with <<%s>>" % (str(req), str(j)))
+                                    self.logger.debug("Merged: <<%s>> with <<%s>>" % (str(req), str(j)))
                                     req['changedfiles'] += j['changedfiles']
                                     req['changedfiles'] = list(set(req['changedfiles']))
                             if j['action'] == 'publish':
                                 if j['ontology_rel_path'] == req['ontology_rel_path'] and j['branch'] == req['branch']:
                                     merged = True
                                     print("Merged: <<%s>> with <<%s>>" % (str(req), str(j)))
+                                    self.logger.debug("Merged: <<%s>> with <<%s>>" % (str(req), str(j)))
                                     # There is already a request to publish, no need to add another one
                     if not merged:
                         self.q.append(txt)
