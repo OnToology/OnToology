@@ -35,7 +35,7 @@ class SQServer2(SQServer):
                                     print("Merged: <<%s>> with <<%s>>" % (str(req), str(j)))
                                     # There is already a request to publish, no need to add another one
                     if not merged:
-                        self.q.append(msg)
+                        self.q.append(txt)
                 except Excepion as e:
                     print("Exception: %s" % str(e))
                     traceback.print_exc()
