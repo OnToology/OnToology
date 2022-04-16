@@ -38,13 +38,14 @@ class SQServer2(SQServer):
             msg = action_msg[self.action_len:]
             if action == b"enm":
                 if self.debug:
-                    self.logger.debug("SERVER> enqueue: ")
+                    self.logger.debug("SERVER> other_actions> enqueue: ")
                     self.logger.debug(msg)
                 self.lock.acquire()
                 txt = msg.decode()
                 j = json.loads(txt)
                 try:
                     merged = False
+                    self.logger.debug("number of pending requests: %d" % len(self.q))
                     for req in self.q:
                         if req['repo'] == j['repo'] and req['action'] == j['action']:
                             self.logger.debug("matching action and repo")
