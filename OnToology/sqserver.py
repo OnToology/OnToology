@@ -1,6 +1,9 @@
 from stiqueue.sqserver import SQServer
 import traceback
 import os
+import sys
+from multiprocessing import Lock
+import logging
 
 
 class SQServer2(SQServer):
