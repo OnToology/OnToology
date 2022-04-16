@@ -181,3 +181,12 @@ docker exec -it <container name> /bin/sh
 4. Install dependencies using pip (`pip install -r requirements`).
 5. Run the [stiqueue](https://github.com/ahmad88me/stiqueue) server (with the ip and port). 
 6. Run `OnToology/sqclient.py`.
+
+
+
+# Stiqueue Environment Variables
+* `stiq_server_log_path`: The path to the `sqserver.py`.
+* `stiq_debug`: can be "true" or "false".
+* `stiq_host`: the address of the stiqueue server.  
+* `stiq_port`: the port of the stiqueue server.
+* `stiq_log_dir`: the logger path for `sqclient.py`.

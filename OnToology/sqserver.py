@@ -5,6 +5,30 @@ import sys
 from multiprocessing import Lock
 import logging
 import json
+try:
+    from localwsgi import *
+except:
+    pass
+
+
+def set_config(logger, logdir=""):
+    """
+    :param logger: logger
+    :param logdir: the directory log
+    :return:
+    """
+    if logdir != "":
+        handler = logging.FileHandler(logdir)
+    else:
+        handler = logging.StreamHandler()
+    formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+    handler.setFormatter(formatter)
+    logger.handlers = []
+    # while len(logger.handlers) > 0:#logger.hasHandlers():
+    #     logger.removeHandler(logger.handlers[0])
+    logger.addHandler(handler)
+    logger.setLevel(logging.DEBUG)
+    return logger
 
 
 class SQServer2(SQServer):
@@ -52,15 +76,26 @@ class SQServer2(SQServer):
 
 if __name__ == '__main__':
     debug = False
+    logger = None
     if 'stiq_debug' in os.environ:
         if os.environ['stiq_debug'].lower() == "true":
             debug = True
             print("SERVER> Debug is on")
+            logger = logging.getLogger(__name__)
+            logger_path = ""
+            if 'stiq_server_log_path' in os.environ:
+                logger_path = os.environ['stiq_server_log_path']
+            logger = set_config(logger, logger_path)
     if len(sys.argv) > 2:
-        s = SQServer2(sys.argv[1], int(sys.argv[2]), str_queue=True, debug=debug)
+        s = SQServer2(sys.argv[1], int(sys.argv[2]), str_queue=True, debug=debug, logger=logger)
     else:
         if "stiq_host" in os.environ and "stiq_port" in os.environ:
-            s = SQServer2(host=os.environ['stiq_host'], port=int(os.environ['stiq_port']), str_queue=True, debug=debug)
+            s = SQServer2(host=os.environ['stiq_host'], port=int(os.environ['stiq_port']), str_queue=True, debug=debug,
+                          logger=logger)
         else:
-            s = SQServer2(debug=debug, str_queue=True)
+            s = SQServer2(debug=debug, str_queue=True, logger=logger)
     s.listen()
+
+
+
+
