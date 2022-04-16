@@ -85,6 +85,10 @@ if __name__ == '__main__':
             logger_path = ""
             if 'stiq_server_log_path' in os.environ:
                 logger_path = os.environ['stiq_server_log_path']
+                print("logger: %s" % logger_path)
+            else:
+                print("logger is not here: ")
+                print(os.environ)
             logger = set_config(logger, logger_path)
     if len(sys.argv) > 2:
         s = SQServer2(sys.argv[1], int(sys.argv[2]), str_queue=True, debug=debug, logger=logger)
