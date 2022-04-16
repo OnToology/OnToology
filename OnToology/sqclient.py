@@ -17,6 +17,15 @@ import traceback
 from stiqueue.sqclient import SQClient
 
 
+class SQClient2(SQClient):
+
+    def enm(self, msg):
+        """
+        Enqueue with Merge
+        """
+        return self.send_with_action(msg, b"enm")
+
+
 locked_repos = []
 lock = Lock()
 
@@ -58,7 +67,7 @@ else:
 
 def client_loop(host, port):
     print("client_loop: %s %d" % (host, port))
-    cc = SQClient(host=host, port=port)
+    cc = SQClient2(host=host, port=port)
     while True:
         time.sleep(1)
         # print(b"CLIENT> get num ")
@@ -77,7 +86,7 @@ def client_loop(host, port):
 
 def send_with_delay(client, data_bytes, delay):
     time.sleep(delay)
-    client.enq(data_bytes)
+    client.enm(data_bytes)
 
 
 def send(message_json):
@@ -91,8 +100,8 @@ def send(message_json):
     # logger.debug("send> sending message: "+str(message))
     print("Sending: ")
     print(message)
-    c = SQClient(host=host, port=port)
-    c.enq(str.encode(message))
+    c = SQClient2(host=host, port=port)
+    c.enm(str.encode(message))
 
 
 def get_pending_messages():
@@ -101,7 +110,7 @@ def get_pending_messages():
     :return:
     """
     print("sqclient> get_pending_messages> %s %d" % (host, port))
-    c = SQClient(host=host, port=port)
+    c = SQClient2(host=host, port=port)
     num = int(c.cnt())
     print("SQClient> get_pending_messages> Number of elements in the queue are: %d" % num)
     return num
