@@ -56,7 +56,7 @@ if __name__ == '__main__':
             debug = True
             print("SERVER> Debug is on")
     if len(sys.argv) > 2:
-        s = SQServer2(sys.argv[1], int(sys.argv[2], str_queue=True), debug=debug)
+        s = SQServer2(sys.argv[1], int(sys.argv[2]), str_queue=True, debug=debug)
     else:
         if "stiq_host" in os.environ and "stiq_port" in os.environ:
             s = SQServer2(host=os.environ['stiq_host'], port=int(os.environ['stiq_port']), str_queue=True, debug=debug)
