@@ -1,5 +1,6 @@
 from stiqueue.sqserver import SQServer
 import traceback
+import os
 
 
 class SQServer2(SQServer):
