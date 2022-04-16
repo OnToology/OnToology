@@ -47,8 +47,11 @@ class SQServer2(SQServer):
                     merged = False
                     for req in self.q:
                         if req['repo'] == j['repo'] and req['action'] == j['action']:
+                            self.logger.debug("matching action and repo")
                             if j['action'] == 'magic':
+                                self.logger.debug("is magic")
                                 if j['branch'] == req['branch']:
+                                    self.logger.debug("matching the branch")
                                     merged = True
                                     print("Merged: <<%s>> with <<%s>>" % (str(req), str(j)))
                                     self.logger.debug("Merged: <<%s>> with <<%s>>" % (str(req), str(j)))
