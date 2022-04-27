@@ -49,6 +49,7 @@ from OnToology import autoncore
 from OnToology.settings import host
 from Integrator import previsual
 from OnToology import sqclient
+from OnToology import controller
 
 
 client_id_login = os.environ['client_id_login']  # 'e2ea731b481438fd1675'
@@ -781,18 +782,34 @@ enable = %s
 def delete_repo(request):
     repo = request.GET['repo']
     user = OUser.objects.get(email=request.user.email)
-    for r in user.repos.all():
-        if r.url == repo:
-            try:
-                user.update(pull__repos=r)
-                user.save()
-                # for now we do not remove the webhook for the sake of students
-                # remove_webhook(repo, host + "/add_hook")
-                return JsonResponse({'status': True})
-            except Exception as e:
-                print("error deleting the webhook: " + str(e))
-                return JsonResponse({'status': False, 'error': str(e)})
-    return JsonResponse({'status': False, 'error': 'You should add this repo first'})
+    j = controller.delete_repo_action(repo=repo, user=user, host=host)
+    return JsonResponse(j)
+
+    # rs = user.repos.filter(url=repo)
+    # try:
+    #     if len(rs) < 1:
+    #         return JsonResponse({'status': False, 'error': 'Invalid Repo'})
+    #     r = rs[0]
+    #     r.delete()
+    #     remove_webhook(repo, host + "/add_hook")
+    #     return JsonResponse({'status': True})
+    # except Exception as e:
+    #     print("error deleting the webhook: " + str(e))
+    #     return JsonResponse({'status': False, 'error': str(e)})
+
+    #
+    # for r in user.repos.all():
+    #     if r.url == repo:
+    #         try:
+    #             user.update(pull__repos=r)
+    #             user.save()
+    #             # for now we do not remove the webhook for the sake of students
+    #             # remove_webhook(repo, host + "/add_hook")
+    #             return JsonResponse({'status': True})
+    #         except Exception as e:
+    #             print("error deleting the webhook: " + str(e))
+    #             return JsonResponse({'status': False, 'error': str(e)})
+    # return JsonResponse({'status': False, 'error': 'You should add this repo first'})
 
 
 @login_required

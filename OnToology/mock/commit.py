@@ -1,5 +1,6 @@
 from .user import get_auth_user_dict
 
+
 def get_commits_dict(repo):
     user, name = repo.split("/")
     commits_dict = [

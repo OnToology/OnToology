@@ -1,5 +1,6 @@
 from .user import get_user_dict
 
+
 def get_milestone_dict(repo):
     user, name = repo.split("/")
     milestone = {

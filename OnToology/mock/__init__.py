@@ -7,6 +7,7 @@ from .repo import *
 from .tree import *
 from .user import *
 from .milestone import *
+from .hook import get_webhooks, get_webhook
 
 user = "ahmad88me"
 repo_name = "ontoology-auto-test-no-res"
@@ -15,7 +16,8 @@ repo = user + "/" + repo_name
 repo_with_res = user + "/" + repo_name_with_res
 ontology_name = "alo.owl"
 branch = "master"
-
+local_hook_url = "http://127.0.0.1:8000/add_hook"
+hook_id = 123
 
 mock_dict_success = {
     "/repos/%s" % repo: {
@@ -94,12 +96,25 @@ mock_dict_success = {
             "body": get_update_content_dict(repo_with_res, branch, "OnToology/%s/documentation/.htaccess" % ontology_name)
         }
     },
-    "/user/repository_invitations/%s" % "1" :{
+    "/user/repository_invitations/%s" % "1": {
         "PATCH": {
             "status": 204,
             "body": ""
         }
+    },
+    "/repos/%s/hooks" % (repo): {
+        "GET": {
+            "status": 200,
+            "body": get_webhooks(local_hook_url, hook_id)
+        }
+    },
+    "/repos/%s/hooks/%d" % (repo, hook_id): {
+        "GET": {
+            "status": 200,
+            "body": get_webhook(local_hook_url, hook_id)
+        }
     }
+
 }
 
 mock_dict = {

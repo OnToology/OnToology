@@ -17,8 +17,9 @@ from OnToology.djangoperpmod import *
 from OnToology.autoncore import publish, previsual
 from OnToology import autoncore
 from OnToology.models import *
-from OnToology.views import publish_dir
+from OnToology.views import publish_dir, host
 from django.utils import timezone
+from OnToology import controller
 
 
 def token_required(func):
@@ -113,22 +114,28 @@ class ReposView(View):
 
     @method_decorator(token_required)
     def delete(self, request, repoid):
-        try:
-            # print("delete start")
-            user = request.user
-            r = Repo.objects.filter(id=repoid)
-            if len(r) == 0 or r[0] not in user.repos.all():
-                return JsonResponse({'message': 'Invalid repo'}, status=404)
-            r = r[0]
-            # user.repos.remove(r)
-            # user.update(pull__repos=r)
-            r.delete()
-            #user.save()
-            return JsonResponse({'message': 'The repo is deleted successfully'}, status=204)
-        except Exception as e:
-            # print("delete exception")
-            traceback.print_exc(file=sys.stdout)
-            return JsonResponse({'message': 'Internal error: '+str(e)}, status=500)
+        user = request.user
+        j = controller.delete_repo_action(repo_id=repoid, user=user, host=host)
+        if 'status_code' not in j:
+            j['status_code'] = 500
+        return JsonResponse(j, status=j['status_code'])
+
+        # try:
+        #     # print("delete start")
+        #     user = request.user
+        #     r = Repo.objects.filter(id=repoid)
+        #     if len(r) == 0 or r[0] not in user.repos.all():
+        #         return JsonResponse({'message': 'Invalid repo'}, status=404)
+        #     r = r[0]
+        #     # user.repos.remove(r)
+        #     # user.update(pull__repos=r)
+        #     r.delete()
+        #     #user.save()
+        #     return JsonResponse({'message': 'The repo is deleted successfully'}, status=204)
+        # except Exception as e:
+        #     # print("delete exception")
+        #     traceback.print_exc(file=sys.stdout)
+        #     return JsonResponse({'message': 'Internal error: '+str(e)}, status=500)
 
 
 class PublishView(View):
@@ -232,15 +239,5 @@ def generate_all(request):
 
     except Exception as e:
         return JsonResponse({'message': 'Internal Error: '+str(e)}, status=500)
-
-
-
-
-
-
-
-
-
-
 
 

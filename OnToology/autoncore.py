@@ -847,12 +847,14 @@ def remove_webhook(target_repo, notification_url):
         try:
             if hook.config["url"] == notification_url:
                 hook.delete()
-                break
+                return True
+                # break
         except Exception as e:
             print("error removing the webhook: %s" % (str(e)))
-            time.sleep(2)
-    sys.stdout.flush()
-    sys.stderr.flush()
+            time.sleep(1)
+    return False
+    # sys.stdout.flush()
+    # sys.stderr.flush()
 
 
 def add_webhook(target_repo, notification_url, newg=None):

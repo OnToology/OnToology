@@ -1,5 +1,5 @@
-
 from .org import get_organization_dict
+
 
 def get_license_dict():
     license = {

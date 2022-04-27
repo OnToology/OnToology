@@ -20,4 +20,7 @@ export test_pull="false"
 
 
 #.venv/bin/python manage.py test --pattern="test_direct_magic.py" --settings=OnToology.settings-tests
+# Commented just for tests
 .venv/bin/python manage.py test OnToology --settings=OnToology.settings-tests
+# Testing hook
+#.venv/bin/python manage.py test OnToology.tests.test_api_repo --settings=OnToology.settings-tests

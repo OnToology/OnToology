@@ -2,9 +2,10 @@ from .repo import get_repo_dict
 from .user import get_user_dict
 from .milestone import get_milestone_dict
 
+
 def get_pulls_dict(repo, branch="master"):
   user, name = repo.split('/')
-  pulls = [ {
+  pulls = [{
     "url": "https://api.github.com/repos/%s/pulls/1347" % repo,
     "id": 1,
     "node_id": "MDExOlB1bGxSZXF1ZXN0MQ==",
