@@ -329,10 +329,16 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
                     drepo.save()
                 else:
                     dolog('Error generating the pull request')
-                    drepo.notes = r['error']
+                    dolog("Response: %s" % str(r))
+                    if 'error' in r:
+                        err_msg = r['error']
+                    elif 'errors' in r:
+                        err_msgs = [er['message'] for er in r['errors'] if 'message' in er]
+                        err_msg = " + ".join(err_msgs)
+                    drepo.notes = err_msg
                     drepo.state = 'Ready'
                     drepo.save()
-                    raise Exception(r['error'])
+                    raise Exception(err_msg)
             except Exception as e:
                 print("3) Exception: " + str(e))
                 traceback.print_exc()
