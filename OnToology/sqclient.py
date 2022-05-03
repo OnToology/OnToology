@@ -58,7 +58,7 @@ else:
 
 def client_loop(host, port):
     print("client_loop: %s %d" % (host, port))
-    cc = SQClient(host=host, port=port)
+    cc = SQClient(host=host, port=port, logger=get_null_logger())
     while True:
         time.sleep(1)
         # print(b"CLIENT> get num ")
@@ -91,7 +91,7 @@ def send(message_json):
     # logger.debug("send> sending message: "+str(message))
     print("Sending: ")
     print(message)
-    c = SQClient(host=host, port=port)
+    c = SQClient(host=host, port=port, logger=get_null_logger())
     c.enq(str.encode(message))
 
 
@@ -101,10 +101,21 @@ def get_pending_messages():
     :return:
     """
     print("sqclient> get_pending_messages> %s %d" % (host, port))
-    c = SQClient(host=host, port=port)
+
+    c = SQClient(host=host, port=port, logger=get_null_logger())
     num = int(c.cnt())
     print("SQClient> get_pending_messages> Number of elements in the queue are: %d" % num)
+    del local_logger
+    del c
     return num
+
+
+def get_null_logger():
+    local_logger = logging.getLogger(__name__)
+    ch = logging.NullHandler()
+    ch.setLevel(logging.INFO)
+    local_logger.addHandler(ch)
+    return local_logger
 
 
 def consume(body):
