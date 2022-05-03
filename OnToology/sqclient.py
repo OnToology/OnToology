@@ -101,9 +101,17 @@ def get_pending_messages():
     :return:
     """
     print("sqclient> get_pending_messages> %s %d" % (host, port))
-    c = SQClient(host=host, port=port)
+
+    local_logger = logging.getLogger(__name__)
+    ch = logging.NullHandler()
+    ch.setLevel(logging.INFO)
+    local_logger.addHandler(ch)
+
+    c = SQClient(host=host, port=port, logger=local_logger)
     num = int(c.cnt())
     print("SQClient> get_pending_messages> Number of elements in the queue are: %d" % num)
+    del local_logger
+    del c
     return num
 
 
