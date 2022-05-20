@@ -105,7 +105,6 @@ def get_pending_messages():
     c = SQClient(host=host, port=port, logger=get_null_logger())
     num = int(c.cnt())
     print("SQClient> get_pending_messages> Number of elements in the queue are: %d" % num)
-    del local_logger
     del c
     return num
 

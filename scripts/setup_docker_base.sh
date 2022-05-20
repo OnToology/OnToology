@@ -10,6 +10,7 @@ apk add --update \
     zip \
     py-virtualenv \
     openssh \
+    libffi-dev \
   && rm -rf /var/cache/apk/*
 
 
