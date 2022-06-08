@@ -13,7 +13,7 @@ config_folder_name = 'OnToology'
 config_file_name = 'OnToology.cfg'
 
 logger = logging.getLogger(__name__)
-
+log_file_dir = None
 g = None
 
 
@@ -93,7 +93,7 @@ def p(msg):
 #                                 progress_inc=progress_inc)
 
 
-def tools_execution(changed_files, base_dir, target_repo=None, g_local=None,
+def tools_execution(changed_files, base_dir, target_repo=None, g_local=None, logfile=None,
                     change_status=None, repo=None, orun=None, m_logger=None):
     """
     :param changed_files:  changed files include relative path
@@ -103,9 +103,12 @@ def tools_execution(changed_files, base_dir, target_repo=None, g_local=None,
     global g
     global dolog
     global logger
+    global log_file_dir
 
     if m_logger:
         logger = m_logger
+
+    log_file_dir = logfile
 
     dolog("tools execution")
     g = g_local

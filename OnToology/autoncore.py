@@ -258,7 +258,7 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
     try:
         Integrator.tools_execution(changed_files=changed_filesss, base_dir=os.path.join(home, user),
                                    target_repo=target_repo, g_local=g, change_status=change_status, repo=drepo,
-                                   orun=orun, m_logger=logger)
+                                   orun=orun, m_logger=logger, logfile=log_file_dir)
     except Exception as e:
         dolog("2) Exception - tools: " + str(e))
         traceback.print_exc()
