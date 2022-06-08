@@ -22,7 +22,7 @@ import os
 # from . import dolog
 import random
 import string
-from . import call_and_get_log, timeout_comm, dolog, prepare_logger
+from . import call_and_get_log, timeout_comm, dolog
 
 
 # def dolog(msg):
