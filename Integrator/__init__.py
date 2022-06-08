@@ -11,8 +11,9 @@ import logging
 ontology_formats = ['.rdf', '.owl', '.ttl']
 config_folder_name = 'OnToology'
 config_file_name = 'OnToology.cfg'
-log_file_dir = ''  # need to be set some how
 
+logger = logging.getLogger(__name__)
+log_file_dir = None
 g = None
 
 
@@ -36,18 +37,19 @@ tools_conf = {
 #     return l
 
 
-def dolog_logg(msg):
-    logging.critical(msg)
+def dolog(msg):
+    logger.critical(msg)
 
 
 def p(msg):
     print(msg)
 
-dolog = p
+# dolog = p
+# dolog = dolog_logg
 
 
-def prepare_logger(log_fname):
-    logging.basicConfig(filename=log_fname, format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
+# def prepare_logger(log_fname):
+#     logging.basicConfig(filename=log_fname, format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
 
 # for the outline
 # def tools_execution(changed_files, base_dir, logfile, dolog_fname=None, target_repo=None, g_local=None,
@@ -91,8 +93,8 @@ def prepare_logger(log_fname):
 #                                 progress_inc=progress_inc)
 
 
-def tools_execution(changed_files, base_dir, logfile, dolog_fname=None, target_repo=None, g_local=None,
-                    change_status=None, repo=None, orun=None):
+def tools_execution(changed_files, base_dir, target_repo=None, g_local=None, logfile=None,
+                    change_status=None, repo=None, orun=None, m_logger=None):
     """
     :param changed_files:  changed files include relative path
             base_dir: abs dir to the repo file name, e.g. /home/user/myrepo/
@@ -100,15 +102,16 @@ def tools_execution(changed_files, base_dir, logfile, dolog_fname=None, target_r
     """
     global g
     global dolog
+    global logger
     global log_file_dir
+
+    if m_logger:
+        logger = m_logger
+
+    log_file_dir = logfile
+
     dolog("tools execution")
     g = g_local
-    log_file_dir = logfile
-    if dolog_fname is not None:
-        dolog("prepare logger")
-        prepare_logger(dolog_fname)
-        dolog = dolog_logg
-        dolog("logger prepared")
 
     dolog("after the logger")
     # dolog = p # This is to print for debugging only

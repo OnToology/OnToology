@@ -158,6 +158,7 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
     global g
     global parent_folder
     global log_file_dir
+    global logger
 
     print("\n\n\n In gitmagic print")
     print("printing test_conf from magic")
@@ -204,8 +205,7 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
         # so the tool user can takeover and do stuff
         dolog("pre block")
         g = init_g()
-        if not settings.test_conf['local'] or settings.test_conf['fork'] or settings.test_conf[
-            'clone']:  # in case it is not test or test with fork option
+        if not settings.test_conf['local'] or settings.test_conf['fork'] or settings.test_conf['clone']:  # in case it is not test or test with fork option
             dolog('will fork the repo')
             drepo.state = 'forking repo'
             otask.description += 'fork the repo'
@@ -243,7 +243,7 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
         otask.description = str(e)
         otask.save()
         drepo.state = 'Ready'
-        drepo.notes+= str(e)
+        drepo.notes += str(e)
         drepo.progress = 100
         drepo.save()
         if raise_exp:
@@ -256,9 +256,9 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
     drepo.save()
 
     try:
-        Integrator.tools_execution(changed_files=changed_filesss, base_dir=os.path.join(home, user), logfile=log_file_dir,
-                                   target_repo=target_repo, g_local=g, dolog_fname=logger_fname,
-                                   change_status=change_status, repo=drepo, orun=orun)
+        Integrator.tools_execution(changed_files=changed_filesss, base_dir=os.path.join(home, user),
+                                   target_repo=target_repo, g_local=g, change_status=change_status, repo=drepo,
+                                   orun=orun, m_logger=logger, logfile=log_file_dir)
     except Exception as e:
         dolog("2) Exception - tools: " + str(e))
         traceback.print_exc()

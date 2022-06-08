@@ -22,10 +22,8 @@ import os
 # from . import dolog
 import random
 import string
-from . import call_and_get_log, timeout_comm, dolog_logg, prepare_logger
+from . import call_and_get_log, timeout_comm, dolog
 
-
-dolog = dolog_logg
 
 # def dolog(msg):
 #     print(msg)
