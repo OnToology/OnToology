@@ -30,15 +30,15 @@ mkdir $PLAYGROUND/repos/log
 
 # setup widoco
 echo "Widoco setup ..."
-cd $PLAYGROUND;mkdir widoco;cd widoco; wget --progress=bar:force https://github.com/dgarijo/Widoco/releases/download/v1.4.17/java-11-widoco-1.4.17-jar-with-dependencies.jar ; mv *.jar widoco.jar ; chmod 777 widoco*
+cd $PLAYGROUND;mkdir widoco;cd widoco; wget wget --no-check-certificate --content-disposition --progress=bar:force https://github.com/dgarijo/Widoco/releases/download/v1.4.17/java-11-widoco-1.4.17-jar-with-dependencies.jar ; mv *.jar widoco.jar ; chmod 777 widoco*
 
 # setup ar2dtool
 echo "ar2dtool ..."
-cd $PLAYGROUND;mkdir ar2dtool;wget --progress=bar:force https://github.com/ahmad88me/ar2dtool-oegfork/releases/download/v.1.3/ar2dtool-1.3.0-jar-with-dependencies.jar;mv ar2dtool*.jar ar2dtool/ar2dtool.jar
+cd $PLAYGROUND;mkdir ar2dtool;wget --no-check-certificate --content-disposition --progress=bar:force https://github.com/oeg-upm/ar2dtool-oegfork/releases/download/v1.3.0/ar2dtool-1.3.0-jar-with-dependencies-java-18.0.1.1.jar;mv ar2dtool*.jar ar2dtool/ar2dtool.jar
 
 # vocablite
 echo "vocabLite ..."
-cd $PLAYGROUND;mkdir vocabLite;cd vocabLite; mkdir jar; cd jar; wget --progress=bar:force https://github.com/dgarijo/vocabLite/releases/download/v1.0.1/vocabLite-1.0.1-jar-with-dependencies.jar ; mv vocabLite-*  vocabLite.jar; chmod 777 vocabLite-*
+cd $PLAYGROUND;mkdir vocabLite;cd vocabLite; mkdir jar; cd jar; wget --no-check-certificate --content-disposition --progress=bar:force https://github.com/dgarijo/vocabLite/releases/download/v1.0.1/vocabLite-1.0.1-jar-with-dependencies.jar ; mv vocabLite-*  vocabLite.jar; chmod 777 vocabLite-*
 
 
 echo "owl2jsonld"
