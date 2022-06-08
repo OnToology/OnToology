@@ -1,4 +1,4 @@
-FROM openjdk:8-alpine
+FROM openjdk:19-alpine
 RUN mkdir -p playground ;\
     chmod 777 playground ; \
     mkdir -p playground/OnToology
