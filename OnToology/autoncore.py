@@ -1506,6 +1506,8 @@ def compute_themis_results(repo, branch ,path):
                 passed += 1
             else:
                 failed += 1
+    if passed + failed == 0:
+        return 0
     return round(passed * 100 / (passed + failed))
 
 
