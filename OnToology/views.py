@@ -188,7 +188,7 @@ def repos_view(request):
         repo_url = request.GET['repo'].strip()
         repos = user.repos.filter(url=repo_url)
         if len(repos) == 0:
-            return render(request, 'msg.html', {'msg': 'This repo does not belong to your user account. Make sure to add it.'})
+            return render(request, 'msg.html', {'msg': 'This repo does not belong to your user account.'})
         try:
             branches = get_repo_branches(repo_url)
         except Exceptions as e:
