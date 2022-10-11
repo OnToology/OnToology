@@ -186,7 +186,15 @@ def repos_view(request):
     user = request.user
     if 'repo' in request.GET:
         repo_url = request.GET['repo'].strip()
-        branches = get_repo_branches(repo_url)
+        repos = user.repos.filter(url=repo_url)
+        if len(repos) == 0:
+            return render(request, 'msg.html', {'msg': 'This repo does not belong to your user account.'})
+        try:
+            branches = get_repo_branches(repo_url)
+        except Exceptions as e:
+            print("repos_view> Exception: %s for repo <%s>" % (str(e), repo_url))
+            traceback.print_exc()
+            return render(request, 'msg.html', {'msg': 'Error getting repository branches from GitHub.'})
         if 'gh-pages' in branches:
             branches.remove('gh-pages')
         if 'branch' in request.GET:
@@ -196,9 +204,6 @@ def repos_view(request):
         pub_page = get_pub_page(repo_url)
         if not pub_page:
             pub_page = ""
-        repos = user.repos.filter(url=repo_url)
-        if len(repos) == 0:
-            return render(request,'msg.html', {'msg': 'This repo does not belong to your user account. Make sure to add it.'})
         return render(request, 'repo.html', {'repo': repos[0], 'branch': branch, 'branches': branches, 'pub_url': pub_page})
     else:
         return render(request, 'repos.html', {'repos': user.repos.all()})
