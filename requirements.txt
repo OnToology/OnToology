@@ -1,5 +1,5 @@
 asgiref==3.2.10
-certifi==2018.1.18
+certifi==2022.12.7
 chardet==3.0.4
 codecov==2.1.4
 coverage==5.3
