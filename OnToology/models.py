@@ -181,4 +181,3 @@ class OTask(models.Model):
     finished = models.BooleanField(default=False)
     orun = models.ForeignKey(ORun, on_delete=models.CASCADE, related_name='otasks')
 
-

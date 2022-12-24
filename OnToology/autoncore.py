@@ -15,14 +15,7 @@
 #  limitations under the License.
 #
 # @author Ahmad Alobaid
-#
-# try:
-#     from OnToology.models import *
-#     # from models import *
-# except:
-#     from djangoperpmod import *
-#     # from models import *
-#     from OnToology.models import *
+
 
 from github import Github
 from datetime import datetime
@@ -61,7 +54,6 @@ from urllib.parse import quote
 
 use_database = True
 
-#ToolUser = 'OnToologyUser'
 ToolUser = os.environ['github_username']
 ToolEmail = os.environ['github_email']
 
@@ -98,8 +90,6 @@ def set_config(logger, logdir=""):
     formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
     handler.setFormatter(formatter)
     logger.handlers = []
-    # while len(logger.handlers) > 0:#logger.hasHandlers():
-    #     logger.removeHandler(logger.handlers[0])
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
     return logger
@@ -110,9 +100,6 @@ def prepare_logger(user, ext='.log_new'):
     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
     l = os.path.join(home, 'log', user + sec + ext)
     logger = set_config(logger, l)
-    # f = open(l, 'w')
-    # f.close()
-    # logging.basicConfig(filename=l, format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
     return l
 
 
@@ -133,9 +120,6 @@ def init_g():
             mock_id = os.environ['mock_id']
             m = mock_dict[mock_id]
             print("init_g>  mock: ")
-            # import pprint
-            # pp = pprint.PrettyPrinter(indent=1)
-            # pp.pprint(m)
             print(m.keys())
             g = Github(username, password, mock=m)
         else:
@@ -191,8 +175,6 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
     dolog("otask is saved")
     otask.description = 'Getting changed files'
     dolog("created the otask")
-    # orun.tasks.add(otask)
-    # orun.save()
     dolog("added the task to run")
     try:
         for ftov in changed_filesss:
@@ -262,10 +244,6 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
     except Exception as e:
         dolog("2) Exception - tools: " + str(e))
         traceback.print_exc()
-        # otask.success = False
-        # otask.finished = True
-        # otask.description = str(e)
-        # otask.save()
         drepo.state = 'Ready'
         drepo.notes += str(e)
         drepo.progress = 100
@@ -276,8 +254,6 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
 
     otask = OTask(name="Postprocessing", description="trying", success=False, finished=False, orun=orun)
     otask.save()
-    # orun.tasks.add(otask)
-    # orun.save()
     try:
         otask.description = "verifying changed files"
         otask.save()
@@ -307,7 +283,6 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
             dolog('No push for testing')
         otask.description = "Removing old pull requests"
         otask.save()
-        # remove_old_pull_requests(target_repo)
 
         otask.description = "Generating pull request"
         otask.save()
@@ -393,10 +368,6 @@ def update_file(target_repo, path, message, content, branch=None, g_local=None):
     global g
     if g_local is None:
         gg = init_g()
-        # if g is None:
-        #     gg = init_g()
-        # else:
-        #     gg = g
         print("update_file> get g from init_g")
     else:
         gg = g_local
@@ -408,9 +379,6 @@ def update_file(target_repo, path, message, content, branch=None, g_local=None):
     clean_path = path
     if path[0] == '/':
         clean_path = clean_path[1:]
-    # username = os.environ['github_username']
-    # password = os.environ['github_password']
-    # g = Github(username, password)
     repo = gg.get_repo(target_repo)
     if branch is None:
         sha = repo.get_contents(path).sha
@@ -566,34 +534,8 @@ def get_ontologies_from_submodules_tree(tree, repo):
         file_content = file_content.decode('utf-8')
         print(file_content)
 
-
-### GOBACK
-        #
-        # config = ConfigParser.ConfigParser()
-        # print("config raw parser")
-        # if from_string:
-        #     config_obj = config.read_string(conf_file_abs)
-        #
-        # file_content = repo.get_contents(p).decoded_content
-        # print("type: "+str(type(file_content)))
-        # # file_content = str(file_content)
-        # file_content = file_content.decode('utf-8')
-        # print("file_content: " + file_content)
-        # # buffile = StringIO(file_content)
-        # print("will get the config")
-        # confs = get_auton_config(file_content, from_string=True)
-        # print("gotten confs: " + str(confs))
-        # o = {}
-        # # o['ontology'] = get_parent_path(cpath.path)[len(get_target_home()):]
-        # o['ontology'] = get_parent_path(p)[len(get_target_home()):]
-        # for c in confs:
-        #     #tool = c.replace('_enable', '')
-        #     tool = c
-        #     o[tool] = confs[c]
-        # ontologies.append(o)
         file_content = file_content.replace('\t', '')  # because it was containing \t
         config_obj = config_parser.read_string(file_content)
-        # config_parser.readfp(io.BytesIO(file_content))
         sections = config_parser.sections()
         for sec in sections:
             p = config_parser.get(sec, "path")
@@ -674,8 +616,7 @@ def fork_repo(target_repo):
     :param target_repo: username/reponame
     :return: forked repo (e.g. OnToologyUser/reponame)
     """
-    # the wait time to give github sometime so the repo can be forked
-    # successfully
+    # the wait time to give github sometime so the repo can be forked successfully
     # time.sleep(sleeping_time)
     gg = init_g()
     repo = gg.get_repo(target_repo)
@@ -714,34 +655,18 @@ def clone_repo(cloning_url, parent_folder, dosleep=True, branch=None):
         init_g()
     dolog('home: %s' % (home))
     dolog('parent_folder: %s' % (parent_folder))
-    # dolog('logfile: %s' % (log_file_dir))
     if dosleep:
         # the wait time to give github sometime so the repo can be cloned
         time.sleep(sleeping_time)
     try:
-        # comm = "rm" + " -Rf " + home + parent_folder
         comm = "rm" + " -Rf " + os.path.join(home, parent_folder)
-        # if not settings.test_conf['local']:
-        #     comm += ' >> "' + log_file_dir + '"'
         dolog(comm)
         call(comm, shell=True)
     except Exception as e:
         dolog('rm failed: ' + str(e))
-    # comm = "git" + " clone" + " " + cloning_repo + " " + home + parent_folder
     comm = "git clone "+"--single-branch --branch "+branch+" --recurse-submodules  " + cloning_url + " " + os.path.join(home, parent_folder)
-    # if not settings.test_conf['local']:
-    #     comm += ' >> "' + log_file_dir + '"'
     dolog(comm)
-    # print("comm: %s" % comm)
     call(comm, shell=True)
-    # dolog(comm)
-    # call(comm, shell=True)
-    # comm = "chmod -R 777 " + home + parent_folder
-    # if not settings.TEST:
-    #     comm += ' >> "' + log_file_dir + '"'
-    # dolog(comm)
-    # call(comm, shell=True)
-    # return home + parent_folder
     return os.path.join(home, parent_folder)
 
 
@@ -749,10 +674,8 @@ def commit_changes():
     global g
     if g is None:
         init_g()
-    # gu = 'git config  user.email "ontoology' + '@delicias.dia.fi.upm.es";'
     gu = 'git config  user.email "%s" ; ' % ToolEmail
     gu += 'git config  user.name "%s" ;' % (ToolUser)
-    # comm = "cd " + home + parent_folder + ";" + gu + " git add . "
     comm = "cd " + os.path.join(home, parent_folder) + ";" + gu + " git add . "
     if not settings.test_conf['local']:
         comm += ' >> "' + log_file_dir + '"'
@@ -760,7 +683,6 @@ def commit_changes():
     if settings.test_conf['push'] or not settings.test_conf['local']:
         call(comm, shell=True)
 
-    # comm = "cd " + home + parent_folder + ";" + \
     comm = "cd " + os.path.join(home, parent_folder) + ";" + \
            gu + " git commit -m 'automated change' "
     if not settings.test_conf['local']:
@@ -826,9 +748,6 @@ def webhook_access(client_id, redirect_url, isprivate):
         scope = 'repo'
     else:
         scope = 'public_repo'
-    # scope = 'admin:org_hook'
-    # scope+=',admin:org,admin:public_key,admin:repo_hook,gist,notifications,delete_repo,repo_deployment,
-    # repo,public_repo,user,admin:public_key'
     sec = ''.join([random.choice(string.ascii_letters + string.digits)
                    for _ in range(9)])
     return "https://github.com/login/oauth/authorize?client_id=" + client_id + "&redirect_uri=" + \
@@ -912,13 +831,8 @@ def add_collaborator(target_repo, user, newg=None):
             else:
                 print("invitation exists")
                 try:
-                    # print("go to init")
                     g = init_g()
                     print("try to accept invitation (new g)")
-                    # username = os.environ['github_username']
-                    # password = os.environ['github_password']
-                    # g_ontoology_user = Github(username, password)
-                    # g_ontoology_user.get_user().accept_invitation(invitation)
                     print("accepting user: %s" % str(g.get_user().name))
                     g.get_user().accept_invitation(invitation)
                     print("invitation accepted: " + str(invitation))
@@ -956,11 +870,7 @@ def previsual(useremail, target_repo, branch):
         user = users[0]
         repo = None
         repos = Repo.objects.filter(ousers=user, url=target_repo)
-        # for r in user.repos.all():
-        #     if target_repo == r.url:
-        #         found = True
-        #         repo = r
-        #         break
+
         if len(repos) > 0:
             repo = repos[0]
             orun = ORun(user=user, repo=repo, branch=branch)
@@ -1454,9 +1364,6 @@ def add_themis_results(target_repo, branch, ontologies):
     repo = g.get_repo(target_repo)
     branch = repo.get_branch(branch)
     sha = branch.commit.sha
-    #
-    # repo = g.get_repo(target_repo)
-    # sha = repo.get_commits()[0].sha
     files = repo.get_git_tree(sha=sha, recursive=True).tree
     ontology_results_d = dict()  # of [ontology_rel_path] = results_path
     themis_results_dir = "/" + Integrator.tools_conf['themis']['folder_name'] + "/" + \
@@ -1532,18 +1439,6 @@ def compute_themis_results(repo, branch ,path):
 #     return pairs
 
 
-# def get_themis_score(ontology_path):
-#     """
-#     get the score (from 0-100) of the passed tests
-#     :param ontology_path:
-#     :return:
-#     """
-#     themis_results_dir = "/"+Integrator.tools_conf['themis']['folder_name'] + "/" + \
-#                              Integrator.tools_conf['themis']['results_file_name']
-#     results_path = get_target_home()+"/"+ontology_path+"/"+themis_results_dir
-#     f.path[-23:] == themis_results_dir
-
-
 def parse_online_repo_for_ontologies(target_repo, branch='master'):
     """
         This is parse repositories for ontologies configuration files OnToology.cfg
@@ -1558,46 +1453,23 @@ def parse_online_repo_for_ontologies(target_repo, branch='master'):
     ontologies = []
 
     for cpath in conf_paths:
-        #p = quote(cpath.path)
         p = cpath.path
         print("get file content: %s" % (str(cpath.path)))
         print("after quote: %s" % p)
         print("now get the decoded content")
-        # file_content = repo.get_contents(cpath.path).decoded_content
         file_content = repo.get_contents(p).decoded_content
         print("type: "+str(type(file_content)))
-        # file_content = str(file_content)
         file_content = file_content.decode('utf-8')
         print("file_content: " + file_content)
-        # buffile = StringIO(file_content)
         print("will get the config")
         confs = get_auton_config(file_content, from_string=True)
         print("gotten confs: " + str(confs))
         o = {}
-        # o['ontology'] = get_parent_path(cpath.path)[len(get_target_home()):]
         o['ontology'] = get_parent_path(p)[len(get_target_home()):]
         for c in confs:
-            #tool = c.replace('_enable', '')
             tool = c
             o[tool] = confs[c]
         ontologies.append(o)
-
-    # check for themis results
-    # themis_results_dir = "/" + Integrator.tools_conf['themis']['folder_name'] + "/" + \
-    #                      Integrator.tools_conf['themis']['results_file_name']
-    # # construct the paths for all ontologies
-    # themis_paths = []
-    # for o in ontologies:
-    #     results_path = get_target_home() + "/" + o["ontology"] + "/" + themis_results_dir
-    #     themis_paths.append(results_path)
-    # # search if any path
-    # for cpath in conf_paths:
-    #     p = quote(cpath.path)
-    #     for o in ontologies:
-    #         if o["ontology"] == get_parent_path(p)[len(get_target_home()):]:
-    #
-    #
-    # f.path[-23:] == themis_results_dir
 
     return ontologies
 
@@ -1643,80 +1515,6 @@ def get_auton_config(conf_file_abs, from_string=True):
     dolog("\n\n\n**************get_auton_config: ")
     dolog(str(config_res))
     return config_res
-
-
-# def get_auton_config(conf_file_abs, from_string=True):
-#     dolog('auton config is called: ')
-#     ar2dtool_sec_name = 'ar2dtool'
-#     widoco_sec_name = 'widoco'
-#     oops_sec_name = 'oops'
-#     owl2jsonld_sec_name = 'owl2jsonld'
-#     themis_sec_name = 'themis'
-#     ar2dtool_enable = True
-#     widoco_enable = True
-#     oops_enable = True
-#     owl2jsonld_enable = True
-#     themis_enable = True
-#     config = ConfigParser.ConfigParser()
-#     print("config raw parser")
-#     if from_string:
-#         opened_conf_files = config.read_string(conf_file_abs)
-#     else:
-#         opened_conf_files = config.read(conf_file_abs)
-#     if from_string or len(opened_conf_files) == 1:
-#         dolog('auton configuration file exists')
-#         try:
-#             ar2dtool_enable = config.getboolean(ar2dtool_sec_name, 'enable')
-#             dolog('got ar2dtool enable value: ' + str(ar2dtool_enable))
-#         except:
-#             dolog('ar2dtool enable value doesnot exist')
-#             pass
-#         try:
-#             widoco_enable = config.getboolean(widoco_sec_name, 'enable')
-#             dolog('got widoco enable value: ' + str(widoco_enable))
-#         except:
-#             dolog('widoco enable value doesnot exist')
-#             pass
-#         try:
-#             oops_enable = config.getboolean(oops_sec_name, 'enable')
-#             dolog('got oops enable value: ' + str(oops_enable))
-#         except:
-#             dolog('oops enable value doesnot exist')
-#         try:
-#             owl2jsonld_enable = config.getboolean(owl2jsonld_sec_name, 'enable')
-#             dolog('got owl2jsonld enable value: ' + str(owl2jsonld_enable))
-#         except:
-#             dolog('owl2jsonld enable value doesnot exist')
-#         try:
-#             themis_enable = config.getboolean(themis_sec_name, 'enable')
-#             dolog('got themis enable value: ' + str(themis_enable))
-#         except:
-#             dolog('themis enable value doesnot exist')
-#     else:
-#         dolog('auton configuration file does not exists')
-#         config.add_section(ar2dtool_sec_name)
-#         config.set(ar2dtool_sec_name, 'enable', ar2dtool_enable)
-#         config.add_section(widoco_sec_name)
-#         config.set(widoco_sec_name, 'enable', widoco_enable)
-#         config.add_section(oops_sec_name)
-#         config.set(oops_sec_name, 'enable', oops_enable)
-#         config.add_section(owl2jsonld_sec_name)
-#         config.set(owl2jsonld_sec_name, 'enable', owl2jsonld_enable)
-#         config.add_section(themis_sec_name)
-#         config.set(themis_sec_name, 'enable', themis_enable)
-#         conff = conf_file_abs
-#         dolog('will create conf file: ' + conff)
-#         try:
-#             with open(conff, 'wb') as configfile:
-#                 config.write(configfile)
-#         except Exception as e:
-#             dolog('expection: ')
-#             dolog(e)
-#     return {'ar2dtool_enable': ar2dtool_enable,
-#             'widoco_enable': widoco_enable,
-#             'oops_enable': oops_enable,
-#             'owl2jsonld_enable': owl2jsonld_enable,
-#             'themis_enable': themis_enable}
 
 
 def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):
@@ -1848,7 +1646,6 @@ def change_status(target_repo, state):
         repo = Repo.objects.get(url=target_repo)
         repo.last_used = timezone.now()
         repo.state = state
-        # repo.owner = parent_folder
         repo.save()
         print("change_status> "+repo.state)
         return repo
@@ -1857,7 +1654,6 @@ def change_status(target_repo, state):
         repo = Repo()
         repo.url = target_repo
         repo.state = state
-        # repo.owner = parent_folder
         repo.save()
         return repo
     except Exception as e:
@@ -1921,7 +1717,6 @@ def django_setup_script():
     import sys
 
     proj_path = (os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
-    # venv_python = os.path.join(proj_path, '..', '.venv', 'bin', 'python')
     # This is so Django knows where to find stuff.
     sys.path.append(os.path.join(proj_path, '..'))
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "OnToology.settings")
@@ -1939,13 +1734,10 @@ def django_setup_script():
 
 
 if __name__ == "__main__":
-    # django_setup_script()
     from OnToology.models import *
     import argparse
 
     parser = argparse.ArgumentParser(description='')
-    # parser.add_argument('task', type=str)
-
     parser.add_argument('--ontology_rel_path', default="")
     parser.add_argument('--publishname', default="")
     parser.add_argument('--publish', action='store_true', default=False)
@@ -1954,10 +1746,6 @@ if __name__ == "__main__":
     parser.add_argument('--useremail')
     parser.add_argument('--magic', action='store_true', default=False)
     parser.add_argument('--changedfiles', action='append', nargs='*')
-    # parser.add_argument('--busyclear', action='store_true', default=False)
-    # parser.add_argument('runid', type=int, metavar='Annotation_Run_ID', help='the id of the Annotation Run ')
-    # parser.add_argument('--csvfiles', action='append', nargs='+', help='the list of csv files to be annotated')
-    # parser.add_argument('--dotype', action='store_true', help='To conclude the type/class of the given csv file')
     args = parser.parse_args()
     if args.useremail and '@' in args.useremail:
         prepare_logger(args.useremail)
@@ -1975,11 +1763,6 @@ if __name__ == "__main__":
                 pass
         else:
             print('autoncore> invalid target repo: <%s>' % args.target_repo)
-    # elif args.busyclear:
-    #     clear_busy()
     else:
         print('autoncore> invalid user email: <%s>' % args.useremail)
-
-
-
 
