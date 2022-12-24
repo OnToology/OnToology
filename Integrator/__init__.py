@@ -25,17 +25,6 @@ tools_conf = {
     'themis': {'folder_name': 'validation', 'tests_file_name': 'tests.txt', 'results_file_name': 'results.tsv'}
 }
 
-#
-# # currently only user for the previsualization
-# def prepare_logger(file_name):
-#     home = os.environ['github_repos_dir']
-#     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
-#     l = os.path.join(home, 'log', file_name)
-#     f = open(l, 'w')
-#     f.close()
-#     logging.basicConfig(filename=l, format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
-#     return l
-
 
 def dolog(msg):
     logger.critical(msg)
@@ -43,54 +32,6 @@ def dolog(msg):
 
 def p(msg):
     print(msg)
-
-# dolog = p
-# dolog = dolog_logg
-
-
-# def prepare_logger(log_fname):
-#     logging.basicConfig(filename=log_fname, format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
-
-# for the outline
-# def tools_execution(changed_files, base_dir, logfile, dolog_fname=None, target_repo=None, g_local=None,
-#                     change_status=None, repo=None):
-#     """
-#     :param changed_files:  changed files include relative path
-#             base_dir: abs dir to the repo file name, e.g. /home/user/myrepo/
-#     :return:
-#     """
-#     global g
-#     global dolog
-#     global log_file_dir
-#
-#     # clean up status pairs for that repo
-#     for sp in repo.ontology_status_pairs:
-#         sp.delete()
-#     repo.ontology_status_pairs = []
-#     repo.save()
-#     g = g_local
-#     log_file_dir = logfile
-#     if dolog_fname is not None:
-#         prepare_logger(dolog_fname)
-#         dolog = dolog_logg
-#     repo.notes = ''
-#     repo.save()
-#     progress_out_of = 70.0
-#     if len(changed_files) == 0:
-#         repo.progress = progress_out_of
-#         repo.save()
-#         return
-#
-#     single_piece = progress_out_of/len(changed_files)
-#     progress_inc = single_piece/4.0
-#     for f in changed_files:
-#         if f[-4:] in ontology_formats:
-#             if f[:len('OnToology/')] == 'OnToology/':  # This is to solve bug #265
-#                 dolog("nested prevented bug: "+f)
-#                 continue
-#             dolog("tools_execution: "+f)
-#             handle_single_ofile(f, base_dir, target_repo=target_repo, change_status=change_status, repo=repo,
-#                                 progress_inc=progress_inc)
 
 
 def tools_execution(changed_files, base_dir, target_repo=None, g_local=None, logfile=None,
@@ -135,18 +76,14 @@ def tools_execution(changed_files, base_dir, target_repo=None, g_local=None, log
 
 
 def task_reporter(name=None, desc=None, success=None, finished=None, orun=None, otask=None):
-    # if name not in ["Documentation", "Diagam", "Evaluation", "Validation", "JSONLD", "Configuration"]:
-    #     raise Exception("Invalid task name")
     dolog("taskreporter")
     if orun is None:
-        raise Exception("orun cannot be Null")
+        raise Exception("orun cannot be None")
     if otask is None:
         if name is None:
             raise Exception("Expected name if otask is not passed")
         t = OTask(name=name, description='', orun=orun)
         t.save()
-        # orun.tasks.add(t)
-        # orun.save()
     else:
         t = otask
     if desc is not None:
@@ -179,13 +116,6 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
     from . import owl2jsonld
     from . import syntaxchecker
     from . import themis
-    # import ar2dtool
-    # import widoco
-    # import oops
-    # import owl2jsonld
-    # import syntaxchecker
-    # import themis
-
     display_onto_name = changed_file[-15:]
     dolog("changed_file <%s> = display <%s>" % (display_onto_name, changed_file))
     otask = task_reporter("Configuration (%s)" % display_onto_name, desc="Loading configuration", orun=orun)
@@ -231,9 +161,6 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
         try:
             r = widoco.generate_widoco_docs([changed_file], base_dir, languages=conf['widoco']['languages'], webVowl=conf['widoco']['webVowl'])
             otask = task_reporter(otask=otask, desc="HTML documentation is generated", success=True, finished=True, orun=orun)
-            # if r != "":
-            #     # repo.notes += 'Error generating documentation for %s. ' % changed_file
-            #     repo.save()
         except Exception as e:
             dolog("Exception in running widoco.generate_widoco_docs: "+str(e))
             otask = task_reporter(otask=otask, desc="Error while generating the documentation", success=False, finished=True, orun=orun)
@@ -248,9 +175,6 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
         try:
             r = oops.oops_ont_files(target_repo=target_repo, changed_files=[changed_file], base_dir=base_dir)
             otask = task_reporter(otask=otask, desc="OOPS! reported is generated", orun=orun)
-            # if r != "":
-            #     # repo.notes += 'Error generating evaluation for %s. ' % changed_file
-            #     repo.save()
             if r != "":
                 dolog("Error in producing OOPS! report: "+str(r))
                 repo.notes += "Error in producing the evaluation report for: %s" % str(changed_file)
@@ -344,9 +268,6 @@ def create_of_get_conf(ofile, base_dir):
     j, config = get_json_from_conf_obj(config)
     print("create_of_get_conf: ")
     print(j)
-    # print("\n\n\n\n\n=========================config: ")
-    # print(j)
-    # print("dir: "+ofile_config_file_abs)
     try:
         with open(ofile_config_file_abs, 'w') as configfile:
             config.write(configfile)
@@ -408,10 +329,7 @@ def get_json_from_conf_obj(config):
         dolog('got themis enable value: ' + str(config_result['themis']['enable']))
     except:
         dolog('themis enable value does not exist')
-    # In case some configurations are missing
-    # dolog("configuration file does not exists (not an error)")
-    # dolog(ofile+' configuration file does not exists (not an error)')
-    # dolog('full path is: '+ofile_config_file_abs)
+
     for sec in config_result.keys():
         if not config.has_section(sec):
             dolog("section %s will be added" % sec)
@@ -426,24 +344,6 @@ def get_json_from_conf_obj(config):
                     str_v = config_result[sec][k]
                 config.set(sec, k, str_v)
     config.set(widoco_sec_name, 'languages', ",".join(config_result[widoco_sec_name]['languages']))
-    # else:
-    #     dolog("configuration file does not exists (not an error)")
-    #     # dolog(ofile+' configuration file does not exists (not an error)')
-    #     # dolog('full path is: '+ofile_config_file_abs)
-    #     for sec in config_result.keys():
-    #         if not config.has_section(sec):
-    #             config.add_section(sec)
-    #         for k in config_result[sec].keys():
-    #             if k != 'languages':
-    #                 dolog("config res: <%s> <%s> " % (sec, k))
-    #                 dolog(config_result[sec][k])
-    #                 if type(config_result[sec][k]) == bool:
-    #                     str_v = str(config_result[sec][k]).lower()
-    #                 else:
-    #                     str_v = config_result[sec][k]
-    #                 config.set(sec, k, str_v)
-    #     config.set(widoco_sec_name, 'languages', ",".join(config_result[widoco_sec_name]['languages']))
-
     return config_result, config
 
 
@@ -529,12 +429,5 @@ def call_and_get_log(comm):
 # timeout_comm = "timeout 300;"
 # disable the timeout for now
 timeout_comm = ""
-
-# error_msg, output_msg = call_and_get_log(timeout_comm+" echo 'testing timeout command'")
-# if error_msg.strip() != "":
-#     timeout_comm = "gtimeout 300;"  # for mac os
-#     error_msg, output_msg = call_and_get_log(timeout_comm+" echo 'testing gtimeout command'")
-#     if error_msg.strip() != "":  # incase timeout and gtimeout are not installed
-#         timeout_comm = "echo "
 
 
