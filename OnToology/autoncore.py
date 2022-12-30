@@ -535,7 +535,7 @@ def get_ontologies_from_submodules_tree(tree, repo):
         print(file_content)
 
         file_content = file_content.replace('\t', '')  # because it was containing \t
-        config_obj = config_parser.read_string(file_content)
+        config_parser.read_string(file_content)
         sections = config_parser.sections()
         for sec in sections:
             p = config_parser.get(sec, "path")
@@ -1748,6 +1748,7 @@ if __name__ == "__main__":
     parser.add_argument('--previsual', action='store_true', default=False)
     parser.add_argument('--target_repo')
     parser.add_argument('--useremail')
+    parser.add_argument('--branch')
     parser.add_argument('--magic', action='store_true', default=False)
     parser.add_argument('--changedfiles', action='append', nargs='*')
     args = parser.parse_args()
@@ -1757,12 +1758,12 @@ if __name__ == "__main__":
             if args.magic:
                 print("changed files: ")
                 print(args.changedfiles[0])
-                git_magic(args.target_repo, args.useremail, args.changedfiles[0])
+                git_magic(args.target_repo, args.useremail, args.changedfiles[0], args.branch)
             if args.previsual:
-                msg = previsual(useremail=args.useremail, target_repo=args.target_repo)
+                msg = previsual(useremail=args.useremail, target_repo=args.target_repo, branch=args.branch)
                 if args.publish:
                     publish(name=args.publishname, target_repo=args.target_repo,
-                            ontology_rel_path=args.ontology_rel_path, useremail=args.useremail)
+                            ontology_rel_path=args.ontology_rel_path, useremail=args.useremail, branch=branch)
             elif args.publish:
                 pass
         else:

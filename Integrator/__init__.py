@@ -7,7 +7,6 @@ from subprocess import call
 from OnToology.models import *
 import logging
 
-
 ontology_formats = ['.rdf', '.owl', '.ttl']
 config_folder_name = 'OnToology'
 config_file_name = 'OnToology.cfg'
@@ -15,7 +14,6 @@ config_file_name = 'OnToology.cfg'
 logger = logging.getLogger(__name__)
 log_file_dir = None
 g = None
-
 
 tools_conf = {
     'ar2dtool': {'folder_name': 'diagrams', 'type': 'png'},
@@ -63,14 +61,14 @@ def tools_execution(changed_files, base_dir, target_repo=None, g_local=None, log
         repo.progress = progress_out_of
         repo.save()
         return
-    single_piece = progress_out_of/len(changed_files)
-    progress_inc = single_piece/4.0
+    single_piece = progress_out_of / len(changed_files)
+    progress_inc = single_piece / 4.0
     for f in changed_files:
         if f[-4:] in ontology_formats:
             if f[:len('OnToology/')] == 'OnToology/':  # This is to solve bug #265
-                dolog("nested prevented bug: "+f)
+                dolog("nested prevented bug: " + f)
                 continue
-            dolog("tools_execution: "+f)
+            dolog("tools_execution: " + f)
             handle_single_ofile(f, base_dir, target_repo=target_repo, change_status=change_status, repo=repo,
                                 progress_inc=progress_inc, orun=orun)
 
@@ -87,10 +85,10 @@ def task_reporter(name=None, desc=None, success=None, finished=None, orun=None, 
     else:
         t = otask
     if desc is not None:
-        dolog("desc: "+desc)
+        dolog("desc: " + desc)
         t.description = desc
     else:
-        dolog("desc None: "+str(desc))
+        dolog("desc None: " + str(desc))
     if success is not None:
         t.success = success
     if finished is not None:
@@ -116,7 +114,7 @@ def run_syntax(conf, display_onto_name, orun, base_dir, changed_file, repo):
     if not syntaxchecker.valid_syntax(os.path.join(base_dir, changed_file)):
         repo.notes += "syntax error in %s\n" % changed_file
         repo.save()
-        otask = task_reporter(otask=otask, desc="Syntax error", finished=True, success=False,  orun=orun)
+        otask = task_reporter(otask=otask, desc="Syntax error", finished=True, success=False, orun=orun)
         return False
     otask = task_reporter(otask=otask, desc="Valid syntax", finished=True, success=True, orun=orun)
     return True
@@ -130,16 +128,17 @@ def run_ar2dtool(conf, display_onto_name, orun, base_dir, changed_file, repo, pr
     if conf.getboolean('ar2dtool', 'enable'):
         otask = task_reporter("Diagrams (%s)" % display_onto_name, desc="Drawing diagrams", orun=orun)
         dolog("will call draw diagrams")
-        change_status(target_repo, 'drawing diagrams for: '+changed_file)
+        change_status(target_repo, 'drawing diagrams for: ' + changed_file)
         repo.update_ontology_status(ontology=changed_file, status='diagram')
         repo.save()
         try:
             r = ar2dtool.draw_diagrams([changed_file], base_dir)
-            otask = task_reporter(otask=otask, desc="Diagrams are drawn",success=True, finished=True,  orun=orun)
+            otask = task_reporter(otask=otask, desc="Diagrams are drawn", success=True, finished=True, orun=orun)
         except Exception as e:
-            dolog("Exception in running ar2dtool.draw_diagrams: "+str(e))
-            dolog("changed_file: <"+changed_file+">")
-            otask = task_reporter(otask=otask, desc="Error generating the diagrams: <%s>" % str(e), success=True, finished=True, orun=orun)
+            dolog("Exception in running ar2dtool.draw_diagrams: " + str(e))
+            dolog("changed_file: <" + changed_file + ">")
+            otask = task_reporter(otask=otask, desc="Error generating the diagrams: <%s>" % str(e), success=True,
+                                  finished=True, orun=orun)
     repo.progress += progress_inc
     repo.save()
 
@@ -152,15 +151,18 @@ def run_widoco(conf, display_onto_name, orun, base_dir, changed_file, repo, prog
     if conf.getboolean('widoco', 'enable'):
         otask = task_reporter("Documentation (%s)" % display_onto_name, desc="Generating HTML documentation", orun=orun)
         dolog('will call widoco')
-        change_status(target_repo, 'generating docs for: '+changed_file)
+        change_status(target_repo, 'generating docs for: ' + changed_file)
         repo.update_ontology_status(ontology=changed_file, status='documentation')
         repo.save()
         try:
-            r = widoco.generate_widoco_docs([changed_file], base_dir, languages=conf.getlist('widoco', 'languages'), webVowl=conf.getboolean('widoco','webVowl'))
-            otask = task_reporter(otask=otask, desc="HTML documentation is generated", success=True, finished=True, orun=orun)
+            r = widoco.generate_widoco_docs([changed_file], base_dir, languages=conf.getlist('widoco', 'languages'),
+                                            webVowl=conf.getboolean('widoco', 'webVowl'))
+            otask = task_reporter(otask=otask, desc="HTML documentation is generated", success=True, finished=True,
+                                  orun=orun)
         except Exception as e:
-            dolog("Exception in running widoco.generate_widoco_docs: "+str(e))
-            otask = task_reporter(otask=otask, desc="Error while generating the documentation", success=False, finished=True, orun=orun)
+            dolog("Exception in running widoco.generate_widoco_docs: " + str(e))
+            otask = task_reporter(otask=otask, desc="Error while generating the documentation", success=False,
+                                  finished=True, orun=orun)
     repo.progress += progress_inc
     repo.save()
 
@@ -173,31 +175,35 @@ def run_oops(conf, display_onto_name, orun, base_dir, changed_file, repo, progre
     if conf.getboolean('oops', 'enable'):
         otask = task_reporter("Evaluation (%s)" % display_onto_name, desc="Generating OOPS! Evaluation", orun=orun)
         dolog('will call oops')
-        change_status(target_repo, 'evaluating: '+changed_file)
+        change_status(target_repo, 'evaluating: ' + changed_file)
         repo.update_ontology_status(ontology=changed_file, status='evaluation')
         repo.save()
         try:
             r = oops.oops_ont_files(target_repo=target_repo, changed_files=[changed_file], base_dir=base_dir)
             otask = task_reporter(otask=otask, desc="OOPS! reported is generated", orun=orun)
             if r != "":
-                dolog("Error in producing OOPS! report: "+str(r))
+                dolog("Error in producing OOPS! report: " + str(r))
                 repo.notes += "Error in producing the evaluation report for: %s" % str(changed_file)
                 repo.save()
-                otask = task_reporter(otask=otask, desc="Error generating OOPS! report", finished=True, success=False, orun=orun)
+                otask = task_reporter(otask=otask, desc="Error generating OOPS! report", finished=True, success=False,
+                                      orun=orun)
             else:
                 dolog("OOPS! report is generated successfully")
                 repo.notes += "Evaluation report is produced for: %s " % str(changed_file)
                 repo.save()
-                otask = task_reporter(otask=otask, desc="OOPS! reported is generated", finished=True, success=True, orun=orun)
+                otask = task_reporter(otask=otask, desc="OOPS! reported is generated", finished=True, success=True,
+                                      orun=orun)
 
         except Exception as e:
-            dolog("Exception in running oops.oops.oops_ont_files: "+str(e))
-            otask = task_reporter(otask=otask, desc="Error generating OOPS! report: "+str(e), finished=True, success=False, orun=orun)
+            dolog("Exception in running oops.oops.oops_ont_files: " + str(e))
+            otask = task_reporter(otask=otask, desc="Error generating OOPS! report: " + str(e), finished=True,
+                                  success=False, orun=orun)
     repo.progress += progress_inc
     repo.save()
 
 
-def run_owl2jsonld(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, change_status):
+def run_owl2jsonld(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo,
+                   change_status):
     """
     Run owl2jsonld
     """
@@ -205,15 +211,15 @@ def run_owl2jsonld(conf, display_onto_name, orun, base_dir, changed_file, repo, 
     if conf.getboolean('owl2jsonld', 'enable'):
         otask = task_reporter("JSONLD (%s)" % display_onto_name, desc="Generating jsonld", orun=orun)
         dolog('will call owl2jsonld')
-        change_status(target_repo, 'generating context for: '+changed_file)
+        change_status(target_repo, 'generating context for: ' + changed_file)
         repo.update_ontology_status(ontology=changed_file, status='jsonld')
         repo.save()
         try:
             owl2jsonld.generate_owl2jsonld_file([changed_file], base_dir=base_dir)
-            otask = task_reporter(otask=otask, desc="jsonld is generated", finished=True, success=True,  orun=orun)
+            otask = task_reporter(otask=otask, desc="jsonld is generated", finished=True, success=True, orun=orun)
         except Exception as e:
-            dolog("Exception in running owl2jsonld.generate_owl2jsonld_file: "+str(e))
-            otask = task_reporter(otask=otask, desc="jsonld is generated", finished=True, success=False,  orun=orun)
+            dolog("Exception in running owl2jsonld.generate_owl2jsonld_file: " + str(e))
+            otask = task_reporter(otask=otask, desc="jsonld is generated", finished=True, success=False, orun=orun)
     repo.progress += progress_inc
     repo.save()
 
@@ -226,14 +232,14 @@ def run_themis(conf, display_onto_name, orun, base_dir, changed_file, repo, prog
     if conf.getboolean('themis', 'enable'):
         otask = task_reporter("Validation (%s)" % display_onto_name, desc="Themis validation", orun=orun)
         dolog('will call themis')
-        change_status(target_repo, 'generating validation for: '+changed_file)
+        change_status(target_repo, 'generating validation for: ' + changed_file)
         repo.update_ontology_status(ontology=changed_file, status='validation')
         repo.save()
         try:
             themis.validate_ontologies(target_repo=target_repo, changed_files=[changed_file], base_dir=base_dir)
             otask = task_reporter(otask=otask, desc="Themis validation", success=True, finished=True, orun=orun)
         except Exception as e:
-            dolog("Exception in running themis: "+str(e))
+            dolog("Exception in running themis: " + str(e))
             otask = task_reporter(otask=otask, desc="Themis validation", success=False, finished=True, orun=orun)
     repo.update_ontology_status(ontology=changed_file, status='finished')
     repo.save()
@@ -259,18 +265,21 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
         conf = create_of_get_conf(changed_file, base_dir)
         conf_str = get_conf_as_str(conf)
         dolog("conf: %s" % conf_str)
-        otask = task_reporter(otask=otask, desc="Configuration loaded successfully", finished=True, success=True, orun=orun)
+        otask = task_reporter(otask=otask, desc="Configuration loaded successfully", finished=True, success=True,
+                              orun=orun)
     except Exception as e:
-        otask = task_reporter(otask=otask, desc="Configuration Error: "+str(e), finished=True, success=False, orun=orun)
+        otask = task_reporter(otask=otask, desc="Configuration Error: " + str(e), finished=True, success=False,
+                              orun=orun)
         raise e
 
-    if not run_syntax(conf, display_onto_name, orun, base_dir, changed_file, repo, change_status):
+    if not run_syntax(conf, display_onto_name, orun, base_dir, changed_file, repo):
         return
 
     run_ar2dtool(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, change_status)
     run_widoco(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, change_status)
     run_oops(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, change_status)
-    run_owl2jsonld(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, change_status)
+    run_owl2jsonld(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo,
+                   change_status)
     run_themis(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, change_status)
 
 
@@ -358,7 +367,7 @@ def build_path(file_with_abs_dir):
     abs_dir = get_parent_path(file_with_abs_dir)
     if not os.path.exists(abs_dir):
         os.makedirs(abs_dir)
-    dolog("build_path abs_dir: "+abs_dir)
+    dolog("build_path abs_dir: " + abs_dir)
     return file_with_abs_dir
 
 
@@ -371,7 +380,7 @@ def build_path_all(abs_dir):
     """
     if not os.path.exists(abs_dir):
         os.makedirs(abs_dir)
-    dolog("build_path_all abs_dir: "+abs_dir)
+    dolog("build_path_all abs_dir: " + abs_dir)
 
 
 def delete_dir(target_directory):
@@ -402,9 +411,9 @@ def call_and_get_log(comm):
     temp_dir = os.environ['github_repos_dir']
     sec = ''.join([random.choice(string.ascii_letters + string.digits)
                    for _ in range(9)])
-    fname_output = 'call-output-'+sec
+    fname_output = 'call-output-' + sec
     fname_output = os.path.join(temp_dir, fname_output)
-    fname_err = 'call-error-'+sec
+    fname_err = 'call-error-' + sec
     fname_err = os.path.join(temp_dir, fname_err)
     f = open(fname_output, 'w')
     ferr = open(fname_err, 'w')
@@ -422,9 +431,6 @@ def call_and_get_log(comm):
     return error_content, file_content
 
 
-
 # timeout_comm = "timeout 300;"
 # disable the timeout for now
 timeout_comm = ""
-
-
