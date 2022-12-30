@@ -122,7 +122,7 @@ def run_syntax(conf, display_onto_name, orun, base_dir, changed_file, repo):
     return True
 
 
-def run_ar2dtool(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo):
+def run_ar2dtool(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, change_status):
     """
     Run AR2DTool
     """
@@ -144,7 +144,7 @@ def run_ar2dtool(conf, display_onto_name, orun, base_dir, changed_file, repo, pr
     repo.save()
 
 
-def run_widoco(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo):
+def run_widoco(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, change_status):
     """
     Run Widoco
     """
@@ -165,7 +165,7 @@ def run_widoco(conf, display_onto_name, orun, base_dir, changed_file, repo, prog
     repo.save()
 
 
-def run_oops(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo):
+def run_oops(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, change_status):
     """
     Run OOPS!
     """
@@ -197,7 +197,7 @@ def run_oops(conf, display_onto_name, orun, base_dir, changed_file, repo, progre
     repo.save()
 
 
-def run_owl2jsonld(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo):
+def run_owl2jsonld(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, change_status):
     """
     Run owl2jsonld
     """
@@ -218,7 +218,7 @@ def run_owl2jsonld(conf, display_onto_name, orun, base_dir, changed_file, repo, 
     repo.save()
 
 
-def run_themis(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo):
+def run_themis(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, change_status):
     """
     Run themis
     """
@@ -264,14 +264,14 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
         otask = task_reporter(otask=otask, desc="Configuration Error: "+str(e), finished=True, success=False, orun=orun)
         raise e
 
-    if not run_syntax(conf, display_onto_name, orun, base_dir, changed_file, repo):
+    if not run_syntax(conf, display_onto_name, orun, base_dir, changed_file, repo, change_status):
         return
 
-    run_ar2dtool(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo)
-    run_widoco(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo)
-    run_oops(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo)
-    run_owl2jsonld(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo)
-    run_themis(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo)
+    run_ar2dtool(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, change_status)
+    run_widoco(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, change_status)
+    run_oops(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, change_status)
+    run_owl2jsonld(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, change_status)
+    run_themis(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, change_status)
 
 
 def get_default_conf():
