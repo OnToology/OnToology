@@ -105,7 +105,8 @@ enable = false
         conf_alo = Integrator.create_of_get_conf(os.path.join("ALo","aLo.owl"), abs_repo_dir)
         # print("\n\n conf alo: ")
         print(conf_alo)
-        self.assertEqual('en,es', ",".join(conf_alo['widoco']['languages']))
+        self.assertListEqual(["en", "es"], conf_alo.getlist('widoco','languages'))
+
 
     def test_fix_old_conf(self):
         """
@@ -141,8 +142,9 @@ enable = false
 
         conf_alo = Integrator.create_of_get_conf(os.path.join("ALo", "aLo.owl"), abs_repo_dir)
         print(conf_alo)
-        self.assertEqual(['en'], conf_alo['widoco']['languages'])
-        self.assertIn('themis', conf_alo)
+
+        self.assertListEqual(["en"], conf_alo.getlist('widoco','languages'))
+        self.assertTrue(conf_alo.has_section('themis'))
 
 
 
