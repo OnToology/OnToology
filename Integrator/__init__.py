@@ -99,6 +99,11 @@ def task_reporter(name=None, desc=None, success=None, finished=None, orun=None, 
     return t
 
 
+def get_conf_as_str(conf):
+    conf_str = {section: dict(conf[section]) for section in conf}
+    return conf_str
+
+
 def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo=None, progress_inc=0.0, orun=None):
     """
     assuming the change_file is an ontology file
@@ -122,7 +127,7 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
     dolog("will call create or get conf")
     try:
         conf = create_of_get_conf(changed_file, base_dir)
-        conf_str = {section: dict(conf[section]) for section in conf}
+        conf_str = get_conf_as_str(conf)
         dolog("conf: %s" % conf_str)
         otask = task_reporter(otask=otask, desc="Configuration loaded successfully", finished=True, success=True, orun=orun)
     except Exception as e:
@@ -244,19 +249,34 @@ def get_default_conf():
     return config_result
 
 
-def create_of_get_conf(ofile, base_dir):
+def get_default_conf_obj():
+    """
+    Get default config object
+    """
+    dolog('config is called')
+    config = ConfigParser()
+    config.read_dict(get_default_conf())
+    return config
+
+
+def create_of_get_conf(ofile=None, base_dir=None, config_abs=None):
     """
     Returns the configuraation if not present. Otherwise, it will create a default one.
     :param ofile: relative directory of the file e.g. dir1/dir2/my.owl
     :return: dict of the configurations
     """
     global config_folder_name, config_file_name
-    ofile_config_file_rel = os.path.join(config_folder_name, ofile, config_file_name)
-    ofile_config_file_abs = os.path.join(base_dir, ofile_config_file_rel)
 
-    dolog('config is called')
-    config = ConfigParser()
-    config.read_dict(get_default_conf())
+    if config_abs:
+        ofile_config_file_abs = ofile_config_file_abs
+    else:
+        ofile_config_file_rel = os.path.join(config_folder_name, ofile, config_file_name)
+        ofile_config_file_abs = os.path.join(base_dir, ofile_config_file_rel)
+
+    config = get_default_conf_obj()
+    # dolog('config is called')
+    # config = ConfigParser()
+    # config.read_dict(get_default_conf())
 
     if os.path.exists(ofile_config_file_abs):
         dolog("create_of_get_conf> config file exists: %s" % ofile_config_file_abs)

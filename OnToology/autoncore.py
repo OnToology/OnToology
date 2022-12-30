@@ -1486,34 +1486,38 @@ def get_auton_configuration(f=None, abs_folder=None):
     return get_auton_config(conf_file_abs, from_string=False)
 
 
+def get_conf_as_str(conf):
+    conf_str = {section: dict(conf[section]) for section in conf}
+    return conf_str
+
+
 def get_auton_config(conf_file_abs, from_string=True):
     """
     :param conf_file_abs:
     :param from_string:
     :return:
     """
-    config = ConfigParser.ConfigParser()
-    print("config raw parser")
+
+    # config = Integrator.get_default_conf_obj()
+    # config = ConfigParser.ConfigParser()
+    # print("config raw parser")
     if from_string:
-        config_obj = config.read_string(conf_file_abs)
+        config = Integrator.get_default_conf_obj()
+        config = config.read_string(conf_file_abs)
         print("obj from string")
     else:
-        config_obj = config.read(conf_file_abs)
+        config = Integrator.create_of_get_conf(config_abs=conf_file_abs)
+        config = config.read(conf_file_abs)
         print("obj from file")
-    print("will ask for get json from conf obj")
-    try:
-        config_res, _ = Integrator.get_json_from_conf_obj(config)
-        if not from_string:
-            try:
-                with open(conf_file_abs, 'wb') as configfile:
-                    config.write(configfile)
-            except Exception as e:
-                dolog('expection: '+str(e))
-    except Exception as e:
-        dolog("Exception: "+str(e))
-        traceback.print_exc()
+        try:
+            with open(conf_file_abs, 'wb') as configfile:
+                config.write(configfile)
+        except Exception as e:
+            dolog('expection: ' + str(e))
+            traceback.print_exc()
+        
     dolog("\n\n\n**************get_auton_config: ")
-    dolog(str(config_res))
+    dolog(get_conf_as_str(conf))
     return config_res
 
 
