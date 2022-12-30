@@ -288,10 +288,6 @@ def create_of_get_conf(ofile=None, base_dir=None, config_abs=None):
         dolog("create_of_get_conf> config file does not exist (will be created): %s" % ofile_config_file_abs)
         build_path(ofile_config_file_abs)
 
-    # Will get the updated config for the new file
-    # j, config = get_json_from_conf_obj(config)
-    print("create_of_get_conf: ")
-    print(j)
     try:
         with open(ofile_config_file_abs, 'w') as configfile:
             config.write(configfile)
