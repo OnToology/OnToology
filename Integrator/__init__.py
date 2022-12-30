@@ -1,4 +1,4 @@
-import configparser
+from ConfigParserList import ConfigParser
 import os
 import random
 import string
@@ -122,7 +122,8 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
     dolog("will call create or get conf")
     try:
         conf = create_of_get_conf(changed_file, base_dir)
-        dolog("conf: "+str(conf))
+        conf_str = {section: dict(conf[section]) for section in conf}
+        dolog("conf: %s" % conf_str)
         otask = task_reporter(otask=otask, desc="Configuration loaded successfully", finished=True, success=True, orun=orun)
     except Exception as e:
         otask = task_reporter(otask=otask, desc="Configuration Error: "+str(e), finished=True, success=False, orun=orun)
@@ -134,7 +135,8 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
         otask = task_reporter(otask=otask, desc="Syntax error", finished=True, success=False,  orun=orun)
         return
     otask = task_reporter(otask=otask, desc="Valid syntax", finished=True, success=True, orun=orun)
-    if conf['ar2dtool']['enable']:
+    # if conf['ar2dtool']['enable']:
+    if conf.getboolean('ar2dtool', 'enable'):
         otask = task_reporter("Diagrams (%s)" % display_onto_name, desc="Drawing diagrams", orun=orun)
         dolog("will call draw diagrams")
         change_status(target_repo, 'drawing diagrams for: '+changed_file)
@@ -143,30 +145,29 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
         try:
             r = ar2dtool.draw_diagrams([changed_file], base_dir)
             otask = task_reporter(otask=otask, desc="Diagrams are drawn",success=True, finished=True,  orun=orun)
-            # if r != "":
-            #     # repo.notes += 'Error generating diagrams for %s. ' % changed_file
-            #     repo.save()
         except Exception as e:
             dolog("Exception in running ar2dtool.draw_diagrams: "+str(e))
             dolog("changed_file: <"+changed_file+">")
             otask = task_reporter(otask=otask, desc="Error generating the diagrams: <%s>" % str(e), success=True, finished=True, orun=orun)
     repo.progress += progress_inc
     repo.save()
-    if conf['widoco']['enable']:
+    # if conf['widoco']['enable']:
+    if conf.getboolean('widoco', 'enable'):
         otask = task_reporter("Documentation (%s)" % display_onto_name, desc="Generating HTML documentation", orun=orun)
         dolog('will call widoco')
         change_status(target_repo, 'generating docs for: '+changed_file)
         repo.update_ontology_status(ontology=changed_file, status='documentation')
         repo.save()
         try:
-            r = widoco.generate_widoco_docs([changed_file], base_dir, languages=conf['widoco']['languages'], webVowl=conf['widoco']['webVowl'])
+            r = widoco.generate_widoco_docs([changed_file], base_dir, languages=conf.getlist('widoco', 'languages'), webVowl=conf.getboolean('widoco','webVowl')
             otask = task_reporter(otask=otask, desc="HTML documentation is generated", success=True, finished=True, orun=orun)
         except Exception as e:
             dolog("Exception in running widoco.generate_widoco_docs: "+str(e))
             otask = task_reporter(otask=otask, desc="Error while generating the documentation", success=False, finished=True, orun=orun)
     repo.progress += progress_inc
     repo.save()
-    if conf['oops']['enable']:
+    # if conf['oops']['enable']:
+    if conf.getboolean('oops', 'enable'):
         otask = task_reporter("Evaluation (%s)" % display_onto_name, desc="Generating OOPS! Evaluation", orun=orun)
         dolog('will call oops')
         change_status(target_repo, 'evaluating: '+changed_file)
@@ -191,7 +192,7 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
             otask = task_reporter(otask=otask, desc="Error generating OOPS! report: "+str(e), finished=True, success=False, orun=orun)
     repo.progress += progress_inc
     repo.save()
-    if conf['owl2jsonld']['enable']:
+    if conf.getboolean('owl2jsonld', 'enable'):
         otask = task_reporter("JSONLD (%s)" % display_onto_name, desc="Generating jsonld", orun=orun)
         dolog('will call owl2jsonld')
         change_status(target_repo, 'generating context for: '+changed_file)
@@ -204,7 +205,7 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
             dolog("Exception in running owl2jsonld.generate_owl2jsonld_file: "+str(e))
             otask = task_reporter(otask=otask, desc="jsonld is generated", finished=True, success=False,  orun=orun)
     repo.progress += progress_inc
-    if conf['themis']['enable']:
+    if conf.boolean('themis', 'enable'):
         otask = task_reporter("Validation (%s)" % display_onto_name, desc="Themis validation", orun=orun)
         dolog('will call themis')
         change_status(target_repo, 'generating validation for: '+changed_file)
@@ -245,27 +246,30 @@ def get_default_conf():
 
 def create_of_get_conf(ofile, base_dir):
     """
+    Returns the configuraation if not present. Otherwise, it will create a default one.
     :param ofile: relative directory of the file e.g. dir1/dir2/my.owl
     :return: dict of the configurations
     """
+    global config_folder_name, config_file_name
     ofile_config_file_rel = os.path.join(config_folder_name, ofile, config_file_name)
     ofile_config_file_abs = os.path.join(base_dir, ofile_config_file_rel)
+
+    dolog('config is called')
+    config = ConfigParser()
+    config.read_dict(get_default_conf())
+
     if os.path.exists(ofile_config_file_abs):
         dolog("create_of_get_conf> config file exists: %s" % ofile_config_file_abs)
-    else:
-        dolog("create_of_get_conf> config file does not exist (will be created): %s" % ofile_config_file_abs)
-    build_path(ofile_config_file_abs)
-    dolog('config is called')
-    config = configparser.ConfigParser()
-    config.read(ofile_config_file_abs)
-    dolog("prev content: ")
-    if os.path.exists(ofile_config_file_abs):
+        config.read(ofile_config_file_abs)
+        dolog("prev content: ")
         with open(ofile_config_file_abs) as f:
             dolog(f.read())
     else:
-        dolog("config path does not exist (it is not an error for new repos)")
+        dolog("create_of_get_conf> config file does not exist (will be created): %s" % ofile_config_file_abs)
+        build_path(ofile_config_file_abs)
+
     # Will get the updated config for the new file
-    j, config = get_json_from_conf_obj(config)
+    # j, config = get_json_from_conf_obj(config)
     print("create_of_get_conf: ")
     print(j)
     try:
@@ -278,73 +282,73 @@ def create_of_get_conf(ofile, base_dir):
         dolog('exception: ')
         dolog(e)
         raise e
-    return j
+    return config
 
-
-def get_json_from_conf_obj(config):
-    """
-    :param config: a config object
-    :return:
-    """
-    ar2dtool_sec_name = 'ar2dtool'
-    widoco_sec_name = 'widoco'
-    oops_sec_name = 'oops'
-    owl2jsonld_sec_name = 'owl2jsonld'
-    themis_sec_name = 'themis'
-    config_result = get_default_conf()
-    # ar2dtool
-    try:
-        config_result['ar2dtool']['enable'] = config.getboolean(ar2dtool_sec_name, 'enable')
-        dolog('got ar2dtool enable value: ' + str(config_result['ar2dtool']['enable']))
-    except:
-        dolog('ar2dtool enable value doesnot exist and will get the default')
-    # widoco
-    try:
-        config_result['widoco']['enable'] = config.getboolean(widoco_sec_name, 'enable')
-        config_result['widoco']['languages'] = config.get(widoco_sec_name, 'languages').replace(' ', '').replace('"', '').replace("'", '').split(',')
-        config_result['widoco']['webVowl'] = config.getboolean(widoco_sec_name, 'webVowl')
-        dolog('got widoco enable value: ' + str(config_result['widoco']['enable']))
-        dolog('includes webVowl: ' + str(config_result['widoco']['webVowl']))
-        dolog('languages: ')
-        dolog(config_result['widoco']['languages'])
-        dolog("cofig original : ")
-        dolog(config.get(widoco_sec_name, 'languages'))
-    except:
-        dolog('widoco enable value does not exist')
-    # oops
-    try:
-        config_result['oops']['enable'] = config.getboolean(oops_sec_name, 'enable')
-        dolog('got oops enable value: ' + str(config_result['oops']['enable']))
-    except:
-        dolog('oops enable value does not exist')
-    # jsonld
-    try:
-        config_result['owl2jsonld']['enable'] = config.getboolean(owl2jsonld_sec_name, 'enable')
-        dolog('got owl2jsonld enable value: ' + str(config_result['owl2jsonld']['enable']))
-    except:
-        dolog('owl2jsonld enable value does not exist')
-    # themis
-    try:
-        config_result['themis']['enable'] = config.getboolean(themis_sec_name, 'enable')
-        dolog('got themis enable value: ' + str(config_result['themis']['enable']))
-    except:
-        dolog('themis enable value does not exist')
-
-    for sec in config_result.keys():
-        if not config.has_section(sec):
-            dolog("section %s will be added" % sec)
-            config.add_section(sec)
-        for k in config_result[sec].keys():
-            if k != 'languages':
-                dolog("config res: <%s> <%s> " % (sec, k))
-                dolog(config_result[sec][k])
-                if type(config_result[sec][k]) == bool:
-                    str_v = str(config_result[sec][k]).lower()
-                else:
-                    str_v = config_result[sec][k]
-                config.set(sec, k, str_v)
-    config.set(widoco_sec_name, 'languages', ",".join(config_result[widoco_sec_name]['languages']))
-    return config_result, config
+# To be removed after update autoncore
+# def get_json_from_conf_obj(config):
+#     """
+#     :param config: a config object
+#     :return:
+#     """
+#     ar2dtool_sec_name = 'ar2dtool'
+#     widoco_sec_name = 'widoco'
+#     oops_sec_name = 'oops'
+#     owl2jsonld_sec_name = 'owl2jsonld'
+#     themis_sec_name = 'themis'
+#     config_result = get_default_conf()
+#     # ar2dtool
+#     try:
+#         config_result['ar2dtool']['enable'] = config.getboolean(ar2dtool_sec_name, 'enable')
+#         dolog('got ar2dtool enable value: ' + str(config_result['ar2dtool']['enable']))
+#     except:
+#         dolog('ar2dtool enable value doesnot exist and will get the default')
+#     # widoco
+#     try:
+#         config_result['widoco']['enable'] = config.getboolean(widoco_sec_name, 'enable')
+#         config_result['widoco']['languages'] = config.get(widoco_sec_name, 'languages').replace(' ', '').replace('"', '').replace("'", '').split(',')
+#         config_result['widoco']['webVowl'] = config.getboolean(widoco_sec_name, 'webVowl')
+#         dolog('got widoco enable value: ' + str(config_result['widoco']['enable']))
+#         dolog('includes webVowl: ' + str(config_result['widoco']['webVowl']))
+#         dolog('languages: ')
+#         dolog(config_result['widoco']['languages'])
+#         dolog("cofig original : ")
+#         dolog(config.get(widoco_sec_name, 'languages'))
+#     except:
+#         dolog('widoco enable value does not exist')
+#     # oops
+#     try:
+#         config_result['oops']['enable'] = config.getboolean(oops_sec_name, 'enable')
+#         dolog('got oops enable value: ' + str(config_result['oops']['enable']))
+#     except:
+#         dolog('oops enable value does not exist')
+#     # jsonld
+#     try:
+#         config_result['owl2jsonld']['enable'] = config.getboolean(owl2jsonld_sec_name, 'enable')
+#         dolog('got owl2jsonld enable value: ' + str(config_result['owl2jsonld']['enable']))
+#     except:
+#         dolog('owl2jsonld enable value does not exist')
+#     # themis
+#     try:
+#         config_result['themis']['enable'] = config.getboolean(themis_sec_name, 'enable')
+#         dolog('got themis enable value: ' + str(config_result['themis']['enable']))
+#     except:
+#         dolog('themis enable value does not exist')
+#
+#     for sec in config_result.keys():
+#         if not config.has_section(sec):
+#             dolog("section %s will be added" % sec)
+#             config.add_section(sec)
+#         for k in config_result[sec].keys():
+#             if k != 'languages':
+#                 dolog("config res: <%s> <%s> " % (sec, k))
+#                 dolog(config_result[sec][k])
+#                 if type(config_result[sec][k]) == bool:
+#                     str_v = str(config_result[sec][k]).lower()
+#                 else:
+#                     str_v = config_result[sec][k]
+#                 config.set(sec, k, str_v)
+#     config.set(widoco_sec_name, 'languages', ",".join(config_result[widoco_sec_name]['languages']))
+#     return config_result, config
 
 
 #######################
@@ -359,7 +363,7 @@ def build_path(file_with_abs_dir):
     abs_dir = get_parent_path(file_with_abs_dir)
     if not os.path.exists(abs_dir):
         os.makedirs(abs_dir)
-    dolog("build_path abs_dir: "+abs_dir)  # file_with_abs_dir
+    dolog("build_path abs_dir: "+abs_dir)
     return file_with_abs_dir
 
 
@@ -372,16 +376,13 @@ def build_path_all(abs_dir):
     """
     if not os.path.exists(abs_dir):
         os.makedirs(abs_dir)
-    dolog("build_path_all abs_dir: "+abs_dir)  # file_with_abs_dir
+    dolog("build_path_all abs_dir: "+abs_dir)
 
 
 def delete_dir(target_directory):
     dolog("target_directory: ")
     dolog(target_directory)
-    # dolog("log_file_dir: ")
-    # dolog(log_file_dir)
     comm = "rm -Rf " + target_directory
-    # comm += '  >> "' + log_file_dir + '" '
     dolog(comm)
     call(comm, shell=True)
 
