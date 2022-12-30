@@ -210,7 +210,7 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
             dolog("Exception in running owl2jsonld.generate_owl2jsonld_file: "+str(e))
             otask = task_reporter(otask=otask, desc="jsonld is generated", finished=True, success=False,  orun=orun)
     repo.progress += progress_inc
-    if conf.boolean('themis', 'enable'):
+    if conf.getboolean('themis', 'enable'):
         otask = task_reporter("Validation (%s)" % display_onto_name, desc="Themis validation", orun=orun)
         dolog('will call themis')
         change_status(target_repo, 'generating validation for: '+changed_file)
