@@ -1515,7 +1515,7 @@ def get_auton_config(conf_file_abs, from_string=True):
         except Exception as e:
             dolog('expection: ' + str(e))
             traceback.print_exc()
-        
+
     dolog("\n\n\n**************get_auton_config: ")
     dolog(get_conf_as_str(conf))
     return config_res

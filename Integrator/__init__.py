@@ -164,7 +164,7 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
         repo.update_ontology_status(ontology=changed_file, status='documentation')
         repo.save()
         try:
-            r = widoco.generate_widoco_docs([changed_file], base_dir, languages=conf.getlist('widoco', 'languages'), webVowl=conf.getboolean('widoco','webVowl')
+            r = widoco.generate_widoco_docs([changed_file], base_dir, languages=conf.getlist('widoco', 'languages'), webVowl=conf.getboolean('widoco','webVowl'))
             otask = task_reporter(otask=otask, desc="HTML documentation is generated", success=True, finished=True, orun=orun)
         except Exception as e:
             dolog("Exception in running widoco.generate_widoco_docs: "+str(e))
