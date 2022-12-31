@@ -1,15 +1,15 @@
-
 from .org import get_organization_dict
 
+
 def get_license_dict():
-    license = {
+    the_license = {
         "key": "mit",
         "name": "MIT License",
         "spdx_id": "MIT",
         "url": "https://api.github.com/licenses/mit",
         "node_id": "MDc6TGljZW5zZW1pdA==",
     }
-    return license
+    return the_license
 
 
 def get_parent_dict(repo):

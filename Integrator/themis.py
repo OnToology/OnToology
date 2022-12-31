@@ -4,7 +4,7 @@ from rdflib.namespace import RDF, OWL
 import requests
 import traceback
 import os
-from . import dolog, tools_conf, build_path_all, get_target_home, get_parent_path, log_file_dir, g
+from . import dolog, tools_conf, build_path_all, get_target_home, log_file_dir, g
 
 THEMIS_URL = "http://themis.linkeddata.es/rest/api/"
 
@@ -46,16 +46,16 @@ def get_themis_results(ontology_url, tests):
         return None
 
 
-def generate_test_class_type(g):
+def generate_test_class_type(gg):
     """
-    :param g: rdflib graph
+    :param gg: rdflib graph
     :return:
     """
     classes_set = set()
     try:
         # for rdf_type, _ in g.subject_objects(predicate=RDF.type):
         # for _, rdf_type in g.subject_objects(predicate=RDFS.Class):
-        for rdf_type in g.subjects(predicate=RDF.type, object=OWL.Class):
+        for rdf_type in gg.subjects(predicate=RDF.type, object=OWL.Class):
             classes_set.add(rdf_type)
         tests = []
         for c in classes_set:
@@ -73,12 +73,12 @@ def generate_tests(file_abs_dir):
     :param file_abs_dir: the ontology absolute directory
     :return: list of tests (or [] in the case of an error)
     """
-    g = rdflib.Graph()
+    gg = rdflib.Graph()
     formats = ['xml', 'ttl']
     for a_format in formats:
         try:
-            g.parse(file_abs_dir, format=a_format)
-            tests = generate_test_class_type(g)
+            gg.parse(file_abs_dir, format=a_format)
+            tests = generate_test_class_type(gg)
             print("tests: ")
             print(tests)
             return tests

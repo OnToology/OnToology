@@ -1,7 +1,6 @@
 import os
-from . import dolog, tools_conf, build_path_all, get_target_home, get_parent_path, log_file_dir, g
+from . import dolog, tools_conf, build_path_all, get_target_home, log_file_dir, g
 from . import call_and_get_log
-import shutil
 
 
 oops_dir = os.environ['oops_dir']
