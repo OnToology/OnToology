@@ -162,7 +162,7 @@ def magic_prep(target_repo, user, branch):
     otask.description = 'Getting changed files'
     dolog("created the otask")
     dolog("added the task to run")
-    return ouser, orun, drepo, otask
+    return orun, drepo, otask
 
 
 def fork_and_clone_block(drepo, user, branch, otask, target_repo):
@@ -340,7 +340,7 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
     print(settings.test_conf)
     parent_folder = user
 
-    ouser, orun, drepo, otask = magic_prep(target_repo, user, branch)
+    orun, drepo, otask = magic_prep(target_repo, user, branch)
 
     try:
         for ftov in changed_filesss:
@@ -1199,7 +1199,7 @@ def generate_bundle(base_dir, target_repo, ontology_bundle, branch):
         files = repo.get_git_tree(sha=sha, recursive=True).tree
         print('num of files: ' + str(len(files)))
         for f in files:
-            bundle_file_handler(repo, f, ontology_bundle)
+            bundle_file_handler(repo, f, ontology_bundle, base_dir)
             # try:
             #     for _ in range(3):
             #         try:
@@ -1874,18 +1874,15 @@ def generate_user_log(log_file_name):
     call(comm, shell=True)
 
 
-############
-#    main  #
-############
+#################################################################
+#           TO make this app compatible with Django             #
+#################################################################
 
 
 def django_setup_script():
-    #################################################################
-    #           TO make this app compatible with Django             #
-    #################################################################
-    import os
-    import sys
-
+    """
+    To load django
+    """
     proj_path = (os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
     # This is so Django knows where to find stuff.
     sys.path.append(os.path.join(proj_path, '..'))

@@ -11,7 +11,6 @@ proj_path = (os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir
 sys.path.append(os.path.join(proj_path, '..'))
 
 
-
 def load(setting_module):
     """
     setting_module: (e.g., "OnToology.settings")

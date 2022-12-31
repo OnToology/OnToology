@@ -5,7 +5,6 @@ import time
 import logging
 import threading
 from threading import Lock
-from multiprocessing import Pipe
 import multiprocessing
 import traceback
 

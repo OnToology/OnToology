@@ -24,7 +24,7 @@ from OnToology import api_urls
 
 
 urlpatterns = [
-    url(r'^delete_repo', views.delete_repo, name="deleterepo"),
+    url(r'^delete_repo', views.delete_repo_view, name="deleterepo"),
     url(r'^update_conf', views.update_conf, name='updateconf'),
     url(r'^add_hook', views.add_hook, name='addhook'),
     url(r'^get_access_token', views.get_access_token, name='getaccesstoken'),

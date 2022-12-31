@@ -146,7 +146,6 @@ class PublishView(View):
                 error_msg = "Error in publishing"
                 return JsonResponse({'message': error_msg}, status=400)
 
-
     @method_decorator(token_required)
     def get(self, request):
         user = request.user
@@ -193,7 +192,7 @@ def generate_all(request):
             return JsonResponse({'message': 'branch is missing'}, status=400)
         branch = request.POST['branch'].strip()
         print("url: 1")
-        url =request.POST['url'].strip()
+        url = request.POST['url'].strip()
         print("url: 2")
         if url[-1] == '/':
             url = url[:-1]
@@ -220,15 +219,3 @@ def generate_all(request):
 
     except Exception as e:
         return JsonResponse({'message': 'Internal Error: '+str(e)}, status=500)
-
-
-
-
-
-
-
-
-
-
-
-

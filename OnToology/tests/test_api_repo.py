@@ -1,6 +1,5 @@
 import json
 import string
-import random
 
 import os
 from .api_util import create_user, delete_all_repos_from_db, create_repo

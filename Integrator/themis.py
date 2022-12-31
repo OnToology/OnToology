@@ -1,19 +1,10 @@
 from collections import Counter
 import rdflib
-from rdflib.namespace import RDF, RDFS, OWL
+from rdflib.namespace import RDF, OWL
 import requests
 import traceback
 import os
-
-from . import dolog, get_file_from_path, tools_conf, build_path_all, get_target_home, get_parent_path, log_file_dir, g
-
-# try:
-#     from . import dolog
-# except Exception as e:
-#     print("exception in loading dolog from themis.py This should only happen when running themis.py directly and not via OnToology")
-#     def dolog(msg):
-#         print(msg)
-
+from . import dolog, tools_conf, build_path_all, get_target_home, get_parent_path, log_file_dir, g
 
 THEMIS_URL = "http://themis.linkeddata.es/rest/api/"
 
@@ -24,7 +15,7 @@ def get_themis_results(ontology_url, tests):
     :param tests:
     :return:
     """
-    results_url = THEMIS_URL+'results'
+    results_url = THEMIS_URL + 'results'
     j = {
         'ontologies': [ontology_url], 'tests': tests
     }
@@ -92,7 +83,7 @@ def generate_tests(file_abs_dir):
             print(tests)
             return tests
         except Exception as e:
-            print("generate_tests> Exception: "+str(e))
+            print("generate_tests> Exception: " + str(e))
             traceback.print_exc()
     return []
 
@@ -116,7 +107,7 @@ def validate_ontology(base_dir, target_repo, ontology_rel_dir):
     tests_file_dir = os.path.join(report_output_dir, tools_conf['themis']['tests_file_name'])
     results_file_dir = os.path.join(report_output_dir, tools_conf['themis']['results_file_name'])
     write_tests(os.path.join(base_dir, ontology_rel_dir), tests_file_dir)
-    write_test_results(target_repo, ontology_rel_dir, tests_file_dir,results_file_dir)
+    write_test_results(target_repo, ontology_rel_dir, tests_file_dir, results_file_dir)
 
 
 def write_test_results(target_repo, ontology_rel_dir, tests_file_dir, results_file_dir):
@@ -155,8 +146,8 @@ def write_tests(ontology_dir, tests_file_dir):
 
 if __name__ == '__main__':
     from sys import argv
+
     if len(argv) == 2:
         generate_tests(argv[1])
     else:
         get_themis_results(argv[1], argv[2].split(';'))
-

@@ -17,7 +17,6 @@
 #
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, UserManager
-from django.contrib.auth.models import AbstractUser as User
 from django.db import models
 from datetime import timedelta
 

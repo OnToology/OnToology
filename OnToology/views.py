@@ -861,7 +861,7 @@ def update_conf(request):
 
 
 @login_required
-def delete_repo(request):
+def delete_repo_view(request):
     repo = request.GET['repo']
     user = OUser.objects.get(email=request.user.email)
     for r in user.repos.all():
@@ -1123,9 +1123,9 @@ def publish_view(request):
         }
         w3id_url = "https://w3id.org/def/%s" % name
         sqclient.send(j)
-        msg = '''<i>%s</i> will be published soon at <a href="%s">%s</a>. This might take a few minutes for 
-        the published ontology to be available for GitHub pages. If it is not published within a few minutes 
-        you can contact us.''' % (ontology_rel_path[1:], w3id_url, w3id_url)
+        msg = '''<i>%s</i> will be published soon at <a href="%s">%s</a>. This might take a few minutes for
+         the published ontology to be available for GitHub pages. If it is not published within a few minutes
+         you can contact us.''' % (ontology_rel_path[1:], w3id_url, w3id_url)
         return JsonResponse({'msg': msg})
     except Exception as e:
         print("publish_view> error : %s" % str(e))
