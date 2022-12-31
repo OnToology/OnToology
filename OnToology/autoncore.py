@@ -165,6 +165,54 @@ def magic_prep(target_repo, user, branch):
     return ouser, orun, drepo, otask
 
 
+def fork_and_clone_block(drepo, user, branch, otask):
+    """
+    This is the preparation block before the execution of the tools
+    :param drepo: Repo object
+    :param user: User object
+    :param branch: str. The branch of the repo
+    :param otask: OTask obj.
+
+    return g
+    """
+    # so the tool user can takeover and do stuff
+    dolog("pre block")
+    g = init_g()
+    cloning_url = None
+    # in case it is not test or test with fork option
+    if not settings.test_conf['local'] or settings.test_conf['fork'] or settings.test_conf['clone']:
+        dolog('will fork the repo')
+        drepo.state = 'forking repo'
+        otask.description += 'fork the repo'
+        otask.save()
+        forked_repo = fork_repo(target_repo)
+        cloning_url = forked_repo.ssh_url
+        time.sleep(refresh_sleeping_secs)
+        dolog('repo forked: ' + str(cloning_url))
+        drepo.progress = 10.0
+        drepo.save()
+    else:
+        print("no fork")
+    if not settings.test_conf['local'] or settings.test_conf['clone']:
+        drepo.state = 'cloning repo'
+        drepo.save()
+        otask.description = 'Clone the repo'
+        otask.save()
+        clone_repo(cloning_url, user, branch=branch)
+        dolog('repo cloned')
+        drepo.progress = 20.0
+    if log_file_dir is None:
+        dolog("Prepare the log for the user: %s" % user)
+        prepare_log(user)
+        dolog("prepared the log")
+    dolog("set success")
+    otask.success = True
+    dolog("save otask")
+    otask.save()
+    drepo.save()
+    return g
+
+
 def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
     """
     :param target_repo: user/reponame
@@ -194,40 +242,42 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
                     dolog("ontology: " + ftov)
                     drepo.update_ontology_status(ontology=ftov, status='pending')
                     dolog("ontology status is updated")
-        # so the tool user can takeover and do stuff
-        dolog("pre block")
-        g = init_g()
-        cloning_url = None
-        if not settings.test_conf['local'] or settings.test_conf['fork'] or settings.test_conf[
-            'clone']:  # in case it is not test or test with fork option
-            dolog('will fork the repo')
-            drepo.state = 'forking repo'
-            otask.description += 'fork the repo'
-            otask.save()
-            forked_repo = fork_repo(target_repo)
-            cloning_url = forked_repo.ssh_url
-            time.sleep(refresh_sleeping_secs)
-            dolog('repo forked: ' + str(cloning_url))
-            drepo.progress = 10.0
-            drepo.save()
-        else:
-            print("no fork")
-        if not settings.test_conf['local'] or settings.test_conf['clone']:
-            drepo.state = 'cloning repo'
-            drepo.save()
-            otask.description = 'Clone the repo'
-            otask.save()
-            clone_repo(cloning_url, user, branch=branch)
-            dolog('repo cloned')
-            drepo.progress = 20.0
-        if log_file_dir is None:
-            dolog("Prepare the log for the user: %s" % user)
-            prepare_log(user)
-            dolog("prepared the log")
-        dolog("set success")
-        otask.success = True
-        dolog("save otask")
-        otask.save()
+
+        # # so the tool user can takeover and do stuff
+        # dolog("pre block")
+        # g = init_g()
+        # cloning_url = None
+        # if not settings.test_conf['local'] or settings.test_conf['fork'] or settings.test_conf[
+        #     'clone']:  # in case it is not test or test with fork option
+        #     dolog('will fork the repo')
+        #     drepo.state = 'forking repo'
+        #     otask.description += 'fork the repo'
+        #     otask.save()
+        #     forked_repo = fork_repo(target_repo)
+        #     cloning_url = forked_repo.ssh_url
+        #     time.sleep(refresh_sleeping_secs)
+        #     dolog('repo forked: ' + str(cloning_url))
+        #     drepo.progress = 10.0
+        #     drepo.save()
+        # else:
+        #     print("no fork")
+        # if not settings.test_conf['local'] or settings.test_conf['clone']:
+        #     drepo.state = 'cloning repo'
+        #     drepo.save()
+        #     otask.description = 'Clone the repo'
+        #     otask.save()
+        #     clone_repo(cloning_url, user, branch=branch)
+        #     dolog('repo cloned')
+        #     drepo.progress = 20.0
+        # if log_file_dir is None:
+        #     dolog("Prepare the log for the user: %s" % user)
+        #     prepare_log(user)
+        #     dolog("prepared the log")
+        # dolog("set success")
+        # otask.success = True
+        # dolog("save otask")
+        # otask.save()
+        g = fork_and_clone_block(drepo, user, branch, otask)
     except Exception as e:
         dolog("1) Exception: " + str(e))
         traceback.print_exc()
