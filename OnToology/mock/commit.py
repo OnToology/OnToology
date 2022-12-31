@@ -1,7 +1,9 @@
 from .user import get_auth_user_dict
 
+
 def get_commits_dict(repo):
-    user, name = repo.split("/")
+    # user, name = repo.split("/")
+    user, _ = repo.split("/")
     commits_dict = [
         {
             "url": "https://api.github.com/repos/%s/commits/6dcb09b5b57875f334f61aebed695e2e4193db5e" % repo,

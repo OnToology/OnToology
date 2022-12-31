@@ -1,13 +1,14 @@
 import random
 import string
 import os
+import sys
 from subprocess import call
 import traceback
+from datetime import datetime
 
 from github import Github
 
 from django.views.generic import View
-from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -15,7 +16,7 @@ from django.utils.decorators import method_decorator
 from OnToology.views import generateforall
 from OnToology.djangoperpmod import *
 from OnToology.autoncore import publish, previsual
-from OnToology import autoncore
+from OnToology.models import Repo, OUser, PublishName
 from OnToology.models import *
 from OnToology.views import publish_dir
 from django.utils import timezone
@@ -52,36 +53,31 @@ def login(request):
             return JsonResponse({'message': 'username or password is missing'}, status=400)
         username = request.POST['username']
         token = request.POST['password']  # or token
-        # g = Github(username, token)
         from OnToology.mock import mock_dict
         if 'mock_id' in os.environ and os.environ['mock_id'].strip() != "":
             print("login> mock_id in environ: ")
             mock_id = os.environ['mock_id']
             m = mock_dict[mock_id]
             print("login>  mock: ")
-            # import pprint
-            # pp = pprint.PrettyPrinter(indent=1)
-            # pp.pprint(m)
             print(m.keys())
             g = Github(username, token, mock=m)
         else:
             print("login> mock_id is not in environ")
             g = Github(username, token)
         try:
-            g.get_user().login
-            try:
-                user = OUser.objects.get(username=username)
-                if user.token_expiry <= timezone.now():
+            login_name = g.get_user().login
+            print("login> try %s" % login_name)
+            user = OUser.objects.get(username=username)
+            if user.token_expiry <= timezone.now():
+                sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
+                while len(OUser.objects.filter(token=sec)) > 0:  # to ensure a unique token
                     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
-                    while len(OUser.objects.filter(token=sec)) > 0:  # to ensure a unique token
-                        sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
-                    user.token = sec
-                    user.token_expiry = datetime.now() + timedelta(days=1)
-                    user.save()
-                return JsonResponse({'token': user.token})
-            except Exception as e:
-                return JsonResponse({'message': 'authentication error'}, status=401)
+                user.token = sec
+                user.token_expiry = datetime.now() + timedelta(days=1)
+                user.save()
+            return JsonResponse({'token': user.token})
         except Exception as e:
+            print(str(e))
             return JsonResponse({'message': 'authentication error'}, status=401)
     return JsonResponse({'message': 'Invalid method'}, status=405)
 
@@ -100,10 +96,8 @@ class ReposView(View):
                 return JsonResponse({'message': 'url is missing'}, status=400)
             user = request.user
             url = request.POST['url']
-            owner = user.username
             repo = Repo()
             repo.url = url
-            #repo.owner = owner
             repo.save()
             user.repos.add(repo)
             user.save()
@@ -114,19 +108,14 @@ class ReposView(View):
     @method_decorator(token_required)
     def delete(self, request, repoid):
         try:
-            # print("delete start")
             user = request.user
             r = Repo.objects.filter(id=repoid)
             if len(r) == 0 or r[0] not in user.repos.all():
                 return JsonResponse({'message': 'Invalid repo'}, status=404)
             r = r[0]
-            # user.repos.remove(r)
-            # user.update(pull__repos=r)
             r.delete()
-            #user.save()
             return JsonResponse({'message': 'The repo is deleted successfully'}, status=204)
         except Exception as e:
-            # print("delete exception")
             traceback.print_exc(file=sys.stdout)
             return JsonResponse({'message': 'Internal error: '+str(e)}, status=500)
 
@@ -134,7 +123,6 @@ class ReposView(View):
 class PublishView(View):
     @method_decorator(token_required)
     def post(self, request):
-        user = request.user
         if 'name' in request.POST and 'repo' in request.POST and 'ontology' in request.POST:
             try:
                 name = request.POST['name']
@@ -157,7 +145,6 @@ class PublishView(View):
                 traceback.print_exc()
                 error_msg = "Error in publishing"
                 return JsonResponse({'message': error_msg}, status=400)
-
 
     @method_decorator(token_required)
     def get(self, request):
@@ -205,7 +192,7 @@ def generate_all(request):
             return JsonResponse({'message': 'branch is missing'}, status=400)
         branch = request.POST['branch'].strip()
         print("url: 1")
-        url =request.POST['url'].strip()
+        url = request.POST['url'].strip()
         print("url: 2")
         if url[-1] == '/':
             url = url[:-1]
@@ -223,7 +210,7 @@ def generate_all(request):
                 print("url not in")
         if found:
             print("generate for all url")
-            res = generateforall(url, user.email, branch)
+            generateforall(url, user.email, branch)
             print("res from renerate all")
             return JsonResponse({'message': 'generation is in process'}, status=202)
         else:
@@ -232,15 +219,3 @@ def generate_all(request):
 
     except Exception as e:
         return JsonResponse({'message': 'Internal Error: '+str(e)}, status=500)
-
-
-
-
-
-
-
-
-
-
-
-

@@ -16,10 +16,7 @@
 # @author Ahmad Alobaid
 #
 
-from subprocess import call
 import os
-# import OnToology
-# from . import dolog
 import random
 import string
 from . import call_and_get_log, timeout_comm, dolog
@@ -165,7 +162,7 @@ def get_confs_from_local(repo_abs_dir):
         repo_abs_dir = repo_abs_dir[:-1]
     num_of_parent_dirs = len(full_path_split(repo_abs_dir))
     dolog("searching for ont in %s" % repo_abs_dir)
-    for root, dirs, files in os.walk(repo_abs_dir, topdown=False):
+    for root, _, files in os.walk(repo_abs_dir, topdown=False):
         for name in files:
             file_abs_dir = os.path.join(root, name)
             if 'OnToology.cfg' in file_abs_dir:
@@ -181,8 +178,8 @@ def get_confs_from_local(repo_abs_dir):
     return ont_files
 
 
-def full_path_split(dir):
-    t = os.path.split(dir)
+def full_path_split(pdir):
+    t = os.path.split(pdir)
     if t[0] == "":
         return [t[1]]
     if t[1] == "" and t[0] == os.path.sep:

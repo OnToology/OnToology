@@ -1,16 +1,7 @@
 import os
-from subprocess import call
 from Integrator import dolog, get_file_from_path, build_path, delete_dir
 from Integrator import get_parent_path, log_file_dir, config_folder_name
-
 from . import call_and_get_log, timeout_comm
-
-import sys
-
-
-ar2dtool_config_types = ['ar2dtool-taxonomy.conf', 'ar2dtool-class.conf']
-
-from OnToology.autoncore import get_target_home
 import OnToology.settings as settings
 
 
@@ -80,7 +71,7 @@ def draw_file(rdf_file, config_type, base_dir):
     comm += '"' + rdf_file_abs + '.' + outtype + '"' + ' -t ' + \
         outtype + ' -c ' + config_file_abs + ' -GV -gml '
     if not settings.test_conf['local']:
-       comm += ' >> "' + log_file_dir + '"'
+        comm += ' >> "' + log_file_dir + '"'
     dolog("drawing is: "+comm)
     error_msg, msg = call_and_get_log(comm)
     dolog(str(msg)+str(error_msg))

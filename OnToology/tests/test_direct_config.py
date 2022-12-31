@@ -1,26 +1,17 @@
-import json
 import string
 import random
-import shutil
 import os
-# import pika
 from subprocess import call
-from .api_util import create_user, create_repo, delete_all_repos_from_db, get_repo_resource_dir, clone_if_not, delete_all_users
-from .api_util import prepare_resource_dir, PrintLogger
-import logging
+from .api_util import create_user, delete_all_repos_from_db, delete_all_users
 from OnToology import autoncore
-from multiprocessing import Process
-from django.test import Client
 from unittest import TestCase
-from django.test.testcases import SerializeMixin
-from OnToology.models import OUser, Repo
-# from OnToology.rabbit import start_pool
-from time import sleep
+from OnToology.models import OUser
 from .serializer import Serializer
 import Integrator
 
 
 class TestDirectConf(Serializer, TestCase):
+
     def setUp(self):
         print("setup DirectMagicConf")
         delete_all_users()
@@ -44,23 +35,17 @@ class TestDirectConf(Serializer, TestCase):
         print(comm)
         call(comm, shell=True)
         abs_repo_dir = autoncore.clone_repo(cloning_url, folder_name, dosleep=True, branch="main")
-        self.assertTrue(os.path.exists(os.path.join(abs_repo_dir,"ALo","aLo.owl")))
-        self.assertTrue(os.path.exists(os.path.join(abs_repo_dir,"GeO","geoLinkedData.owl")))
-        self.assertFalse(os.path.exists(os.path.join(abs_repo_dir,"OnToology","ALo","aLo.owl")))
-        self.assertFalse(os.path.exists(os.path.join(abs_repo_dir,"OnToology","GeO","geoLinkedData.owl")))
-        conf_file_abs_alo = os.path.join(abs_repo_dir,"OnToology","ALo","aLo.owl")
-        conf_file_abs_geo = os.path.join(abs_repo_dir,"OnToology","GeO","geoLinkedData.owl")
-        conf_alo = Integrator.create_of_get_conf(os.path.join("ALo","aLo.owl"), abs_repo_dir)
-        conf_geo = Integrator.create_of_get_conf(os.path.join("GeO","geoLinkedData.owl"), abs_repo_dir)
-        #
-        # conf_alo = autoncore.get_auton_config(conf_file_abs_alo, from_string=False)
-        # conf_geo = autoncore.get_auton_config(conf_file_abs_geo, from_string=False)
-        self.assertTrue(os.path.exists(os.path.join(abs_repo_dir,"OnToology","ALo","aLo.owl","OnToology.cfg")))
-        self.assertTrue(os.path.exists(os.path.join(abs_repo_dir,"OnToology","GeO","geoLinkedData.owl","OnToology.cfg")))
-        t_alo = open(os.path.join(abs_repo_dir,"OnToology","ALo","aLo.owl","OnToology.cfg")).read()
-        t_geo = open(os.path.join(abs_repo_dir,"OnToology","GeO","geoLinkedData.owl","OnToology.cfg")).read()
-        # print("t_alo: \n"+t_alo)
-        # print("t_geo: \n"+t_geo)
+        self.assertTrue(os.path.exists(os.path.join(abs_repo_dir, "ALo", "aLo.owl")))
+        self.assertTrue(os.path.exists(os.path.join(abs_repo_dir, "GeO", "geoLinkedData.owl")))
+        self.assertFalse(os.path.exists(os.path.join(abs_repo_dir, "OnToology", "ALo", "aLo.owl")))
+        self.assertFalse(os.path.exists(os.path.join(abs_repo_dir, "OnToology", "GeO", "geoLinkedData.owl")))
+        Integrator.create_of_get_conf(os.path.join("ALo", "aLo.owl"), abs_repo_dir)
+        Integrator.create_of_get_conf(os.path.join("GeO", "geoLinkedData.owl"), abs_repo_dir)
+        self.assertTrue(os.path.exists(os.path.join(abs_repo_dir, "OnToology", "ALo", "aLo.owl", "OnToology.cfg")))
+        self.assertTrue(
+            os.path.exists(os.path.join(abs_repo_dir, "OnToology", "GeO", "geoLinkedData.owl", "OnToology.cfg")))
+        t_alo = open(os.path.join(abs_repo_dir, "OnToology", "ALo", "aLo.owl", "OnToology.cfg")).read()
+        t_geo = open(os.path.join(abs_repo_dir, "OnToology", "GeO", "geoLinkedData.owl", "OnToology.cfg")).read()
         self.assertFalse(t_alo.strip() == "")
         self.assertFalse(t_geo.strip() == "")
 
@@ -72,10 +57,10 @@ class TestDirectConf(Serializer, TestCase):
         print(comm)
         call(comm, shell=True)
         abs_repo_dir = autoncore.clone_repo(self.cloning_url, folder_name, dosleep=True, branch="main")
-        self.assertTrue(os.path.exists(os.path.join(abs_repo_dir,"ALo","aLo.owl")))
-        self.assertTrue(os.path.exists(os.path.join(abs_repo_dir,"GeO","geoLinkedData.owl")))
-        self.assertFalse(os.path.exists(os.path.join(abs_repo_dir,"OnToology","ALo","aLo.owl")))
-        self.assertFalse(os.path.exists(os.path.join(abs_repo_dir,"OnToology","GeO","geoLinkedData.owl")))
+        self.assertTrue(os.path.exists(os.path.join(abs_repo_dir, "ALo", "aLo.owl")))
+        self.assertTrue(os.path.exists(os.path.join(abs_repo_dir, "GeO", "geoLinkedData.owl")))
+        self.assertFalse(os.path.exists(os.path.join(abs_repo_dir, "OnToology", "ALo", "aLo.owl")))
+        self.assertFalse(os.path.exists(os.path.join(abs_repo_dir, "OnToology", "GeO", "geoLinkedData.owl")))
         conf_content = """
 [owl2jsonld]
 enable = false
@@ -95,18 +80,15 @@ enable = false
 enable = false
 
 """
-        conf_alo = Integrator.create_of_get_conf(os.path.join("ALo","aLo.owl"), abs_repo_dir)
-        conf_file_abs_alo = os.path.join(abs_repo_dir,"OnToology","ALo","aLo.owl", "OnToology.cfg")
-        # print("abs alo dir: "+conf_file_abs_alo)
+        Integrator.create_of_get_conf(os.path.join("ALo", "aLo.owl"), abs_repo_dir)
+        conf_file_abs_alo = os.path.join(abs_repo_dir, "OnToology", "ALo", "aLo.owl", "OnToology.cfg")
         f = open(conf_file_abs_alo, 'w')
         f.write(conf_content)
         f.close()
 
-        conf_alo = Integrator.create_of_get_conf(os.path.join("ALo","aLo.owl"), abs_repo_dir)
-        # print("\n\n conf alo: ")
+        conf_alo = Integrator.create_of_get_conf(os.path.join("ALo", "aLo.owl"), abs_repo_dir)
         print(conf_alo)
-        self.assertListEqual(["en", "es"], conf_alo.getlist('widoco','languages'))
-
+        self.assertListEqual(["en", "es"], conf_alo.getlist('widoco', 'languages'))
 
     def test_fix_old_conf(self):
         """
@@ -140,16 +122,5 @@ enable = false
         f.write(conf_content)
         f.close()
 
-        conf_alo = Integrator.create_of_get_conf(os.path.join("ALo", "aLo.owl"), abs_repo_dir)
-        print(conf_alo)
-
-        self.assertListEqual(["en"], conf_alo.getlist('widoco','languages'))
+        self.assertListEqual(["en"], conf_alo.getlist('widoco', 'languages'))
         self.assertTrue(conf_alo.has_section('themis'))
-
-
-
-
-
-
-
-

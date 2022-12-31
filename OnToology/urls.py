@@ -18,14 +18,13 @@
 
 
 from django.conf.urls import include, url
-from django.contrib import admin
 from OnToology import views
 from django.conf import settings
 from OnToology import api_urls
 
 
 urlpatterns = [
-    url(r'^delete_repo', views.delete_repo, name="deleterepo"),
+    url(r'^delete_repo', views.delete_repo_view, name="deleterepo"),
     url(r'^update_conf', views.update_conf, name='updateconf'),
     url(r'^add_hook', views.add_hook, name='addhook'),
     url(r'^get_access_token', views.get_access_token, name='getaccesstoken'),
@@ -61,7 +60,7 @@ urlpatterns = [
     url(r'show_stats', views.show_stats),
     # url(r'^error_test', views.error_test),
     # url(r'^admin', views.superadmin, name='superadmin'),
-    url(r'', views.home, name='home'),
+    url(r'', views.home_view, name='home'),
 ]
 
 handler500 = 'OnToology.views.handler500'

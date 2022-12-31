@@ -1,19 +1,15 @@
 import json
 import string
 import random
-
 import os
-
 from django.test import Client
 from unittest import TestCase
-# from mongoengine.django.tests import MongoTestCase as TestCase
 from OnToology.models import OUser, Repo
-from django.utils import timezone
 
 
 class TestLoginAPIs(TestCase):
-    def setUp(self):
 
+    def setUp(self):
         if len(OUser.objects.all()) > 0:
             OUser.objects.all().delete()
 

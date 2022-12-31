@@ -2,8 +2,8 @@ from ConfigParserList import ConfigParser
 import os
 import random
 import string
-import io
 from subprocess import call
+from OnToology.models import OTask
 from OnToology.models import *
 import logging
 
@@ -36,11 +36,17 @@ def tools_execution(changed_files, base_dir, target_repo=None, g_local=None, log
                     change_status=None, repo=None, orun=None, m_logger=None):
     """
     :param changed_files:  changed files include relative path
-            base_dir: abs dir to the repo file name, e.g. /home/user/myrepo/
+    :param base_dir: abs dir to the repo file name, e.g. /home/user/myrepo/
+    :param target_repo:
+    :param g_local:
+    :param logfile:
+    :param change_status:
+    :param repo:
+    :param orun:
+    :param m_logger:
     :return:
     """
     global g
-    global dolog
     global logger
     global log_file_dir
 
@@ -53,7 +59,6 @@ def tools_execution(changed_files, base_dir, target_repo=None, g_local=None, log
     g = g_local
 
     dolog("after the logger")
-    # dolog = p # This is to print for debugging only
     repo.notes = ''
     repo.save()
     progress_out_of = 70.0
@@ -105,7 +110,7 @@ def get_conf_as_str(conf):
     return conf_str
 
 
-def run_syntax(conf, display_onto_name, orun, base_dir, changed_file, repo):
+def run_syntax(display_onto_name, orun, base_dir, changed_file, repo):
     """
     Syntax Check
     """
@@ -114,9 +119,9 @@ def run_syntax(conf, display_onto_name, orun, base_dir, changed_file, repo):
     if not syntaxchecker.valid_syntax(os.path.join(base_dir, changed_file)):
         repo.notes += "syntax error in %s\n" % changed_file
         repo.save()
-        otask = task_reporter(otask=otask, desc="Syntax error", finished=True, success=False, orun=orun)
+        task_reporter(otask=otask, desc="Syntax error", finished=True, success=False, orun=orun)
         return False
-    otask = task_reporter(otask=otask, desc="Valid syntax", finished=True, success=True, orun=orun)
+    task_reporter(otask=otask, desc="Valid syntax", finished=True, success=True, orun=orun)
     return True
 
 
@@ -132,13 +137,13 @@ def run_ar2dtool(conf, display_onto_name, orun, base_dir, changed_file, repo, pr
         repo.update_ontology_status(ontology=changed_file, status='diagram')
         repo.save()
         try:
-            r = ar2dtool.draw_diagrams([changed_file], base_dir)
+            ar2dtool.draw_diagrams([changed_file], base_dir)
             otask = task_reporter(otask=otask, desc="Diagrams are drawn", success=True, finished=True, orun=orun)
         except Exception as e:
             dolog("Exception in running ar2dtool.draw_diagrams: " + str(e))
             dolog("changed_file: <" + changed_file + ">")
-            otask = task_reporter(otask=otask, desc="Error generating the diagrams: <%s>" % str(e), success=True,
-                                  finished=True, orun=orun)
+            task_reporter(otask=otask, desc="Error generating the diagrams: <%s>" % str(e), success=True, finished=True,
+                          orun=orun)
     repo.progress += progress_inc
     repo.save()
 
@@ -155,14 +160,14 @@ def run_widoco(conf, display_onto_name, orun, base_dir, changed_file, repo, prog
         repo.update_ontology_status(ontology=changed_file, status='documentation')
         repo.save()
         try:
-            r = widoco.generate_widoco_docs([changed_file], base_dir, languages=conf.getlist('widoco', 'languages'),
-                                            webVowl=conf.getboolean('widoco', 'webVowl'))
+            widoco.generate_widoco_docs([changed_file], base_dir, languages=conf.getlist('widoco', 'languages'),
+                                        webVowl=conf.getboolean('widoco', 'webVowl'))
             otask = task_reporter(otask=otask, desc="HTML documentation is generated", success=True, finished=True,
                                   orun=orun)
         except Exception as e:
             dolog("Exception in running widoco.generate_widoco_docs: " + str(e))
-            otask = task_reporter(otask=otask, desc="Error while generating the documentation", success=False,
-                                  finished=True, orun=orun)
+            task_reporter(otask=otask, desc="Error while generating the documentation", success=False, finished=True,
+                          orun=orun)
     repo.progress += progress_inc
     repo.save()
 
@@ -196,8 +201,8 @@ def run_oops(conf, display_onto_name, orun, base_dir, changed_file, repo, progre
 
         except Exception as e:
             dolog("Exception in running oops.oops.oops_ont_files: " + str(e))
-            otask = task_reporter(otask=otask, desc="Error generating OOPS! report: " + str(e), finished=True,
-                                  success=False, orun=orun)
+            task_reporter(otask=otask, desc="Error generating OOPS! report: " + str(e), finished=True,
+                          success=False, orun=orun)
     repo.progress += progress_inc
     repo.save()
 
@@ -219,7 +224,7 @@ def run_owl2jsonld(conf, display_onto_name, orun, base_dir, changed_file, repo, 
             otask = task_reporter(otask=otask, desc="jsonld is generated", finished=True, success=True, orun=orun)
         except Exception as e:
             dolog("Exception in running owl2jsonld.generate_owl2jsonld_file: " + str(e))
-            otask = task_reporter(otask=otask, desc="jsonld is generated", finished=True, success=False, orun=orun)
+            task_reporter(otask=otask, desc="jsonld is generated", finished=True, success=False, orun=orun)
     repo.progress += progress_inc
     repo.save()
 
@@ -240,9 +245,10 @@ def run_themis(conf, display_onto_name, orun, base_dir, changed_file, repo, prog
             otask = task_reporter(otask=otask, desc="Themis validation", success=True, finished=True, orun=orun)
         except Exception as e:
             dolog("Exception in running themis: " + str(e))
-            otask = task_reporter(otask=otask, desc="Themis validation", success=False, finished=True, orun=orun)
-    repo.update_ontology_status(ontology=changed_file, status='finished')
+            task_reporter(otask=otask, desc="Themis validation", success=False, finished=True, orun=orun)
+    repo.progress += progress_inc
     repo.save()
+    repo.update_ontology_status(ontology=changed_file, status='finished')
 
 
 def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo=None, progress_inc=0.0, orun=None):
@@ -268,11 +274,10 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
         otask = task_reporter(otask=otask, desc="Configuration loaded successfully", finished=True, success=True,
                               orun=orun)
     except Exception as e:
-        otask = task_reporter(otask=otask, desc="Configuration Error: " + str(e), finished=True, success=False,
-                              orun=orun)
+        task_reporter(otask=otask, desc="Configuration Error: " + str(e), finished=True, success=False, orun=orun)
         raise e
 
-    if not run_syntax(conf, display_onto_name, orun, base_dir, changed_file, repo):
+    if not run_syntax(display_onto_name, orun, base_dir, changed_file, repo):
         return
 
     run_ar2dtool(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, change_status)
@@ -320,12 +325,14 @@ def create_of_get_conf(ofile=None, base_dir=None, config_abs=None):
     """
     Returns the configuraation if not present. Otherwise, it will create a default one.
     :param ofile: relative directory of the file e.g. dir1/dir2/my.owl
+    :param base_dir:
+    :param config_abs:
     :return: dict of the configurations
     """
     global config_folder_name, config_file_name
 
     if config_abs:
-        ofile_config_file_abs = ofile_config_file_abs
+        ofile_config_file_abs = config_abs
     else:
         ofile_config_file_rel = os.path.join(config_folder_name, ofile, config_file_name)
         ofile_config_file_abs = os.path.join(base_dir, ofile_config_file_rel)
@@ -341,7 +348,6 @@ def create_of_get_conf(ofile=None, base_dir=None, config_abs=None):
     else:
         dolog("create_of_get_conf> config file does not exist (will be created): %s" % ofile_config_file_abs)
         build_path(ofile_config_file_abs)
-
     try:
         with open(ofile_config_file_abs, 'w') as configfile:
             config.write(configfile)
@@ -355,9 +361,9 @@ def create_of_get_conf(ofile=None, base_dir=None, config_abs=None):
     return config
 
 
-##########################
-###  helper functions  ###
-##########################
+######################
+#  helper functions  #
+######################
 
 def build_path(file_with_abs_dir):
     """

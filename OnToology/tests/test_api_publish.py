@@ -1,14 +1,9 @@
-import json
-import string
-import random
-
-import os
 from .api_util import create_user, delete_all_repos_from_db, create_repo, delete_all_publishnames
 from .api_util import create_publishname, delete_all_users
 
 from django.test import Client
 from unittest import TestCase
-from OnToology.models import *
+from OnToology.models import PublishName, Repo, OUser
 from .serializer import Serializer
 
 
@@ -70,7 +65,6 @@ class TestPublishAPI(Serializer, TestCase):
 
     def test_add_publishname_with_doc(self):
         delete_all_publishnames()
-        # create_publishname(name=self.name+"-new", user=self.user, repo=Repo.objects.get(url=self.url_no_res), ontology=self.ontology+"new")
         c = Client()
         response = c.post('/api/publishnames', {'name': self.name, 'repo': self.url_with_res, 'ontology': self.ontology, 'branch': self.branch},
                           HTTP_AUTHORIZATION='Token ' + self.user.token)

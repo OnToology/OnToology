@@ -1,16 +1,10 @@
 import json
 import os
-import subprocess
 import sys
-import hashlib
 import time
 import logging
 import threading
-from functools import partial
-import functools
-from TPool.TPool import Pool
 from threading import Lock
-from multiprocessing import Process, Pipe
 import multiprocessing
 import traceback
 
@@ -240,10 +234,8 @@ def handle_action(j, logger, raise_exp=False):
             autoncore.django_setup_script()
         except:
             from OnToology import autoncore
-
         print("set logger")
         logger.debug("handle_action> ")
-        repo = j['repo']
         if j['action'] == 'magic':
             logger.debug("going for magic: "+str(j))
             try:
@@ -338,9 +330,8 @@ if __name__ == "__main__":
         logger = multiprocessing.get_logger()
         logger = set_config(logger)
 
-    import autoncore
     from localwsgi import *
-    from OnToology.models import *
+    from OnToology.models import OUser, Repo
     print(OUser.objects.all())
     print(Repo.objects.all())
     client_loop(host, port)
