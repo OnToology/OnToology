@@ -165,7 +165,7 @@ def get_confs_from_local(repo_abs_dir):
         repo_abs_dir = repo_abs_dir[:-1]
     num_of_parent_dirs = len(full_path_split(repo_abs_dir))
     dolog("searching for ont in %s" % repo_abs_dir)
-    for root, dirs, files in os.walk(repo_abs_dir, topdown=False):
+    for root, _, files in os.walk(repo_abs_dir, topdown=False):
         for name in files:
             file_abs_dir = os.path.join(root, name)
             if 'OnToology.cfg' in file_abs_dir:

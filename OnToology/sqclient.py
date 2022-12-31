@@ -6,7 +6,6 @@ import hashlib
 import time
 import logging
 import threading
-from functools import partial
 import functools
 from TPool.TPool import Pool
 from threading import Lock
@@ -240,10 +239,8 @@ def handle_action(j, logger, raise_exp=False):
             autoncore.django_setup_script()
         except:
             from OnToology import autoncore
-
         print("set logger")
         logger.debug("handle_action> ")
-        repo = j['repo']
         if j['action'] == 'magic':
             logger.debug("going for magic: "+str(j))
             try:

@@ -18,7 +18,6 @@
 
 
 from django.conf.urls import include, url
-from django.contrib import admin
 from OnToology import views
 from django.conf import settings
 from OnToology import api_urls

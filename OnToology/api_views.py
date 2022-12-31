@@ -7,7 +7,6 @@ import traceback
 from github import Github
 
 from django.views.generic import View
-from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -80,8 +79,10 @@ def login(request):
                     user.save()
                 return JsonResponse({'token': user.token})
             except Exception as e:
+                print(str(e))
                 return JsonResponse({'message': 'authentication error'}, status=401)
         except Exception as e:
+            print(str(e))
             return JsonResponse({'message': 'authentication error'}, status=401)
     return JsonResponse({'message': 'Invalid method'}, status=405)
 

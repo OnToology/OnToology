@@ -34,7 +34,6 @@ from django.contrib.auth import login as django_login, logout as django_logout
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Model
 import requests
 import traceback

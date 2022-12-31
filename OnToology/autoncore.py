@@ -29,7 +29,7 @@ except:
 
 from OnToology import settings
 from OnToology import models
-from OnToology.models import OUser, Repo
+from OnToology.models import OUser, Repo, OTask, PublishName
 from OnToology.models import *
 from ConfigParserList import ConfigParser
 from github import Github

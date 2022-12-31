@@ -2,7 +2,7 @@ import os
 import string
 import shutil
 import random
-from OnToology.models import OUser, Repo
+from OnToology.models import OUser, Repo, PublishName
 from subprocess import call
 
 user_password = os.environ['test_user_token']
