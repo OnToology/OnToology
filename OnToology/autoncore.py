@@ -586,12 +586,12 @@ def is_organization(target_repo):
 
 def has_access_to_repo(target_repo):
     global g
-    id = g.get_user().id
+    user_id = g.get_user().id
     if is_organization(target_repo):
         try:
             collaborators = g.get_repo(target_repo).get_collaborators()
             for coll in collaborators:
-                if id == coll.id:
+                if user_id == coll.id:
                     return True
             return False
         except:
