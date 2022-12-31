@@ -435,3 +435,8 @@ def call_and_get_log(comm):
     os.remove(fname_output)
     os.remove(fname_err)
     return error_content, file_content
+
+
+# timeout_comm = "timeout 300;"
+# disable the timeout for now
+timeout_comm = ""

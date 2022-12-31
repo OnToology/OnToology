@@ -667,7 +667,8 @@ def profile(request):
                 update_g(request.session['access_token'])
             try:
                 ontologies = parse_online_repo_for_ontologies(repo)
-                ontologies = autoncore.add_themis_results(repo, ontologies=ontologies)
+                # Will be commented for now until the branch part is solved (#639)
+                # ontologies = autoncore.add_themis_results(repo, ontologies=ontologies)
                 print('ontologies: ' + str(len(ontologies)))
                 arepo = Repo.objects.get(url=repo)
                 pnames = PublishName.objects.filter(user=user, repo=arepo)
