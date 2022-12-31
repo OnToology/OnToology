@@ -31,7 +31,6 @@ from django.urls import reverse
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib.auth import login as django_login, logout as django_logout
-from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -40,9 +39,12 @@ from django.db.models import Model
 import requests
 import traceback
 from github import Github
-
+from django.utils import timezone
 from OnToology import settings
+from OnToology.autoncore import webhook_access, add_themis_results, add_webhook, ToolUser, filter_pub_name
+from OnToology.autoncore import generate_bundle
 from OnToology.autoncore import *
+from OnToology.models import OUser, Repo
 from OnToology.models import *
 from OnToology import autoncore
 from OnToology.settings import host
@@ -190,7 +192,7 @@ def repos_view(request):
             return render(request, 'msg.html', {'msg': 'This repo does not belong to your user account.'})
         try:
             branches = get_repo_branches(repo_url)
-        except Exceptions as e:
+        except Exception as e:
             print("repos_view> Exception: %s for repo <%s>" % (str(e), repo_url))
             traceback.print_exc()
             return render(request, 'msg.html', {'msg': 'Error getting repository branches from GitHub.'})
@@ -1078,7 +1080,7 @@ def error_test(request):
 @login_required
 def get_branches(request):
     if 'repo' not in request.GET:
-        return JsonReponse({'error': 'repo is not passed'}, status=400)
+        return JsonResponse({'error': 'repo is not passed'}, status=400)
     try:
         repo = request.GET['repo'].strip()
         branches = get_repo_branches(repo)

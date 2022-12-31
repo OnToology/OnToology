@@ -1,3 +1,4 @@
+#!/bin/sh
 sh scripts/migrate.sh
 echo "RUN the Stiqueue Client"
 .venv/bin/python OnToology/sqclient.py &
@@ -7,4 +8,4 @@ export PATH=.venv/bin/:$PATH
 echo "run coverage tests"
 .venv/bin/python -m coverage run manage.py test OnToology --settings=OnToology.settings-tests
 coverage report
-codecov -t $CODECOV_TOKEN
+codecov -t "$CODECOV_TOKEN"
