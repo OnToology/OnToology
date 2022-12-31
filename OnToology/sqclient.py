@@ -1,13 +1,11 @@
 import json
 import os
-import subprocess
 import sys
-import hashlib
 import time
 import logging
 import threading
 from threading import Lock
-from multiprocessing import Process, Pipe
+from multiprocessing import Pipe
 import multiprocessing
 import traceback
 
@@ -334,7 +332,7 @@ if __name__ == "__main__":
         logger = set_config(logger)
 
     from localwsgi import *
-    from OnToology.models import *
+    from OnToology.models import OUser, Repo
     print(OUser.objects.all())
     print(Repo.objects.all())
     client_loop(host, port)

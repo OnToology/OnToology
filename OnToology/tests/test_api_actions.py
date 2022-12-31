@@ -1,6 +1,3 @@
-import json
-import string
-import random
 import os
 from subprocess import call
 from .api_util import create_user, create_repo, delete_all_repos_from_db, get_repo_resource_dir, clone_if_not

@@ -1,6 +1,3 @@
-import json
-import string
-
 from .api_util import create_user, delete_all_repos_from_db, create_repo, delete_all_publishnames
 from .api_util import create_publishname, delete_all_users
 

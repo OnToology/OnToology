@@ -2,7 +2,7 @@ from django.test import Client
 from unittest import TestCase
 from .serializer import Serializer
 from OnToology.models import OUser, Repo
-from .api_util import create_user, create_repo, delete_all_repos_from_db, clone_if_not, delete_all_users
+from .api_util import create_user, create_repo, delete_all_repos_from_db, delete_all_users
 
 
 class TestOutline(Serializer, TestCase):

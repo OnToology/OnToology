@@ -43,7 +43,7 @@ from OnToology import settings
 from OnToology.autoncore import webhook_access, add_themis_results, add_webhook, ToolUser, filter_pub_name
 from OnToology.autoncore import generate_bundle, parse_online_repo_for_ontologies, get_repo_branches
 from OnToology.autoncore import update_g, add_collaborator, get_ontologies_in_online_repo, clone_repo
-from OnToology.autoncore import get_conf, init_g
+from OnToology.autoncore import init_g
 from OnToology.autoncore import *
 from OnToology.models import OUser, Repo, ORun, PublishName, OntologyStatusPair
 from OnToology.models import *
@@ -458,6 +458,41 @@ def get_changed_files_from_payload(payload):
     return changed_files
 
 
+def send_to_magic(changed_files, target_repo, branch, user):
+    """
+    Send the request to magic
+    :param changed_files:
+    :param target_repo:
+    :param branch:
+    :param user:
+    return JsonResponse
+    """
+    try:
+        print('##################################################')
+        print('changed_files: ' + str(changed_files))
+        j = {
+            'action': 'magic',
+            'repo': target_repo,
+            'branch': branch,
+            'useremail': user,
+            'changedfiles': changed_files,
+            'created': str(timezone.now()),
+        }
+        sqclient.send(j)
+    except Exception as e:
+        error_msg = str(e)
+        print('error running generall all subprocess: ' + error_msg)
+        traceback.print_exc()
+        sys.stdout.flush()
+        sys.stderr.flush()
+        if 'execv() arg 2 must contain only strings' in error_msg:
+            error_msg = 'make sure that your repository filenames does not have accents or special characters'
+        else:
+            error_msg = 'generic error, please report the problem to us ontoology@delicias.dia.fi.upm.es'
+        return JsonResponse({'status': False, 'error': error_msg})
+    return JsonResponse({'status': True})
+
+
 @csrf_exempt
 def add_hook(request):
     """
@@ -530,34 +565,7 @@ def add_hook(request):
             return JsonResponse({'status': False, 'error': str(e)})
     if target_repo is None:
         return JsonResponse({'status': False, 'error': 'Unknown'})
-
-    try:
-        print('##################################################')
-        print('changed_files: ' + str(changed_files))
-        j = {
-            'action': 'magic',
-            'repo': target_repo,
-            'branch': branch,
-            'useremail': user,
-            'changedfiles': changed_files,
-            'created': str(timezone.now()),
-        }
-        sqclient.send(j)
-    except Exception as e:
-        error_msg = str(e)
-        print('error running generall all subprocess: ' + error_msg)
-        traceback.print_exc()
-        sys.stdout.flush()
-        sys.stderr.flush()
-        if 'execv() arg 2 must contain only strings' in error_msg:
-            error_msg = 'make sure that your repository filenames does not have accents or special characters'
-        else:
-            error_msg = 'generic error, please report the problem to us ontoology@delicias.dia.fi.upm.es'
-
-        return JsonResponse({'status': False, 'error': error_msg})
-
-    return JsonResponse({'status': True})
-    # return render(request, 'msg.html', {'msg': '' + s}, )
+    return send_to_magic(changed_files, target_repo, branch, user)
 
 
 @login_required
