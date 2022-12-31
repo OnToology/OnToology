@@ -16,10 +16,9 @@
 # @author Ahmad Alobaid
 #
 from django.utils import timezone
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, UserManager
-from django.contrib.auth.models import AbstractUser as User
+from django.contrib.auth.models import AbstractBaseUser, UserManager
 from django.db import models
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 
 class Repo(models.Model):
@@ -118,6 +117,7 @@ class OUser(AbstractBaseUser):
 
     def __unicode__(self):
         return self.username
+
 
 class OntologyStatusPair(models.Model):
     STATUSES = (

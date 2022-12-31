@@ -1,7 +1,9 @@
 from .user import get_user_dict
 
+
 def get_milestone_dict(repo):
-    user, name = repo.split("/")
+    # user, name = repo.split("/")
+    user, _ = repo.split("/")
     milestone = {
       "url": "https://api.github.com/repos/%s/milestones/1" % repo,
       "html_url": "https://github.com/%s/milestones/v1.0" % repo,

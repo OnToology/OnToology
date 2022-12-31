@@ -1,19 +1,11 @@
-import json
-import string
-import random
-import shutil
 import os
 from subprocess import call
-from .api_util import create_user, create_repo, delete_all_repos_from_db, get_repo_resource_dir, clone_if_not, delete_all_users
-from .api_util import prepare_resource_dir, PrintLogger
+from .api_util import create_user, create_repo, delete_all_repos_from_db, get_repo_resource_dir, delete_all_users
+from .api_util import prepare_resource_dir, PrintLogger, clone_if_not
 import logging
-from multiprocessing import Process
-from django.test import Client
 from unittest import TestCase
-from django.test.testcases import SerializeMixin
 from OnToology.models import OUser, Repo
 from OnToology import sqclient
-from time import sleep
 from .serializer import Serializer
 
 
@@ -21,14 +13,13 @@ queue_name = 'ontoology'
 
 
 def get_logger(name, logdir="", level=logging.INFO):
-    # logging.basicConfig(level=level)
+
     logger = logging.getLogger(name)
     if logdir != "":
         handler = logging.FileHandler(logdir)
     else:
         handler = logging.StreamHandler()
-    #
-    # handler = logging.FileHandler('property-output.log')
+
     formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
@@ -44,12 +35,11 @@ def get_pending_messages():
 
 
 class TestDirectMagic(Serializer, TestCase):
+
     def setUp(self):
         print("setup DirectMagic")
         delete_all_users()
         delete_all_repos_from_db()
-        # if len(OUser.objects.all()) == 0:
-        #     create_user()
         create_user()
         self.url = 'ahmad88me/ontoology-auto-test-no-res'
         self.user = OUser.objects.all()[0]
@@ -62,6 +52,7 @@ class TestDirectMagic(Serializer, TestCase):
         logger.error("testing the logger\n\n\n\n\n")
         resources_dir = get_repo_resource_dir(os.environ['test_user_email'])
         clone_if_not(resources_dir, self.url)
+
         # The below two assertion is to protect the deletion of important files
         self.assertEqual(resources_dir.split('/')[-1], 'OnToology', msg='might be a wrong resources dir OnToology')
         self.assertIn(os.environ['test_user_email'], resources_dir, msg='might be a wrong resources dir or wrong user')
@@ -128,10 +119,8 @@ enable = False
         }
         sqclient.handle_action(j, logger, raise_exp=True)
         self.assertEqual(1, len(Repo.objects.all()))
-        repo = Repo.objects.all()[0]
 
-        files_to_check = ['alo.owl/OnToology.cfg',]
-        docs_files = ['index-en.html', 'ontology.xml', '.htaccess', 'alo.owl.widoco.conf']
+        files_to_check = ['alo.owl/OnToology.cfg', ]
         diagrams_files = ['ar2dtool-class/alo.owl.png', 'ar2dtool-taxonomy/alo.owl.png']
 
         print("\nStarting the test block\n")
@@ -147,11 +136,8 @@ enable = False
         output = stream.read()
         logger.debug(output)
 
-        # os.system(cmd)
         eval_files = ['oops.html']
-        # for f in docs_files:
-        #     ff = os.path.join('alo.owl/documentation', f)
-        #     files_to_check.append(ff)
+
         for f in diagrams_files:
             ff = os.path.join('alo.owl/diagrams', f)
             files_to_check.append(ff)
@@ -162,5 +148,4 @@ enable = False
             print(os.path.join(resources_dir, f))
             self.assertTrue(os.path.exists(os.path.join(resources_dir, f)), msg=(f+" does not exists"))
         delete_all_repos_from_db()
-        # p.terminate()
         print("-------------\n\n\n---------- test_generate_all_check_generated_resources_slash ###############\n\n")

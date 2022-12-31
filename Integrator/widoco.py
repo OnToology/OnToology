@@ -1,10 +1,5 @@
-
-
 from . import get_file_from_path, get_target_home
-
 import os
-from subprocess import call
-
 from . import dolog, build_path
 from . import ontology_formats, get_parent_path, log_file_dir
 from . import call_and_get_log, timeout_comm

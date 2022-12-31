@@ -2,7 +2,7 @@ import os
 import string
 import shutil
 import random
-from OnToology.models import *
+from OnToology.models import OUser, Repo, PublishName
 from subprocess import call
 
 user_password = os.environ['test_user_token']
@@ -21,20 +21,10 @@ class PrintLogger():
 
 
 def delete_all_repos_from_db():
-    # OUser.objects.all().delete()
-    # for u in OUser.objects.all():
-    #     u.repos = []
-    #     u.save()
-    # for r in Repo.objects.all():
-    #     r.delete()
-    #     r.save()
     Repo.objects.all().delete()
 
 
 def delete_all_users():
-    # for u in OUser.objects.all():
-    #     u.delete()
-    #     u.save()
     OUser.objects.all().delete()
 
 
@@ -60,12 +50,6 @@ def create_user():
     user = OUser.objects.create_user(email=os.environ['test_user_email'], username=os.environ['test_user_email'],
                              password=os.environ['test_user_token'], token=sec)
     user.save()
-    # user = OUser()
-    # user.email = os.environ['test_user_email']
-    # user.username = user.email
-    # user.password = os.environ['test_user_token']
-    # user.token = sec
-    # user.save()
 
 
 def delete_all_publishnames():
@@ -93,7 +77,6 @@ def get_repo_resource_dir(user_email):
 
 
 def clone_if_not(resources_dir, repo):
-    repo_dir = os.path.join(resources_dir, os.pardir)
     repo_dir = os.sep.join(resources_dir.split(os.sep)[:-1])
     if not os.path.exists(resources_dir):
         cloning_url = "git@github.com:%s.git" % repo.strip()
