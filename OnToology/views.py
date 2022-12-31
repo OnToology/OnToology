@@ -663,7 +663,7 @@ def profile(request):
             if hackatt:  # trying to access a repo that does not belong to the use currently logged in
                 return render(request, 'msg.html', {'msg': 'This repo is not added, please do so in the main page'})
             print('try to get abs folder')
-            if type(autoncore.g) == type(None):
+            if autoncore.g is None:
                 print('access token is: ' + request.session['access_token'])
                 update_g(request.session['access_token'])
             try:
@@ -1076,10 +1076,10 @@ def syntax_check_view(request):
         # return render(request, 'msg.html', {'msg': 'Format is expected'})
     # if 'url' not in request.GET:
     #     return render(request, 'msg.html', {'msg': 'url is expected'})
-    format = request.GET['format']
+    oformat = request.GET['format']
     url = request.GET['url']
-    if format not in valid_formats:
-        return render(request, 'syntax.html', {'error': '<%s> format is not supported' % format,
+    if oformat not in valid_formats:
+        return render(request, 'syntax.html', {'error': '<%s> format is not supported' % oformat,
                                                'formats': valid_formats})
         # return render(request, 'msg.html', {'msg': '<%s> format is not supported'})
     if 'https://' not in url[:8] and 'http://' not in url[:7]:
@@ -1087,7 +1087,7 @@ def syntax_check_view(request):
         # return render(request, 'msg.html', {'msg': 'Invalid URL'})
     g = rdflib.Graph()
     try:
-        g.parse(url, format=format)
+        g.parse(url, format=oformat)
         return render(request, 'syntax.html', {'msg': 'The syntax of the ontology is correct', 'formats': valid_formats})
     except Exception as e:
         return render(request, 'syntax.html', {'formats': valid_formats,

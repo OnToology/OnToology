@@ -26,21 +26,20 @@ import time
 import sys
 import traceback
 
-from io import StringIO  ## for Python 3
 try:
     print("importing OnToology...")
     import OnToology
+
     print("Success")
 except:
     print("Importing djangoperpmode")
     import djangoperpmod
-    print("Imported it")
 
-print("autonecore continue")
+    print("Imported it")
 
 from OnToology import settings
 from OnToology.models import *
-import io
+from OnToology.models import OUser
 import configparser as ConfigParser
 
 from OnToology.__init__ import *
@@ -104,7 +103,7 @@ def prepare_logger(user, ext='.log_new'):
 
 
 def dolog(msg):
-    print("dolog> "+msg)
+    print("dolog> " + msg)
     logger.critical(msg)
 
 
@@ -112,7 +111,7 @@ def init_g():
     global g
     username = os.environ['github_username']
     password = os.environ['github_password']
-    if settings.DEBUG == True:
+    if settings.DEBUG:
         print("init_g> debug")
         from OnToology.mock import mock_dict
         if 'mock_id' in os.environ and os.environ['mock_id'].strip() != "":
@@ -181,13 +180,15 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
             if ftov[-4:] in ontology_formats:
                 if ftov[:len('OnToology/')] != 'OnToology/':  # This is to solve bug #265
                     dolog("update ontology status")
-                    dolog("ontology: "+ftov)
+                    dolog("ontology: " + ftov)
                     drepo.update_ontology_status(ontology=ftov, status='pending')
                     dolog("ontology status is updated")
         # so the tool user can takeover and do stuff
         dolog("pre block")
         g = init_g()
-        if not settings.test_conf['local'] or settings.test_conf['fork'] or settings.test_conf['clone']:  # in case it is not test or test with fork option
+        cloning_url = None
+        if not settings.test_conf['local'] or settings.test_conf['fork'] or settings.test_conf[
+            'clone']:  # in case it is not test or test with fork option
             dolog('will fork the repo')
             drepo.state = 'forking repo'
             otask.description += 'fork the repo'
@@ -195,7 +196,7 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
             forked_repo = fork_repo(target_repo)
             cloning_url = forked_repo.ssh_url
             time.sleep(refresh_sleeping_secs)
-            dolog('repo forked: '+str(cloning_url))
+            dolog('repo forked: ' + str(cloning_url))
             drepo.progress = 10.0
             drepo.save()
         else:
@@ -218,7 +219,7 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
         dolog("save otask")
         otask.save()
     except Exception as e:
-        dolog("1) Exception: "+str(e))
+        dolog("1) Exception: " + str(e))
         traceback.print_exc()
         otask.success = False
         otask.finished = True
@@ -305,6 +306,7 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
                 else:
                     dolog('Error generating the pull request')
                     dolog("Response: %s" % str(r))
+                    err_msg = ""
                     if 'error' in r:
                         err_msg = r['error']
                     elif 'errors' in r:
@@ -318,7 +320,8 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
                 print("3) Exception: " + str(e))
                 traceback.print_exc()
                 exception_if_exists = str(e)
-                dolog('We have not been able to create the pull request. Please contact us to analyze the issue. ' + exception_if_exists)
+                dolog(
+                    'We have not been able to create the pull request. Please contact us to analyze the issue. ' + exception_if_exists)
                 drepo.notes = 'We have not been able to create the pull request. Please contact us to analyze the issue.'
                 drepo.progress = 100
                 drepo.state = 'Ready'
@@ -341,7 +344,7 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
         otask.save()
 
     except Exception as e:
-        print("4) Exception - generic: "+str(e))
+        print("4) Exception - generic: " + str(e))
         traceback.print_exc()
         otask.success = False
         otask.description = str(e)
@@ -372,10 +375,10 @@ def update_file(target_repo, path, message, content, branch=None, g_local=None):
     else:
         gg = g_local
         print("update_file> g local")
-    print("*****\n\n\n\n\n\n\nupdate_file> gg: "+str(gg))
-    print("vget user: "+str(gg.get_user()))
-    print("\n\n\nupdate_file> *** branch: "+str(branch))
-    print("path: "+path)
+    print("*****\n\n\n\n\n\n\nupdate_file> gg: " + str(gg))
+    print("vget user: " + str(gg.get_user()))
+    print("\n\n\nupdate_file> *** branch: " + str(branch))
+    print("path: " + path)
     clean_path = path
     if path[0] == '/':
         clean_path = clean_path[1:]
@@ -621,18 +624,18 @@ def fork_repo(target_repo):
     gg = init_g()
     repo = gg.get_repo(target_repo)
     user = gg.get_user()
-    dolog("To fork repo: "+target_repo)
+    dolog("To fork repo: " + target_repo)
     try:
-        gg.get_repo("%s/%s" % (user.name,repo.name)).delete()
-        dolog("deleted %s/%s" % (user.name,repo.name))
+        gg.get_repo("%s/%s" % (user.name, repo.name)).delete()
+        dolog("deleted %s/%s" % (user.name, repo.name))
     except:
-        dolog("did not delete %s/%s" % (user.name,repo.name))
+        dolog("did not delete %s/%s" % (user.name, repo.name))
     for i in range(1, 3):
         try:
-            gg.get_repo("%s/%s-%d" % (user.name,repo.name,i)).delete()
-            dolog("deleted %s/%s-%d" % (user.name,repo.name,i))
+            gg.get_repo("%s/%s-%d" % (user.name, repo.name, i)).delete()
+            dolog("deleted %s/%s-%d" % (user.name, repo.name, i))
         except:
-            dolog("did not delete %s/%s-%d" % (user.name,repo.name,i))
+            dolog("did not delete %s/%s-%d" % (user.name, repo.name, i))
     time.sleep(sleeping_time)
     forked_repo = user.create_fork(repo)
     dolog("forked repo")
@@ -664,7 +667,8 @@ def clone_repo(cloning_url, parent_folder, dosleep=True, branch=None):
         call(comm, shell=True)
     except Exception as e:
         dolog('rm failed: ' + str(e))
-    comm = "git clone "+"--single-branch --branch "+branch+" --recurse-submodules  " + cloning_url + " " + os.path.join(home, parent_folder)
+    comm = "git clone " + "--single-branch --branch " + branch + " --recurse-submodules  " + cloning_url + " " + os.path.join(
+        home, parent_folder)
     dolog(comm)
     call(comm, shell=True)
     return os.path.join(home, parent_folder)
@@ -810,8 +814,8 @@ def add_collaborator(target_repo, user, newg=None):
         print("in try")
         u = newg.get_user()
         print(u)
-        print("user name: "+str(u.name))
-        print("email: "+str(u.email))
+        print("user name: " + str(u.name))
+        print("email: " + str(u.email))
         print("adding collaborator from user: %s " % str(newg.get_user().name))
         print("goring for the first")
         if u.name is None or u.email is None:
@@ -843,7 +847,7 @@ def add_collaborator(target_repo, user, newg=None):
                     traceback.print_exc()
                     return {'status': False, 'error': 'Could not accept the invitation for becoming a collaborator'}
     except Exception as e:
-        print("add_collaborator> Exception: "+str(e))
+        print("add_collaborator> Exception: " + str(e))
         traceback.print_exc()
         return {'status': False, 'error': str(e)}  # e.data}
 
@@ -856,7 +860,7 @@ def previsual(useremail, target_repo, branch):
     :return: error, orun
     """
     from Integrator.previsual import start_previsual
-    prepare_logger(useremail+"-prev-")
+    prepare_logger(useremail + "-prev-")
     dolog("starting previsual function with ontology: %s" % target_repo)
     orun = None
     otask = None
@@ -876,7 +880,8 @@ def previsual(useremail, target_repo, branch):
             orun = ORun(user=user, repo=repo, branch=branch)
             orun.save()
             dolog("previsual> created the orun")
-            otask = OTask(name='Cloning the repo', finished=False, success=False, description="prepaaring the previsualization", orun=orun)
+            otask = OTask(name='Cloning the repo', finished=False, success=False,
+                          description="prepaaring the previsualization", orun=orun)
             dolog("previsual> otask is init")
             otask.save()
 
@@ -899,12 +904,13 @@ def previsual(useremail, target_repo, branch):
                 otask.save()
 
             else:
-                otask.description="Skip cloning"
+                otask.description = "Skip cloning"
                 otask.save()
-            otask.success=True
-            otask.finished=True
+            otask.success = True
+            otask.finished = True
             otask.save()
-            otask = OTask(name='Previsualization', finished=False, success=False, description="preparing the previsualization", orun=orun)
+            otask = OTask(name='Previsualization', finished=False, success=False,
+                          description="preparing the previsualization", orun=orun)
             otask.save()
             repo_dir = os.path.join(home, folder_name)
             dolog("previsual> will call start previsual")
@@ -913,9 +919,9 @@ def previsual(useremail, target_repo, branch):
             msg = start_previsual(repo_dir, target_repo)
             if msg == "":  # no errors
                 dolog("previsual> completed successfully")
-                otask.description="The previsualization is generated without errors"
-                otask.success=True
-                otask.finished=True
+                otask.description = "The previsualization is generated without errors"
+                otask.success = True
+                otask.finished = True
                 otask.save()
                 repo.state = 'Ready'
                 repo.save()
@@ -925,9 +931,9 @@ def previsual(useremail, target_repo, branch):
                 repo.notes = msg
                 repo.state = 'Ready'
                 repo.save()
-                otask.description="Error generating the previsualization: "+msg
-                otask.success=False
-                otask.finished=True
+                otask.description = "Error generating the previsualization: " + msg
+                otask.success = False
+                otask.finished = True
                 otask.save()
                 return msg, orun
         else:  # not found
@@ -995,14 +1001,12 @@ def generate_bundle(base_dir, target_repo, ontology_bundle, branch):
                         break
                     except Exception as e:
                         time.sleep(2)
-                        print("generate_bundle> Exception "+str(e))
+                        print("generate_bundle> Exception " + str(e))
                         traceback.print_exc()
                 p = f.path
                 if p[0] == '/':
                     p = p[1:]
                 abs_path = os.path.join(base_dir, p)
-                # print("abs_path: "+abs_path)
-                # print("p: "+str(p))
                 if p[:len(ontology_bundle)] == ontology_bundle:
                     print('true: ' + str(p))
                     if f.type == 'tree':
@@ -1010,23 +1014,16 @@ def generate_bundle(base_dir, target_repo, ontology_bundle, branch):
                     elif f.type == 'blob':
                         parent_folder = os.path.join(*abs_path.split('/')[:-1])
                         if parent_folder != base_dir:  # not in the top level of the repo
-                            try:
+                            if not os.path.exists(parent_folder):
                                 os.makedirs(parent_folder)
-                            except Exception as e:
-                                # An exception may occur the file parents has already been generated
-                                pass
-                                #print("generate_bundle> Exception2: "+str(e))
-                                #traceback.print_exc()
                         with open(abs_path, 'wb') as fii:
                             file_content = repo.get_contents(f.path).decoded_content
                             fii.write(file_content)
                             print("file %s" % str(f.path))
-                            #print('file %s content: %s' % (f.path, file_content[:10]))
                     else:
                         print('unknown type in generate bundle')
                 else:
                     pass
-                    #print('not: ' + p)
             except Exception as e:
                 print('generate_bundle> Exception3: ' + str(e))
                 traceback.print_exc()
@@ -1049,13 +1046,13 @@ def filter_pub_name(name):
 def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_local=None):
     """
     To publish the ontology via github.
-
     :param name:
     :param target_repo:
     :param ontology_rel_path:
     :param useremail:
     :param branch:
     :param orun:
+    :param g_local:
     :return: error message, it will return an empty string if everything went ok
     """
     global g
@@ -1070,7 +1067,6 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
     except:
         django_setup_script()
     from OnToology.models import OUser, PublishName, Repo
-    error_msg = ""
     try:
         user = OUser.objects.get(email=useremail)
         dolog("publish> user is found")
@@ -1079,19 +1075,15 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         dolog("publish> error: %s" % str(e))
         return error_msg
 
-    prepare_logger(useremail+"-publish-")
+    prepare_logger(useremail + "-publish-")
 
     repos = Repo.objects.filter(url=target_repo)
     if len(repos) == 0:
-        error_msg = "The repository: <"+target_repo+"> is not found"
-        dolog("publish>"+error_msg)
+        error_msg = "The repository: <" + target_repo + "> is not found"
+        dolog("publish>" + error_msg)
         return error_msg
 
     repo = repos[0]
-        # error_msg = """This repository is not register under your account. If you are the owner, you can add it to OnToology,
-        #  Or you can fork it to your GitHub account and register the fork to OnToology"""
-        # dolog("publish> " + error_msg)
-
     otask = OTask(name='Name Reservation', finished=False, success=False, description="Look for published names",
                   orun=orun)
     dolog("publish> otask is init")
@@ -1103,7 +1095,6 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
     if ontology[-1] == '/':
         ontology = ontology[:-1]
     ontology = "/" + ontology
-    # name = ''.join(ch for ch in name if ch.isalnum() or ch in ['_', '-'])
     name = filter_pub_name(name)
     pns_name = PublishName.objects.filter(name=name)
     if len(pns_name) > 1:
@@ -1115,9 +1106,9 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         otask.save()
         return error_msg
 
-    print("ontology: "+ontology)
-    print("repo: "+repo.url)
-    print("user: "+user.email)
+    print("ontology: " + ontology)
+    print("repo: " + repo.url)
+    print("user: " + user.email)
     pns_ontology = PublishName.objects.filter(user=user, ontology=ontology, repo=repo)
 
     otask.description = "Verify ontology publication"
@@ -1125,7 +1116,7 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
 
     if len(pns_ontology) == 0 and name.strip() == '':
         error_msg = 'can not reserve an empty name'
-        dolog('publish> '+error_msg)
+        dolog('publish> ' + error_msg)
         otask.success = False
         otask.finished = True
         otask.description = error_msg
@@ -1139,12 +1130,6 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         otask.description = error_msg
         otask.save()
         return error_msg
-    # name can be empty, which means a republish. pname can't be empty. So if name is empty, it will fetch the
-    # the correct name from the database
-    elif len(pns_ontology) > 0 and name.strip()=='':
-        pname = pns_ontology[0].name
-    else:
-        pname = name
 
     # If the publication name is taken
     if len(pns_name) == 1 and len(pns_ontology) == 0:
@@ -1152,7 +1137,7 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         dolog("publish> " + error_msg)
         otask.success = False
         otask.finished = True
-        otask.description=error_msg
+        otask.description = error_msg
         otask.save()
         return error_msg
 
@@ -1165,7 +1150,6 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
     dolog("publish> otask is init")
     otask.save()
 
-
     # new name and ontology is not published or republish
     if (len(pns_name) == 0 and len(pns_ontology) == 0) or (name.strip() == ''):
         rel_htaccess_path = os.path.join('OnToology', ontology[1:], 'documentation/.htaccess')
@@ -1176,7 +1160,6 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
             dolog("publish> gotten the htaccess successfully")
         except Exception as e:
             if '404' in str(e):
-                # return "documentation of the ontology has to be generated first."
                 error_msg = """documentation of the ontology has to be generated first (%s)""" % rel_htaccess_path
                 dolog("publish> " + error_msg)
                 otask.success = False
@@ -1193,18 +1176,14 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
                 otask.save()
                 return error_msg
         dolog("publish> htaccess content: ")
-        # dolog(str(type(htaccess)))
         if isinstance(htaccess, bytes):
             htaccess = htaccess.decode('utf-8')
-        # htaccess = str(htaccess)
         dolog(str(type(htaccess)))
-        # dolog(htaccess)
-        otask.description="rewriting .htaccess with redirects to GitHub"
+        otask.description = "rewriting .htaccess with redirects to GitHub"
         otask.save()
         new_htaccess = htaccess_github_rewrite(target_repo=target_repo, htaccess_content=htaccess,
                                                ontology_rel_path=ontology[1:])
         dolog("new htaccess: ")
-        # dolog(new_htaccess)
         otask.description = "updating the .htaccess on GitHub"
         otask.save()
         update_file(target_repo=target_repo,
@@ -1235,9 +1214,9 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
             p.save()
 
         dolog("publish> published correctly")
-        otask.success=True
-        otask.finished=True
-        otask.description="The ontology is published correctly"
+        otask.success = True
+        otask.finished = True
+        otask.description = "The ontology is published correctly"
         otask.save()
         return ""  # means it is published correctly
 
@@ -1250,33 +1229,32 @@ def change_configuration(user_email, target_repo, data, ontologies):
     :param ontologies:
     :return:
     """
+    otask = True  # This is assigned true here in case the exception code is reached
     try:
         users = OUser.objects.filter(email=user_email)
         repos = Repo.objects.filter(url=target_repo)
         if len(repos) == 1:
             repo = repos[0]
         else:
-            dolog("change_configuration> Invalid repo: "+target_repo)
-            raise Exception("Invalid repo: "+target_repo)
+            dolog("change_configuration> Invalid repo: " + target_repo)
+            raise Exception("Invalid repo: " + target_repo)
         if len(users) == 1:
             user = users[0]
         else:
-            dolog("change_configuration> Invalid email: "+user_email)
-            raise Exception("Invalid email: "+user_email)
+            dolog("change_configuration> Invalid email: " + user_email)
+            raise Exception("Invalid email: " + user_email)
 
         orun = ORun(user=user, repo=repo)
         orun.save()
         otask = OTask(name="Change Configuration", description="changing the configuration", orun=orun)
         otask.save()
-        # orun.tasks.add(otask)
-        # orun.save()
         for onto in ontologies:
             dolog('inside the loop')
             ar2dtool = onto + '-ar2dtool' in data
             widoco = onto + '-widoco' in data
             oops = onto + '-oops' in data
             dolog('will call get_conf')
-            otask.description = 'Get new configuration for the ontology: '+onto
+            otask.description = 'Get new configuration for the ontology: ' + onto
             otask.save()
             new_conf = get_conf(ar2dtool, widoco, oops)
             dolog('will call update_file')
@@ -1287,18 +1265,15 @@ def change_configuration(user_email, target_repo, data, ontologies):
                 otask.description = 'Update the configuration for the ontology: ' + onto
                 otask.save()
                 update_file(target_repo, o, 'OnToology Configuration', new_conf)
-                dolog('configuration is changed for file for ontology: '+onto)
+                dolog('configuration is changed for file for ontology: ' + onto)
                 otask.description = 'The task is completed successfully'
                 otask.success = True
                 otask.save()
             except Exception as e:
                 dolog('Error in updating the configuration: ' + str(e))
-                # return render(request, 'msg.html', {'msg': str(e)})
                 otask.description = 'Error in updating the configuration: ' + str(e)
                 otask.success = False
-                # otask.finished = True
                 otask.save()
-                # return
                 break
         otask.finished = True
         otask.save()
@@ -1309,17 +1284,18 @@ def change_configuration(user_email, target_repo, data, ontologies):
         err = str(e)
         print(err)
         dolog(err)
-        otask.finished = True
-        otask.success = False
-        otask.description = str(e)
-        otask.save()
+        if otask:
+            otask.finished = True
+            otask.success = False
+            otask.description = str(e)
+            otask.save()
+
 
 ########################################################################
 ########################################################################
 # #####################  Auton configuration file  #####################
 ########################################################################
 ########################################################################
-
 
 
 def get_conf(ar2dtool, widoco, oops):
@@ -1341,7 +1317,6 @@ def get_confs_from_repo(target_repo, branch):
     repo = g.get_repo(target_repo)
     branch = repo.get_branch(branch)
     sha = branch.commit.sha
-    # sha = repo.get_commits()[0].sha
     files = repo.get_git_tree(sha=sha, recursive=True).tree
     conf_files = []
     for f in files:
@@ -1374,30 +1349,23 @@ def add_themis_results(target_repo, branch, ontologies):
 
     for o in ontologies:
         if o['ontology'] in ontology_results_d:
-            o['themis_results'] = compute_themis_results(repo, branch , ontology_results_d[o['ontology']])
+            o['themis_results'] = compute_themis_results(repo, branch, ontology_results_d[o['ontology']])
     return ontologies
 
 
-def compute_themis_results(repo, branch ,path):
+def compute_themis_results(repo, branch, path):
     """
     :param repo:
     :param branch:
     :param path:
     :return: score (0-100)
     """
-    #p = quote(path)
     p = path
     print("get file content: %s" % (str(path)))
     print("after quote: %s" % p)
     print("now get the decoded content")
-    # file_content = repo.get_contents(cpath.path).decoded_content
     file_content = repo.get_contents(p).decoded_content
     file_content = file_content.decode('utf-8')
-    # print("file_content: ")
-    # print(file_content)
-    # print("file_content str: ")
-    # file_content = str(file_content)
-    # print(file_content)
 
     passed = 0
     failed = 0
@@ -1446,7 +1414,7 @@ def parse_online_repo_for_ontologies(target_repo, branch='master'):
     global g
     if g is None:
         init_g()
-    #dolog("Parse online repo for ontologies\n\n\n\n")
+    # dolog("Parse online repo for ontologies\n\n\n\n")
     print("in parse online repo for ontologies")
     repo, conf_paths = get_confs_from_repo(target_repo, branch)
     print("repo: %s, conf_paths: %s" % (str(repo), str(conf_paths)))
@@ -1458,7 +1426,7 @@ def parse_online_repo_for_ontologies(target_repo, branch='master'):
         print("after quote: %s" % p)
         print("now get the decoded content")
         file_content = repo.get_contents(p).decoded_content
-        print("type: "+str(type(file_content)))
+        print("type: " + str(type(file_content)))
         file_content = file_content.decode('utf-8')
         print("file_content: " + file_content)
         print("will get the config")
@@ -1651,7 +1619,7 @@ def change_status(target_repo, state):
         repo.last_used = timezone.now()
         repo.state = state
         repo.save()
-        print("change_status> "+repo.state)
+        print("change_status> " + repo.state)
         return repo
     except models.DoesNotExist:
         print("change_status> New repo")
@@ -1663,6 +1631,7 @@ def change_status(target_repo, state):
     except Exception as e:
         print('database_exception: ' + str(e))
     return None
+
 
 # Before calling this function, the g must belong to the user not OnToologyUser
 def get_proper_loggedin_scope(ouser, target_repo):
@@ -1688,6 +1657,7 @@ def get_repo_branches(repo):
     repo = g.get_repo(repo)
     branches = repo.get_branches()
     return [b.name for b in branches]
+
 
 ##########################################################################
 #####################   Generate user log file  ##########################
@@ -1733,41 +1703,4 @@ def django_setup_script():
     from django.core.wsgi import get_wsgi_application
 
     application = get_wsgi_application()
-
-    #################################################################
-
-
-if __name__ == "__main__":
-    from OnToology.models import *
-    import argparse
-
-    parser = argparse.ArgumentParser(description='')
-    parser.add_argument('--ontology_rel_path', default="")
-    parser.add_argument('--publishname', default="")
-    parser.add_argument('--publish', action='store_true', default=False)
-    parser.add_argument('--previsual', action='store_true', default=False)
-    parser.add_argument('--target_repo')
-    parser.add_argument('--useremail')
-    parser.add_argument('--branch')
-    parser.add_argument('--magic', action='store_true', default=False)
-    parser.add_argument('--changedfiles', action='append', nargs='*')
-    args = parser.parse_args()
-    if args.useremail and '@' in args.useremail:
-        prepare_logger(args.useremail)
-        if args.target_repo and len(args.target_repo.split('/')) == 2:
-            if args.magic:
-                print("changed files: ")
-                print(args.changedfiles[0])
-                git_magic(args.target_repo, args.useremail, args.changedfiles[0], args.branch)
-            if args.previsual:
-                msg = previsual(useremail=args.useremail, target_repo=args.target_repo, branch=args.branch)
-                if args.publish:
-                    publish(name=args.publishname, target_repo=args.target_repo,
-                            ontology_rel_path=args.ontology_rel_path, useremail=args.useremail, branch=branch)
-            elif args.publish:
-                pass
-        else:
-            print('autoncore> invalid target repo: <%s>' % args.target_repo)
-    else:
-        print('autoncore> invalid user email: <%s>' % args.useremail)
-
+    return application

@@ -20,7 +20,7 @@ import Integrator
 
 
 class TestDirectConf(Serializer, TestCase):
-    
+
     def setUp(self):
         print("setup DirectMagicConf")
         delete_all_users()
