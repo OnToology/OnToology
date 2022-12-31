@@ -41,5 +41,7 @@ blocks:
             - '#docker-compose run web .venv/bin/python manage.py test OnToology'
             - echo "Running Coverage"
             - docker-compose run -e CODECOV_TOKEN=$CODECOV_TOKEN web sh semaphoreci.sh
+            - echo "Running Codacy Coverage"
+            - 'docker-compose run -e CODACY_PROJECT_TOKEN=$CODACY_PROJECT_TOKEN web bash <(curl -Ls https://coverage.codacy.com/get.sh)'
       secrets:
         - name: NEW OnToology Secret Configuration
