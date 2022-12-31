@@ -3,6 +3,7 @@ import os
 import random
 import string
 from subprocess import call
+from OnToology.models import OUser, OTask, Repo
 from OnToology.models import *
 import logging
 

@@ -335,7 +335,6 @@ if __name__ == "__main__":
         logger = multiprocessing.get_logger()
         logger = set_config(logger)
 
-    import autoncore
     from localwsgi import *
     from OnToology.models import *
     print(OUser.objects.all())

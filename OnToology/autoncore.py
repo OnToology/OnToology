@@ -29,7 +29,7 @@ except:
 
 from OnToology import settings
 from OnToology import models
-from OnToology.models import OUser, Repo, OTask, PublishName
+from OnToology.models import OUser, Repo, OTask, PublishName, ORun
 from OnToology.models import *
 from ConfigParserList import ConfigParser
 from github import Github
@@ -40,14 +40,11 @@ import time
 import sys
 import traceback
 import os
-
 from OnToology.__init__ import *
-
 import Integrator
-
 import logging
+from django.utils import timezone
 
-from urllib.parse import quote
 
 use_database = True
 
@@ -95,9 +92,9 @@ def set_config(logger, logdir=""):
 def prepare_logger(user, ext='.log_new'):
     global logger
     sec = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(9)])
-    l = os.path.join(home, 'log', user + sec + ext)
-    logger = set_config(logger, l)
-    return l
+    home_path = os.path.join(home, 'log', user + sec + ext)
+    logger = set_config(logger, home_path)
+    return home_path
 
 
 def dolog(msg):
@@ -983,7 +980,7 @@ def generate_bundle(base_dir, target_repo, ontology_bundle, branch):
         print('num of files: ' + str(len(files)))
         for f in files:
             try:
-                for i in range(3):
+                for _ in range(3):
                     try:
                         f.path
                         break
@@ -1467,8 +1464,8 @@ def get_auton_config(conf_file_abs, from_string=True):
             traceback.print_exc()
 
     dolog("\n\n\n**************get_auton_config: ")
-    dolog(get_conf_as_str(conf))
-    return config_res
+    dolog(get_conf_as_str(config))
+    return config
 
 
 def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):
@@ -1574,10 +1571,10 @@ def build_file_structure(file_with_rel_dir, category_folder='', abs_home=''):
         abs_dir = get_abs_path('')
     else:
         abs_dir = abs_home
-    if type(category_folder) == type(""):  # if string
+    if isinstance(category_folder, str):  # if string
         if category_folder != '':
             abs_dir += category_folder + '/'
-    elif type(category_folder) == type([]):  # if list
+    elif isinstance(category_folder, list):  # if list
         for catfol in category_folder:
             abs_dir += catfol + '/'
     abs_dir_with_file = abs_dir + file_with_rel_dir

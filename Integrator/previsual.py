@@ -16,10 +16,7 @@
 # @author Ahmad Alobaid
 #
 
-from subprocess import call
 import os
-# import OnToology
-# from . import dolog
 import random
 import string
 from . import call_and_get_log, timeout_comm, dolog
@@ -181,8 +178,8 @@ def get_confs_from_local(repo_abs_dir):
     return ont_files
 
 
-def full_path_split(dir):
-    t = os.path.split(dir)
+def full_path_split(pdir):
+    t = os.path.split(pdir)
     if t[0] == "":
         return [t[1]]
     if t[1] == "" and t[0] == os.path.sep:

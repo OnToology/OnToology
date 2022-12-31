@@ -1,17 +1,12 @@
-import json
 import string
 import random
 import os
 from subprocess import call
-from .api_util import create_user, create_repo, delete_all_repos_from_db, clone_if_not, delete_all_users
+from .api_util import create_user, delete_all_repos_from_db, clone_if_not, delete_all_users
 from .api_util import PrintLogger, get_repo_resource_dir
-import logging
 from OnToology import autoncore
-from multiprocessing import Process
 from unittest import TestCase
-from django.test.testcases import SerializeMixin
 from OnToology.models import OUser, Repo
-from time import sleep
 from .serializer import Serializer
 import Integrator
 
