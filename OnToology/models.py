@@ -15,6 +15,7 @@
 #
 # @author Ahmad Alobaid
 #
+import os
 from django.utils import timezone
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, UserManager
 from django.contrib.auth.models import AbstractUser as User
