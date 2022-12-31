@@ -302,11 +302,11 @@ def get_access_token(request):
 
     error_msg = ""
 
-    if rpy_wh['status'] == False:
+    if rpy_wh['status'] is False:
         error_msg += str(rpy_wh['error'])
         print('error adding webhook: ' + error_msg)
 
-    if rpy_coll['status'] == False:
+    if rpy_coll['status'] is False:
         error_msg += str(rpy_coll['error'])
         print('error adding collaborator: ' + rpy_coll['error'])
     else:
@@ -497,8 +497,11 @@ def generateforall_view(request):
         print("generateforall_view exception: " + str(e))
         return render(request, 'msg.html', {'msg': 'Internal error in generating the resources'})
     if res['status'] is True:
-        return render(request, 'msg.html', {
-            'msg': 'Soon you will find generated files included in a pull request in your repository. Once the pull request is generated, you can merge it using GitHub Merge function. If the resources (e.g., documentation, evaluation, ...) are not generated within a few minutes, you can contact us.'}, )
+        msg = """Soon you will find generated files included in a pull request in your repository. Once the pull 
+        request is generated, you can merge it using GitHub Merge function. If the resources (e.g., documentation, 
+        evaluation, ...) are not generated within a few minutes, you can contact us.
+        """
+        return render(request, 'msg.html', {'msg': msg})
     else:
         return render(request, 'msg.html', {'msg': res['error']})
 
