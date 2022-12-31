@@ -126,25 +126,16 @@ def init_g():
     return g
 
 
-def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
+def magic_prep(target_repo, user, branch):
     """
+    To prepare the git magic
+
     :param target_repo: user/reponame
     :param user: user email
-    :param changed_filesss: list of changed files
     :param branch: the branch of the changed
-    :return:
+    :return: ouser, orun, drepo, otask
     """
-    global g
-    global parent_folder
-    global log_file_dir
-    global logger
-
-    print("\n\n\n In gitmagic print")
-    print("printing test_conf from magic")
-    print(settings.test_conf)
-
     prepare_logger(user)
-    parent_folder = user
     if not settings.test_conf['local']:
         prepare_log(user)
     dolog('############################### magic #############################')
@@ -171,6 +162,30 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
     otask.description = 'Getting changed files'
     dolog("created the otask")
     dolog("added the task to run")
+    return ouser, orun, drepo, otask
+
+
+def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
+    """
+    :param target_repo: user/reponame
+    :param user: user email
+    :param changed_filesss: list of changed files
+    :param branch: the branch of the changed
+    :param raise_exp: Whether to raise exception or not in the case of an error
+    :return:
+    """
+    global g
+    global parent_folder
+    global log_file_dir
+    global logger
+
+    print("\n\n\n In gitmagic print")
+    print("printing test_conf from magic")
+    print(settings.test_conf)
+    parent_folder = user
+
+    ouser, orun, drepo, otask = magic_prep(target_repo, user, branch)
+
     try:
         for ftov in changed_filesss:
             if ftov[-4:] in ontology_formats:
