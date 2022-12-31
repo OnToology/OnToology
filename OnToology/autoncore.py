@@ -38,9 +38,9 @@ except:
     print("Imported it")
 
 from OnToology import settings
+from OnToology import models
 from OnToology.models import *
-from OnToology.models import OUser
-import configparser as ConfigParser
+from ConfigParserList import ConfigParser
 
 from OnToology.__init__ import *
 
@@ -147,7 +147,7 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
     print("printing test_conf from magic")
     print(settings.test_conf)
 
-    logger_fname = prepare_logger(user)
+    prepare_logger(user)
     parent_folder = user
     if not settings.test_conf['local']:
         prepare_log(user)
@@ -209,7 +209,6 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
             clone_repo(cloning_url, user, branch=branch)
             dolog('repo cloned')
             drepo.progress = 20.0
-        files_to_verify = []
         if log_file_dir is None:
             dolog("Prepare the log for the user: %s" % user)
             prepare_log(user)
@@ -526,7 +525,7 @@ def get_ontologies_from_submodules_tree(tree, repo):
     ontologies = []
     submodule_tree_elements = [f for f in tree if f.path == '.gitmodules']
     if len(submodule_tree_elements) == 1:
-        config_parser = ConfigParser.ConfigParser()
+        config_parser = ConfigParser()
         subm_tree_ele = submodule_tree_elements[0]
         print("tree ele: ")
         print(subm_tree_ele)
@@ -801,7 +800,7 @@ def add_webhook(target_repo, notification_url, newg=None):
         newg.get_repo(target_repo).create_hook(name, config, events, active)
         return {'status': True}
     except Exception as e:
-        return {'status': False, 'error': str(e)}  # e.data}
+        return {'status': False, 'error': str(e)}
 
 
 def add_collaborator(target_repo, user, newg=None):
@@ -872,7 +871,6 @@ def previsual(useremail, target_repo, branch):
             dolog("previsual> " + error_msg)
             return error_msg, None
         user = users[0]
-        repo = None
         repos = Repo.objects.filter(ousers=user, url=target_repo)
 
         if len(repos) > 0:
@@ -937,12 +935,8 @@ def previsual(useremail, target_repo, branch):
                 otask.save()
                 return msg, orun
         else:  # not found
-            # repo.state = 'Ready'
-            # repo.save()
             error_msg = 'You should add the repo while you are logged in before the revisual renewal'
             dolog("previsual> " + error_msg)
-            # otask.description = "The repo is not found or does not belog to this user"
-            # otask.save()
             return error_msg, None
     except Exception as e:
         dolog("autoncore.previsual exception: <%s>" % str(e))
@@ -964,7 +958,6 @@ def get_file_content(target_repo, path, branch=None):
     password = os.environ['github_password']
     g = Github(username, password)
     repo = g.get_repo(target_repo)
-    # sha = repo.get_contents(path).sha
     if branch is None:
         return repo.get_contents(path).decoded_content
     else:
@@ -994,10 +987,7 @@ def generate_bundle(base_dir, target_repo, ontology_bundle, branch):
             try:
                 for i in range(3):
                     try:
-                        # print('f: ' + str(f))
-                        # print('next: ' + str(f.path))
-                        p = f.path
-                        # print("generate_bundle> got p = f.path")
+                        f.path
                         break
                     except Exception as e:
                         time.sleep(2)
@@ -1291,11 +1281,9 @@ def change_configuration(user_email, target_repo, data, ontologies):
             otask.save()
 
 
-########################################################################
-########################################################################
-# #####################  Auton configuration file  #####################
-########################################################################
-########################################################################
+#############################
+# Auton configuration file  #
+#############################
 
 
 def get_conf(ar2dtool, widoco, oops):
@@ -1414,7 +1402,6 @@ def parse_online_repo_for_ontologies(target_repo, branch='master'):
     global g
     if g is None:
         init_g()
-    # dolog("Parse online repo for ontologies\n\n\n\n")
     print("in parse online repo for ontologies")
     repo, conf_paths = get_confs_from_repo(target_repo, branch)
     print("repo: %s, conf_paths: %s" % (str(repo), str(conf_paths)))
@@ -1466,16 +1453,13 @@ def get_auton_config(conf_file_abs, from_string=True):
     :return:
     """
 
-    # config = Integrator.get_default_conf_obj()
-    # config = ConfigParser.ConfigParser()
-    # print("config raw parser")
     if from_string:
         config = Integrator.get_default_conf_obj()
-        config = config.read_string(conf_file_abs)
+        config.read_string(conf_file_abs)
         print("obj from string")
     else:
         config = Integrator.create_of_get_conf(config_abs=conf_file_abs)
-        config = config.read(conf_file_abs)
+        config.read(conf_file_abs)
         print("obj from file")
         try:
             with open(conf_file_abs, 'wb') as configfile:
@@ -1525,7 +1509,6 @@ def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):
     user_username = target_repo.split('/')[0]
     repo_name = target_repo.split('/')[1]
     base_url = "https://%s.github.io/%s/OnToology/%s/documentation/" % (user_username, repo_name, ontology_rel_path)
-    # base_url_for_hashed = "https://%s.github.io/%s/OnToology/%s/documentation/doc/" % (user_username, repo_name, ontology_rel_path)
     new_htaccess = ""
 
     for line in htaccess_content.split('\n'):
@@ -1547,9 +1530,9 @@ def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):
     return new_htaccess
 
 
-##########################################################################
-################################# generic helper functions ###############
-##########################################################################
+############################
+# generic helper functions #
+############################
 
 
 def delete_dir(target_directory):
@@ -1606,13 +1589,11 @@ def build_file_structure(file_with_rel_dir, category_folder='', abs_home=''):
     return abs_dir_with_file
 
 
-##########################################################################
-################################ Database functions ######################
-##########################################################################
+######################
+# Database functions #
+######################
 
-# if use_database:
-#    from Auton.models import Repo
-# import it for now
+
 def change_status(target_repo, state):
     try:
         repo = Repo.objects.get(url=target_repo)
@@ -1659,11 +1640,9 @@ def get_repo_branches(repo):
     return [b.name for b in branches]
 
 
-##########################################################################
-#####################   Generate user log file  ##########################
-##########################################################################
-
-# just for the development phase
+#############################
+#   Generate user log file  #
+#############################
 
 
 def generate_user_log(log_file_name):
@@ -1678,9 +1657,9 @@ def generate_user_log(log_file_name):
     call(comm, shell=True)
 
 
-# #########################################################################
-# ###################################   main  #############################
-# #########################################################################
+############
+#    main  #
+############
 
 
 def django_setup_script():
