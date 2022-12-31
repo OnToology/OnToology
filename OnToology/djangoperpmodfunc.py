@@ -1,5 +1,5 @@
 #################################################################
-#           TO make this app compatible with Django             #
+#           To make this app compatible with Django             #
 #################################################################
 import os
 import sys
