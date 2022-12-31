@@ -346,7 +346,6 @@ def create_of_get_conf(ofile=None, base_dir=None, config_abs=None):
     else:
         dolog("create_of_get_conf> config file does not exist (will be created): %s" % ofile_config_file_abs)
         build_path(ofile_config_file_abs)
-
     try:
         with open(ofile_config_file_abs, 'w') as configfile:
             config.write(configfile)
