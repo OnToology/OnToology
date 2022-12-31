@@ -2,8 +2,8 @@ import string
 import random
 import os
 from subprocess import call
-from .api_util import create_user, delete_all_repos_from_db, clone_if_not, delete_all_users
-from .api_util import PrintLogger, get_repo_resource_dir
+from .api_util import create_user, delete_all_repos_from_db, delete_all_users
+from .api_util import get_repo_resource_dir
 from OnToology import autoncore
 from unittest import TestCase
 from OnToology.models import OUser, Repo

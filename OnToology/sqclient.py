@@ -6,8 +6,6 @@ import hashlib
 import time
 import logging
 import threading
-import functools
-from TPool.TPool import Pool
 from threading import Lock
 from multiprocessing import Process, Pipe
 import multiprocessing

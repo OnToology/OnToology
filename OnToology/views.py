@@ -43,7 +43,7 @@ from OnToology import settings
 from OnToology.autoncore import webhook_access, add_themis_results, add_webhook, ToolUser, filter_pub_name
 from OnToology.autoncore import generate_bundle, parse_online_repo_for_ontologies, get_repo_branches
 from OnToology.autoncore import update_g, add_collaborator, get_ontologies_in_online_repo, clone_repo
-from OnToology.autoncore import get_conf
+from OnToology.autoncore import get_conf, init_g
 from OnToology.autoncore import *
 from OnToology.models import OUser, Repo, ORun, PublishName, OntologyStatusPair
 from OnToology.models import *
@@ -150,7 +150,7 @@ def get_ontologies(request):
         repo_url = request.GET['repo'].strip()
         repos = user.repos.filter(url=repo_url)
         if len(repos) == 0:
-            return JsonReponse({'error': 'This repo does not belong to your user account. Make sure to add it.'},
+            return JsonResponse({'error': 'This repo does not belong to your user account. Make sure to add it.'},
                                status=400)
         else:
             try:
@@ -249,38 +249,11 @@ def grant_update(request):
     return render(request, 'msg.html', {'msg': 'Magic is done'})
 
 
-def get_access_token(request):
-    global is_private, client_id, client_secret
-    print("get_access_token")
-    if 'state' not in request.session or request.GET['state'] != request.session['state']:
-        return HttpResponseRedirect('/')
-    data = {
-        'client_id': client_id,
-        'client_secret': client_secret,
-        'code': request.GET['code'],
-        'redirect_uri': host + '/add_hook'
-    }
-    res = requests.post('https://github.com/login/oauth/access_token', data=data)
-    try:
-        atts = res.text.split('&')
-        d = {}
-        for att in atts:
-            keyv = att.split('=')
-            d[keyv[0]] = keyv[1]
-    except Exception as e:
-        print("Exception: %s" % str(e))
-        print("response: %s" % str(res.text))
-        return render(request, 'msg.html',
-                      {'msg': 'Error getting the token from GitHub. please try again or contact us'})
-    if 'access_token' not in d:
-        print('access_token is not there')
-        print(d)
-        return HttpResponseRedirect('/')
-
-    access_token = d['access_token']
-    request.session['access_token'] = access_token
-    update_g(access_token)
-    print('access_token: ' + access_token)
+def add_coll_and_webhook(request):
+    """
+    To Add OnToology as a collaborator and Add a webhook
+    """
+    global is_private, client_id
 
     if request.user.is_authenticated and request.session['access_token_time'] == '1':
         request.session['access_token_time'] = '2'  # so we do not loop
@@ -359,6 +332,123 @@ def get_access_token(request):
             ouser.save()
             # generateforall(repo.url, ouser.email, branch)
     return render(request, 'msg.html', {'msg': msg})
+
+
+
+def get_access_token(request):
+    """
+    For access token handling
+    """
+    global is_private, client_id, client_secret
+    print("get_access_token")
+    if 'state' not in request.session or request.GET['state'] != request.session['state']:
+        return HttpResponseRedirect('/')
+    data = {
+        'client_id': client_id,
+        'client_secret': client_secret,
+        'code': request.GET['code'],
+        'redirect_uri': host + '/add_hook'
+    }
+    res = requests.post('https://github.com/login/oauth/access_token', data=data)
+    try:
+        atts = res.text.split('&')
+        d = {}
+        for att in atts:
+            keyv = att.split('=')
+            d[keyv[0]] = keyv[1]
+    except Exception as e:
+        print("Exception: %s" % str(e))
+        print("response: %s" % str(res.text))
+        return render(request, 'msg.html',
+                      {'msg': 'Error getting the token from GitHub. please try again or contact us'})
+    if 'access_token' not in d:
+        print('access_token is not there')
+        print(d)
+        return HttpResponseRedirect('/')
+
+    access_token = d['access_token']
+    request.session['access_token'] = access_token
+    update_g(access_token)
+    print('access_token: ' + access_token)
+    return add_coll_and_webhook()
+
+    # if request.user.is_authenticated and request.session['access_token_time'] == '1':
+    #     request.session['access_token_time'] = '2'  # so we do not loop
+    #     webhook_access_url, state = webhook_access(client_id, host + '/get_access_token', is_private)
+    #     request.session['state'] = state
+    #     return HttpResponseRedirect(webhook_access_url)
+    #
+    # if 'skip_add_collaborator' in os.environ and os.environ['skip_add_collaborator'] == "true":
+    #     print("is local********\n\n\n\n\n\n")
+    #     rpy_wh = {
+    #         'status': True
+    #     }
+    #     rpy_coll = {
+    #         'status': True,
+    #         'msg': 'Ignoring collaborator adding'
+    #     }
+    # else:
+    #     print("NOTNOTNOT local********\n\n\n\n\n\n")
+    #     rpy_wh = add_webhook(request.session['target_repo'], host + "/add_hook")
+    #     rpy_coll = add_collaborator(request.session['target_repo'], ToolUser)
+    #
+    # error_msg = ""
+    #
+    # if rpy_wh['status'] is False:
+    #     error_msg += str(rpy_wh['error'])
+    #     print('error adding webhook: ' + error_msg)
+    #
+    # if rpy_coll['status'] is False:
+    #     error_msg += str(rpy_coll['error'])
+    #     print('error adding collaborator: ' + rpy_coll['error'])
+    # else:
+    #     print('adding collaborator: ' + rpy_coll['msg'])
+    #
+    # if error_msg != "":
+    #     if 'Hook already exists on this repository' in error_msg:
+    #         error_msg = 'This repository already watched'
+    #     elif '404' in error_msg:  # so no enough access according to Github troubleshooting guide
+    #         error_msg = """You don\'t have permission to add collaborators and create webhooks to this repo or this
+    #         repo does not exist. Note that if you can fork this repo, you can add it here"""
+    #         return render(request, 'msg.html', {'msg': error_msg})
+    #         # if settings.local:
+    #         #     if request.user.is_authenticated:
+    #         #         ouser = OUser.objects.get(email=request.user.email)
+    #         #         if repo not in ouser.repos.all():
+    #         #             ouser.repos.add(repo)
+    #         #             ouser.save()
+    #         #         msg = 'The repo is added because local variable is True'
+    #         #     else:
+    #         #         msg = 'Local is true but the user is not authenticated'
+    #         #     return render(request, 'msg.html', {'msg': msg})
+    #         # else:
+    #         #     error_msg = """You don\'t have permission to add collaborators and create webhooks to this repo or this
+    #         #     repo does not exist. Note that if you can fork this repo, you can add it here"""
+    #         #     return render(request, 'msg.html', {'msg': error_msg})
+    #     else:
+    #         print("error message not hook and not 404: " + error_msg)
+    #         print("target repo: " + request.session['target_repo'])
+    #         print("ToolUser: " + ToolUser)
+    #     msg = error_msg
+    # else:
+    #     msg = '''webhook attached and user added as collaborator, Note that generating the documentation,
+    #      diagrams and evaluation report takes sometime to be generated. In "My repositories" page, you can see the
+    #       status of each repo.'''
+    # target_repo = request.session['target_repo']
+    # try:
+    #     repo = Repo.objects.get(url=target_repo)
+    # except Exception as e:
+    #     print(str(e))
+    #     repo = Repo()
+    #     repo.url = target_repo
+    #     repo.save()
+    # if request.user.is_authenticated:
+    #     ouser = OUser.objects.get(email=request.user.email)
+    #     if repo not in ouser.repos.all():
+    #         ouser.repos.add(repo)
+    #         ouser.save()
+    #         # generateforall(repo.url, ouser.email, branch)
+    # return render(request, 'msg.html', {'msg': msg})
 
 
 def get_changed_files_from_payload(payload):

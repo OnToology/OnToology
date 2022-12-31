@@ -1,6 +1,7 @@
 import random
 import string
 import os
+import sys
 from subprocess import call
 import traceback
 
@@ -14,7 +15,7 @@ from django.utils.decorators import method_decorator
 from OnToology.views import generateforall
 from OnToology.djangoperpmod import *
 from OnToology.autoncore import publish, previsual
-from OnToology.models import Repo, OUser
+from OnToology.models import Repo, OUser, PublishName
 from OnToology.models import *
 from OnToology.views import publish_dir
 from django.utils import timezone

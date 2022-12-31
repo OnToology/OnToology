@@ -7,7 +7,6 @@ from .api_util import create_user, create_repo, delete_all_repos_from_db, get_re
 from .api_util import delete_all_users, prepare_resource_dir
 import logging
 
-from multiprocessing import Process
 from django.test import Client
 from unittest import TestCase
 from .serializer import Serializer
@@ -298,7 +297,7 @@ enable = False
 
         files_to_check = ['geolinkeddata.owl/OnToology.cfg', ]
         diagrams_files = ['ar2dtool-class/geolinkeddata.owl.png', 'ar2dtool-taxonomy/geolinkeddata.owl.png']
-        eval_files = ['oops.html']
+        # eval_files = ['oops.html']
         # for f in docs_files:
         #     ff = os.path.join('geolinkeddata.owl/documentation', f)
         #     files_to_check.append(ff)
