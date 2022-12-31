@@ -975,6 +975,52 @@ def get_file_content(target_repo, path, branch=None):
         return repo.get_contents(path, branch).decoded_content
 
 
+def bundle_file_handler(repo, f, ontology_bundle, base_dir):
+    """
+    Generate Bundle
+    :param repo: repo object
+    :param f: file github
+    :param ontology_bundle:
+    :param base_dir:
+    """
+    fpath = None
+    try:
+        for _ in range(3):
+            try:
+                fpath = f.path
+                print("generate_bundle> %s" % fpath)
+                break
+            except Exception as e:
+                time.sleep(2)
+                print("generate_bundle> Exception " + str(e))
+                traceback.print_exc()
+        if not fpath:
+            fpath = f.path
+        if fpath[0] == '/':
+            p = fpath[1:]
+        abs_path = os.path.join(base_dir, p)
+        if p[:len(ontology_bundle)] == ontology_bundle:
+            print('true: ' + str(p))
+            if f.type == 'tree':
+                os.makedirs(abs_path)
+            elif f.type == 'blob':
+                parent_folder = os.path.join(*abs_path.split('/')[:-1])
+                if parent_folder != base_dir:  # not in the top level of the repo
+                    if not os.path.exists(parent_folder):
+                        os.makedirs(parent_folder)
+                with open(abs_path, 'wb') as fii:
+                    file_content = repo.get_contents(fpath).decoded_content
+                    fii.write(file_content)
+                    print("file %s" % str(f.path))
+            else:
+                print('unknown type in generate bundle')
+        else:
+            pass
+    except Exception as e:
+        print('generate_bundle> Exception3: ' + str(e))
+        traceback.print_exc()
+
+
 def generate_bundle(base_dir, target_repo, ontology_bundle, branch):
     """
     :param base_dir: e.g. /home/user/temp/random-folder-xyz
@@ -991,43 +1037,44 @@ def generate_bundle(base_dir, target_repo, ontology_bundle, branch):
         repo = g.get_repo(target_repo)
         branch = repo.get_branch(branch)
         sha = branch.commit.sha
-        # sha = repo.get_commits()[0].sha
         files = repo.get_git_tree(sha=sha, recursive=True).tree
         print('num of files: ' + str(len(files)))
         for f in files:
-            try:
-                for _ in range(3):
-                    try:
-                        f.path
-                        break
-                    except Exception as e:
-                        time.sleep(2)
-                        print("generate_bundle> Exception " + str(e))
-                        traceback.print_exc()
-                p = f.path
-                if p[0] == '/':
-                    p = p[1:]
-                abs_path = os.path.join(base_dir, p)
-                if p[:len(ontology_bundle)] == ontology_bundle:
-                    print('true: ' + str(p))
-                    if f.type == 'tree':
-                        os.makedirs(abs_path)
-                    elif f.type == 'blob':
-                        parent_folder = os.path.join(*abs_path.split('/')[:-1])
-                        if parent_folder != base_dir:  # not in the top level of the repo
-                            if not os.path.exists(parent_folder):
-                                os.makedirs(parent_folder)
-                        with open(abs_path, 'wb') as fii:
-                            file_content = repo.get_contents(f.path).decoded_content
-                            fii.write(file_content)
-                            print("file %s" % str(f.path))
-                    else:
-                        print('unknown type in generate bundle')
-                else:
-                    pass
-            except Exception as e:
-                print('generate_bundle> Exception3: ' + str(e))
-                traceback.print_exc()
+            bundle_file_handler(repo, f, ontology_bundle)
+            # try:
+            #     for _ in range(3):
+            #         try:
+            #             fpath = f.path
+            #             print("generate_bundle> %s" % fpath)
+            #             break
+            #         except Exception as e:
+            #             time.sleep(2)
+            #             print("generate_bundle> Exception " + str(e))
+            #             traceback.print_exc()
+            #     p = f.path
+            #     if p[0] == '/':
+            #         p = p[1:]
+            #     abs_path = os.path.join(base_dir, p)
+            #     if p[:len(ontology_bundle)] == ontology_bundle:
+            #         print('true: ' + str(p))
+            #         if f.type == 'tree':
+            #             os.makedirs(abs_path)
+            #         elif f.type == 'blob':
+            #             parent_folder = os.path.join(*abs_path.split('/')[:-1])
+            #             if parent_folder != base_dir:  # not in the top level of the repo
+            #                 if not os.path.exists(parent_folder):
+            #                     os.makedirs(parent_folder)
+            #             with open(abs_path, 'wb') as fii:
+            #                 file_content = repo.get_contents(f.path).decoded_content
+            #                 fii.write(file_content)
+            #                 print("file %s" % str(f.path))
+            #         else:
+            #             print('unknown type in generate bundle')
+            #     else:
+            #         pass
+            # except Exception as e:
+            #     print('generate_bundle> Exception3: ' + str(e))
+            #     traceback.print_exc()
         zip_file = os.path.join(base_dir, '%s.zip' % ontology_bundle.split('/')[-1])
         comm = "cd %s; zip -r '%s' OnToology" % (base_dir, zip_file)
         print('comm: %s' % comm)
