@@ -88,7 +88,7 @@ def get_repo_name_from_url(url):
     return None
 
 
-def home(request):
+def home_view(request):
     global client_id, client_secret, is_private
     sys.stdout.flush()
     sys.stderr.flush()

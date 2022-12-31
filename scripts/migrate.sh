@@ -1,3 +1,4 @@
+#!/bin/sh
 echo "Migration script -- START"
 rm -Rf OnToology/migrations
 rm -Rf *.db

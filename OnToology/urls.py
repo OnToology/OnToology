@@ -61,7 +61,7 @@ urlpatterns = [
     url(r'show_stats', views.show_stats),
     # url(r'^error_test', views.error_test),
     # url(r'^admin', views.superadmin, name='superadmin'),
-    url(r'', views.home, name='home'),
+    url(r'', views.home_view, name='home'),
 ]
 
 handler500 = 'OnToology.views.handler500'
