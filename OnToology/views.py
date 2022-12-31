@@ -334,7 +334,6 @@ def add_coll_and_webhook(request):
     return render(request, 'msg.html', {'msg': msg})
 
 
-
 def get_access_token(request):
     """
     For access token handling
@@ -370,7 +369,7 @@ def get_access_token(request):
     request.session['access_token'] = access_token
     update_g(access_token)
     print('access_token: ' + access_token)
-    return add_coll_and_webhook()
+    return add_coll_and_webhook(request)
 
     # if request.user.is_authenticated and request.session['access_token_time'] == '1':
     #     request.session['access_token_time'] = '2'  # so we do not loop
