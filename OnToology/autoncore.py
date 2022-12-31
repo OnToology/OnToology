@@ -29,8 +29,9 @@ except:
 
 from OnToology import settings
 from OnToology import models
-from OnToology.models import OUser, Repo, OTask, PublishName, ORun
+from OnToology.models import OUser, Repo, OTask, ORun
 from OnToology.models import *
+from OnToology import *
 from ConfigParserList import ConfigParser
 from github import Github
 from subprocess import call
@@ -40,7 +41,7 @@ import time
 import sys
 import traceback
 import os
-from OnToology.__init__ import *
+# from OnToology.__init__ import *
 import Integrator
 import logging
 from django.utils import timezone
