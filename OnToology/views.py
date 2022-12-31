@@ -43,6 +43,7 @@ from OnToology import settings
 from OnToology.autoncore import webhook_access, add_themis_results, add_webhook, ToolUser, filter_pub_name
 from OnToology.autoncore import generate_bundle, parse_online_repo_for_ontologies, get_repo_branches
 from OnToology.autoncore import update_g, add_collaborator, get_ontologies_in_online_repo, clone_repo
+from OnToology.autoncore import get_conf
 from OnToology.autoncore import *
 from OnToology.models import OUser, Repo, ORun, PublishName, OntologyStatusPair
 from OnToology.models import *
@@ -501,8 +502,8 @@ def generateforall_view(request):
         print("generateforall_view exception: " + str(e))
         return render(request, 'msg.html', {'msg': 'Internal error in generating the resources'})
     if res['status'] is True:
-        msg = """Soon you will find generated files included in a pull request in your repository. Once the pull 
-        request is generated, you can merge it using GitHub Merge function. If the resources (e.g., documentation, 
+        msg = """Soon you will find generated files included in a pull request in your repository. Once the pull
+        request is generated, you can merge it using GitHub Merge function. If the resources (e.g., documentation,
         evaluation, ...) are not generated within a few minutes, you can contact us.
         """
         return render(request, 'msg.html', {'msg': msg})
@@ -760,20 +761,6 @@ def update_conf(request):
     }
     sqclient.send(j)
     return HttpResponseRedirect('/profile')
-
-
-def get_conf(ar2dtool, widoco, oops):
-    conf = """
-[ar2dtool]
-enable = %s
-
-[widoco]
-enable = %s
-
-[oops]
-enable = %s
-    """ % (str(ar2dtool), str(widoco), str(oops))
-    return conf
 
 
 @login_required
