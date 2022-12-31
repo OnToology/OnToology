@@ -165,7 +165,7 @@ def magic_prep(target_repo, user, branch):
     return ouser, orun, drepo, otask
 
 
-def fork_and_clone_block(drepo, user, branch, otask):
+def fork_and_clone_block(drepo, user, branch, otask, target_repo):
     """
     This is the preparation block before the execution of the tools
     :param drepo: Repo object
@@ -213,106 +213,10 @@ def fork_and_clone_block(drepo, user, branch, otask):
     return g
 
 
-def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
+def post_block(drepo, orun, changed_filesss, target_repo, branch, raise_exp=False):
     """
-    :param target_repo: user/reponame
-    :param user: user email
-    :param changed_filesss: list of changed files
-    :param branch: the branch of the changed
-    :param raise_exp: Whether to raise exception or not in the case of an error
-    :return:
+    After the execution of the tools
     """
-    global g
-    global parent_folder
-    global log_file_dir
-    global logger
-
-    print("\n\n\n In gitmagic print")
-    print("printing test_conf from magic")
-    print(settings.test_conf)
-    parent_folder = user
-
-    ouser, orun, drepo, otask = magic_prep(target_repo, user, branch)
-
-    try:
-        for ftov in changed_filesss:
-            if ftov[-4:] in ontology_formats:
-                if ftov[:len('OnToology/')] != 'OnToology/':  # This is to solve bug #265
-                    dolog("update ontology status")
-                    dolog("ontology: " + ftov)
-                    drepo.update_ontology_status(ontology=ftov, status='pending')
-                    dolog("ontology status is updated")
-
-        # # so the tool user can takeover and do stuff
-        # dolog("pre block")
-        # g = init_g()
-        # cloning_url = None
-        # if not settings.test_conf['local'] or settings.test_conf['fork'] or settings.test_conf[
-        #     'clone']:  # in case it is not test or test with fork option
-        #     dolog('will fork the repo')
-        #     drepo.state = 'forking repo'
-        #     otask.description += 'fork the repo'
-        #     otask.save()
-        #     forked_repo = fork_repo(target_repo)
-        #     cloning_url = forked_repo.ssh_url
-        #     time.sleep(refresh_sleeping_secs)
-        #     dolog('repo forked: ' + str(cloning_url))
-        #     drepo.progress = 10.0
-        #     drepo.save()
-        # else:
-        #     print("no fork")
-        # if not settings.test_conf['local'] or settings.test_conf['clone']:
-        #     drepo.state = 'cloning repo'
-        #     drepo.save()
-        #     otask.description = 'Clone the repo'
-        #     otask.save()
-        #     clone_repo(cloning_url, user, branch=branch)
-        #     dolog('repo cloned')
-        #     drepo.progress = 20.0
-        # if log_file_dir is None:
-        #     dolog("Prepare the log for the user: %s" % user)
-        #     prepare_log(user)
-        #     dolog("prepared the log")
-        # dolog("set success")
-        # otask.success = True
-        # dolog("save otask")
-        # otask.save()
-        g = fork_and_clone_block(drepo, user, branch, otask)
-    except Exception as e:
-        dolog("1) Exception: " + str(e))
-        traceback.print_exc()
-        otask.success = False
-        otask.finished = True
-        otask.description = str(e)
-        otask.save()
-        drepo.state = 'Ready'
-        drepo.notes += str(e)
-        drepo.progress = 100
-        drepo.save()
-        if raise_exp:
-            raise Exception(str(e))
-        return
-
-    otask.finished = True
-    otask.save()
-    drepo.state = 'Tools'
-    drepo.save()
-
-    try:
-        Integrator.tools_execution(changed_files=changed_filesss, base_dir=os.path.join(home, user),
-                                   target_repo=target_repo, g_local=g, change_status=change_status, repo=drepo,
-                                   orun=orun, m_logger=logger, logfile=log_file_dir)
-    except Exception as e:
-        dolog("2) Exception - tools: " + str(e))
-        traceback.print_exc()
-        drepo.state = 'Ready'
-        drepo.notes += str(e)
-        drepo.progress = 100
-        drepo.save()
-        if raise_exp:
-            raise Exception(str(e))
-        return
-
     otask = OTask(name="Postprocessing", description="trying", success=False, finished=False, orun=orun)
     otask.save()
     try:
@@ -380,9 +284,9 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
                 print("3) Exception: " + str(e))
                 traceback.print_exc()
                 exception_if_exists = str(e)
-                dolog(
-                    'We have not been able to create the pull request. Please contact us to analyze the issue. ' + exception_if_exists)
-                drepo.notes = 'We have not been able to create the pull request. Please contact us to analyze the issue.'
+                err_msg = 'We have not been able to create the pull request. Please contact us to analyze the issue.'
+                dolog(err_msg+ exception_if_exists)
+                drepo.notes = err_msg
                 drepo.progress = 100
                 drepo.state = 'Ready'
                 drepo.save()
@@ -415,6 +319,211 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
             raise Exception(str(e))
     otask.finished = True
     otask.save()
+
+
+def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
+    """
+    :param target_repo: user/reponame
+    :param user: user email
+    :param changed_filesss: list of changed files
+    :param branch: the branch of the changed
+    :param raise_exp: Whether to raise exception or not in the case of an error
+    :return:
+    """
+    global g
+    global parent_folder
+    global log_file_dir
+    global logger
+
+    print("\n\n\n In gitmagic print")
+    print("printing test_conf from magic")
+    print(settings.test_conf)
+    parent_folder = user
+
+    ouser, orun, drepo, otask = magic_prep(target_repo, user, branch)
+
+    try:
+        for ftov in changed_filesss:
+            if ftov[-4:] in ontology_formats:
+                if ftov[:len('OnToology/')] != 'OnToology/':  # This is to solve bug #265
+                    dolog("update ontology status")
+                    dolog("ontology: " + ftov)
+                    drepo.update_ontology_status(ontology=ftov, status='pending')
+                    dolog("ontology status is updated")
+
+        # # so the tool user can takeover and do stuff
+        # dolog("pre block")
+        # g = init_g()
+        # cloning_url = None
+        # if not settings.test_conf['local'] or settings.test_conf['fork'] or settings.test_conf[
+        #     'clone']:  # in case it is not test or test with fork option
+        #     dolog('will fork the repo')
+        #     drepo.state = 'forking repo'
+        #     otask.description += 'fork the repo'
+        #     otask.save()
+        #     forked_repo = fork_repo(target_repo)
+        #     cloning_url = forked_repo.ssh_url
+        #     time.sleep(refresh_sleeping_secs)
+        #     dolog('repo forked: ' + str(cloning_url))
+        #     drepo.progress = 10.0
+        #     drepo.save()
+        # else:
+        #     print("no fork")
+        # if not settings.test_conf['local'] or settings.test_conf['clone']:
+        #     drepo.state = 'cloning repo'
+        #     drepo.save()
+        #     otask.description = 'Clone the repo'
+        #     otask.save()
+        #     clone_repo(cloning_url, user, branch=branch)
+        #     dolog('repo cloned')
+        #     drepo.progress = 20.0
+        # if log_file_dir is None:
+        #     dolog("Prepare the log for the user: %s" % user)
+        #     prepare_log(user)
+        #     dolog("prepared the log")
+        # dolog("set success")
+        # otask.success = True
+        # dolog("save otask")
+        # otask.save()
+        g = fork_and_clone_block(drepo, user, branch, otask, target_repo)
+    except Exception as e:
+        dolog("1) Exception: " + str(e))
+        traceback.print_exc()
+        otask.success = False
+        otask.finished = True
+        otask.description = str(e)
+        otask.save()
+        drepo.state = 'Ready'
+        drepo.notes += str(e)
+        drepo.progress = 100
+        drepo.save()
+        if raise_exp:
+            raise Exception(str(e))
+        return
+
+    otask.finished = True
+    otask.save()
+    drepo.state = 'Tools'
+    drepo.save()
+
+    try:
+        Integrator.tools_execution(changed_files=changed_filesss, base_dir=os.path.join(home, user),
+                                   target_repo=target_repo, g_local=g, change_status=change_status, repo=drepo,
+                                   orun=orun, m_logger=logger, logfile=log_file_dir)
+    except Exception as e:
+        dolog("2) Exception - tools: " + str(e))
+        traceback.print_exc()
+        drepo.state = 'Ready'
+        drepo.notes += str(e)
+        drepo.progress = 100
+        drepo.save()
+        if raise_exp:
+            raise Exception(str(e))
+        return
+
+    post_block(drepo, orun, changed_filesss, target_repo, branch, raise_exp)
+    # otask = OTask(name="Postprocessing", description="trying", success=False, finished=False, orun=orun)
+    # otask.save()
+    # try:
+    #     otask.description = "verifying changed files"
+    #     otask.save()
+    #     files_to_verify = [c for c in changed_filesss if c[-4:] in ontology_formats]
+    #     for c in changed_filesss:
+    #         if c[:-4] in ontology_formats:
+    #             print("file to verify: " + c)
+    #         else:
+    #             print("c: %s c-4: %s" % (c, c[-4:]))
+    #     otask.description = "preparing the repo after the processing"
+    #     otask.save()
+    #     # After the loop
+    #     dolog("number of files to verify %d" % (len(files_to_verify)))
+    #     if len(files_to_verify) == 0:
+    #         print("files: " + str(files_to_verify))
+    #         drepo.state = 'Ready'
+    #         drepo.notes = ''
+    #         drepo.progress = 100
+    #         drepo.save()
+    #         return
+    #     # if not test or test with push
+    #     if not settings.test_conf['local'] or settings.test_conf['push']:
+    #         dolog("will commit the changed")
+    #         commit_changes()
+    #         dolog('changes committed')
+    #     else:
+    #         dolog('No push for testing')
+    #     otask.description = "Removing old pull requests"
+    #     otask.save()
+    #
+    #     otask.description = "Generating pull request"
+    #     otask.save()
+    #     if settings.test_conf['pull']:
+    #         print("pull is true")
+    #     else:
+    #         print("pull is false")
+    #     if not settings.test_conf['local'] or settings.test_conf['pull']:
+    #         drepo.state = 'creating a pull request'
+    #         drepo.save()
+    #         try:
+    #             remove_old_pull_requests(target_repo)
+    #             time.sleep(5)
+    #             r = send_pull_request(target_repo, ToolUser, branch)
+    #             if r['status']:
+    #                 dolog('pull request is sent')
+    #                 drepo.notes = ''
+    #                 drepo.state = 'Ready'
+    #                 drepo.save()
+    #             else:
+    #                 dolog('Error generating the pull request')
+    #                 dolog("Response: %s" % str(r))
+    #                 err_msg = ""
+    #                 if 'error' in r:
+    #                     err_msg = r['error']
+    #                 elif 'errors' in r:
+    #                     err_msgs = [er['message'] for er in r['errors'] if 'message' in er]
+    #                     err_msg = " + ".join(err_msgs)
+    #                 drepo.notes = err_msg
+    #                 drepo.state = 'Ready'
+    #                 drepo.save()
+    #                 raise Exception(err_msg)
+    #         except Exception as e:
+    #             print("3) Exception: " + str(e))
+    #             traceback.print_exc()
+    #             exception_if_exists = str(e)
+    #             dolog(
+    #                 'We have not been able to create the pull request. Please contact us to analyze the issue. ' + exception_if_exists)
+    #             drepo.notes = 'We have not been able to create the pull request. Please contact us to analyze the issue.'
+    #             drepo.progress = 100
+    #             drepo.state = 'Ready'
+    #             drepo.save()
+    #             otask.success = False
+    #             otask.finished = True
+    #             otask.save()
+    #             if raise_exp:
+    #                 raise Exception(str(e))
+    #             return
+    #     else:
+    #         dolog("No pull for testing 11")
+    #         print('No pull for testing 11')
+    #         drepo.state = 'Ready'
+    #         drepo.save()
+    #     drepo.progress = 100
+    #     drepo.save()
+    #
+    #     otask.success = True
+    #     otask.save()
+    #
+    # except Exception as e:
+    #     print("4) Exception - generic: " + str(e))
+    #     traceback.print_exc()
+    #     otask.success = False
+    #     otask.description = str(e)
+    #     otask.save()
+    #     otask.finished = True
+    #     otask.save()
+    #     if raise_exp:
+    #         raise Exception(str(e))
+    # otask.finished = True
+    # otask.save()
 
 
 def update_file(target_repo, path, message, content, branch=None, g_local=None):
