@@ -42,14 +42,16 @@ from github import Github
 from django.utils import timezone
 from OnToology import settings
 from OnToology.autoncore import webhook_access, add_themis_results, add_webhook, ToolUser, filter_pub_name
-from OnToology.autoncore import generate_bundle
+from OnToology.autoncore import generate_bundle, parse_online_repo_for_ontologies, get_repo_branches
+from OnToology.autoncore import update_g, add_collaborator, get_ontologies_in_online_repo, clone_repo
 from OnToology.autoncore import *
-from OnToology.models import OUser, Repo
+from OnToology.models import OUser, Repo, ORun, PublishName, OntologyStatusPair
 from OnToology.models import *
 from OnToology import autoncore
 from OnToology.settings import host
 from Integrator import previsual
 from OnToology import sqclient
+
 
 client_id_login = os.environ['client_id_login']  # 'e2ea731b481438fd1675'
 client_id_public = os.environ['client_id_public']  # '878434ff1065b7fa5b92'
@@ -248,8 +250,8 @@ def grant_update(request):
 
 
 def get_access_token(request):
-    print("get_access_token")
     global is_private, client_id, client_secret
+    print("get_access_token")
     if 'state' not in request.session or request.GET['state'] != request.session['state']:
         return HttpResponseRedirect('/')
     data = {
@@ -369,6 +371,9 @@ def get_changed_files_from_payload(payload):
 
 @csrf_exempt
 def add_hook(request):
+    """
+    To Add hook.
+    """
     print("in add hook function")
     print("method: " + request.method)
     print("body: ")

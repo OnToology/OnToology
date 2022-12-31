@@ -29,6 +29,7 @@ except:
 
 from OnToology import settings
 from OnToology import models
+from OnToology.models import OUser, Repo
 from OnToology.models import *
 from ConfigParserList import ConfigParser
 from github import Github
@@ -38,12 +39,12 @@ import random
 import time
 import sys
 import traceback
+import os
 
 from OnToology.__init__ import *
 
 import Integrator
 
-import shutil
 import logging
 
 from urllib.parse import quote

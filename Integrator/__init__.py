@@ -2,7 +2,6 @@ from ConfigParserList import ConfigParser
 import os
 import random
 import string
-import io
 from subprocess import call
 from OnToology.models import *
 import logging
