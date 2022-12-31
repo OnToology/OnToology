@@ -42,6 +42,6 @@ blocks:
             - echo "Running Coverage"
             - docker-compose run -e CODECOV_TOKEN=$CODECOV_TOKEN web sh semaphoreci.sh
             - echo "Running Codacy Coverage"
-            - 'docker-compose run -e CODACY_PROJECT_TOKEN=$CODACY_PROJECT_TOKEN web bash <(curl -Ls https://coverage.codacy.com/get.sh)'
+            - 'docker-compose run -e CODACY_PROJECT_TOKEN=$CODACY_PROJECT_TOKEN web wget -qO - https://coverage.codacy.com/get.sh | sh -s -- report'
       secrets:
         - name: NEW OnToology Secret Configuration
