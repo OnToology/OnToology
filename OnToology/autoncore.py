@@ -16,16 +16,6 @@
 #
 # @author Ahmad Alobaid
 
-
-from github import Github
-from datetime import datetime
-from subprocess import call
-import string
-import random
-import time
-import sys
-import traceback
-
 try:
     print("importing OnToology...")
     import OnToology
@@ -41,6 +31,13 @@ from OnToology import settings
 from OnToology import models
 from OnToology.models import *
 from ConfigParserList import ConfigParser
+from github import Github
+from subprocess import call
+import string
+import random
+import time
+import sys
+import traceback
 
 from OnToology.__init__ import *
 
