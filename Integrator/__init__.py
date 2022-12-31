@@ -47,7 +47,6 @@ def tools_execution(changed_files, base_dir, target_repo=None, g_local=None, log
     :return:
     """
     global g
-    global dolog
     global logger
     global log_file_dir
 
@@ -247,8 +246,9 @@ def run_themis(conf, display_onto_name, orun, base_dir, changed_file, repo, prog
         except Exception as e:
             dolog("Exception in running themis: " + str(e))
             task_reporter(otask=otask, desc="Themis validation", success=False, finished=True, orun=orun)
-    repo.update_ontology_status(ontology=changed_file, status='finished')
+    repo.progress += progress_inc
     repo.save()
+    repo.update_ontology_status(ontology=changed_file, status='finished')
 
 
 def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo=None, progress_inc=0.0, orun=None):
@@ -325,6 +325,8 @@ def create_of_get_conf(ofile=None, base_dir=None, config_abs=None):
     """
     Returns the configuraation if not present. Otherwise, it will create a default one.
     :param ofile: relative directory of the file e.g. dir1/dir2/my.owl
+    :param base_dir:
+    :param config_abs:
     :return: dict of the configurations
     """
     global config_folder_name, config_file_name
