@@ -19,12 +19,10 @@
 try:
     print("importing OnToology...")
     import OnToology
-
     print("Success")
 except:
     print("Importing djangoperpmode")
     import djangoperpmod
-
     print("Imported it")
 
 from OnToology import settings
@@ -41,7 +39,6 @@ import time
 import sys
 import traceback
 import os
-# from OnToology.__init__ import *
 import Integrator
 import logging
 from django.utils import timezone
