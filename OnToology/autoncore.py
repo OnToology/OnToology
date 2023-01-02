@@ -1531,7 +1531,7 @@ def add_themis_results(target_repo, branch, ontologies):
     """
       get all themis results from a given repo,
       then, cross reference them with the ontologies list,
-      then, add the themis results to the ontologies list
+      finally, add the themis results to the ontologies list
     :param target_repo:
     :param branch:
     :param ontologies: a list of dicts of ontologies and tools
@@ -1542,12 +1542,15 @@ def add_themis_results(target_repo, branch, ontologies):
     branch = repo.get_branch(branch)
     sha = branch.commit.sha
     files = repo.get_git_tree(sha=sha, recursive=True).tree
-    ontology_results_d = dict()  # of [ontology_rel_path] = results_path
-    themis_results_dir = "/" + Integrator.tools_conf['themis']['folder_name'] + "/" + \
-                         Integrator.tools_conf['themis']['results_file_name']
+    ontology_results_d = dict()
+    themis_results_dir = "/" + Integrator.tools_conf['themis']['folder_name']
+    themis_results_dir += "/" + Integrator.tools_conf['themis']['results_file_name']
+
+    start_subs = get_target_home() + "/"
+    end_subs = themis_results_dir
     for f in files:
-        if f.path[:10] == get_target_home() + "/" and f.path[-23:] == themis_results_dir:
-            ontology_results_d["/" + f.path[10:-23]] = f.path
+        if f.path.startswith(start_subs) and f.path.endswith(end_subs):
+            ontology_results_d["/" + f.path[len(start_subs):-len(end_subs)]] = f.path
 
     for o in ontologies:
         if o['ontology'] in ontology_results_d:
@@ -1566,7 +1569,7 @@ def compute_themis_results(repo, branch, path):
     print("get file content: %s" % (str(path)))
     print("after quote: %s" % p)
     print("now get the decoded content")
-    file_content = repo.get_contents(p).decoded_content
+    file_content = repo.get_contents(p, ref=branch).decoded_content
     file_content = file_content.decode('utf-8')
 
     passed = 0

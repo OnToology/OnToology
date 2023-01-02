@@ -1,5 +1,6 @@
 from collections import Counter
 import rdflib
+from sys import argv
 from rdflib.namespace import RDF, OWL
 import requests
 import traceback
@@ -24,11 +25,6 @@ def get_themis_results(ontology_url, tests):
         dolog("Themis APIs is a success for <%s>" % ontology_url)
         raw_results = r.json()
         print(raw_results)
-        # num_of_passed = 0
-        # parsed_results = []
-        # for r in test_results:
-        #     parsed_results.append(r['Results'][0]['Result'])
-        # c = Counter(parsed_results)
         test_result_pairs = []
         stats = []
         for r in raw_results:
@@ -53,8 +49,6 @@ def generate_test_class_type(gg):
     """
     classes_set = set()
     try:
-        # for rdf_type, _ in g.subject_objects(predicate=RDF.type):
-        # for _, rdf_type in g.subject_objects(predicate=RDFS.Class):
         for rdf_type in gg.subjects(predicate=RDF.type, object=OWL.Class):
             classes_set.add(rdf_type)
         tests = []
@@ -145,8 +139,6 @@ def write_tests(ontology_dir, tests_file_dir):
 
 
 if __name__ == '__main__':
-    from sys import argv
-
     if len(argv) == 2:
         generate_tests(argv[1])
     else:
