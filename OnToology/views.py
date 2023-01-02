@@ -233,7 +233,7 @@ def runs_view(request):
                 if repo not in user.repos.all():
                     return render(request, 'msg.html', {
                         'msg': 'This repo does not belong to the loggedin user. Try to add it and try again.'})
-                latest_oruns = ORun.objects.filter(repo=repo)
+                latest_oruns = ORun.objects.filter(repo=repo).order_by('-timestamp')
                 print("going to render")
                 return render(request, 'runs.html', {'oruns': latest_oruns})
             else:
