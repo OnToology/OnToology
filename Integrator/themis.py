@@ -1,5 +1,6 @@
 from collections import Counter
 import rdflib
+from sys import argv
 from rdflib.namespace import RDF, OWL
 import requests
 import traceback
@@ -24,11 +25,6 @@ def get_themis_results(ontology_url, tests):
         dolog("Themis APIs is a success for <%s>" % ontology_url)
         raw_results = r.json()
         print(raw_results)
-        # num_of_passed = 0
-        # parsed_results = []
-        # for r in test_results:
-        #     parsed_results.append(r['Results'][0]['Result'])
-        # c = Counter(parsed_results)
         test_result_pairs = []
         stats = []
         for r in raw_results:
@@ -53,8 +49,6 @@ def generate_test_class_type(gg):
     """
     classes_set = set()
     try:
-        # for rdf_type, _ in g.subject_objects(predicate=RDF.type):
-        # for _, rdf_type in g.subject_objects(predicate=RDFS.Class):
         for rdf_type in gg.subjects(predicate=RDF.type, object=OWL.Class):
             classes_set.add(rdf_type)
         tests = []
@@ -88,7 +82,7 @@ def generate_tests(file_abs_dir):
     return []
 
 
-def validate_ontologies(target_repo, changed_files, base_dir):
+def validate_ontologies(target_repo, branch, changed_files, base_dir):
     """
     :param target_repo:
     :param changed_files:
@@ -96,10 +90,10 @@ def validate_ontologies(target_repo, changed_files, base_dir):
     :return:
     """
     for f in changed_files:
-        validate_ontology(base_dir, target_repo, f)
+        validate_ontology(base_dir, target_repo, branch, f)
 
 
-def validate_ontology(base_dir, target_repo, ontology_rel_dir):
+def validate_ontology(base_dir, target_repo, branch, ontology_rel_dir):
     report_output_dir = os.path.join(base_dir, get_target_home(), ontology_rel_dir, tools_conf['themis']['folder_name'])
     dolog("report output dir: %s" % report_output_dir)
     build_path_all(report_output_dir)
@@ -107,11 +101,11 @@ def validate_ontology(base_dir, target_repo, ontology_rel_dir):
     tests_file_dir = os.path.join(report_output_dir, tools_conf['themis']['tests_file_name'])
     results_file_dir = os.path.join(report_output_dir, tools_conf['themis']['results_file_name'])
     write_tests(os.path.join(base_dir, ontology_rel_dir), tests_file_dir)
-    write_test_results(target_repo, ontology_rel_dir, tests_file_dir, results_file_dir)
+    write_test_results(target_repo, branch, ontology_rel_dir, tests_file_dir, results_file_dir)
 
 
-def write_test_results(target_repo, ontology_rel_dir, tests_file_dir, results_file_dir):
-    ontology_public_url = 'https://raw.githubusercontent.com/%s/master/%s' % (target_repo, ontology_rel_dir)
+def write_test_results(target_repo, branch, ontology_rel_dir, tests_file_dir, results_file_dir):
+    ontology_public_url = 'https://raw.githubusercontent.com/%s/%s/%s' % (target_repo, branch, ontology_rel_dir)
     f = open(tests_file_dir)
     tests_text = f.read()
     f.close()
@@ -132,10 +126,12 @@ def write_tests(ontology_dir, tests_file_dir):
     :return: None
     """
     if os.path.exists(tests_file_dir):
-        dolog("the themis file exists <%s> for the ontology <%s>" % (tests_file_dir, ontology_dir))
+        dolog("themis tests exists <%s> for the ontology <%s>" % (tests_file_dir, ontology_dir))
     else:
-        dolog("the themis does not exist <%s> for the ontology <%s>" % (tests_file_dir, ontology_dir))
+        dolog("themis tests does not exist <%s> for the ontology <%s>" % (tests_file_dir, ontology_dir))
         tests = generate_tests(ontology_dir)
+        dolog("themis tests: ")
+        dolog(str(tests))
         f = open(tests_file_dir, 'w')
         for t in tests:
             f.write(t)
@@ -145,8 +141,6 @@ def write_tests(ontology_dir, tests_file_dir):
 
 
 if __name__ == '__main__':
-    from sys import argv
-
     if len(argv) == 2:
         generate_tests(argv[1])
     else:
