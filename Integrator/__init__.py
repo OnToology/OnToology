@@ -32,7 +32,7 @@ def p(msg):
     print(msg)
 
 
-def tools_execution(changed_files, base_dir, target_repo=None, g_local=None, logfile=None,
+def tools_execution(changed_files, base_dir, target_repo, branch, g_local=None, logfile=None,
                     change_status=None, repo=None, orun=None, m_logger=None):
     """
     :param changed_files:  changed files include relative path
@@ -43,6 +43,7 @@ def tools_execution(changed_files, base_dir, target_repo=None, g_local=None, log
     :param change_status:
     :param repo:
     :param orun:
+    :param branch:
     :param m_logger:
     :return:
     """
@@ -75,7 +76,7 @@ def tools_execution(changed_files, base_dir, target_repo=None, g_local=None, log
                 continue
             dolog("tools_execution: " + f)
             handle_single_ofile(f, base_dir, target_repo=target_repo, change_status=change_status, repo=repo,
-                                progress_inc=progress_inc, orun=orun)
+                                progress_inc=progress_inc, orun=orun, branch=branch)
 
 
 def task_reporter(name=None, desc=None, success=None, finished=None, orun=None, otask=None):
@@ -238,7 +239,7 @@ def run_owl2jsonld(conf, display_onto_name, orun, base_dir, changed_file, repo, 
     repo.save()
 
 
-def run_themis(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, change_status):
+def run_themis(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, branch, change_status):
     """
     Run themis
     """
@@ -250,7 +251,7 @@ def run_themis(conf, display_onto_name, orun, base_dir, changed_file, repo, prog
         repo.update_ontology_status(ontology=changed_file, status='validation')
         repo.save()
         try:
-            themis.validate_ontologies(target_repo=target_repo, changed_files=[changed_file], base_dir=base_dir)
+            themis.validate_ontologies(target_repo=target_repo, branch=branch, changed_files=[changed_file], base_dir=base_dir)
             otask = task_reporter(otask=otask, desc="Themis validation", success=True, finished=True, orun=orun)
         except Exception as e:
             dolog("Exception in running themis: " + str(e))
@@ -260,7 +261,7 @@ def run_themis(conf, display_onto_name, orun, base_dir, changed_file, repo, prog
     repo.update_ontology_status(ontology=changed_file, status='finished')
 
 
-def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo=None, progress_inc=0.0, orun=None):
+def handle_single_ofile(changed_file, base_dir, target_repo, change_status, branch, repo=None, progress_inc=0.0, orun=None):
     """
     assuming the change_file is an ontology file
     :param changed_file: relative directory of the file e.g. dir1/dir2/my.owl
@@ -294,7 +295,7 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, repo
     run_oops(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, change_status)
     run_owl2jsonld(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo,
                    change_status)
-    run_themis(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, change_status)
+    run_themis(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, branch, change_status)
 
 
 def get_default_conf():
