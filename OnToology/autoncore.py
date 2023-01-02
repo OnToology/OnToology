@@ -1635,7 +1635,7 @@ def parse_online_repo_for_ontologies(target_repo, branch='master'):
         print("file_content: " + file_content)
         print("will get the config")
         conf = get_auton_config(file_content, from_string=True)
-        conf_str = get_conf_as_str(conf)
+        conf_str = Integrator.get_conf_as_str(conf)
         print("gotten confs: " + conf_str)
         o = dict()
         o['ontology'] = get_parent_path(p)[len(get_target_home()):]
@@ -1656,11 +1656,6 @@ def get_auton_configuration(f=None, abs_folder=None):
         conf_file_abs = build_file_structure(
             'OnToology.cfg', [get_target_home()])
     return get_auton_config(conf_file_abs, from_string=False)
-
-
-def get_conf_as_str(conf):
-    conf_str = {section: dict(conf[section]) for section in conf}
-    return conf_str
 
 
 def get_auton_config(conf_file_abs, from_string=True):
@@ -1686,7 +1681,11 @@ def get_auton_config(conf_file_abs, from_string=True):
             traceback.print_exc()
 
     dolog("\n\n***get_auton_config***")
-    dolog(get_conf_as_str(config))
+    conf_str = Integrator.get_conf_as_str(config)
+    print("Type")
+    print(type(conf_str))
+    print(conf_str)
+    dolog(conf_str)
     return config
 
 

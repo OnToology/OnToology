@@ -102,11 +102,20 @@ def task_reporter(name=None, desc=None, success=None, finished=None, orun=None, 
     return t
 
 
+def get_conf_as_dict(conf):
+    """
+    Get dict from a conf object
+    """
+    d = {section: dict(conf[section]) for section in conf}
+    return d
+
+
 def get_conf_as_str(conf):
     """
-    Get string from a conf object
+    Get str from a conf object
     """
-    conf_str = {section: dict(conf[section]) for section in conf}
+    conf_str = get_conf_as_dict(conf)
+    conf_str = str(conf_str)
     return conf_str
 
 
