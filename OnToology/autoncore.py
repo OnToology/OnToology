@@ -348,40 +348,6 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
                     drepo.update_ontology_status(ontology=ftov, status='pending')
                     dolog("ontology status is updated")
 
-        # # so the tool user can takeover and do stuff
-        # dolog("pre block")
-        # g = init_g()
-        # cloning_url = None
-        # if not settings.test_conf['local'] or settings.test_conf['fork'] or settings.test_conf[
-        #     'clone']:  # in case it is not test or test with fork option
-        #     dolog('will fork the repo')
-        #     drepo.state = 'forking repo'
-        #     otask.description += 'fork the repo'
-        #     otask.save()
-        #     forked_repo = fork_repo(target_repo)
-        #     cloning_url = forked_repo.ssh_url
-        #     time.sleep(refresh_sleeping_secs)
-        #     dolog('repo forked: ' + str(cloning_url))
-        #     drepo.progress = 10.0
-        #     drepo.save()
-        # else:
-        #     print("no fork")
-        # if not settings.test_conf['local'] or settings.test_conf['clone']:
-        #     drepo.state = 'cloning repo'
-        #     drepo.save()
-        #     otask.description = 'Clone the repo'
-        #     otask.save()
-        #     clone_repo(cloning_url, user, branch=branch)
-        #     dolog('repo cloned')
-        #     drepo.progress = 20.0
-        # if log_file_dir is None:
-        #     dolog("Prepare the log for the user: %s" % user)
-        #     prepare_log(user)
-        #     dolog("prepared the log")
-        # dolog("set success")
-        # otask.success = True
-        # dolog("save otask")
-        # otask.save()
         g = fork_and_clone_block(drepo, user, branch, otask, target_repo)
     except Exception as e:
         dolog("1) Exception: " + str(e))
@@ -404,7 +370,7 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
     drepo.save()
 
     try:
-        Integrator.tools_execution(changed_files=changed_filesss, base_dir=os.path.join(home, user),
+        Integrator.tools_execution(changed_files=changed_filesss, base_dir=os.path.join(home, user), branch=branch,
                                    target_repo=target_repo, g_local=g, change_status=change_status, repo=drepo,
                                    orun=orun, m_logger=logger, logfile=log_file_dir)
     except Exception as e:
@@ -419,108 +385,6 @@ def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
         return
 
     post_block(drepo, orun, changed_filesss, target_repo, branch, raise_exp)
-    # otask = OTask(name="Postprocessing", description="trying", success=False, finished=False, orun=orun)
-    # otask.save()
-    # try:
-    #     otask.description = "verifying changed files"
-    #     otask.save()
-    #     files_to_verify = [c for c in changed_filesss if c[-4:] in ontology_formats]
-    #     for c in changed_filesss:
-    #         if c[:-4] in ontology_formats:
-    #             print("file to verify: " + c)
-    #         else:
-    #             print("c: %s c-4: %s" % (c, c[-4:]))
-    #     otask.description = "preparing the repo after the processing"
-    #     otask.save()
-    #     # After the loop
-    #     dolog("number of files to verify %d" % (len(files_to_verify)))
-    #     if len(files_to_verify) == 0:
-    #         print("files: " + str(files_to_verify))
-    #         drepo.state = 'Ready'
-    #         drepo.notes = ''
-    #         drepo.progress = 100
-    #         drepo.save()
-    #         return
-    #     # if not test or test with push
-    #     if not settings.test_conf['local'] or settings.test_conf['push']:
-    #         dolog("will commit the changed")
-    #         commit_changes()
-    #         dolog('changes committed')
-    #     else:
-    #         dolog('No push for testing')
-    #     otask.description = "Removing old pull requests"
-    #     otask.save()
-    #
-    #     otask.description = "Generating pull request"
-    #     otask.save()
-    #     if settings.test_conf['pull']:
-    #         print("pull is true")
-    #     else:
-    #         print("pull is false")
-    #     if not settings.test_conf['local'] or settings.test_conf['pull']:
-    #         drepo.state = 'creating a pull request'
-    #         drepo.save()
-    #         try:
-    #             remove_old_pull_requests(target_repo)
-    #             time.sleep(5)
-    #             r = send_pull_request(target_repo, ToolUser, branch)
-    #             if r['status']:
-    #                 dolog('pull request is sent')
-    #                 drepo.notes = ''
-    #                 drepo.state = 'Ready'
-    #                 drepo.save()
-    #             else:
-    #                 dolog('Error generating the pull request')
-    #                 dolog("Response: %s" % str(r))
-    #                 err_msg = ""
-    #                 if 'error' in r:
-    #                     err_msg = r['error']
-    #                 elif 'errors' in r:
-    #                     err_msgs = [er['message'] for er in r['errors'] if 'message' in er]
-    #                     err_msg = " + ".join(err_msgs)
-    #                 drepo.notes = err_msg
-    #                 drepo.state = 'Ready'
-    #                 drepo.save()
-    #                 raise Exception(err_msg)
-    #         except Exception as e:
-    #             print("3) Exception: " + str(e))
-    #             traceback.print_exc()
-    #             exception_if_exists = str(e)
-    #             dolog(
-    #                 'We have not been able to create the pull request. Please contact us to analyze the issue. ' + exception_if_exists)
-    #             drepo.notes = 'We have not been able to create the pull request. Please contact us to analyze the issue.'
-    #             drepo.progress = 100
-    #             drepo.state = 'Ready'
-    #             drepo.save()
-    #             otask.success = False
-    #             otask.finished = True
-    #             otask.save()
-    #             if raise_exp:
-    #                 raise Exception(str(e))
-    #             return
-    #     else:
-    #         dolog("No pull for testing 11")
-    #         print('No pull for testing 11')
-    #         drepo.state = 'Ready'
-    #         drepo.save()
-    #     drepo.progress = 100
-    #     drepo.save()
-    #
-    #     otask.success = True
-    #     otask.save()
-    #
-    # except Exception as e:
-    #     print("4) Exception - generic: " + str(e))
-    #     traceback.print_exc()
-    #     otask.success = False
-    #     otask.description = str(e)
-    #     otask.save()
-    #     otask.finished = True
-    #     otask.save()
-    #     if raise_exp:
-    #         raise Exception(str(e))
-    # otask.finished = True
-    # otask.save()
 
 
 def update_file(target_repo, path, message, content, branch=None, g_local=None):
@@ -1530,8 +1394,8 @@ def get_confs_from_repo(target_repo, branch):
 def add_themis_results(target_repo, branch, ontologies):
     """
       get all themis results from a given repo,
-      then, cross reference them with the ontologies list,
-      then, add the themis results to the ontologies list
+      then, cross-reference them with the ontologies list,
+      finally, add the themis results to the ontologies list
     :param target_repo:
     :param branch:
     :param ontologies: a list of dicts of ontologies and tools
@@ -1542,16 +1406,19 @@ def add_themis_results(target_repo, branch, ontologies):
     branch = repo.get_branch(branch)
     sha = branch.commit.sha
     files = repo.get_git_tree(sha=sha, recursive=True).tree
-    ontology_results_d = dict()  # of [ontology_rel_path] = results_path
-    themis_results_dir = "/" + Integrator.tools_conf['themis']['folder_name'] + "/" + \
-                         Integrator.tools_conf['themis']['results_file_name']
+    ontology_results_d = dict()
+    themis_results_dir = "/" + Integrator.tools_conf['themis']['folder_name']
+    themis_results_dir += "/" + Integrator.tools_conf['themis']['results_file_name']
+
+    start_subs = get_target_home() + "/"
+    end_subs = themis_results_dir
     for f in files:
-        if f.path[:10] == get_target_home() + "/" and f.path[-23:] == themis_results_dir:
-            ontology_results_d["/" + f.path[10:-23]] = f.path
+        if f.path.startswith(start_subs) and f.path.endswith(end_subs):
+            ontology_results_d["/" + f.path[len(start_subs):-len(end_subs)]] = f.path
 
     for o in ontologies:
         if o['ontology'] in ontology_results_d:
-            o['themis_results'] = compute_themis_results(repo, branch, ontology_results_d[o['ontology']])
+            o['themis_results'] = compute_themis_results(repo, branch.name, ontology_results_d[o['ontology']])
     return ontologies
 
 
@@ -1566,7 +1433,7 @@ def compute_themis_results(repo, branch, path):
     print("get file content: %s" % (str(path)))
     print("after quote: %s" % p)
     print("now get the decoded content")
-    file_content = repo.get_contents(p).decoded_content
+    file_content = repo.get_contents(p, ref=branch).decoded_content
     file_content = file_content.decode('utf-8')
 
     passed = 0
@@ -1631,13 +1498,18 @@ def parse_online_repo_for_ontologies(target_repo, branch='master'):
         file_content = file_content.decode('utf-8')
         print("file_content: " + file_content)
         print("will get the config")
-        confs = get_auton_config(file_content, from_string=True)
-        print("gotten confs: " + str(confs))
-        o = {}
+        conf = get_auton_config(file_content, from_string=True)
+        conf_str = Integrator.get_conf_as_str(conf)
+        print("gotten confs: " + conf_str)
+        o = dict()
         o['ontology'] = get_parent_path(p)[len(get_target_home()):]
-        for c in confs:
-            tool = c
-            o[tool] = confs[c]
+        for tool in conf.sections():
+            o[tool] = Integrator.get_conf_tool_json(conf, tool)
+            print("parse_online_repo_for_ontologies> ")
+            print("Themis debug: ")
+            print("tool: %s" % tool)
+            print(type(o[tool]))
+            print(o[tool])
         ontologies.append(o)
 
     return ontologies
@@ -1655,16 +1527,11 @@ def get_auton_configuration(f=None, abs_folder=None):
     return get_auton_config(conf_file_abs, from_string=False)
 
 
-def get_conf_as_str(conf):
-    conf_str = {section: dict(conf[section]) for section in conf}
-    return conf_str
-
-
 def get_auton_config(conf_file_abs, from_string=True):
     """
     :param conf_file_abs:
     :param from_string:
-    :return:
+    :return: config obj
     """
 
     if from_string:
@@ -1682,8 +1549,12 @@ def get_auton_config(conf_file_abs, from_string=True):
             dolog('expection: ' + str(e))
             traceback.print_exc()
 
-    dolog("\n\n\n**************get_auton_config: ")
-    dolog(get_conf_as_str(config))
+    dolog("\n\n***get_auton_config***")
+    conf_str = Integrator.get_conf_as_str(config)
+    print("Type")
+    print(type(conf_str))
+    print(conf_str)
+    dolog(conf_str)
     return config
 
 
