@@ -1640,7 +1640,7 @@ def parse_online_repo_for_ontologies(target_repo, branch='master'):
         o = dict()
         o['ontology'] = get_parent_path(p)[len(get_target_home()):]
         for tool in conf.sections():
-            o[tool] = Integrator.get_conf_tool_json(tool)
+            o[tool] = Integrator.get_conf_tool_json(conf, tool)
         ontologies.append(o)
 
     return ontologies
