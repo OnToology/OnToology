@@ -1634,13 +1634,13 @@ def parse_online_repo_for_ontologies(target_repo, branch='master'):
         file_content = file_content.decode('utf-8')
         print("file_content: " + file_content)
         print("will get the config")
-        confs = get_auton_config(file_content, from_string=True)
-        print("gotten confs: " + str(confs))
-        o = {}
+        conf = get_auton_config(file_content, from_string=True)
+        conf_str = get_conf_as_str(conf)
+        print("gotten confs: " + conf_str)
+        o = dict()
         o['ontology'] = get_parent_path(p)[len(get_target_home()):]
-        for c in confs:
-            tool = c
-            o[tool] = confs[c]
+        for tool in conf.sections():
+            o[tool] = Integrator.get_conf_tool_json(tool)
         ontologies.append(o)
 
     return ontologies
@@ -1667,7 +1667,7 @@ def get_auton_config(conf_file_abs, from_string=True):
     """
     :param conf_file_abs:
     :param from_string:
-    :return:
+    :return: config obj
     """
 
     if from_string:
@@ -1685,7 +1685,7 @@ def get_auton_config(conf_file_abs, from_string=True):
             dolog('expection: ' + str(e))
             traceback.print_exc()
 
-    dolog("\n\n\n**************get_auton_config: ")
+    dolog("\n\n***get_auton_config***")
     dolog(get_conf_as_str(config))
     return config
 

@@ -311,6 +311,26 @@ def get_default_conf():
     return config_result
 
 
+def get_conf_tool_json(conf, tool):
+    """
+    Get tool
+    """
+    if tool == "widoco":
+        return {
+            tool: {
+                'enable': conf.getboolean(tool, "enable"),
+                'languages': conf.getboolean(tool, "languages"),
+                'webVowl': conf.getboolean(tool, "webVowl"),
+            }
+        }
+    else:
+        return {
+            tool: {
+                'enable': conf.getboolean(tool, "enable")
+            }
+        }
+
+
 def get_default_conf_obj():
     """
     Get default config object
