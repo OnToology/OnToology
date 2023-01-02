@@ -1643,7 +1643,7 @@ def parse_online_repo_for_ontologies(target_repo, branch='master'):
             o[tool] = Integrator.get_conf_tool_json(conf, tool)
             print("parse_online_repo_for_ontologies> ")
             print("Themis debug: ")
-            print("\ttool: %s" % tool)
+            print("tool: %s" % tool)
             print(type(o[tool]))
             print(o[tool])
         ontologies.append(o)
