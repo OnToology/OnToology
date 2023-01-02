@@ -1530,7 +1530,7 @@ def get_confs_from_repo(target_repo, branch):
 def add_themis_results(target_repo, branch, ontologies):
     """
       get all themis results from a given repo,
-      then, cross reference them with the ontologies list,
+      then, cross-reference them with the ontologies list,
       finally, add the themis results to the ontologies list
     :param target_repo:
     :param branch:
@@ -1554,7 +1554,7 @@ def add_themis_results(target_repo, branch, ontologies):
 
     for o in ontologies:
         if o['ontology'] in ontology_results_d:
-            o['themis_results'] = compute_themis_results(repo, branch, ontology_results_d[o['ontology']])
+            o['themis_results'] = compute_themis_results(repo, branch.name, ontology_results_d[o['ontology']])
     return ontologies
 
 
