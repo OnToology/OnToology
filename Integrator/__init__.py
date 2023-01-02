@@ -326,17 +326,13 @@ def get_conf_tool_json(conf, tool):
     """
     if tool == "widoco":
         return {
-            tool: {
-                'enable': conf.getboolean(tool, "enable"),
-                'languages': conf.getlist(tool, "languages"),
-                'webVowl': conf.getboolean(tool, "webVowl"),
-            }
+            'enable': conf.getboolean(tool, "enable"),
+            'languages': conf.getlist(tool, "languages"),
+            'webVowl': conf.getboolean(tool, "webVowl"),
         }
     else:
         return {
-            tool: {
-                'enable': conf.getboolean(tool, "enable")
-            }
+            'enable': conf.getboolean(tool, "enable")
         }
 
 
