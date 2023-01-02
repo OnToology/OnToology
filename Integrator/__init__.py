@@ -328,7 +328,7 @@ def get_conf_tool_json(conf, tool):
         return {
             tool: {
                 'enable': conf.getboolean(tool, "enable"),
-                'languages': conf.getboolean(tool, "languages"),
+                'languages': conf.getlist(tool, "languages"),
                 'webVowl': conf.getboolean(tool, "webVowl"),
             }
         }
