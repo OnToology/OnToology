@@ -207,7 +207,6 @@ def fork_and_clone_block(drepo, user, branch, otask, target_repo):
     dolog("save otask")
     otask.save()
     drepo.save()
-    orun.save()
     return g
 
 
