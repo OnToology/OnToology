@@ -28,7 +28,7 @@ from subprocess import call
 
 from django.http import HttpResponse
 from django.urls import reverse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.contrib.auth import login as django_login, logout as django_logout
 from django.contrib.auth.decorators import login_required
@@ -212,6 +212,13 @@ def repos_view(request):
     else:
         return render(request, 'repos.html', {'repos': user.repos.all()})
 
+
+@login_required
+def status_view(request):
+    last_run = ORun.objects.filter(user=request.user).order_by('-timestamp').first()
+    if last_run:
+        return redirect('/runs?repo=%s' % last_run.repo.url)
+    return render(request, 'msg.html', {'error': 'No runs are found.'})
 
 @login_required
 def opub_view(request):

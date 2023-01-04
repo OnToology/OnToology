@@ -16,13 +16,12 @@
 <div class="card">
     <div class="card-header" role="tab">
         <h4 class="card-title">
-            <a role="button" data-toggle="collapse" href="#coll{{orun.id}}" role="button" aria-expanded="false"
-               aria-controls="coll{{orun.id}}">
+            <a role="button" data-toggle="collapse" href="#coll{{orun.id}}" role="button" aria-expanded="false" aria-controls="coll{{orun.id}}">
                 {{orun.timestamp}} ({{orun.repo.url}}: {{orun.branch}})
             </a>
         </h4>
     </div>
-    <div class="panel-body collapse" id="coll{{orun.id}}">
+    <div class="panel-body collapse {% if forloop.first %}show{% endif %}" id="coll{{orun.id}}">
         {%for otask in orun.otasks.all%}
         {%if otask.success%}
         <li class="list-group-item ">
@@ -106,10 +105,11 @@
 
 
 <script>
+/*
         var canvas = document.getElementById("myCanvas");
         var ctx = canvas.getContext("2d");
         ctx.canvas.width = window.innerWidth * 0.95;
-/*
+
         var g = new OutlineGraph(ctx, {"title_color": "black",
                                  "items_color": "blue",
                                  "inner_color": "#3498DB",
@@ -142,8 +142,10 @@
                                         {"title": "Finished", "items": ["finals"]}
                                  ]});
         */
+        /*
         g.draw();
         g.draw_inner(0);
+        */
 
 function compute_index(j){
    return 2;
@@ -189,8 +191,8 @@ var outline_function = function(){
     });
 
 }
-setInterval(outline_function, 4000);
-outline_function();
+//setInterval(outline_function, 4000);
+//outline_function();
 
 </script>
 
