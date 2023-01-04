@@ -316,6 +316,7 @@ def post_block(drepo, orun, changed_filesss, target_repo, branch, raise_exp=Fals
             raise Exception(str(e))
     otask.finished = True
     otask.save()
+    orun.save()
 
 
 def git_magic(target_repo, user, changed_filesss, branch, raise_exp=False):
@@ -1061,40 +1062,7 @@ def generate_bundle(base_dir, target_repo, ontology_bundle, branch):
         print('num of files: ' + str(len(files)))
         for f in files:
             bundle_file_handler(repo, f, ontology_bundle, base_dir)
-            # try:
-            #     for _ in range(3):
-            #         try:
-            #             fpath = f.path
-            #             print("generate_bundle> %s" % fpath)
-            #             break
-            #         except Exception as e:
-            #             time.sleep(2)
-            #             print("generate_bundle> Exception " + str(e))
-            #             traceback.print_exc()
-            #     p = f.path
-            #     if p[0] == '/':
-            #         p = p[1:]
-            #     abs_path = os.path.join(base_dir, p)
-            #     if p[:len(ontology_bundle)] == ontology_bundle:
-            #         print('true: ' + str(p))
-            #         if f.type == 'tree':
-            #             os.makedirs(abs_path)
-            #         elif f.type == 'blob':
-            #             parent_folder = os.path.join(*abs_path.split('/')[:-1])
-            #             if parent_folder != base_dir:  # not in the top level of the repo
-            #                 if not os.path.exists(parent_folder):
-            #                     os.makedirs(parent_folder)
-            #             with open(abs_path, 'wb') as fii:
-            #                 file_content = repo.get_contents(f.path).decoded_content
-            #                 fii.write(file_content)
-            #                 print("file %s" % str(f.path))
-            #         else:
-            #             print('unknown type in generate bundle')
-            #     else:
-            #         pass
-            # except Exception as e:
-            #     print('generate_bundle> Exception3: ' + str(e))
-            #     traceback.print_exc()
+
         zip_file = os.path.join(base_dir, '%s.zip' % ontology_bundle.split('/')[-1])
         comm = "cd %s; zip -r '%s' OnToology" % (base_dir, zip_file)
         print('comm: %s' % comm)
@@ -1286,6 +1254,7 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         otask.finished = True
         otask.description = "The ontology is published correctly"
         otask.save()
+
         return ""  # means it is published correctly
 
 

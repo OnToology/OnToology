@@ -166,7 +166,7 @@ class ORun(models.Model):
     repo = models.ForeignKey(Repo, on_delete=models.CASCADE, related_name='oruns')
     branch = models.TextField(default='')
     user = models.ForeignKey(OUser, on_delete=models.CASCADE, related_name='oruns')
-    timestamp = models.DateTimeField(default=timezone.now)
+    timestamp = models.DateTimeField(auto_now=True)
     # tasks = models.EmbeddedField(model_container=OTask)
     # tasks = models.ArrayReferenceField(OTask, on_delete=models.CASCADE)
 
