@@ -57,6 +57,7 @@ urlpatterns = [
     url(r'^delete_published', views.delete_published),
     url(r'^update_stats', views.update_stats_view),
     url(r'^syntax', views.syntax_check_view),
+    url(r'^status', views.status_view),
     url(r'show_stats', views.show_stats),
     # url(r'^error_test', views.error_test),
     # url(r'^admin', views.superadmin, name='superadmin'),

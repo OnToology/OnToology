@@ -100,6 +100,7 @@ def task_reporter(name=None, desc=None, success=None, finished=None, orun=None, 
     if finished is not None:
         t.finished = finished
     t.save()
+    orun.save()
     return t
 
 
