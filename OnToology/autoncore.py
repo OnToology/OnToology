@@ -1017,6 +1017,7 @@ def bundle_file_handler(repo, f, ontology_bundle, base_dir):
                 traceback.print_exc()
         if not fpath:
             fpath = f.path
+        p = fpath
         if fpath[0] == '/':
             p = fpath[1:]
         abs_path = os.path.join(base_dir, p)
