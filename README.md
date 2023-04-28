@@ -187,3 +187,13 @@ docker exec -it <container name> /bin/sh
 5. Run the [stiqueue](https://github.com/ahmad88me/stiqueue) server
 (with the ip and port).
 6. Run `OnToology/sqclient.py`.
+
+
+# Developers and System Admins
+Sometimes things happens and the processes or the APIs fail. Here are the common ones and how to resolve them.
+1. *Access permissions* on the server. OnToology generates the resources, which are automatically has different permissions 
+(probably www-data) rather than the user itself. So, make sure that the apache user has the permission to do so.
+2. *GitHub permissions*. When users add their repo to OnToology, the proper permissions will be added. There are two: 
+   a. *OnToology access*. <img height=200px src="media/faqs/OnToologyAccess.png"/>
+   b. *OnToologyUser as a collaborator*. In this case, the last thing that will be shown in the user log will be `new htaccess:` (if the repo didn't has any ontology published before. If the repo has published an ontology before, you will see that OnToology tried several times to publish, but failed). <img height=200px src="media/faqs/Collaborator.png"/>
+3. 
