@@ -194,5 +194,5 @@ Sometimes things happens and the processes or the APIs fail. Here are the common
 1. *Access permissions* on the server. OnToology generates the resources, which are automatically has different permissions 
 (probably www-data) rather than the user itself. So, make sure that the apache user has the permission to do so.
 2. *GitHub permissions*. When users add their repo to OnToology, the proper permissions will be added. There are two: 
-   2.1. *OnToology access*. <img height=200px src="media/faqs/OnToologyAccess.png"/>
-   2.2. *OnToologyUser as a collaborator*. In this case, the last thing that will be shown in the user log will be `new htaccess:` (if the repo didn't has any ontology published before. If the repo has published an ontology before, you will see that OnToology tried several times to publish, but failed). <img height=200px src="media/faqs/Collaborator.png"/>
+   1. *OnToology access*. <img height=300px src="media/faqs/OnToologyAccess.png"/>
+   2. *OnToologyUser as a collaborator*. In this case, the last thing that will be shown in the user log will be `new htaccess:` (if the repo didn't has any ontology published before. If the repo has published an ontology before, you will see that OnToology tried several times to publish, but failed). <img height=300px src="media/faqs/Collaborator.png"/>
