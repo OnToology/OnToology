@@ -1185,7 +1185,7 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
     otask.save()
     otask = OTask(name='.htaccess Preparation', finished=False, success=False, description="Get .htaccess",
                   orun=orun)
-    dolog("publish> otask is init")
+    dolog("publish> otask is init .htaccess Preparation")
     otask.save()
 
     # new name and ontology is not published or republish
@@ -1216,12 +1216,12 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         dolog("publish> htaccess content: ")
         if isinstance(htaccess, bytes):
             htaccess = htaccess.decode('utf-8')
-        dolog(str(type(htaccess)))
+        #dolog(str(type(htaccess)))
         otask.description = "rewriting .htaccess with redirects to GitHub"
         otask.save()
         new_htaccess = htaccess_github_rewrite(target_repo=target_repo, htaccess_content=htaccess,
                                                ontology_rel_path=ontology[1:])
-        dolog("new htaccess: ")
+        dolog("new htaccess is generated")
         otask.description = "updating the .htaccess on GitHub"
         otask.save()
         update_file(target_repo=target_repo,
@@ -1234,7 +1234,7 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         otask.save()
         otask = OTask(name='Redirection', finished=False, success=False,
                       description="setup the .htaccess file on OnToogy server", orun=orun)
-        dolog("publish> otask is init")
+        dolog("publish> otask is init. Redirection")
         otask.save()
 
         dolog(f"**** publish> name: <{name}>")
@@ -1243,6 +1243,8 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
             comm = 'mkdir -p "%s"' % os.path.join(publish_dir, name)
             dolog("publish> " + comm)
             call(comm, shell=True)
+        else:
+            dolog("publish> republish")
 
 
         otask.description = "writing the new .htaccess on OnToology server"
