@@ -1237,7 +1237,7 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         dolog("publish> otask is init. Redirection")
         otask.save()
 
-        dolog(f"**** publish> name: <{name}>")
+        dolog(f"publish> name: <{name}>")
 
         if name != "": # new reserved name
             comm = 'mkdir -p "%s"' % os.path.join(publish_dir, name)
@@ -1246,11 +1246,8 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         else:
             dolog("publish> republish")
 
-
         otask.description = "writing the new .htaccess on OnToology server"
         otask.save()
-
-
 
         if name == "": # republish case
             publication_folder_name = pns_ontology[0].name
