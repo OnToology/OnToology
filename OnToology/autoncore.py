@@ -1247,7 +1247,7 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
 
 
 
-        if name == "" # republish case
+        if name == "": # republish case
             publication_folder_name = pns_ontology[0].name
         else: # new name
             publication_folder_name = name
