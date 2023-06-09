@@ -1104,6 +1104,7 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
     except:
         django_setup_script()
     from OnToology.models import OUser, PublishName, Repo
+
     try:
         user = OUser.objects.get(email=useremail)
         dolog("publish> user is found")
@@ -1111,7 +1112,6 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         error_msg = "user is not found"
         dolog("publish> error: %s" % str(e))
         return error_msg
-
     prepare_logger(useremail + "-publish-")
 
     repos = Repo.objects.filter(url=target_repo)
@@ -1132,6 +1132,7 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
     if ontology[-1] == '/':
         ontology = ontology[:-1]
     ontology = "/" + ontology
+    name = name.strip()
     name = filter_pub_name(name)
     pns_name = PublishName.objects.filter(name=name)
     if len(pns_name) > 1:
@@ -1184,11 +1185,11 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
     otask.save()
     otask = OTask(name='.htaccess Preparation', finished=False, success=False, description="Get .htaccess",
                   orun=orun)
-    dolog("publish> otask is init")
+    dolog("publish> otask is init .htaccess Preparation")
     otask.save()
 
     # new name and ontology is not published or republish
-    if (len(pns_name) == 0 and len(pns_ontology) == 0) or (name.strip() == ''):
+    if (len(pns_name) == 0 and len(pns_ontology) == 0) or (name == ''):
         rel_htaccess_path = os.path.join('OnToology', ontology[1:], 'documentation/.htaccess')
         try:
             htaccess = get_file_content(target_repo=target_repo, path=rel_htaccess_path, branch=branch)
@@ -1215,12 +1216,12 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         dolog("publish> htaccess content: ")
         if isinstance(htaccess, bytes):
             htaccess = htaccess.decode('utf-8')
-        dolog(str(type(htaccess)))
+        #dolog(str(type(htaccess)))
         otask.description = "rewriting .htaccess with redirects to GitHub"
         otask.save()
         new_htaccess = htaccess_github_rewrite(target_repo=target_repo, htaccess_content=htaccess,
                                                ontology_rel_path=ontology[1:])
-        dolog("new htaccess: ")
+        dolog("new htaccess is generated")
         otask.description = "updating the .htaccess on GitHub"
         otask.save()
         update_file(target_repo=target_repo,
@@ -1233,18 +1234,30 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         otask.save()
         otask = OTask(name='Redirection', finished=False, success=False,
                       description="setup the .htaccess file on OnToogy server", orun=orun)
-        dolog("publish> otask is init")
+        dolog("publish> otask is init. Redirection")
         otask.save()
 
-        comm = 'mkdir -p "%s"' % os.path.join(publish_dir, name)
-        dolog("publish> " + comm)
-        call(comm, shell=True)
+        dolog(f"publish> name: <{name}>")
+
+        if name != "": # new reserved name
+            comm = 'mkdir -p "%s"' % os.path.join(publish_dir, name)
+            dolog("publish> " + comm)
+            call(comm, shell=True)
+        else:
+            dolog("publish> republish")
+
         otask.description = "writing the new .htaccess on OnToology server"
         otask.save()
-        f = open(os.path.join(publish_dir, name, '.htaccess'), 'w')
+
+        if name == "": # republish case
+            publication_folder_name = pns_ontology[0].name
+        else: # new name
+            publication_folder_name = name
+
+        f = open(os.path.join(publish_dir, publication_folder_name, '.htaccess'), 'w')
         f.write(new_htaccess)
         f.close()
-        if name.strip() != '':
+        if name != '':
             otask.description = "Reserving the new w3id name"
             otask.save()
             p = PublishName(name=name, user=user, repo=repo, ontology=ontology)
