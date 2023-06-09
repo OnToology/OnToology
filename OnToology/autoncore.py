@@ -1236,15 +1236,26 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         dolog("publish> otask is init")
         otask.save()
 
-        comm = 'mkdir -p "%s"' % os.path.join(publish_dir, name)
-        dolog("publish> " + comm)
-        call(comm, shell=True)
+        if name != "": # new reserved name
+            comm = 'mkdir -p "%s"' % os.path.join(publish_dir, name)
+            dolog("publish> " + comm)
+            call(comm, shell=True)
+
+
         otask.description = "writing the new .htaccess on OnToology server"
         otask.save()
-        f = open(os.path.join(publish_dir, name, '.htaccess'), 'w')
+
+
+
+        if name == "" # republish case
+            publication_folder_name = pns_ontology[0].name
+        else: # new name
+            publication_folder_name = name
+
+        f = open(os.path.join(publish_dir, publication_folder_name, '.htaccess'), 'w')
         f.write(new_htaccess)
         f.close()
-        if name.strip() != '':
+        if name != '':
             otask.description = "Reserving the new w3id name"
             otask.save()
             p = PublishName(name=name, user=user, repo=repo, ontology=ontology)
