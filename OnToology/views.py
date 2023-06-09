@@ -1116,8 +1116,10 @@ def publish_view(request):
     branch = request.GET['branch'].strip()
     print("name: " + name)
     pns = PublishName.objects.filter(name=name)
-    if len(pns) > 0:
+    if len(pns) > 0 and name!="":
         return JsonResponse({'msg': 'This name is already taken, try to choose another name'}, status=400)
+    if name == "": # republish
+        print("republish case")
     try:
         j = {
             'action': 'publish',
