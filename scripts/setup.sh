@@ -98,8 +98,10 @@ export USER=`whoami`
 #$PLAYGROUND/config/ar2dtool-class.conf
 # $PLAYGROUND/config/ar2dtool-taxonomy.conf
 
+# Note that these will be overridden when running docker tests
 # Setup virtual env
 # cd $PLAYGROUND;wget --progress=bar:force https://github.com/ahmad88me/PyGithub.git
-cd $PLAYGROUND/OnToology; python3 -m venv .venv; .venv/bin/pip install wheel pip --upgrade
+#cd $PLAYGROUND/OnToology; python3 -m venv .venv; .venv/bin/pip install wheel pip --upgrade
+cd $PLAYGROUND/OnToology; .venv/bin/pip install wheel pip --upgrade
 cd $PLAYGROUND/OnToology; .venv/bin/pip install -r requirements.txt; .venv/bin/pip install git+https://github.com/ahmad88me/PyGithub.git
 
