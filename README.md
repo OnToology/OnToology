@@ -203,3 +203,8 @@ Sometimes things happens and the processes or the APIs fail. Here are the common
 
 ## Debugging with Docker
 
+```
+docker-compose up
+docker ps
+docker exec -it <container name> /bin/sh 
+```

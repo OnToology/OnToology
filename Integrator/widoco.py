@@ -46,16 +46,13 @@ def create_widoco_doc(rdf_file, base_dir, languages, webVowl):
     except Exception as e:
         dolog('in create_widoco_doc: exception opening the file: ' + str(e))
     out_abs_dir = get_parent_path(config_file_abs)
-    comm = "cd " + base_dir + "; "
-    comm += timeout_comm + "java -jar "
+    comm = f"cd '{base_dir}'; {timeout_comm} java -jar "
     comm += ' -Dfile.encoding=utf-8 '
     comm += widoco_dir + "widoco.jar  -rewriteAll "
-    #comm += widoco_dir + "widoco-0.0.1-jar-with-dependencies.jar  "
-    comm += " -ontFile '" + rdf_file_abs
-    comm += "' -outFolder '" + out_abs_dir + "'"
+    comm += f" -ontFile '{rdf_file_abs}' -outFolder '{out_abs_dir}'"
+
     if use_conf_file:
-        comm += " -confFile " + config_file_abs
-        comm += " -crossRef"
+        comm += f" -confFile '{config_file_abs}' -crossRef"
     else:
         comm += " -getOntologyMetadata "
         comm += " -licensius "  # Only works if the -getOntologyMetadata flag is enabled.
