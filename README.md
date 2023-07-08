@@ -2,10 +2,11 @@
 # ![alt text](https://raw.githubusercontent.com/OnToology/OnToology/main/media/icons/logoprop1_readme.png "OnToology")
 
 [![Build Status](https://ahmad88me.semaphoreci.com/badges/OnToology/branches/main.svg)](https://ahmad88me.semaphoreci.com/projects/OnToology)
-[![codecov](https://codecov.io/gh/OnToology/OnToology/branch/main/graph/badge.svg?token=PJgHWaaa9l)](https://codecov.io/gh/OnToology/OnToology)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1317786.svg)](https://doi.org/10.5281/zenodo.1317786)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/7e81902ad6044e72bbc6af11a5201e0e)](https://www.codacy.com/gh/OnToology/OnToology/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=OnToology/OnToology&amp;utm_campaign=Badge_Grade)
 [![Twitter](https://img.shields.io/twitter/follow/OnToology.svg?style=social&label=@OnToology)](https://twitter.com/OnToology) [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+[//]: # ([![codecov]&#40;https://codecov.io/gh/OnToology/OnToology/branch/main/graph/badge.svg?token=PJgHWaaa9l&#41;]&#40;https://codecov.io/gh/OnToology/OnToology&#41;)
 
 A system for collaborative ontology development process. Given a repository with an owl file, **OnToology** will survey it and produce diagrams, a complete documentation and validation based on common pitfalls. It also offers seamless publication of user ontologies with w3id using GitHub pages.
 
@@ -121,8 +122,10 @@ export client_secret_public=""
 export client_secret_private=""
 export test_user_token=""
 export test_user_email=""
-export rabbit_host=""
+export github_username=""
 ```
+*Note: this this info are related to your test user on GitHub to mimic the behaviour of `OnToologyUser` which is used on the live version of OnToology*
+
 
 ### Environment variables
 Here we describe some of the main ones
@@ -188,11 +191,15 @@ docker exec -it <container name> /bin/sh
 (with the ip and port).
 6. Run `OnToology/sqclient.py`.
 
-
-# Developers and System Admins
+# Debugging Guide
+## Debugging Live Version
 Sometimes things happens and the processes or the APIs fail. Here are the common ones and how to resolve them.
 1. *Access permissions* on the server. OnToology generates the resources, which are automatically has different permissions 
 (probably www-data) rather than the user itself. So, make sure that the apache user has the permission to do so.
 2. *GitHub permissions*. When users add their repo to OnToology, the proper permissions will be added. There are two: 
    1. *OnToology access*. <img height=300px src="media/faqs/OnToologyAccess-light.png"/>
    2. *OnToologyUser as a collaborator*. In this case, the last thing that will be shown in the user log will be `new htaccess:` (if the repo didn't has any ontology published before. If the repo has published an ontology before, you will see that OnToology tried several times to publish, but failed). <img height=300px src="media/faqs/Collaborator-light.png"/>
+
+
+## Debugging with Docker
+

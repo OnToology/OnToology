@@ -158,3 +158,8 @@ http://www.w3.org/2000/01/rdf-schema#subClassOf
 ];
 
 EOT
+
+
+
+cd $PLAYGROUND/OnToology; python3 -m venv .venv; .venv/bin/pip install wheel pip --upgrade
+cd $PLAYGROUND/OnToology; .venv/bin/pip install git+https://github.com/ahmad88me/PyGithub.git; .venv/bin/pip install -r requirements.txt
