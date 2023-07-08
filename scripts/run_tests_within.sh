@@ -3,7 +3,7 @@ pwd
 cat OnToology/localwsgi.py
 echo "Show $PLAYGROUND/OnToology/.venv/bin/activate"
 echo "cat $PLAYGROUND/OnToology/.venv/bin/activate"
-echo "MIGRATION SCRIPT"
+echo "tests within: MIGRATION SCRIPT"
 sh scripts/migrate.sh
 echo "list"
 ls OnToology -ltr

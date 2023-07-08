@@ -1,4 +1,5 @@
-FROM ahmad88me/ontoology:openjdk
+FROM ahmad88me/ontoology:amazoncorretto
+
 WORKDIR /playground/OnToology
 
 COPY ssh/* /root/.ssh/
@@ -29,7 +30,7 @@ ENV db_host db
 ENV db_port 27017
 ENV stiq_host stiqueue
 ENV stiq_port 1234
-ENV rabbit_log_dir /playground/rabbit.log
+#ENV rabbit_log_dir /playground/rabbit.log
 
 
 # For the codecov
