@@ -1,6 +1,7 @@
 import os
 from subprocess import call
 from . import dolog, build_path, ontology_formats, get_target_home, tools_conf, get_parent_path, timeout_comm
+import urllib.parse
 
 owl2jsonld_dir = os.environ['owl2jsonld_dir']
 
@@ -25,7 +26,8 @@ def build_owl2jsonld_file(ont_file, base_dir):
     # comm += os.path.join(owl2jsonld_dir, 'owl2jsonld-0.2.1-standalone.jar')  # ToolLocation
     comm += f" -o '{ctabs}'"
     # comm += " -o " + ctabs  # Output File
-    comm += f" 'file://{os.path.join(base_dir, ont_file)}' "
+    encoded_path = urllib.parse.quote(os.path.join(base_dir, ont_file))
+    comm += f" file:///{encoded_path} "
     # comm += ' file://' + os.path.join(base_dir, ont_file)  # Ontology Location
     dolog(comm)
     call(comm, shell=True)

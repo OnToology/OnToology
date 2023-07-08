@@ -56,7 +56,7 @@ def create_widoco_doc(rdf_file, base_dir, languages, webVowl):
     else:
         comm += " -getOntologyMetadata "
         comm += " -licensius "  # Only works if the -getOntologyMetadata flag is enabled.
-        comm += " -saveConfig " + config_file_abs
+        comm += f" -saveConfig '{config_file_abs}'"
     comm += " -htaccess "
     if webVowl:
         comm += " -webVowl "
