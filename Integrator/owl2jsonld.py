@@ -20,10 +20,12 @@ def build_owl2jsonld_file(ont_file, base_dir):
     ctabs = build_path(os.path.join(base_dir, get_target_home(), ont_file, tools_conf['owl2jsonld']['folder_name'],
                                     'context.jsonld'))
     dolog('ctabs %s' % ctabs)
-    comm = "cd " + get_parent_path(ctabs) + "; "  # Not neccesary
-    comm += timeout_comm + "java -jar "
-    comm += os.path.join(owl2jsonld_dir, "owl2jsonld-0.2.1-standalone.jar")  # ToolLocation
-    comm += " -o " + ctabs  # Output File
-    comm += " file://" + os.path.join(base_dir, ont_file)  # Ontology Location
+    comm = f" cd '{ get_parent_path(ctabs)}' ; {timeout_comm} java -jar "
+    comm += f" '{os.path.join(owl2jsonld_dir, 'owl2jsonld-0.2.1-standalone.jar')}'"
+    # comm += os.path.join(owl2jsonld_dir, 'owl2jsonld-0.2.1-standalone.jar')  # ToolLocation
+    comm += f" -o '{ctabs}'"
+    # comm += " -o " + ctabs  # Output File
+    comm += f" 'file://{os.path.join(base_dir, ont_file)}' "
+    # comm += ' file://' + os.path.join(base_dir, ont_file)  # Ontology Location
     dolog(comm)
     call(comm, shell=True)
