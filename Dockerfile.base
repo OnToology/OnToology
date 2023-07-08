@@ -1,4 +1,4 @@
-FROM amazoncorretto:8-alpine3.17
+FROM amazoncorretto:17-alpine3.17
 RUN mkdir -p playground ;\
     chmod 777 playground ; \
     mkdir -p playground/OnToology
