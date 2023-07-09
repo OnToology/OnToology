@@ -1578,8 +1578,9 @@ def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):
     repo_name = target_repo.split('/')[1]
     # base_url = "https://%s.github.io/%s/OnToology/%s/documentation/" % (user_username, repo_name, ontology_rel_path)
     base_url = "%s.github.io/%s/OnToology/%s/documentation/" % (user_username, repo_name, ontology_rel_path)
-    base_url = urllib.parse.quote(base_url)
+    # base_url = urllib.parse.quote(base_url)
     base_url = f"https://{base_url}"
+    base_url = base_url.replace(' ', '\\ ')
     new_htaccess = ""
 
     for line in htaccess_content.split('\n'):
