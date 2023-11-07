@@ -229,19 +229,15 @@ def opub_view(request):
 def runs_view(request):
     user = request.user
     try:
-        print("in runs view")
         if 'repo' in request.GET:
-            print("in request GET")
             repo_name = request.GET['repo'].strip()
             repos = Repo.objects.filter(url=repo_name)
             if len(repos) == 1:
-                print("single repo")
                 repo = repos[0]
                 if repo not in user.repos.all():
                     return render(request, 'msg.html', {
                         'msg': 'This repo does not belong to the loggedin user. Try to add it and try again.'})
                 latest_oruns = ORun.objects.filter(repo=repo).order_by('-timestamp')
-                print("going to render")
                 return render(request, 'runs.html', {'oruns': latest_oruns})
             else:
                 print("runs_view> repo <" + str(repo_name) + "> does not exist for user: " + str(user))
