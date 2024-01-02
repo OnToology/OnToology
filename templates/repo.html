@@ -196,7 +196,7 @@ Landing Page:
                     html_list+=card_html_post;
                 }
                 if(resp.ontologies.length == 0){
-                    html_list='<div class="container-fluid"><div class="col-sm-12 col-md-8 offset-md-2 col-lg-8 offset-lg-2"><br><div class="alert alert-warning" role="alert">This repo does not have ontologies with generated resources</div></div></div>';
+                    html_list='<div class="container-fluid"><div class="col-sm-12 col-md-8 offset-md-2 col-lg-8 offset-lg-2"><br><div class="alert alert-warning" role="alert">This repo does not have the generated resources. To generate the resources you can click on the "Generate Resources" above. After a few minutes, you will get a pull request, once you accept it, you will see the list of ontologies and their resources here.</div></div></div>';
                 }
                 $("#content").html(html_list);
                 update_collapse_listener();
