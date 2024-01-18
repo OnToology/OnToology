@@ -172,7 +172,7 @@ def run_widoco(conf, display_onto_name, orun, base_dir, changed_file, repo, prog
         repo.save()
         try:
             widoco.generate_widoco_docs([changed_file], base_dir, languages=conf.getlist('widoco', 'languages'),
-                                        webVowl=conf.getboolean('widoco', 'webVowl'))
+                                        webVowl=conf.getboolean('widoco', 'webvowl'))
             otask = task_reporter(otask=otask, desc="HTML documentation is generated", success=True, finished=True,
                                   orun=orun)
         except Exception as e:
@@ -304,7 +304,7 @@ def get_default_conf():
         'widoco': {
             'enable': True,
             'languages': ['en'],
-            'webVowl': False,
+            'webvowl': False,
         },
         'ar2dtool': {
             'enable': True
@@ -330,7 +330,7 @@ def get_conf_tool_json(conf, tool):
         return {
             'enable': conf.getboolean(tool, "enable"),
             'languages': conf.getlist(tool, "languages"),
-            'webVowl': conf.getboolean(tool, "webVowl"),
+            'webvowl': conf.getboolean(tool, "webvowl"),
         }
     else:
         return {

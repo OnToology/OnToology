@@ -67,7 +67,7 @@ enable = false
 
 [widoco]
 enable = true
-webVowl = false
+webvowl = false
 languages = en,es
 
 [themis]
