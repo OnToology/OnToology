@@ -1555,7 +1555,7 @@ def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):
         "RewriteRule ^$ index-es.html [R=303, L]",
         "RewriteRule ^$ index-en.html [R=303, L]",
         "RewriteRule ^$ ontology.n3 [R=303, L]",
-        # "RewriteRule ^$ ontology.xml [R=303, L]",
+        "RewriteRule ^$ ontology.xml [R=303, L]",
         "RewriteRule ^$ ontology.owl [R=303, L]",
         "RewriteRule ^$ ontology.ttl [R=303, L]",
         "RewriteRule ^$ 406.html [R=406, L]",
@@ -1568,13 +1568,12 @@ def htaccess_github_rewrite(htaccess_content, target_repo, ontology_rel_path):
         "RewriteRule ^$ index-es.html [R=303,L]",
         "RewriteRule ^$ index-en.html [R=303,L]",
         "RewriteRule ^$ ontology.n3 [R=303,L]",
-        # "RewriteRule ^$ ontology.xml [R=303,L]",
+        "RewriteRule ^$ ontology.xml [R=303,L]",
         "RewriteRule ^$ ontology.owl [R=303,L]",
         "RewriteRule ^$ ontology.ttl [R=303,L]",
         "RewriteRule ^$ 406.html [R=406,L]",
         "RewriteRule ^$ ontology.json [R=303,L]",
         "RewriteRule ^$ ontology.nt [R=303,L]"
-
     ]
     user_username = target_repo.split('/')[0]
     repo_name = target_repo.split('/')[1]
