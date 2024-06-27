@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright 2012-2013 Ontology Engineering Group, Universidad Politecnica de Madrid, Spain
+# Copyright 2012-2013 Ontology Engineering Group, Universidad Politécnica de Madrid, Spain
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
