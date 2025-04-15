@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright 2012-2013 Ontology Engineering Group, Universidad Politecnica de Madrid, Spain
+# Copyright 2012-2013 Ontology Engineering Group, Universidad Politécnica de Madrid, Spain
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -214,6 +214,7 @@ def post_block(drepo, orun, changed_filesss, target_repo, branch, raise_exp=Fals
     """
     After the execution of the tools
     """
+    dolog("post block")
     otask = OTask(name="Postprocessing", description="trying", success=False, finished=False, orun=orun)
     otask.save()
     try:
@@ -256,8 +257,10 @@ def post_block(drepo, orun, changed_filesss, target_repo, branch, raise_exp=Fals
             drepo.state = 'creating a pull request'
             drepo.save()
             try:
+                dolog("Removing old pull requests")
                 remove_old_pull_requests(target_repo)
                 time.sleep(5)
+                dolog("Creating a new pull request")
                 r = send_pull_request(target_repo, ToolUser, branch)
                 if r['status']:
                     dolog('pull request is sent')
@@ -280,6 +283,7 @@ def post_block(drepo, orun, changed_filesss, target_repo, branch, raise_exp=Fals
             except Exception as e:
                 print("3) Exception: " + str(e))
                 traceback.print_exc()
+                dolog(traceback.format_exc())
                 exception_if_exists = str(e)
                 err_msg = 'We have not been able to create the pull request. Please contact us to analyze the issue.'
                 dolog(err_msg+ exception_if_exists)
@@ -307,6 +311,7 @@ def post_block(drepo, orun, changed_filesss, target_repo, branch, raise_exp=Fals
     except Exception as e:
         print("4) Exception - generic: " + str(e))
         traceback.print_exc()
+        dolog(traceback.format_exc())
         otask.success = False
         otask.description = str(e)
         otask.save()
