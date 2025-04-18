@@ -716,6 +716,8 @@ def commit_changes():
         init_g()
     gu = 'git config  user.email "%s" ; ' % ToolEmail
     gu += 'git config  user.name "%s" ;' % (ToolUser)
+    dolog(f'home: {home}')
+    dolog(f'parent_folder: {parent_folder}')
     comm = "cd " + os.path.join(home, parent_folder) + ";" + gu + " git add . "
     if not settings.test_conf['local']:
         comm += ' >> "' + log_file_dir + '"'
@@ -723,6 +725,7 @@ def commit_changes():
     if settings.test_conf['push'] or not settings.test_conf['local']:
         call(comm, shell=True)
 
+    dolog(f"commit_changes: home: {home}, parent_folder: {parent_folder}")
     comm = "cd " + os.path.join(home, parent_folder) + ";" + \
            gu + " git commit -m 'automated change' "
     if not settings.test_conf['local']:
