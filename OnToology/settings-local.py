@@ -17,12 +17,12 @@ DEBUG = True
 print("environ: ")
 print(os.environ)
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'OnToology.db',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': 'OnToology.db',
+#     }
+# }
 
 test_conf = {'local': False,  # doing test
              'fork': False,  # perform fork

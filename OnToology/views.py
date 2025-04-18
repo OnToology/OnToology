@@ -1,5 +1,5 @@
 #
-# Copyright 2012-2013 Ontology Engineering Group, Universidad Politecnica de Madrid, Spain
+# Copyright 2012-2013 Ontology Engineering Group, Universidad Politécnica de Madrid, Spain
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -92,8 +92,6 @@ def get_repo_name_from_url(url):
 
 def home_view(request):
     global client_id, client_secret, is_private
-    sys.stdout.flush()
-    sys.stderr.flush()
     if 'target_repo' in request.GET:
         print("we are inside")
         target_repo = request.GET['target_repo']
