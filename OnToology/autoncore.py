@@ -716,6 +716,8 @@ def commit_changes():
         init_g()
     gu = 'git config  user.email "%s" ; ' % ToolEmail
     gu += 'git config  user.name "%s" ;' % (ToolUser)
+    dolog(f'home: {home}')
+    dolog(f'parent_folder: {parent_folder}')
     comm = "cd " + os.path.join(home, parent_folder) + ";" + gu + " git add . "
     if not settings.test_conf['local']:
         comm += ' >> "' + log_file_dir + '"'
