@@ -18,3 +18,4 @@ TPool==1.2
 urllib3==1.26.5
 stiqueue==1.1.0
 configparser-list==1.0.0
+PyGithub==2.6.1
