@@ -65,4 +65,17 @@ environ["github_email"] = "test@example.com"
 environ["publish_dir"] = "publish"
 environ["github_repos_dir"] = "repos"
 environ["previsual_dir"] = "prev"
+
+environ['client_id_login'] = ""
+environ['client_id_public'] = ""
+environ['client_id_private'] = ""
+
+environ['client_secret_login'] = ""
+environ['client_secret_public'] = ""
+environ['client_secret_private'] = ""
+
+environ['SECRET_KEY'] = "ONTOOLOGY"
+
+environ["test_local"] = ""
+
 environ['setting_module'] = "OnToology.settings-tests"
