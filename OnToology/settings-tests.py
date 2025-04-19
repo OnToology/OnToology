@@ -62,4 +62,5 @@ environ = os.environ
 print("environ: ")
 environ["github_username"] = "TEST_GITHUB_USERNAME"
 environ["github_email"] = "test@example.com"
+environ["publish_dir"] = "publish"
 environ['setting_module'] = "OnToology.settings-tests"
