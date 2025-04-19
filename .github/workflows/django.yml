@@ -23,7 +23,30 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+    - name: Set up localwsgi.py
+      run: |
+        cat <<EOF > OnToology/localwsgi.py
+from os import environ
+
+environ['github_username'] = ""
+environ['github_email'] = ""
+environ["publish_dir"] = ""
+environ["github_repos_dir"] = ""
+environ["previsual_dir"] = ""
+
+environ['client_id_login'] = ""
+environ['client_id_public'] = ""
+environ['client_id_private'] = ""
+
+environ['client_secret_login'] = ""
+environ['client_secret_public'] = ""
+environ['client_secret_private'] = ""
+
+environ['SECRET_KEY'] = ""
+
+environ["test_local"] = ""
+        EOF
+
     - name: Run Tests
       run: |
-        touch OnToology/localwsgi.py
         python manage.py test --settings=OnToology.settings-tests
