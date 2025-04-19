@@ -536,7 +536,7 @@ def add_hook(request):
                     print(msg)
                     if settings.test_conf['local']:
                         print(msg)
-                        return
+                        return JsonResponse({'status': True, 'msg': msg})
                     else:
                         return JsonResponse({'status': True, 'msg': msg})
         else:
