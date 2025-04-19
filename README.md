@@ -1,6 +1,8 @@
 
 # ![alt text](https://raw.githubusercontent.com/OnToology/OnToology/main/media/icons/logoprop1_readme.png "OnToology")
 
+![tests](../../actions/workflows/django.yml/badge.svg)
+
 [![Build Status](https://ahmad88me.semaphoreci.com/badges/OnToology/branches/main.svg)](https://ahmad88me.semaphoreci.com/projects/OnToology)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1317786.svg)](https://doi.org/10.5281/zenodo.1317786)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/7e81902ad6044e72bbc6af11a5201e0e)](https://www.codacy.com/gh/OnToology/OnToology/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=OnToology/OnToology&amp;utm_campaign=Badge_Grade)

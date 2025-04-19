@@ -25,4 +25,5 @@ jobs:
         pip install -r requirements.txt
     - name: Run Tests
       run: |
+        touch localwsgi.py
         python manage.py test --settings=OnToology.settings-tests
