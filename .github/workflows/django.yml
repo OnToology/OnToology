@@ -25,6 +25,8 @@ jobs:
         pip install -r requirements.txt
     - name: Set up localwsgi.py
       run: |
+    - name: Set up localwsgi.py
+      run: |
         cat <<EOF > OnToology/localwsgi.py
 from os import environ
 
@@ -45,7 +47,7 @@ environ['client_secret_private'] = ""
 environ['SECRET_KEY'] = ""
 
 environ["test_local"] = ""
-        EOF
+EOF
 
     - name: Run Tests
       run: |
