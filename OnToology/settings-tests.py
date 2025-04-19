@@ -61,4 +61,5 @@ except Exception as e:
 environ = os.environ
 print("environ: ")
 environ["github_username"] = "TEST_GITHUB_USERNAME"
+environ["github_email"] = "test@example.com"
 environ['setting_module'] = "OnToology.settings-tests"
