@@ -20,7 +20,8 @@ print(os.environ)
 
 DATABASES = {
     'default': {
-
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'OnToology.db',
     }
 }
 
@@ -59,30 +60,22 @@ except Exception as e:
 
 environ = os.environ
 print("environ: ")
+environ["github_username"] = "TEST_GITHUB_USERNAME"
+environ["github_email"] = "test@example.com"
+environ["publish_dir"] = "publish"
+environ["github_repos_dir"] = "repos"
+environ["previsual_dir"] = "prev"
 
+environ['client_id_login'] = ""
+environ['client_id_public'] = ""
+environ['client_id_private'] = ""
 
-db_name = environ['db_name']
-if DEBUG:
-    db_name_parts = db_name.split('.')
-    db_name = ".".join(db_name_parts[:-1] + ["test"] + [db_name_parts[-1]])
-    # db_name += "test"
-DATABASES['default']['NAME'] = db_name
+environ['client_secret_login'] = ""
+environ['client_secret_public'] = ""
+environ['client_secret_private'] = ""
 
-DATABASES['default']['ENGINE'] = environ['db_engine']
-if 'db_password' in environ:
-    DATABASES['default']['PASSWORD'] = environ['db_password']
+environ['SECRET_KEY'] = "ONTOOLOGY"
 
-if 'db_username' in environ:
-    DATABASES['default']['USER'] = environ['db_username']
-
-if 'db_host' in environ:
-    print("yes db_host in environ")
-    host_db = environ['db_host']
-    DATABASES['default']['HOST'] = host_db
-    if 'db_port' in environ:
-        DATABASES['default']['PORT'] = environ['db_port']
-else:
-    print("db_host is not in environ")
-
+environ["test_local"] = ""
 
 environ['setting_module'] = "OnToology.settings-tests"

@@ -1,5 +1,5 @@
 #
-# Copyright 2012-2013 Ontology Engineering Group, Universidad Politecnica de Madrid, Spain
+# Copyright 2012-2013 Ontology Engineering Group, Universidad Politécnica de Madrid, Spain
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -92,8 +92,6 @@ def get_repo_name_from_url(url):
 
 def home_view(request):
     global client_id, client_secret, is_private
-    sys.stdout.flush()
-    sys.stderr.flush()
     if 'target_repo' in request.GET:
         print("we are inside")
         target_repo = request.GET['target_repo']
@@ -297,20 +295,6 @@ def add_coll_and_webhook(request):
             error_msg = """You don\'t have permission to add collaborators and create webhooks to this repo or this
             repo does not exist. Note that if you can fork this repo, you can add it here"""
             return render(request, 'msg.html', {'msg': error_msg})
-            # if settings.local:
-            #     if request.user.is_authenticated:
-            #         ouser = OUser.objects.get(email=request.user.email)
-            #         if repo not in ouser.repos.all():
-            #             ouser.repos.add(repo)
-            #             ouser.save()
-            #         msg = 'The repo is added because local variable is True'
-            #     else:
-            #         msg = 'Local is true but the user is not authenticated'
-            #     return render(request, 'msg.html', {'msg': msg})
-            # else:
-            #     error_msg = """You don\'t have permission to add collaborators and create webhooks to this repo or this
-            #     repo does not exist. Note that if you can fork this repo, you can add it here"""
-            #     return render(request, 'msg.html', {'msg': error_msg})
         else:
             print("error message not hook and not 404: " + error_msg)
             print("target repo: " + request.session['target_repo'])
@@ -552,7 +536,7 @@ def add_hook(request):
                     print(msg)
                     if settings.test_conf['local']:
                         print(msg)
-                        return
+                        return JsonResponse({'status': True, 'msg': msg})
                     else:
                         return JsonResponse({'status': True, 'msg': msg})
         else:
