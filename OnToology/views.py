@@ -560,7 +560,7 @@ def generateforall_view(request):
     if 'repo' not in request.GET:
         return HttpResponseRedirect('/')
     if 'branch' not in request.GET:
-        return render(request, 'msg.html', {'msg': 'A beanch is expected as a GET parameter'})
+        return render(request, 'msg.html', {'msg': 'A branch is expected as a GET parameter'})
     target_repo = request.GET['repo'].strip()
     branch = request.GET['branch'].strip()
     found = False
