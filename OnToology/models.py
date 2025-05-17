@@ -167,8 +167,6 @@ class ORun(models.Model):
     branch = models.TextField(default='')
     user = models.ForeignKey(OUser, on_delete=models.CASCADE, related_name='oruns')
     timestamp = models.DateTimeField(auto_now=True)
-    # tasks = models.EmbeddedField(model_container=OTask)
-    # tasks = models.ArrayReferenceField(OTask, on_delete=models.CASCADE)
 
     def __unicode__(self):
         return "run <"+str(self.id)+"> " + self.user.email + " - " + self.repo.url + " - " + str(self.timestamp)
@@ -180,4 +178,5 @@ class OTask(models.Model):
     success = models.BooleanField(default=False)
     finished = models.BooleanField(default=False)
     orun = models.ForeignKey(ORun, on_delete=models.CASCADE, related_name='otasks')
+    msg = models.TextField(default="")
 
