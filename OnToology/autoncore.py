@@ -293,6 +293,7 @@ def post_block(drepo, orun, changed_filesss, target_repo, branch, raise_exp=Fals
                 drepo.save()
                 otask.success = False
                 otask.finished = True
+                otask.msg += traceback.format_exc()
                 otask.save()
                 if raise_exp:
                     raise Exception(str(e))
@@ -316,6 +317,7 @@ def post_block(drepo, orun, changed_filesss, target_repo, branch, raise_exp=Fals
         otask.description = str(e)
         otask.save()
         otask.finished = True
+        otask.msg += traceback.format_exc()
         otask.save()
         if raise_exp:
             raise Exception(str(e))

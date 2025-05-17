@@ -6,6 +6,7 @@ from subprocess import call
 from OnToology.models import OTask
 from OnToology.models import *
 import logging
+import traceback
 
 ontology_formats = ['.rdf', '.owl', '.ttl']
 config_folder_name = 'OnToology'
@@ -79,14 +80,14 @@ def tools_execution(changed_files, base_dir, target_repo, branch, g_local=None, 
                                 progress_inc=progress_inc, orun=orun, branch=branch)
 
 
-def task_reporter(name=None, desc=None, success=None, finished=None, orun=None, otask=None):
+def task_reporter(name=None, desc=None, success=None, finished=None, orun=None, otask=None, msg=""):
     dolog("taskreporter")
     if orun is None:
         raise Exception("orun cannot be None")
     if otask is None:
         if name is None:
             raise Exception("Expected name if otask is not passed")
-        t = OTask(name=name, description='', orun=orun)
+        t = OTask(name=name, description='', orun=orun, msg=msg+" otask not passed.")
         t.save()
     else:
         t = otask
@@ -99,6 +100,8 @@ def task_reporter(name=None, desc=None, success=None, finished=None, orun=None, 
         t.success = success
     if finished is not None:
         t.finished = finished
+    if msg.strip() != "":
+        t.msg = t.msg + " - " + msg
     t.save()
     orun.save()
     return t
@@ -154,7 +157,7 @@ def run_ar2dtool(conf, display_onto_name, orun, base_dir, changed_file, repo, pr
             dolog("Exception in running ar2dtool.draw_diagrams: " + str(e))
             dolog("changed_file: <" + changed_file + ">")
             task_reporter(otask=otask, desc="Error generating the diagrams: <%s>" % str(e), success=True, finished=True,
-                          orun=orun)
+                          orun=orun, msg=traceback.format_exc())
     repo.progress += progress_inc
     repo.save()
 
@@ -178,7 +181,7 @@ def run_widoco(conf, display_onto_name, orun, base_dir, changed_file, repo, prog
         except Exception as e:
             dolog("Exception in running widoco.generate_widoco_docs: " + str(e))
             task_reporter(otask=otask, desc="Error while generating the documentation", success=False, finished=True,
-                          orun=orun)
+                          orun=orun, msg=traceback.format_exc())
     repo.progress += progress_inc
     repo.save()
 
@@ -213,7 +216,7 @@ def run_oops(conf, display_onto_name, orun, base_dir, changed_file, repo, progre
         except Exception as e:
             dolog("Exception in running oops.oops.oops_ont_files: " + str(e))
             task_reporter(otask=otask, desc="Error generating OOPS! report: " + str(e), finished=True,
-                          success=False, orun=orun)
+                          success=False, orun=orun, msg=traceback.format_exc())
     repo.progress += progress_inc
     repo.save()
 
@@ -235,7 +238,8 @@ def run_owl2jsonld(conf, display_onto_name, orun, base_dir, changed_file, repo, 
             otask = task_reporter(otask=otask, desc="jsonld is generated", finished=True, success=True, orun=orun)
         except Exception as e:
             dolog("Exception in running owl2jsonld.generate_owl2jsonld_file: " + str(e))
-            task_reporter(otask=otask, desc="jsonld is generated", finished=True, success=False, orun=orun)
+            task_reporter(otask=otask, desc="jsonld is generated", finished=True, success=False, orun=orun,
+                          msg=traceback.format_exc())
     repo.progress += progress_inc
     repo.save()
 
@@ -252,11 +256,13 @@ def run_themis(conf, display_onto_name, orun, base_dir, changed_file, repo, prog
         repo.update_ontology_status(ontology=changed_file, status='validation')
         repo.save()
         try:
-            themis.validate_ontologies(target_repo=target_repo, branch=branch, changed_files=[changed_file], base_dir=base_dir)
+            themis.validate_ontologies(target_repo=target_repo, branch=branch, changed_files=[changed_file],
+                                       base_dir=base_dir)
             otask = task_reporter(otask=otask, desc="Themis validation", success=True, finished=True, orun=orun)
         except Exception as e:
             dolog("Exception in running themis: " + str(e))
-            task_reporter(otask=otask, desc="Themis validation", success=False, finished=True, orun=orun)
+            task_reporter(otask=otask, desc="Themis validation", success=False, finished=True, orun=orun,
+                          msg=traceback.format_exc())
     repo.progress += progress_inc
     repo.save()
     repo.update_ontology_status(ontology=changed_file, status='finished')
@@ -285,7 +291,8 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, bran
         otask = task_reporter(otask=otask, desc="Configuration loaded successfully", finished=True, success=True,
                               orun=orun)
     except Exception as e:
-        task_reporter(otask=otask, desc="Configuration Error: " + str(e), finished=True, success=False, orun=orun)
+        task_reporter(otask=otask, desc="Configuration Error: " + str(e), finished=True, success=False, orun=orun,
+                      msg=traceback.format_exc())
         raise e
 
     if not run_syntax(display_onto_name, orun, base_dir, changed_file, repo):
