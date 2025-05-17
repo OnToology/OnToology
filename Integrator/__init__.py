@@ -87,7 +87,7 @@ def task_reporter(name=None, desc=None, success=None, finished=None, orun=None, 
     if otask is None:
         if name is None:
             raise Exception("Expected name if otask is not passed")
-        t = OTask(name=name, description='', orun=orun, msg=msg+" otask not passed.")
+        t = OTask(name=name, description='', orun=orun)
         t.save()
     else:
         t = otask
