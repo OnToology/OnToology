@@ -314,7 +314,7 @@ def get_default_conf():
             'webvowl': False,
         },
         'ar2dtool': {
-            'enable': True
+            'enable': False
         },
         'oops': {
             'enable': True
