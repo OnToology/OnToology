@@ -54,7 +54,7 @@ def client_loop(host, port):
     print("client_loop: %s %d" % (host, port))
     cc = SQClient(host=host, port=port, logger=get_null_logger())
     while True:
-        time.sleep(1)
+        # time.sleep(1)
         # print(b"CLIENT> get num ")
         v = cc.deq()
         if v == b"":
