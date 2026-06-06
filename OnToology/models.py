@@ -158,7 +158,7 @@ class PublishName(models.Model):
                 'ontology': self.ontology
                 }
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
