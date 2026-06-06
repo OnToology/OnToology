@@ -464,7 +464,7 @@ def verify_tools_generation(ver_file_comp, repo=None):
                                    '.graphml')
         file_exists = os.path.isfile(target_file)
         if repo is not None and not file_exists:
-            repo.state += ' The Diagram of the file %s is not generated ' % \
+            repo.notes += ' The Diagram of the file %s is not generated ' % \
                           (ver_file_comp['file'])
             repo.save()
         if settings.test_conf['local']:
@@ -479,7 +479,7 @@ def verify_tools_generation(ver_file_comp, repo=None):
                                    'index.html')
         file_exists = os.path.isfile(target_file)
         if repo is not None and not file_exists:
-            repo.state += ' The Documentation of the file %s if not generated ' % (
+            repo.notes += ' The Documentation of the file %s if not generated ' % (
                 ver_file_comp['file'])
             repo.save()
         if settings.test_conf['local']:
@@ -494,7 +494,7 @@ def verify_tools_generation(ver_file_comp, repo=None):
                                    'oopsEval.html')
         file_exists = os.path.isfile(target_file)
         if repo is not None and not file_exists:
-            repo.state += ' The Evaluation report of the file %s if not generated ' % (
+            repo.notes += ' The Evaluation report of the file %s if not generated ' % (
                 ver_file_comp['file'])
             repo.save()
         if settings.test_conf['local']:
@@ -510,7 +510,7 @@ def verify_tools_generation(ver_file_comp, repo=None):
                                    'context.jsonld')
         file_exists = os.path.isfile(target_file)
         if repo is not None and not file_exists:
-            repo.state += ' The Context documentation of the file %s if not generated ' % (
+            repo.notes += ' The Context documentation of the file %s if not generated ' % (
                 ver_file_comp['file'])
             repo.save()
         if settings.test_conf['local']:
