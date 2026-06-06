@@ -1,122 +1,138 @@
-{% extends "base2.html"%}
-{%block body%}
+{% extends "base.html" %}
+{% block body %}
 
+<div class="container py-4">
 
+<!--  <div class="mb-4">-->
+<!--    <h2 class="fw-bold mb-1">My Repositories</h2>-->
+<!--    <p class="text-muted mb-0">Search and manage your watched repositories.</p>-->
+<!--  </div>-->
 
-<h2>My Repositories</h2>
+<!--  <div class="d-flex justify-content-between align-items-center mb-4">-->
+<!--    <div>-->
+<!--        <h2 class="fw-bold mb-1">My Repositories</h2>-->
+<!--        <p class="text-muted mb-0">-->
+<!--            Search and manage your watched repositories.-->
+<!--        </p>-->
+<!--    </div>-->
 
-<div class="clearfix alert alert-info" id="spinner">
-     <strong>Loading ...</strong>
-  <div class="spinner-border float-right text-light" role="status">
-    <span class="sr-only">Loading...</span>
-  </div>
+<!--    <a href="/" class="btn btn-primary">-->
+<!--        + Watch New Repository-->
+<!--    </a>-->
+<!--</div>-->
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">My Repositories</h2>
+        <p class="text-muted mb-0">
+            Search and manage your watched repositories.
+        </p>
+    </div>
+
+    <a href="/" class="btn btn-outline-primary">
+      New Repository +
+    </a>
 </div>
-<br><br>
 
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+      <label for="repoSearchInput" class="form-label fw-semibold">
+        Search repositories
+      </label>
 
-<form action="/" method="GET" style="color: #999">
-	<div class="form-group">
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-md-9">
-					<input class="form-control input-lg" id="target_repo_select" name="target_repo" placeholder="user/repo" type="text" />
-					</br>
-				</div>
-				<div class="col-md-3">
-					<input class="form-control btn btn-primary input-lg" type="submit" value="Watch this repo" /> </div>
-			</div>
-		</div>
-	</div>
-</form>
+      <input
+        id="repoSearchInput"
+        class="form-control form-control-lg"
+        type="search"
+        placeholder="Search by repository name..."
+        autocomplete="off"
+      >
 
-
-<div class="row">
-    {%for repo in repos%}
-  <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">{{repo.url}}</h5>
-<!--         <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>-->
-        <a href="runs?repo={{repo.url}}" class="btn btn-primary">Past jobs</a>
-                <a href="/repos?repo={{repo.url}}" class="btn btn-primary">Select Repo</a>
-
-<!--        <span repo="{{repo.url}}" class="btn btn-primary manipulate-btn">Select Repo</span>-->
-<!--        <button class="btn btn-primary"></button>-->
+      <div class="form-text">
+        Filtering is done instantly in your browser.
       </div>
     </div>
   </div>
-    {%endfor%}
-</div>
 
+  <div class="row g-4" id="repoList">
+    {% for repo in repos %}
+      <div class="col-lg-4 col-md-6 repo-card" data-repo="{{ repo.url|lower }}">
+        <div class="card h-100 shadow-sm border-0">
+          <div class="card-body d-flex flex-column">
 
+            <div class="mb-3">
+              <div class="text-muted small mb-1">Repository</div>
+              <h5 class="card-title fw-semibold mb-0 text-break">
+                {{ repo.url }}
+              </h5>
+            </div>
 
-<div class="modal" tabindex="-1" id="branches-modal">
-  <div class="modal-dialog modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Choose a branch</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+            <div class="mt-auto d-flex gap-2 flex-wrap">
+              <a href="runs?repo={{ repo.url }}" class="btn btn-outline-primary">
+                Past jobs
+              </a>
+
+              <a href="/repos?repo={{ repo.url }}" class="btn btn-primary">
+                Select repo
+              </a>
+            </div>
+
+          </div>
+        </div>
       </div>
-      <div class="modal-body">
-        <p>Click on the branch to process</p>
-          <div id="branches-div"></div>
+    {% empty %}
+      <div class="col-12">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body text-center py-5">
+            <h5 class="fw-semibold">No repositories yet</h5>
+            <p class="text-muted mb-0">
+              You do not have any watched repositories.
+            </p>
+          </div>
+        </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-<!--        <button type="button" class="btn btn-primary">Save changes</button>-->
-      </div>
+    {% endfor %}
+  </div>
+
+  <div id="noRepoResults" class="card border-0 shadow-sm d-none mt-4">
+    <div class="card-body text-center py-5">
+      <h5 class="fw-semibold">No matching repositories</h5>
+      <p class="text-muted mb-0">
+        Try a different search term.
+      </p>
     </div>
   </div>
+
 </div>
-
-
 
 <script>
-    var chosen_repo = "";
-        $(document).on('click', '.manipulate-btn', function(){
-        console.log("manipulate btn is clicked");
-        chosen_repo = $(this).attr('repo');
-        //$("#spinner").hide();
-        $("#spinner").show();
-        var html_list=""
-        $.ajax({
-			  method: "GET",
-			  url: "/get_branches?repo="+chosen_repo,
-			}).fail(function(resp){
-                	alert("error getting the branches");
-					console.log(resp.error);
-					$("#spinner").hide();
-			}).done(function(resp){
-				    for(var i=0;i<resp.branches.length;i++){
-                        html_list+="<li class='list-group-item branch btn'>"+resp.branches[i]+"</li>"
-                        console.log(resp.branches[i])
-                    }
-                    $("#branches-div").html(html_list);
-                    $('#branches-modal').modal('show');
-                    set_branch_listeners();
-                    $("#spinner").hide();
-		});
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("repoSearchInput");
+    const repoCards = document.querySelectorAll(".repo-card");
+    const noRepoResults = document.getElementById("noRepoResults");
 
-        //alert($(this).attr('repo'));
-        //$.get("generateforall", {"repo": $(this).attr('repo')});
+    searchInput.addEventListener("input", function () {
+      const query = searchInput.value.trim().toLowerCase();
+      let visibleCount = 0;
+
+      repoCards.forEach(function (card) {
+        const repoName = card.dataset.repo || "";
+
+        if (repoName.includes(query)) {
+          card.classList.remove("d-none");
+          visibleCount++;
+        } else {
+          card.classList.add("d-none");
+        }
+      });
+
+      if (visibleCount === 0 && repoCards.length > 0) {
+        noRepoResults.classList.remove("d-none");
+      } else {
+        noRepoResults.classList.add("d-none");
+      }
     });
-
-function set_branch_listeners(){
-    console.log("in branch listeners")
-    $(document).on('click', '.branch', function(){
-        var clicked_branch = $(this).html();
-        console.log("clicked branch: "+clicked_branch)
-        $('#branches-modal').modal('hide');
-        $("#spinner").show();
-        console.log("chosen_repo: "+chosen_repo);
-        location.href="/repos?repo="+chosen_repo+"&branch="+clicked_branch
-    });//set branch listeners
-}
-$("#spinner").hide();
+  });
 </script>
-
-
 
 {% endblock %}
