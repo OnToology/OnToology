@@ -1,166 +1,231 @@
-{% extends "base2.html"%}
-{%block body%}
+{% extends "base.html"%}
+{% block body %}
 
-<h2>Past Jobs</h2>
+<style>
+    .notes-cell {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+</style>
 
-<!--  <strong>Loading...</strong>-->
-<!--<div class="d-flex justify-content-center">-->
-<!--  <div class="spinner-border text-info" role="status">-->
-<!--    <span class="sr-only">Loading...</span>-->
-<!--  </div>-->
-<!--</div>-->
+<div class="container py-4">
 
-<!--<div class="clearfix">-->
-<!--      <strong> Loading ...</strong>-->
-<!--  <div class="spinner-border float-left" role="status">-->
-<!--    <span class="sr-only">Loading...</span>-->
-<!--  </div>-->
-
-<!--</div>-->
-
-
-<!--<div class=" align-items-center" id="abc">-->
-<!--  <strong>Example ...</strong>-->
-<!--</div>-->
-
-<br>
-<div class="container-fluid"><div class="col-sm-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
-<br><div class="alert alert-secondary justify" role="alert">
-    You can click on any of your repositories below to see the execution details (e.g., documentation, evaluation, ...). You can also see the progress details (what was generated and what is being generated at the moment).
-<br>
-  </div></div></div>
-
-
-<div class="clearfix alert alert-info" id="spinner">
-    <strong>Loading ...</strong>
-    <div class="spinner-border float-right text-light" role="status">
-        <span class="sr-only">Loading...</span>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">Generation History</h2>
+      <p class="text-muted mb-0">
+        Review previous repository runs, generated resources, and execution progress.
+      </p>
     </div>
+  </div>
+
+  <div class="alert alert-primary d-none align-items-center gap-2" id="spinner">
+    <div class="spinner-border spinner-border-sm" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <strong>Loading...</strong>
+  </div>
+
+  {% if repos %}
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Repository</th>
+              <th>Status</th>
+              <th>Notes</th>
+              <th style="min-width: 180px;">Progress</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+          {% for r in repos %}
+            <tr>
+              <td>
+                <a href="/runs?repo={{r.url}}" class="fw-semibold text-decoration-none">
+                  {{r.url}}
+                </a>
+              </td>
+
+              <td>
+                <span class="badge bg-secondary">
+                  {{r.state}}
+                </span>
+              </td>
+
+
+                <td>
+                <div class="text-muted notes-cell"
+                     title="{{r.notes}}">
+                    {{r.notes|default:"—" }}
+                </div>
+            </td>
+
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="progress flex-grow-1" style="height: 8px;">
+                    <div
+                      class="progress-bar"
+                      role="progressbar"
+                      style="width: {{r.progress}}%;"
+                      aria-valuenow="{{r.progress|floatformat:1}}"
+                      aria-valuemin="0"
+                      aria-valuemax="100">
+                    </div>
+                  </div>
+                  <small class="text-muted">
+                    {{r.progress|floatformat:1}}%
+                  </small>
+                </div>
+              </td>
+
+                <td>
+    <div class="d-flex justify-content-end gap-2">
+
+        <a href="/runs?repo={{r.url}}"
+           class="btn btn-sm btn-outline-primary">
+            Generation Details
+        </a>
+
+        <a href="https://github.com/{{r.url}}"
+           target="_blank"
+           class="btn btn-sm btn-outline-primary">
+            GitHub
+        </a>
+
+        <button
+            type="button"
+            class="generateall-btn btn btn-sm btn-primary"
+            repo="{{r.url}}">
+            Generate Resources
+        </button>
+
+    </div>
+</td>
+
+            </tr>
+          {% endfor %}
+          </tbody>
+
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  {% else %}
+  <div class="card border-0 shadow-sm">
+    <div class="card-body text-center py-5">
+      <h5 class="fw-bold mb-2">No previous jobs found</h5>
+      <p class="text-muted mb-0">
+        Once you run generation jobs, they will appear here.
+      </p>
+    </div>
+  </div>
+  {% endif %}
+
 </div>
 
-<!--<div class="align-items-center" id="spinner">-->
-<!--  <strong>Loading ...</strong>-->
-<!--    <div class="spinner-border ml-auto text-info" role="status" aria-hidden="true"></div>-->
-<!--</div>-->
 
-<table class="table">
-    <tbody>
-    {%for r in repos%}
-    <tr>
-        <td><a href="/runs?repo={{r.url}}">{{r.url}}</a></td>
-        <td>{{r.state}}</td>
-        <td>{{r.notes}}</td>
-        <td>
-            <div class="progress-bar progress-bar-info" role="progressbar"
-                 aria-valuenow="{{r.progress|floatformat:1}}" aria-valuemin="0"
-                 aria-valuemax="100"
-                 style="width: {{r.progress}}%">
-                {{r.progress|floatformat:1}}%
-            </div>
-        </td>
-        <td>
-            <span class="btn" >
-            <a href="http://www.github.com/{{r.url}}" target="_blank"
-               title="Go to repo in GitHub">
-                <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/GitHub-Mark-32px.png"
-                     class="img-circle" height="20px"></a>
-            </span>
-        </td>
-        <td>
-            <span class="generateall-btn btn" repo="{{r.url}}" title="Generate documentation, diagrams and evaluation">
-                 <img src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/regenerate_all.png"
-                      height="20px">
-            </span>
-        </td>
-    </tr>
-    </tbody>
-    {%endfor%}
+<div class="modal fade" tabindex="-1" id="branches-modal">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow">
 
-</table>
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">Choose a branch</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
 
-{%if not repos%}
-<p>has previous runs</p>
-{%endif%}
+      <div class="modal-body">
+        <p class="text-muted">
+          Select the branch where you want to generate documentation, diagrams, and evaluation.
+        </p>
 
-<div class="modal" tabindex="-1" id="branches-modal">
-    <div class="modal-dialog modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Choose a branch</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p>Click on the branch you would like to select</p>
-                <div id="branches-div"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <!--        <button type="button" class="btn btn-primary">Save changes</button>-->
-            </div>
-        </div>
+        <div id="branches-div" class="list-group"></div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+
     </div>
+  </div>
 </div>
 
 
 <script>
-    var chosen_repo = "";
-        $(document).on('click', '.generateall-btn', function(){
-        console.log("generateall btn is clicked");
-        chosen_repo = $(this).attr('repo');
-        //$("#spinner").hide();
-        $("#spinner").show();
-        var html_list=""
-        $.ajax({
-			  method: "GET",
-			  url: "/get_branches?repo="+$(this).attr('repo'),
-			}).fail(function(resp){
-                	alert("error getting the branches");
-					console.log(resp.error);
-					$("#spinner").hide();
-			}).done(function(resp){
-				    for(var i=0;i<resp.branches.length;i++){
-                        html_list+="<li class='list-group-item branch btn'>"+resp.branches[i]+"</li>"
-                        console.log(resp.branches[i])
-                    }
-                    $("#branches-div").html(html_list);
-                    $('#branches-modal').modal('show');
-                    set_branch_listeners();
-                    $("#spinner").hide();
-		});
+  var chosen_repo = "";
 
-        //alert($(this).attr('repo'));
-        //$.get("generateforall", {"repo": $(this).attr('repo')});
+  function showSpinner() {
+    $("#spinner").removeClass("d-none").addClass("d-flex");
+  }
+
+  function hideSpinner() {
+    $("#spinner").removeClass("d-flex").addClass("d-none");
+  }
+
+  $(document).on("click", ".generateall-btn", function () {
+    chosen_repo = $(this).attr("repo");
+
+    showSpinner();
+
+    $.ajax({
+      method: "GET",
+      url: "/get_branches?repo=" + chosen_repo,
+    }).fail(function (resp) {
+      alert("Error getting the branches");
+      console.log(resp.error);
+      hideSpinner();
+    }).done(function (resp) {
+      var html_list = "";
+
+      for (var i = 0; i < resp.branches.length; i++) {
+        html_list += `
+          <button type="button" class="list-group-item list-group-item-action branch">
+            ${resp.branches[i]}
+          </button>`;
+      }
+
+      $("#branches-div").html(html_list);
+
+      var modal = new bootstrap.Modal(document.getElementById("branches-modal"));
+      modal.show();
+
+      hideSpinner();
     });
+  });
 
-function set_branch_listeners(){
-    console.log("in branch listeners")
-    $(document).on('click', '.branch', function(){
-        var clicked_branch = $(this).html();
-        console.log("clicked branch: "+clicked_branch)
-        $('#branches-modal').modal('hide');
-        $("#spinner").show();
-        console.log("chosen_repo: "+chosen_repo);
-        //$.get("generateforall", {"repo": chosen_repo, "branch": clicked_branch});
+  $(document).on("click", ".branch", function () {
+    var clicked_branch = $(this).text().trim();
 
-        $.ajax({
-			  method: "GET",
-			  url: "/generateforall?repo="+chosen_repo+"&branch="+clicked_branch,
-			}).fail(function(resp){
-                	alert("error in generating the request");
-					console.log(resp.error);
-					$("#spinner").hide();
-			}).done(function(resp){
-                    $("#spinner").hide();
-                    location.href="/runs?repo="+chosen_repo
-		});// ajax
+    var modalElement = document.getElementById("branches-modal");
+    var modal = bootstrap.Modal.getInstance(modalElement);
+    modal.hide();
 
-    });//set branch listeners
-}
-$("#spinner").hide();
+    showSpinner();
 
+    $.ajax({
+      method: "GET",
+      url: "/generateforall?repo=" + chosen_repo + "&branch=" + clicked_branch,
+    }).fail(function (resp) {
+      alert("Error in generating the request");
+      console.log(resp.error);
+      hideSpinner();
+    }).done(function () {
+      hideSpinner();
+      location.href = "/runs?repo=" + chosen_repo;
+    });
+  });
+
+  hideSpinner();
 </script>
-
 
 {% endblock %}

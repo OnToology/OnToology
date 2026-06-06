@@ -1,200 +1,141 @@
-{% extends "base2.html"%}
-{%block body%}
+{% extends "base.html"%}
+{% block body %}
 
-<script src="https://ahmad88me.github.io/outlinejs/cdn/outline.js"></script>
-<!--<canvas id="myCanvas"  height="200" width="200"  style="border:1px solid #d3d3d3;">-->
-<!--            Your browser does not support the canvas element.-->
-<!--</canvas>-->
+<div class="container py-4">
 
-
-<canvas id="myCanvas" height="200" width="200">
-    Your browser does not support the canvas element.
-</canvas>
-
-
-{%for orun in oruns%}
-<div class="card">
-    <div class="card-header" role="tab">
-        <h4 class="card-title">
-            <a role="button" data-toggle="collapse" href="#coll{{orun.id}}" role="button" aria-expanded="false" aria-controls="coll{{orun.id}}">
-                {{orun.timestamp}} ({{orun.repo.url}}: {{orun.branch}})
-            </a>
-        </h4>
+  <div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">Generation Status</h2>
+      <p class="text-muted mb-0">
+        Track documentation, diagrams, evaluation, JSON-LD, and validation generation progress.
+      </p>
     </div>
-    <div class="panel-body collapse {% if forloop.first %}show{% endif %}" id="coll{{orun.id}}">
-        {%for otask in orun.otasks.all%}
-        {%if otask.success%}
-        <li class="list-group-item ">
-
-
-                         <span style="color: green;">
-                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check-circle-fill"
-                             fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-  <path fill-rule="evenodd"
-        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-</svg>
-                        </span>
-
-
-            <span style="font-weight: bold;">{{otask.name}} </span> {{otask.description}}
-            <!--                        <span style="color: green;">-->
-            <!--                        <svg  width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">-->
-            <!--  <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>-->
-            <!--</svg>-->
-            <!--                        </span>-->
-        </li>
-
-        {%else%}
-        {%if otask.finished%}
-
-
-        <li class="list-group-item alert alert-danger" role="alert">
-
-
-            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x-circle-fill" fill="currentColor"
-                 xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd"
-                      d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
-            </svg>
-
-
-            <span style="font-weight: bold;">{{otask.name}} </span> {{otask.description}}
-            <!--                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">-->
-            <!--  <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>-->
-            <!--</svg>-->
-        </li>
-
-        {%else%}
-        <li class="list-group-item alert alert-info" role="alert">
-
-
-            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-repeat" fill="currentColor"
-                 xmlns="http://www.w3.org/2000/svg">
-                <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
-                <path fill-rule="evenodd"
-                      d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>
-            </svg>
-
-
-            <span style="font-weight: bold;">{{otask.name}} </span> {{otask.description}}
-
-            <!--                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-repeat" fill="currentColor" xmlns="http://www.w3.org/2000/svg">-->
-            <!--  <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>-->
-            <!--  <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>-->
-            <!--</svg>-->
-        </li>
-        {%endif%}
-        {%endif%}
-
-        {%endfor%}
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox"
+               id="autoRefreshSwitch" checked>
+        <label class="form-check-label"
+               for="autoRefreshSwitch">
+            Auto refresh
+        </label>
     </div>
+<!--    <a href="/repos" class="btn btn-outline-primary">-->
+<!--      Back to repositories-->
+<!--    </a>-->
+  </div>
+
+  {% if oruns %}
+
+  <div class="accordion" id="runsAccordion">
+
+    {% for orun in oruns %}
+    <div class="accordion-item border-0 shadow-sm mb-3 rounded overflow-hidden">
+
+      <h2 class="accordion-header" id="heading{{ orun.id }}">
+        <button
+          class="accordion-button {% if not forloop.first %}collapsed{% endif %}"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#coll{{ orun.id }}"
+          aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
+          aria-controls="coll{{ orun.id }}"
+        >
+          <div class="w-100">
+            <div class="fw-semibold">
+              {{ orun.repo.url }}
+            </div>
+            <small class="text-muted">
+              Branch: {{ orun.branch }} · {{ orun.timestamp }}
+            </small>
+          </div>
+        </button>
+      </h2>
+
+      <div
+        id="coll{{ orun.id }}"
+        class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+        aria-labelledby="heading{{ orun.id }}"
+        data-bs-parent="#runsAccordion"
+      >
+        <div class="accordion-body p-0">
+
+          <ul class="list-group list-group-flush">
+
+            {% for otask in orun.otasks.all %}
+
+              {% if otask.success %}
+              <li class="list-group-item d-flex align-items-start gap-3 py-3">
+                <span class="text-success fs-5">
+                  <i class="bi bi-check-circle-fill"></i>
+                </span>
+                <div>
+                  <div class="fw-semibold">{{ otask.name }}</div>
+                  <div class="text-muted small">{{ otask.description }}</div>
+                </div>
+              </li>
+
+              {% else %}
+
+                {% if otask.finished %}
+                <li class="list-group-item d-flex align-items-start gap-3 py-3 bg-danger-subtle">
+                  <span class="text-danger fs-5">
+                    <i class="bi bi-x-circle-fill"></i>
+                  </span>
+                  <div>
+                    <div class="fw-semibold text-danger">{{ otask.name }}</div>
+                    <div class="small">{{ otask.description }}</div>
+                  </div>
+                </li>
+
+                {% else %}
+                <li class="list-group-item d-flex align-items-start gap-3 py-3 bg-info-subtle">
+                  <span class="text-info fs-5">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  </span>
+                  <div>
+                    <div class="fw-semibold">{{ otask.name }}</div>
+                    <div class="small text-muted">{{ otask.description }}</div>
+                  </div>
+                </li>
+                {% endif %}
+
+              {% endif %}
+
+            {% endfor %}
+
+          </ul>
+
+        </div>
+      </div>
+
+    </div>
+    {% endfor %}
+
+  </div>
+
+  {% else %}
+
+  <div class="alert alert-warning shadow-sm border-0">
+    <h5 class="alert-heading fw-bold mb-2">No previous runs yet</h5>
+    <p class="mb-3">
+      You should either push a change to the ontology repository or force resource generation from the web interface.
+    </p>
+    <a href="/repos" class="btn btn-warning">
+      Go to repositories
+    </a>
+  </div>
+
+  {% endif %}
+
 </div>
-{%endfor%}
-
-
-{%if not oruns%}
-
-<div class="alert alert-warning alert-dismissible fade show" role="alert">
-    <strong>There are no previous runs!</strong> You should either push a change in the ontology or use our web interface to
-    force resource generation (<a href="/repos">here</a>)<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-
-</div>
-{%endif%}
-
 
 <script>
-/*
-        var canvas = document.getElementById("myCanvas");
-        var ctx = canvas.getContext("2d");
-        ctx.canvas.width = window.innerWidth * 0.95;
+  setInterval(() => {
+    const enabled =
+        document.getElementById("autoRefreshSwitch").checked;
 
-        var g = new OutlineGraph(ctx, {"title_color": "black",
-                                 "items_color": "blue",
-                                 "inner_color": "#3498DB",
-                                 "title_font": "15px Helvetica",
-                                 "items_font": "10px Comic Sans MS",
-                                 "points": [
-                                    {"title": "Pending", "items": []},
-                                    {"title": "Diagrams", "items": []},
-                                    {"title": "Documentation", "items": []},
-                                    {"title": "Evaluation", "items": []},
-                                    {"title": "JSON-LD", "items": []},
-                                    {"title": "Validation", "items": []},
-                                    {"title": "Finished", "items": []},
-                                 ]});
-                                 */
-
-            /* testing
-                 var g = new OutlineGraph(ctx, {"title_color": "black",
-                                 "items_color": "blue",
-                                 "inner_color": "#3498DB",
-                                 "title_font": "15px Helvetica",
-                                 "items_font": "10px Comic Sans MS",
-                                 "points": [
-                                        {"title": "Pending", "items": ["abc", "def"]},
-                                        {"title": "Diagrams", "items": ["xyz1"]},
-                                        {"title": "Documentation", "items": ["xyz22"]},
-                                        {"title": "Evaluation", "items": ["xyz33"]},
-                                        {"title": "JSON-LD", "items": ["xyz44"]},
-                                        {"title": "Validation", "items": ["xyz55"]},
-                                        {"title": "Finished", "items": ["finals"]}
-                                 ]});
-        */
-        /*
-        g.draw();
-        g.draw_inner(0);
-        */
-
-function compute_index(j){
-   return 2;
-}
-
-
-var outline_function = function(){
-
-    var graph_data = {
-                 "title_color": "black",
-                 "items_color": "blue",
-                 "inner_color": "#3498DB",
-                 "title_font": "15px Helvetica",
-                 "items_font": "10px Comic Sans MS",
-                 "points": [
-                 ]
-     }
-
-
-    $.getJSON('get_outline', function(data){
-        var stages = Object.keys(data["stages"]);
-        var i;
-        var points = [];
-        for(i=0;i<stages.length;i++){
-            p = {"title": stages[i], "items": data["stages"][stages[i]]}
-            points.push(p);
-        }
-        graph_data["points"] = points
-        graph_data["points"] = [
-            {"title": "Pending", "items": data["stages"]["pending"]},
-            {"title": "Diagrams", "items": data["stages"]["diagram"]},
-            {"title": "Documentation", "items": data["stages"]["documentation"]},
-            {"title": "Evaluation", "items": data["stages"]["evaluation"]},
-            {"title": "JSON-LD", "items": data["stages"]["jsonld"]},
-            {"title": "Validation", "items": data["stages"]["validation"]},
-            {"title": "Finished", "items": data["stages"]["finished"]}
-        ]
-        delete window.g;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        g = new OutlineGraph(ctx, graph_data);
-        g.draw();
-        g.draw_inner(data["inner"]);
-    });
-
-}
-//setInterval(outline_function, 4000);
-//outline_function();
-setTimeout(() => {
-  document.location.reload();
+    if (enabled) {
+        location.reload();
+    }
 }, 5000);
 </script>
 

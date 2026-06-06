@@ -169,7 +169,7 @@ class ORun(models.Model):
     timestamp = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return "run <"+str(self.id)+"> " + self.user.email + " - " + self.repo.url + " - " + str(self.timestamp)
+        return f"{self.id}> {self.repo.url} ({self.branch}) - {self.timestamp}"
 
 
 class OTask(models.Model):
@@ -180,3 +180,5 @@ class OTask(models.Model):
     orun = models.ForeignKey(ORun, on_delete=models.CASCADE, related_name='otasks')
     msg = models.TextField(default="")
 
+    def __str__(self):
+        return f"{self.id} > {self.name}"
