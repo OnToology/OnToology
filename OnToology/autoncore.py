@@ -1209,7 +1209,7 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         except Exception as e:
             if '404' in str(e):
                 error_msg = """documentation of the ontology has to be generated first (%s)""" % rel_htaccess_path
-                dolog("publish> " + error_msg)
+                dolog("publish> Error msg 1: " + error_msg)
                 otask.success = False
                 otask.finished = True
                 otask.description = error_msg
@@ -1217,7 +1217,7 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
                 return error_msg
             else:
                 error_msg = "github error: %s" % str(e)
-                dolog("publish> " + error_msg)
+                dolog("publish> Error msg 2: " + error_msg)
                 otask.success = False
                 otask.finished = True
                 otask.description = error_msg
@@ -1249,7 +1249,7 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
 
         dolog(f"publish> name: <{name}>")
 
-        if name != "": # new reserved name
+        if name != "":  # new reserved name
             comm = 'mkdir -p "%s"' % os.path.join(publish_dir, name)
             dolog("publish> " + comm)
             call(comm, shell=True)
@@ -1259,9 +1259,9 @@ def publish(name, target_repo, ontology_rel_path, useremail, branch, orun, g_loc
         otask.description = "writing the new .htaccess on OnToology server"
         otask.save()
 
-        if name == "": # republish case
+        if name == "":  # republish case
             publication_folder_name = pns_ontology[0].name
-        else: # new name
+        else:  # new name
             publication_folder_name = name
 
         f = open(os.path.join(publish_dir, publication_folder_name, '.htaccess'), 'w')

@@ -138,9 +138,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-#### Mongo Engine configs #########
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),  # folder where you keep CSS/JS/images during dev
+]
 
-
+# STATIC_ROOT = BASE_DIR + '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "local_static")
 
 
 try:
