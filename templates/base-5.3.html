@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>OnToology</title>
+
+    <!-- Required meta tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+
+        <link rel="apple-touch-icon" sizes="57x57" href="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/favicon/favicon-16x16.png">
+    <link rel="manifest" href="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/favicon/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="https://raw.githubusercontent.com/OnToology/OnToology/master/media/icons/favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+
+    <style>
+:root {
+    --ontology-blue: #2E6FB5;
+
+    --bs-primary: var(--ontology-blue);
+    --bs-primary-rgb: 46, 111, 181;
+
+    --bs-link-color: var(--ontology-blue);
+    --bs-link-hover-color: #245c96;
+}
+
+.btn-primary {
+    --bs-btn-bg: var(--ontology-blue);
+    --bs-btn-border-color: var(--ontology-blue);
+    --bs-btn-hover-bg: #245c96;
+    --bs-btn-hover-border-color: #245c96;
+    --bs-btn-active-bg: #1f4f82;
+    --bs-btn-active-border-color: #1f4f82;
+}
+</style>
+
+    <style>
+
+
+
+
+        .color0back{background-color: #000000 !important;}
+        .color0{color: #000000 !important;}
+        .color1back{background-color: #3498DB !important;}
+        .color1{color: #3498DB !important;}
+        .color2{color: #1d63db !important;}
+        .color2back{background-color: #1d63db !important;}
+        .color3{color: #FFFFFF !important;}
+        .color3back{background-color: #FFFFFF !important;}
+        .color4{ color: #AED6F1 !important;}
+        .color4back{background-color: #AED6F1 !important;}
+        .color5{ color: #D6EAF8 !important;}
+        .color5back{background-color: #D6EAF8 !important;}
+        .color6{ color: #EBF5FB !important;}
+        .color6back{background-color: #EBF5FB !important;}
+        .color7{color: #d9edf7 !important;}
+        .color7back{background-color: #d9edf7 !important;}
+        .color8{color: #337ab7 !important;}
+        .color8back{background-color: #337ab7 !important;}
+
+                .justify {
+            text-align: justify;
+            text-justify: inter-word;
+        }
+    </style>
+
+
+</head>
+<body>
+        {% load static %}
+
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">
+      <img src="{% static 'icons/nav-img.png' %}" alt="OnToology Logo" height="24" class="d-inline-block align-text-top"/>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+<!--      <ul class="navbar-nav">-->
+        <li class="nav-item">
+          <a class="nav-link {%block nav-home%}  {%endblock%}" aria-current="page" href="{% url 'home' %}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {%block nav-tut%}  {%endblock%}" href="{% url 'stepbystep' %}">Tutorial</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link  {%block nav-about%}  {%endblock%}" href="{% url 'about' %}">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {%block nav-faq%}  {%endblock%}" href="{% url 'faqs' %}">FAQs</a>
+        </li>
+
+
+
+        {% if request.user.is_authenticated %}
+            <li class="nav-item dropdown ms-auto">
+                <a class="nav-link dropdown-toggle" href="{% url 'repos' %}" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          My Repositories
+            <img src="{{request.session.avatar_url}}" class="rounded" style="height: 20px;vertical-align: top;transform: translateY(0%);"/>
+
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown" >
+            <a class="dropdown-item" href="{% url 'repos' %}">My Repositories</a>
+            <a class="dropdown-item" href="/opub">My Published Ontologies</a>
+            <a class="dropdown-item" href="/status">Status (last run)</a>
+            <a class="dropdown-item" href="/runs">Past Jobs (see what is going on)</a>
+			<a class="dropdown-item" href="/syntax">Syntax Validator</a>
+
+            {%if manager%}
+            <a class="dropdown-item" href="/profile">Profile</a>
+            {%endif%}
+            <a class="dropdown-item" href="{% url 'logout'%}">Logout </a>
+
+        </div>
+      </li>
+        {%else%}
+
+          <li class="nav-item">
+          <a class="nav-link" href="{% url 'login' %}">  Login via GitHub
+ <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
+  <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/>
+</svg>
+
+          </a>
+        </li>
+
+        {%endif%}
+      </ul>
+
+
+    </div>
+  </div>
+</nav>
+
+
+
+
+
+
+<div class="container">
+    <div class="row">
+  <div class="col-md-12">
+{%block body%}
+
+{%endblock%}
+  </div></div></div>
+
+<div class="container">
+    <div class="row">
+  <div class="offset-md-1 col-md-10">
+    {%block slim%}
+{%endblock%}
+  </div></div></div>
+<!--</div>-->
+<br><br><br><br><br>
+<br><br><br><br><br>
+
+<script>
+$(document).ready(function(){
+    $(".dropdown").hover(function(){
+        //console.log('hover');
+        $('.dropdown-toggle').dropdown('show');
+    },
+    function(){
+        //console.log('unhover');
+        $('.dropdown-toggle').dropdown('hide');
+    }
+    );
+});
+</script>
+
+<div id="footer" class="fixed-bottom bg-footer" style="background-color: #F9F9F9; bottom: 0; height:60px">
+
+
+        <div class="row">
+            <div class="offset-md-1 col-md-5 col-xs-6 " align="left">
+                <p style="font-size: small">
+                    Ontology Engineering Group<br>
+                    Need help? contact us at: ontoology (at) delicias.dia.fi.upm.es
+					<br>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" fill="currentColor" class="bi bi-twitter-x" viewBox="0 0 16 16">
+  <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"/>
+</svg>
+ Follow us <a href="https://x.com/OnToology">@OnToology</a>
+                </p>
+            </div>
+            <div class="col-md-6 col-xs-6 " align="right">
+                <a href="https://oeg.fi.upm.es/" target="_blank">
+                    <img height="35px"
+                        src="https://raw.githubusercontent.com/OnToology/OnToology/master/media/home/oeg.gif"
+                        alt="OEG logo" class="img-rounded" class="img-responsive"/></a>
+                <img height="35px" src="https://www.upm.es/sfs/Rectorado/Gabinete%20del%20Rector/Logos/FAC_INFORMATICA/FacInformatica.jpg"/>
+                <img height="45px" src="https://www.upm.es/sfs/Rectorado/Gabinete%20del%20Rector/Logos/UPM/CEI/LOGOTIPO%20leyenda%20color%20JPG.jpg"/>
+            </div>
+
+        </div>
+</div>
+</body>
+</html>
