@@ -1,38 +1,91 @@
-{% extends "base2.html"%}
-{%block slim%}
-</br></br>
-<h2>Ontology Syntax Checker</h2>
-<p>The ontology syntax is checked using <a href="https://github.com/RDFLib/rdflib">RDFLib</a></p>
-{%if error%}
-<div class="alert alert-danger" role="alert">
-  {{error}}
-</div>
-{%endif%}
-{%if msg%}
-<div class="alert alert-success" role="alert">
-  {{msg}}
-</div>
-{%endif%}
+{% extends "base.html" %}
 
-<form method="GET" id="syntax-form">
-	<div class="form-group">
-    <label for="exampleInputEmail1">Ontology URL</label>
-    <input type="url" name="url" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
-    <small id="emailHelp" class="form-text text-muted">URL of the target ontology</small>
+{% block slim %}
+
+<section class="py-5">
+  <div class="container" style="max-width: 760px;">
+
+    <div class="text-center mb-4">
+      <h1 class="fw-bold mb-3">Ontology Syntax Checker</h1>
+      <p class="text-muted mb-0">
+        Validate your ontology syntax using
+        <a href="https://github.com/RDFLib/rdflib" target="_blank" rel="noopener">
+          RDFLib
+        </a>.
+      </p>
+    </div>
+
+    {% if error %}
+      <div class="alert alert-danger" role="alert">
+        {{ error }}
+      </div>
+    {% endif %}
+
+    {% if msg %}
+      <div class="alert alert-success" role="alert">
+        {{ msg }}
+      </div>
+    {% endif %}
+
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-4 p-md-5">
+
+        <form method="GET" id="syntax-form">
+
+          <div class="mb-4">
+            <label for="ontology-url" class="form-label fw-semibold">
+              Ontology URL
+            </label>
+            <input
+              type="url"
+              name="url"
+              class="form-control form-control-lg"
+              id="ontology-url"
+              placeholder="https://example.com/ontology.owl"
+              aria-describedby="ontology-url-help"
+              required
+            >
+            <div id="ontology-url-help" class="form-text">
+              Enter the URL of the ontology you want to validate.
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label for="oformat" class="form-label fw-semibold">
+              Ontology format
+            </label>
+            <select
+              id="oformat"
+              name="format"
+              class="form-select form-select-lg"
+              required
+            >
+              {% for format in formats %}
+                <option value="{{ format }}">{{ format }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-lg">
+              Check syntax
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+
+    <div class="alert alert-light border mt-4 mb-0" role="alert">
+      <strong>Note:</strong>
+      Large ontologies may timeout. In that case, you can use
+      <a href="https://rdflib.readthedocs.io/en/7.1.1/intro_to_parsing.html" target="_blank" rel="noopener">
+        RDFLib.
+      </a>
+    </div>
 
   </div>
-	<div class="form-group">
-		<label for="oformat">Choose the ontology format:</label>
-		<select id="oformat" name="format" form="syntax-form" required>
-	{%for format in formats%}
-	  <option value="{{format}}">{{format}}</option>
-	{%endfor%}
-</select>
-	</div>
-		<button type="submit" class="btn btn-primary">Check syntax</button>
-</form>
-
-<p>Note that this page may timeout for large ontologies. In such cases, please use the <a href="https://rdflib.readthedocs.io/en/stable/intro_to_parsing.html">RDFLib homepage</a></p>
-
+</section>
 
 {% endblock %}

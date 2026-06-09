@@ -48,7 +48,7 @@ urlpatterns = [
     url(r'^api/', include(api_urls)),
     url(r'^progress', views.progress_page),
     url(r'500', views.handler500),
-    url(r'faqs', views.faqs),
+    url(r'faqs', views.faqs, name="faqs"),
     url(r'get_branches', views.get_branches),
     url(r'get_outline', views.get_outline),
     url(r'^show_repos_list', views.show_repos_list),
@@ -61,19 +61,18 @@ urlpatterns = [
     url(r'show_stats', views.show_stats),
     # url(r'^error_test', views.error_test),
     # url(r'^admin', views.superadmin, name='superadmin'),
-    url(r'', views.home_view, name='home'),
+    url(r'', views.home_view, name='home')
 ]
 
 handler500 = 'OnToology.views.handler500'
 
-# if settings.DEBUG:
-#     # static files (images, css, javascript, etc.)
-#     urlpatterns = ['',
-#         (r'^media/(?P<path>.*)$', 'django.views.static.serve', {
-#             'document_root': settings.MEDIA_ROOT})] + urlpatterns
-
 
 if settings.DEBUG:
+    from django.contrib import admin
+    from django.urls import path
     from django.conf.urls.static import static
-    # static files (images, css, javascript, etc.)
+    # old media url
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # static files (images, css, javascript, etc.)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns = [path('admin/', admin.site.urls)] + urlpatterns

@@ -63,7 +63,7 @@ class Repo(models.Model):
         # self.ontology_status_pairs.clear()
         self.save()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.url
 
 
@@ -139,7 +139,7 @@ class OntologyStatusPair(models.Model):
             "status": self.status
         }
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name + ' - ' + self.status
 
 
@@ -158,7 +158,7 @@ class PublishName(models.Model):
                 'ontology': self.ontology
                 }
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -168,8 +168,8 @@ class ORun(models.Model):
     user = models.ForeignKey(OUser, on_delete=models.CASCADE, related_name='oruns')
     timestamp = models.DateTimeField(auto_now=True)
 
-    def __unicode__(self):
-        return "run <"+str(self.id)+"> " + self.user.email + " - " + self.repo.url + " - " + str(self.timestamp)
+    def __str__(self):
+        return f"{self.id}> {self.repo.url} ({self.branch}) - {self.timestamp}"
 
 
 class OTask(models.Model):
@@ -180,3 +180,5 @@ class OTask(models.Model):
     orun = models.ForeignKey(ORun, on_delete=models.CASCADE, related_name='otasks')
     msg = models.TextField(default="")
 
+    def __str__(self):
+        return f"{self.id} > {self.name}"

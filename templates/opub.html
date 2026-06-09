@@ -1,55 +1,113 @@
-{% extends "base2.html"%}
-{%block body%}
-<br>
-<!--<div class="container-fluid"><div class="col-sm-12 col-md-8 offset-md-2 col-lg-8 offset-lg-2">-->
-<br>
-<div class="alert alert-secondary" role="alert">
+{% extends "base.html"%}
+{% block body %}
 
+<div class="container py-4">
 
-
-<a target="_blank" href="https://github.com/OnToology/OnToology/raw/master/media/misc/gh-pages.png">Make sure you enabled
-github pages on your repository.</a>
-	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-		<span aria-hidden="true">&times;</span>
-	</button>
-<br>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">Published Ontologies</h2>
+      <p class="text-muted mb-0">
+        Manage your published w3id ontology links and generated bundles.
+      </p>
+    </div>
   </div>
 
-<!--</div></div>-->
-  <br>
+  {% if not opubs %}
+<div class="alert alert-info">
+    <strong>Before publishing:</strong>
+    Make sure GitHub Pages is enabled on your repository.
+          {% load static %}
+    <a target="_blank" class="alert-link" href="{% static 'faqs/gh-pages.png' %}">View instructions</a>
+</div>
+{% endif %}
 
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Name</th>
-      <th scope="col">Repository</th>
-      <th scope="col">Ontology</th>
-      <th scope="col">Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-  {%for op in opubs%}
-    <tr>
-      <td>{{op.name}} (<a href="https://w3id.org/def/{{op.name}}">https://w3id.org/def/{{op.name}}</a>)</td>
-      <td>{{op.repo.url}}</td>
-      <td>{{op.ontology}}</td>
-      <td>
-        <a href="/delete_published?name={{op.name}}" data-toggle="tooltip" title="Remove the w3id link">
-          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 64 64">
-            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
-          </svg>
-        </a>
-        <a href="/get_bundle?ontology={{op.ontology}}&repo={{op.repo.url}}&branch=gh-pages" data-toggle="tooltip" title="Download the bundle which contains all the resources (e.g., documentation, evaluation report)">
-          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-cloud-download-fill" viewBox="0 0 64 64">
-            <path fill-rule="evenodd" d="M8 0a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 4.095 0 5.555 0 7.318 0 9.366 1.708 11 3.781 11H7.5V5.5a.5.5 0 0 1 1 0V11h4.188C14.502 11 16 9.57 16 7.773c0-1.636-1.242-2.969-2.834-3.194C12.923 1.999 10.69 0 8 0zm-.354 15.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 14.293V11h-1v3.293l-2.146-2.147a.5.5 0 0 0-.708.708l3 3z"/>
-          </svg>
-        </a>
-      </td>
-    </tr>
-  {%endfor%}
-  </tbody>
-</table>
 
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+
+      {% if opubs %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Name</th>
+              <th>Repository</th>
+              <th>Ontology</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for op in opubs %}
+            <tr>
+              <td>
+                <div class="fw-semibold">{{ op.name }}</div>
+                <a
+                  href="https://w3id.org/def/{{ op.name }}"
+                  target="_blank"
+                  class="small text-decoration-none">
+                  https://w3id.org/def/{{ op.name }}
+                </a>
+              </td>
+
+              <td>
+                <span class="text-muted small">{{ op.repo.url }}</span>
+              </td>
+
+              <td>
+                <code class="small">{{ op.ontology }}</code>
+              </td>
+
+              <td class="text-end">
+                <div class="btn-group" role="group">
+
+<!--                  <a-->
+<!--                    href="/get_bundle?ontology={{ op.ontology }}&repo={{ op.repo.url }}&branch=gh-pages"-->
+<!--                    class="btn btn-sm btn-outline-primary"-->
+<!--                    data-bs-toggle="tooltip"-->
+<!--                    title="Download generated resources">-->
+<!--                    Download-->
+<!--                  </a>-->
+
+                  <a
+  href="/get_bundle?ontology={{ op.ontology }}&repo={{ op.repo.url }}&branch=gh-pages"
+  class="btn btn-sm btn-outline-primary"
+  data-bs-toggle="tooltip"
+  title="Download a ZIP bundle containing documentation, diagrams, validation reports, and other generated resources">
+
+  <i class="bi bi-download me-1"></i>
+  Bundle
+</a>
+
+                  <a
+                    href="/delete_published?name={{ op.name }}"
+                    class="btn btn-sm btn-outline-danger"
+                    data-bs-toggle="tooltip"
+                    title="Remove the w3id link">
+                    Remove
+                  </a>
+
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% else %}
+      <div class="text-center py-5">
+        <h5 class="fw-semibold">No published ontologies yet</h5>
+        <p class="text-muted mb-0">
+          Published ontology links will appear here once they are created.
+        </p>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+</div>
 
 
 
