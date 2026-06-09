@@ -1,5 +1,5 @@
 from django.contrib import admin
-from OnToology.models import *
+from OnToology.models import OUser, Repo, PublishName, ORun, OTask
 
 admin.site.register(OUser)
 admin.site.register(Repo)

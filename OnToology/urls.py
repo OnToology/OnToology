@@ -69,7 +69,7 @@ handler500 = 'OnToology.views.handler500'
 
 if settings.DEBUG:
     from django.contrib import admin
-    from django.urls import path, include
+    from django.urls import path
     from django.conf.urls.static import static
     # old media url
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
