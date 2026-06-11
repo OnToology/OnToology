@@ -20,7 +20,7 @@ def get_ontology_github_url(repo, branch, ontology):
     return f"https://github.com/{repo}/raw/refs/heads/{branch}{ontology}"
 
 
-def save_oops_scores(data_path, output_path):
+def save_foops_scores(data_path, output_path):
     with open(data_path) as f:
         data = f.read()
     scores = compute_foops_scores(data)
@@ -35,9 +35,9 @@ def compute_foops_scores(data):
     """
     Compute the scores for each category given foops raw json
     """
-    if type(data, dict):
+    if isinstance(data, dict):
         j = data
-    elif type(data, str):
+    elif isinstance(data, str):
         j = json.loads(data)
     else:
         raise Exception(f"FOOPS SCORES UNKNOWN DATA TYPE {type(data)}")
@@ -58,6 +58,7 @@ def compute_foops_scores(data):
 
     for category in fair:
         scores[category] = fair[category]["passed"] / fair[category]["tests"] if fair[category]["tests"] > 0 else 0
+    return scores
 
 
 def call_foops_and_save_results(ontology_uri, output_path):
@@ -73,7 +74,7 @@ def call_foops_and_save_results(ontology_uri, output_path):
         "ontologyUri": ontology_uri
     }
 
-    response = requests.post(FOOPS_URL, headers=headers, json=payload)
+    response = requests.post(FOOPS_URL, headers=headers, json=payload, timeout=60 * 3)
     response.raise_for_status()  # Raises an exception for HTTP errors
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(response.text)
@@ -101,4 +102,4 @@ def gen_fair_for_ontology(base_dir, target_repo, branch, ontology_rel_dir):
     scores_file_dir = os.path.join(report_output_dir, tools_conf['foops']['scores_file_name'])
     ontology_public_url = get_ontology_github_url(repo=target_repo, branch=branch, ontology=ontology_rel_dir)
     call_foops_and_save_results(ontology_uri=ontology_public_url, output_path=results_file_dir)
-    save_oops_scores(data_path=results_file_dir, output_path=scores_file_dir)
+    save_foops_scores(data_path=results_file_dir, output_path=scores_file_dir)
