@@ -347,7 +347,7 @@ def get_default_conf():
             'enable': False
         },
         'oops': {
-            'enable': False
+            'enable': True
         },
         'owl2jsonld': {
             'enable': True
