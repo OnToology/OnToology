@@ -15,7 +15,6 @@
 #  limitations under the License.
 #
 # @author Ahmad Alobaid
-
 try:
     print("importing OnToology...")
     import OnToology
@@ -43,6 +42,7 @@ import Integrator
 import logging
 from django.utils import timezone
 import urllib.parse
+import json
 
 use_database = True
 
@@ -55,16 +55,17 @@ publish_dir = os.environ['publish_dir']
 home = os.environ['github_repos_dir']  # e.g. home = 'blahblah/temp/'
 verification_log_fname = 'verification.log'
 sleeping_time = 7
-refresh_sleeping_secs = 10  # because github takes time to refresh
+refresh_sleeping_secs = 10  # because GitHub takes time to refresh
 ontology_formats = ['.rdf', '.owl', '.ttl']
 g = None
 log_file_dir = None  # '&1'#which is stdout #sys.stdout#by default
-tools_conf = {
-    'ar2dtool': {'folder_name': 'diagrams', 'type': 'png'},
-    'widoco': {'folder_name': 'documentation'},
-    'oops': {'folder_name': 'evaluation'},
-    'owl2jsonld': {'folder_name': 'context'}
-}
+# tools_conf = {
+#     'ar2dtool': {'folder_name': 'diagrams', 'type': 'png'},
+#     'widoco': {'folder_name': 'documentation'},
+#     'oops': {'folder_name': 'evaluation'},
+#     'owl2jsonld': {'folder_name': 'context'}
+# }
+from Integrator import tools_conf
 
 logger = logging.getLogger(__name__)
 
@@ -1384,6 +1385,15 @@ def get_confs_from_repo(target_repo, branch):
     return repo, conf_files
 
 
+def get_repo_files(target_repo, branch):
+    global g
+    repo = g.get_repo(target_repo)
+    branch = repo.get_branch(branch)
+    sha = branch.commit.sha
+    files = repo.get_git_tree(sha=sha, recursive=True).tree
+    return repo, files
+
+
 def add_themis_results(target_repo, branch, ontologies):
     """
       get all themis results from a given repo,
@@ -1394,11 +1404,7 @@ def add_themis_results(target_repo, branch, ontologies):
     :param ontologies: a list of dicts of ontologies and tools
     :return: list of pairs of the form (ontology path in the repo, themis results path in the repo)
     """
-    global g
-    repo = g.get_repo(target_repo)
-    branch = repo.get_branch(branch)
-    sha = branch.commit.sha
-    files = repo.get_git_tree(sha=sha, recursive=True).tree
+    repo, files = get_repo_files(target_repo=target_repo, branch=branch)
     ontology_results_d = dict()
     themis_results_dir = "/" + Integrator.tools_conf['themis']['folder_name']
     themis_results_dir += "/" + Integrator.tools_conf['themis']['results_file_name']
@@ -1411,8 +1417,51 @@ def add_themis_results(target_repo, branch, ontologies):
 
     for o in ontologies:
         if o['ontology'] in ontology_results_d:
-            o['themis_results'] = compute_themis_results(repo, branch.name, ontology_results_d[o['ontology']])
+            o['themis_results'] = compute_themis_results(repo, branch, ontology_results_d[o['ontology']])
     return ontologies
+
+
+def add_foops_results(target_repo, branch, ontologies):
+    """
+        Get FOOPS computed scores from a given repo, cross-reference them with the ontologies list,
+      finally, add foops results to the ontologies list
+    :param target_repo:
+    :param branch:
+    :param ontologies: a list of dicts of ontologies and tools
+    :return: list of pairs of the form (ontology path in the repo, themis results path in the repo)
+    """
+    repo, files = get_repo_files(target_repo=target_repo, branch=branch)
+    ontology_results_d = dict()
+    foops_results_dir = "/" + Integrator.tools_conf['foops']['folder_name']
+    foops_results_dir += "/" + Integrator.tools_conf['foops']['scores_file_name']
+
+    start_subs = get_target_home() + "/"
+    end_subs = foops_results_dir
+    for f in files:
+        if f.path.startswith(start_subs) and f.path.endswith(end_subs):
+            ontology_results_d["/" + f.path[len(start_subs):-len(end_subs)]] = f.path
+
+    for o in ontologies:
+        if o['ontology'] in ontology_results_d:
+            o['foops_scores'] = fetch_foops_results(repo, branch, ontology_results_d[o['ontology']])
+    return ontologies
+
+
+def fetch_foops_results(repo, branch, path):
+    """
+    :param repo:
+    :param branch:
+    :param path:
+    :return: dict()
+    """
+    p = path
+    print("get file content: %s" % (str(path)))
+    print("after quote: %s" % p)
+    print("now get the decoded content")
+    file_content = repo.get_contents(p, ref=branch).decoded_content
+    file_content = file_content.decode('utf-8')
+    scores = json.loads(file_content)
+    return scores
 
 
 def compute_themis_results(repo, branch, path):
@@ -1539,7 +1588,7 @@ def get_auton_config(conf_file_abs, from_string=True):
             with open(conf_file_abs, 'wb') as configfile:
                 config.write(configfile)
         except Exception as e:
-            dolog('expection: ' + str(e))
+            dolog('exception: ' + str(e))
             traceback.print_exc()
 
     dolog("\n\n***get_auton_config***")

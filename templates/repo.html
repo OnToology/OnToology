@@ -1,6 +1,6 @@
 {% extends "base.html"%}
 {% block body %}
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 
 
@@ -180,6 +180,15 @@
 </div>
 
 <script>
+    function escapeHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
 (() => {
   const repoUrl = "{{repo.url}}";
   const branch = "{{branch}}";
@@ -198,7 +207,9 @@
     "ar2dtool-enable": "Visualisation (AR2DTool)",
     "oops-enable": "Evaluation (OOPS!)",
     "owl2jsonld-enable": "JSON-LD Context (owl2jsonld)",
-    "themis-enable": "Validation (Themis)"
+    "themis-enable": "Validation (Themis)",
+    "foops-enable": "Fair (FOOPS!)"
+
   };
 
   const spinner = document.getElementById("spinner");
@@ -210,14 +221,7 @@
   const publishOntologyInput = document.getElementById("publish-ontology-input");
   const publishBranchInput = document.getElementById("publish-branch-input");
 
-  function escapeHtml(value) {
-    return String(value ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
+
 
   function collapseId(ontology) {
     return ontology
@@ -231,7 +235,10 @@
     let html = "";
 
     Object.entries(ont).forEach(([toolName, config]) => {
-      if (toolName === "ontology" || toolName === "themis_results") return;
+      if (  toolName === "ontology" || toolName === "themis_results" || toolName === "foops_scores") {
+        return;
+      }
+
       if (!config || typeof config !== "object") return;
 
       Object.entries(config).forEach(([key, value]) => {
@@ -294,8 +301,8 @@
 
   function ontologyCard(ont) {
     const id = collapseId(ont.ontology);
-    const score = ont.themis_results ?? null;
 
+    const themisScore = ont.themis_results ?? null;
     return `
       <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
         <div class="card ontology-card shadow-sm h-100">
@@ -304,16 +311,22 @@
             <div class="mb-3">
               <div class="text-muted small mb-1">Ontology</div>
 
-              <div class="d-flex justify-content-between align-items-start gap-3">
-                <h5 class="ontology-title mb-0">${escapeHtml(ont.ontology)}</h5>
+                <div class="d-flex justify-content-between align-items-start gap-3">
+                  <h5 class="ontology-title mb-0">
+                    ${escapeHtml(ont.ontology)}
+                  </h5>
 
-                ${
-                  score !== null
-                    ? `<span class="badge text-bg-light border text-muted flex-shrink-0">Themis ${escapeHtml(score)}%</span>`
-                    : ""
-                }
-              </div>
-            </div>
+                  <div class="d-flex gap-2 flex-wrap">
+                    ${
+                      themisScore !== null
+                        ? `<span class="badge text-bg-light border text-muted">Themis ${escapeHtml(themisScore)}%</span>`
+                        : ""
+                    }
+
+                    ${foopsOverallBadge(ont)}
+                  </div>
+                </div>
+                </div>
 
             <div class="d-flex flex-wrap gap-2 mb-3">
               <button
@@ -326,6 +339,23 @@
                 Configuration
               </button>
 
+              ${
+                ont.foops_scores
+                  ? `
+                    <button
+                      class="btn btn-sm btn-outline-primary"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#${id}-foops"
+                      aria-expanded="false"
+                      aria-controls="${id}-foops">
+                      FAIR Dimensions
+                    </button>
+                  `
+                  : ""
+              }
+
+
               ${publishButtons(ont.ontology)}
             </div>
 
@@ -334,7 +364,9 @@
                 ${configurationList(ont)}
               </ul>
             </div>
-
+            <div class="collapse" id="${id}-foops">
+              ${foopsChartHtml(ont, id)}
+            </div>
           </div>
         </div>
       </div>
@@ -372,7 +404,7 @@
       content.innerHTML = ontologies.length
         ? ontologies.map(ontologyCard).join("")
         : emptyState();
-
+      //renderFoopsCharts();
     } catch (error) {
       console.error(error);
       alert("Error loading the data for this ontology.");
@@ -464,6 +496,160 @@
     {% endif %}
   });
 })();
+
+  function foopsOverallBadge(ont) {
+  const overall = ont.foops_scores?.Overall;
+
+  if (overall === undefined || overall === null) return "";
+
+  const score = Math.round(Number(overall) * 100);
+
+  return `
+    <span class="badge text-bg-light border text-muted flex-shrink-0">
+      FOOPS ${escapeHtml(score)}%
+    </span>
+  `;
+}
+
+function foopsChartHtml(ont, id) {
+  if (!ont.foops_scores) return "";
+
+  return `
+    <div class="mt-4">
+      <div class="text-muted small mb-2">FOOPS! FAIR scores</div>
+
+      <div style="height:220px" >
+        <canvas
+          id="${id}-foops-chart"
+          data-foops='${escapeHtml(JSON.stringify(ont.foops_scores))}'>
+        </canvas>
+      </div>
+    </div>
+  `;
+}
+
+function renderFoopsCharts() {
+  document.querySelectorAll("canvas[data-foops]").forEach((canvas) => {
+    const scores = JSON.parse(canvas.dataset.foops);
+
+    const labels = Object.keys(scores).filter((key) => key !== "Overall");
+    const values = labels.map((key) => Number(scores[key]));
+
+    new Chart(canvas, {
+      type: "radar",
+      data: {
+        labels,
+        datasets: [{
+          label: "FOOPS score",
+          data: values,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+          duration: 1200,
+          easing: "easeOutQuart"
+        },
+        scales: {
+          r: {
+            min: 0,
+            max: 1,
+            ticks: {
+              callback: (value) => `${Math.round(value * 100)}%`
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            callbacks: {
+              label: (context) => `${Math.round(context.raw * 100)}%`
+            }
+          }
+        }
+      }
+    });
+  });
+}
+
+
+
+
+  /*NEW for animation*/
+
+  function createFoopsChart(canvas) {
+  if (!canvas || canvas.dataset.rendered === "true") return;
+
+  const scores = JSON.parse(canvas.dataset.foops);
+  const labels = Object.keys(scores).filter((key) => key !== "Overall");
+  const values = labels.map((key) => Number(scores[key]));
+
+  canvas.dataset.rendered = "true";
+
+  new Chart(canvas, {
+    type: "radar",
+    data: {
+      labels,
+      datasets: [{
+        label: "FOOPS score",
+        data: values,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: {
+        duration: 900,
+        easing: "easeOutQuart"
+      },
+      scales: {
+        r: {
+          min: 0,
+          max: 1,
+          ticks: {
+            callback: (value) => `${Math.round(value * 100)}%`
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          callbacks: {
+            label: (context) => `${Math.round(context.raw * 100)}%`
+          }
+        }
+      }
+    }
+  });
+}
+
+function setupFoopsChartAnimation() {
+  document.addEventListener("shown.bs.collapse", function (event) {
+    if (!event.target.id.endsWith("-foops")) return;
+
+    const canvas = event.target.querySelector("canvas[data-foops]");
+    createFoopsChart(canvas);
+  });
+}
+
+  document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((tooltipEl) => {
+    new bootstrap.Tooltip(tooltipEl);
+  });
+
+  setupFoopsChartAnimation();
+
+  {% if branch != "" %}
+    loadOntologies();
+  {% endif %}
+});
 </script>
 
 {% endblock %}

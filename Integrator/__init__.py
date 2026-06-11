@@ -21,9 +21,9 @@ tools_conf = {
     'widoco': {'folder_name': 'documentation'},
     'oops': {'folder_name': 'evaluation'},
     'owl2jsonld': {'folder_name': 'context'},
-    'themis': {'folder_name': 'validation', 'tests_file_name': 'tests.txt', 'results_file_name': 'results.tsv'}
+    'themis': {'folder_name': 'validation', 'tests_file_name': 'tests.txt', 'results_file_name': 'results.tsv'},
+    'foops': {'folder_name': 'fair', 'scores_file_name': 'scores.json'},
 }
-
 
 def dolog(msg):
     logger.critical(msg)
@@ -244,7 +244,8 @@ def run_owl2jsonld(conf, display_onto_name, orun, base_dir, changed_file, repo, 
     repo.save()
 
 
-def run_themis(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, branch, change_status):
+def run_themis(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, branch,
+               change_status):
     """
     Run themis
     """
@@ -268,7 +269,33 @@ def run_themis(conf, display_onto_name, orun, base_dir, changed_file, repo, prog
     repo.update_ontology_status(ontology=changed_file, status='finished')
 
 
-def handle_single_ofile(changed_file, base_dir, target_repo, change_status, branch, repo=None, progress_inc=0.0, orun=None):
+def run_foops(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, branch,
+              change_status):
+    """
+    Run FOOPS!
+    """
+    from . import foops
+    if conf.getboolean('foops', 'enable'):
+        otask = task_reporter("Fair (%s)" % display_onto_name, desc="FOOPS! checking", orun=orun)
+        dolog('will call foops')
+        change_status(target_repo, 'generating foops checks for: ' + changed_file)
+        repo.update_ontology_status(ontology=changed_file, status='fair')
+        repo.save()
+        try:
+            foops.check_fair_for_ontologies(target_repo=target_repo, branch=branch, changed_files=[changed_file],
+                                            base_dir=base_dir)
+            otask = task_reporter(otask=otask, desc="FOOPS! checking", success=True, finished=True, orun=orun)
+        except Exception as e:
+            dolog("Exception in running foops: " + str(e))
+            task_reporter(otask=otask, desc="FOOPS! checking", success=False, finished=True, orun=orun,
+                          msg=traceback.format_exc())
+    repo.progress += progress_inc
+    repo.save()
+    repo.update_ontology_status(ontology=changed_file, status='finished')
+
+
+def handle_single_ofile(changed_file, base_dir, target_repo, change_status, branch, repo=None, progress_inc=0.0,
+                        orun=None):
     """
     assuming the change_file is an ontology file
     :param changed_file: relative directory of the file e.g. dir1/dir2/my.owl
@@ -303,7 +330,10 @@ def handle_single_ofile(changed_file, base_dir, target_repo, change_status, bran
     run_oops(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, change_status)
     run_owl2jsonld(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo,
                    change_status)
-    run_themis(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, branch, change_status)
+    run_themis(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, branch,
+               change_status)
+    run_foops(conf, display_onto_name, orun, base_dir, changed_file, repo, progress_inc, target_repo, branch,
+              change_status)
 
 
 def get_default_conf():
@@ -317,13 +347,16 @@ def get_default_conf():
             'enable': False
         },
         'oops': {
-            'enable': True
+            'enable': False
         },
         'owl2jsonld': {
             'enable': True
         },
         'themis': {
             'enable': False
+        },
+        'foops': {
+            'enable': True
         }
     }
     return config_result
@@ -357,7 +390,7 @@ def get_default_conf_obj():
 
 def create_of_get_conf(ofile=None, base_dir=None, config_abs=None):
     """
-    Returns the configuraation if not present. Otherwise, it will create a default one.
+    Returns the configuration if not present. Otherwise, it will create a default one.
     :param ofile: relative directory of the file e.g. dir1/dir2/my.owl
     :param base_dir:
     :param config_abs:

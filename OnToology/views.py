@@ -52,6 +52,7 @@ from OnToology.settings import host
 from Integrator import previsual
 from OnToology import sqclient
 
+LOCAL_TEST = False
 
 client_id_login = os.environ['client_id_login']
 client_id_public = os.environ['client_id_public']
@@ -141,8 +142,87 @@ def read_stats():
     }
 
 
+def ontologies_mock():
+    j = {
+        "ontologies": [
+            {
+                "ontology": "/ontology.ttl",
+                "widoco": {
+                    "enable": False,
+                    "languages": "en"
+                },
+                "ar2dtool": {
+                    "enable": False
+                },
+                "oops": {
+                    "enable": True
+                },
+                "owl2jsonld": {
+                    "enable": True
+                },
+                "foops": {
+                    "enable": False
+                },
+            },
+            {
+                "ontology": "/core/core.ttl",
+                "widoco": {
+                    "enable": True,
+                    "languages": "en,es"
+                },
+                "ar2dtool": {
+                    "enable": True
+                },
+                "oops": {
+                    "enable": True
+                },
+                "owl2jsonld": {
+                    "enable": True
+                },
+                "themis": {
+                    "enable": True
+                },
+                "themis_results": 78
+            },
+            {
+                "ontology": "/alignment/alignment.owl",
+                "widoco": {
+                    "enable": True,
+                    "languages": "en"
+                },
+                "ar2dtool": {
+                    "enable": True
+                },
+                "oops": {
+                    "enable": True
+                },
+                "owl2jsonld": {
+                    "enable": True
+                },
+                "themis": {
+                    "enable": True
+                },
+                "foops": {
+                    "enable": True
+                },
+                "themis_results": 45,
+                "foops_scores": {
+                    "Findable": 0.9,
+                    "Accessible": 0.7,
+                    "Reusable": 1.0,
+                    "Interoperable": 0.8,
+                    "Overall": 0.85
+                }
+            }
+        ]
+    }
+    return JsonResponse(j)
+
 @login_required
 def get_ontologies(request):
+    if LOCAL_TEST:
+        return ontologies_mock()
+
     user = request.user
     if 'branch' in request.GET and 'repo' in request.GET:
         branch = request.GET['branch'].strip()
@@ -173,13 +253,20 @@ def get_ontologies(request):
 def get_pub_page(repo):
     """
     :param repo: owner/repo-name
-    :return:
+    :return: publication page URL or None
     """
-    wgets_dir = os.environ['wget_dir']
+    if LOCAL_TEST:
+        return None
     owner_name, repo_name = repo.split('/')
-    pub_page = 'http://%s.github.io/%s/index.html' % (owner_name, repo_name)
-    if call('cd %s; wget %s;' % (wgets_dir, pub_page), shell=True) == 0:
-        return pub_page
+    pub_page = f'https://{owner_name}.github.io/{repo_name}/index.html'
+
+    try:
+        r = requests.get(pub_page, timeout=10)
+        if r.ok:
+            return pub_page
+    except requests.RequestException:
+        pass
+
     return None
 
 
@@ -192,7 +279,10 @@ def repos_view(request):
         if len(repos) == 0:
             return render(request, 'msg.html', {'msg': 'This repo does not belong to your user account.'})
         try:
-            branches = get_repo_branches(repo_url)
+            if LOCAL_TEST:
+                branches = ["test_1", "test_2"]
+            else:
+                branches = get_repo_branches(repo_url)
         except Exception as e:
             print("repos_view> Exception: %s for repo <%s>" % (str(e), repo_url))
             traceback.print_exc()
