@@ -104,7 +104,7 @@
 
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand" href="/">
 <!--      <img src="{% static 'icons/nav-img.png' %}" alt="OnToology Logo" height="24" class="d-inline-block align-text-top"/>-->
       <img src="{% static 'icons/nav-img-animation.gif' %}" alt="OnToology Logo" height="24" class="d-inline-block align-text-top"/>
     </a>
@@ -133,7 +133,7 @@
             <li class="nav-item dropdown ms-auto">
                 <a class="nav-link dropdown-toggle" href="{% url 'repos' %}" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
           My Repositories
-            <img src="{{request.session.avatar_url}}" class="rounded" style="height: 20px;vertical-align: top;transform: translateY(0%);"/>
+            <img src="{{request.session.avatar_url}}" class="rounded" style="height: 30px" />
 
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown" >

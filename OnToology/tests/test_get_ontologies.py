@@ -34,7 +34,8 @@ class GetOntologiesTestCase(unittest.TestCase):
 
     @patch('OnToology.views.parse_online_repo_for_ontologies', return_value=['onto1.owl', 'onto2.ttl'])
     @patch('OnToology.views.add_themis_results')
-    def test_successful_ontology_extraction(self, mock_add_themis, mock_parse):
+    @patch('OnToology.views.add_foops_results')
+    def test_successful_ontology_extraction(self, mock_add_foops, mock_add_themis, mock_parse):
         request = self.factory.get(f'/get_ontologies?branch={self.branch}&repo={self.repo_url}')
         request.user = self.user
         self.user.repos.filter.return_value = [MagicMock()]  # Simulate user owning the repo
@@ -45,7 +46,8 @@ class GetOntologiesTestCase(unittest.TestCase):
 
     @patch('OnToology.views.parse_online_repo_for_ontologies', side_effect=Exception('Boom!'))
     @patch('OnToology.views.add_themis_results')
-    def test_parsing_exception(self, mock_add_themis, mock_parse):
+    @patch('OnToology.views.add_foops_results')
+    def test_parsing_exception(self, mock_add_foops, mock_add_themis, mock_parse):
         request = self.factory.get(f'/get_ontologies?branch={self.branch}&repo={self.repo_url}')
         request.user = self.user
         self.user.repos.filter.return_value = [MagicMock()]
