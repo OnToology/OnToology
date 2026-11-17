@@ -239,6 +239,7 @@ def get_ontologies(request):
                 print(ontologies)
                 print("add themis results")
                 add_themis_results(repo_url, branch, ontologies)
+                print("add foops results")
                 add_foops_results(repo_url, branch, ontologies)
                 j = {'ontologies': ontologies}
                 return JsonResponse(j)
