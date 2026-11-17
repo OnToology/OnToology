@@ -16,15 +16,14 @@
 # @author Ahmad Alobaid
 #
 
-
-from django.conf.urls import url
+from django.urls import include, re_path
 from OnToology import api_views as views
 
 urlpatterns = [
-    url(r'login', views.login),
-    url(r'repos$', views.ReposView.as_view()),  # for add and list
-    url(r'repos/$', views.ReposView.as_view()),  # for add and list
-    url(r'repos/(?P<repoid>\w+)', views.ReposView.as_view()),  # for the delete
-    url(r'generate_all', views.generate_all),
-    url(r'publishnames', views.PublishView.as_view()),
+    re_path(r'login', views.login),
+    re_path(r'repos$', views.ReposView.as_view()),  # for add and list
+    re_path(r'repos/$', views.ReposView.as_view()),  # for add and list
+    re_path(r'repos/(?P<repoid>\w+)', views.ReposView.as_view()),  # for the delete
+    re_path(r'generate_all', views.generate_all),
+    re_path(r'publishnames', views.PublishView.as_view()),
 ]

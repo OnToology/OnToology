@@ -17,51 +17,50 @@
 #
 
 
-from django.conf.urls import include, url
+from django.urls import include, re_path
+
+
 from OnToology import views
 from django.conf import settings
 from OnToology import api_urls
 
 
 urlpatterns = [
-    url(r'^delete_repo', views.delete_repo_view, name="deleterepo"),
-    url(r'^update_conf', views.update_conf, name='updateconf'),
-    url(r'^add_hook', views.add_hook, name='addhook'),
-    url(r'^get_access_token', views.get_access_token, name='getaccesstoken'),
-    url(r'^grantupdate', views.grant_update, name='grantupdate'),
-    url(r'^profile', views.profile, name='profile'),
-    url(r'^repos', views.repos_view, name='repos'),
-    url(r'^ontologies', views.get_ontologies, name='ontologies'),
-    url(r'^runs', views.runs_view, name='runs'),
-    url(r'^opub', views.opub_view, name='opub'),
-    # url(r'^repo', views.repo_view, name='repo'),
-    url(r'^login_get_access', views.login_get_access, name='login_get_access'),
-    url(r'^login', views.login, name='login'),
-    url(r'^logout', views.logout, name='logout'),
-    url(r'^previsual_toggle', views.previsual_toggle, name='previsualtoggle'),
-    url(r'^renew_previsual', views.renew_previsual, name='renewprevisual'),
-    url(r'^tutorial', views.stepbystep, name='stepbystep'),
-    url(r'^publications', views.publications, name='publications'),
-    url(r'^generateforall', views.generateforall_view, name='generateforall'),
-    url(r'^get_bundle', views.get_bundle, name='get_bundle'),
-    url(r'^about', views.about, name='about'),
-    url(r'^api/', include(api_urls)),
-    url(r'^progress', views.progress_page),
-    url(r'500', views.handler500),
-    url(r'faqs', views.faqs, name="faqs"),
-    url(r'get_branches', views.get_branches),
-    url(r'get_outline', views.get_outline),
-    url(r'^show_repos_list', views.show_repos_list),
-    url(r'^get_repos_list_file', views.get_repos_list_file),
-    url(r'^publish', views.publish_view),
-    url(r'^delete_published', views.delete_published),
-    url(r'^update_stats', views.update_stats_view),
-    url(r'^syntax', views.syntax_check_view),
-    url(r'^status', views.status_view),
-    url(r'show_stats', views.show_stats),
-    # url(r'^error_test', views.error_test),
-    # url(r'^admin', views.superadmin, name='superadmin'),
-    url(r'', views.home_view, name='home')
+    re_path(r'^delete_repo', views.delete_repo_view, name="deleterepo"),
+    re_path(r'^update_conf', views.update_conf, name='updateconf'),
+    re_path(r'^add_hook', views.add_hook, name='addhook'),
+    re_path(r'^get_access_token', views.get_access_token, name='getaccesstoken'),
+    re_path(r'^grantupdate', views.grant_update, name='grantupdate'),
+    re_path(r'^profile', views.profile, name='profile'),
+    re_path(r'^repos', views.repos_view, name='repos'),
+    re_path(r'^ontologies', views.get_ontologies, name='ontologies'),
+    re_path(r'^runs', views.runs_view, name='runs'),
+    re_path(r'^opub', views.opub_view, name='opub'),
+    re_path(r'^login_get_access', views.login_get_access, name='login_get_access'),
+    re_path(r'^login', views.login, name='login'),
+    re_path(r'^logout', views.logout, name='logout'),
+    re_path(r'^previsual_toggle', views.previsual_toggle, name='previsualtoggle'),
+    re_path(r'^renew_previsual', views.renew_previsual, name='renewprevisual'),
+    re_path(r'^tutorial', views.stepbystep, name='stepbystep'),
+    re_path(r'^publications', views.publications, name='publications'),
+    re_path(r'^generateforall', views.generateforall_view, name='generateforall'),
+    re_path(r'^get_bundle', views.get_bundle, name='get_bundle'),
+    re_path(r'^about', views.about, name='about'),
+    re_path(r'^api/', include(api_urls)),
+    re_path(r'^progress', views.progress_page),
+    re_path(r'500', views.handler500),
+    re_path(r'faqs', views.faqs, name="faqs"),
+    re_path(r'get_branches', views.get_branches),
+    re_path(r'get_outline', views.get_outline),
+    re_path(r'^show_repos_list', views.show_repos_list),
+    re_path(r'^get_repos_list_file', views.get_repos_list_file),
+    re_path(r'^publish', views.publish_view),
+    re_path(r'^delete_published', views.delete_published),
+    re_path(r'^update_stats', views.update_stats_view),
+    re_path(r'^syntax', views.syntax_check_view),
+    re_path(r'^status', views.status_view),
+    re_path(r'show_stats', views.show_stats),
+    re_path(r'', views.home_view, name='home')
 ]
 
 handler500 = 'OnToology.views.handler500'

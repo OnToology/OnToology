@@ -228,3 +228,11 @@ print(os.environ)
 AUTH_USER_MODEL = 'OnToology.OUser'
 
 environ['setting_module'] = "OnToology.settings"
+
+
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://ontoology.linkeddata.es",
+    "https://beta.ontoology.linkeddata.es"
+]
