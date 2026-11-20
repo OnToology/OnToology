@@ -93,3 +93,15 @@ To run the tests locally, you can try to the following command:
 ```bash
 python manage.py test --settings=OnToology.settings-tests
 ``` 
+
+
+# Databases
+Since the database driver depends on the production database in use, do deliberatly
+left that out.
+
+If your live database is postgres: `pip install "psycopg[binary]"`
+
+If your live database is mysql: `pip install mysqlclient`
+
+For more, follow [Django docs](https://docs.djangoproject.com/en/6.1/ref/databases/)
+
