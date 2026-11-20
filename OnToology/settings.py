@@ -36,21 +36,12 @@ SECRET_KEY = 'xj1c6fel(z5@=%(br!j)u155a71j*^u_b+2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-
-print("environ: ")
-print(os.environ)
-
 if 'debug' in os.environ:
     DEBUG = os.environ['debug'].lower() == 'true'
     print("DEBUG in ENVIRON")
 else:
     print("DEBUG is not in ENVIRON")
 
-
-if DEBUG == True:
-    print("settings: DEBUG>>>>>>>>>>>>>>\n\n\n")
-else:
-    print("settings: Not DEBUG>>>>>>>>>>>>>>\n\n\n")
 
 ALLOWED_HOSTS = ['*']
 
@@ -147,16 +138,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "local_static")
 
 
 try:
-    # print("openning the file:")
-    # f = open("OnToology/localwsgi.py")
-    # print(f.read())
-    # f.close()
-    # print("closing the file:")
     from OnToology.localwsgi import environ  # as environabc
-    print("\\\\*****\\\\\\*****\n\n\n\n\n****")
-    for k in environ:
-        print(k+" abc--> "+str(environ[k]))
-    # print(environ)
     test_conf = {
         'local': environ['test_local'].strip().lower() =="true",  # doing test
         'fork': environ['test_fork'].strip().lower() =="true",  # perform fork
@@ -184,7 +166,6 @@ except Exception as e:
         raise Exception("Force local wsgi load")
 
 environ = os.environ
-print("environ: ")
 
 if 'db_name' in environ:
     db_name = environ['db_name']
@@ -223,7 +204,6 @@ os.environ['OnToology_home'] = "false"
 local = False
 
 print("Going remote")
-print(os.environ)
 
 AUTH_USER_MODEL = 'OnToology.OUser'
 
