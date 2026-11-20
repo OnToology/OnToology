@@ -96,8 +96,7 @@ python manage.py test --settings=OnToology.settings-tests
 
 
 # Databases
-Since the database driver depends on the production database in use, do deliberatly
-left that out.
+Since the database driver depends on the production database in use, do deliberately left that out.
 
 If your live database is postgres: `pip install "psycopg[binary]"`
 
